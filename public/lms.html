@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LMS Admin - Course Management</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --navy: #0B1D3A;
+  --surface: #0F2440;
+  --royal: #2454A0;
+  --teal: #00B4D8;
+  --green: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --text: #E2E8F0;
+  --text-dim: #94A3B8;
+  --border: rgba(255,255,255,0.08);
+  --border-light: rgba(255,255,255,0.12);
+  --glass: rgba(15,36,64,0.85);
+  --radius: 10px;
+  --radius-lg: 14px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.5);
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--navy);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--royal); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--teal); }
+
+/* Header */
+.lms-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+}
+
+.lms-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lms-header h1 svg { width: 28px; height: 28px; }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Tabs */
+.tabs-bar {
+  display: flex;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  gap: 0;
+  position: sticky;
+  top: 64px;
+  z-index: 99;
+}
+
+.tab-btn {
+  padding: 14px 28px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
+
+.tab-content { display: none; padding: 28px 32px; }
+.tab-content.active { display: block; }
+
+/* Buttons */
+.btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.2px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--royal), var(--teal));
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(0,180,216,0.25);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,180,216,0.35); }
+
+.btn-success { background: var(--green); color: #fff; }
+.btn-success:hover { background: #0ea572; }
+
+.btn-warning { background: var(--warning); color: #000; }
+.btn-warning:hover { background: #d97706; }
+
+.btn-danger { background: var(--error); color: #fff; }
+.btn-danger:hover { background: #dc2626; }
+
+.btn-ghost {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.btn-xs { padding: 4px 10px; font-size: 11px; border-radius: 6px; }
+
+/* Form Controls */
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  transition: var(--transition);
+  outline: none;
+}
+
+.form-control:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(0,180,216,0.15); }
+.form-control::placeholder { color: rgba(148,163,184,0.5); }
+
+select.form-control { cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394A3B8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+textarea.form-control { resize: vertical; min-height: 80px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* Search & Filter Bar */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 240px;
+  position: relative;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px 14px 10px 40px;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: var(--transition);
+}
+
+.search-box input:focus { border-color: var(--teal); }
+.search-box svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px; height: 18px;
+  color: var(--text-dim);
+}
+
+.filter-select {
+  padding: 10px 32px 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394A3B8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: var(--transition);
+}
+
+.filter-select:focus { border-color: var(--teal); }
+
+/* Cards Grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 18px;
+}
+
+.course-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.course-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--royal), var(--teal));
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.course-card:hover { border-color: var(--royal); transform: translateY(-2px); box-shadow: var(--shadow); }
+.course-card:hover::before { opacity: 1; }
+
+.course-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.course-card h3 { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.3; }
+
+.course-code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--teal);
+  background: rgba(0,180,216,0.1);
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.course-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.course-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.course-card-footer span {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.course-card-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.badge-mandatory { background: rgba(239,68,68,0.15); color: var(--error); }
+.badge-recommended { background: rgba(245,158,11,0.15); color: var(--warning); }
+.badge-optional { background: rgba(0,180,216,0.15); color: var(--teal); }
+.badge-active { background: rgba(16,185,129,0.15); color: var(--green); }
+.badge-draft { background: rgba(148,163,184,0.15); color: var(--text-dim); }
+.badge-archived { background: rgba(100,116,139,0.15); color: #64748B; }
+.badge-assigned { background: rgba(148,163,184,0.15); color: var(--text-dim); }
+.badge-in-progress { background: rgba(36,84,160,0.2); color: #60A5FA; }
+.badge-completed { background: rgba(16,185,129,0.15); color: var(--green); }
+.badge-overdue { background: rgba(239,68,68,0.15); color: var(--error); }
+.badge-expired { background: rgba(245,158,11,0.15); color: var(--warning); }
+
+/* Expanded Course Detail */
+.course-expanded {
+  display: none;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.course-expanded.open { display: block; }
+
+.module-item, .question-item {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+}
+
+.module-item h4, .question-item h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal);
+  margin-bottom: 4px;
+}
+
+.module-item p, .question-item p {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-dim);
+  margin: 16px 0 10px;
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+  overflow-y: auto;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--navy);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 780px;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn 0.3s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(-20px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 { font-size: 18px; font-weight: 700; color: var(--teal); }
+
+.modal-close {
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  font-size: 18px;
+}
+
+.modal-close:hover { background: rgba(239,68,68,0.2); color: var(--error); }
+
+.modal-body { padding: 24px; max-height: 70vh; overflow-y: auto; }
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+
+/* Builder Sections */
+.builder-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.builder-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.builder-section-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text);
+}
+
+.builder-item {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.builder-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.builder-item-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--teal);
+  background: rgba(0,180,216,0.1);
+  padding: 2px 10px;
+  border-radius: 4px;
+}
+
+.remove-item-btn {
+  width: 28px; height: 28px;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: 6px;
+  color: var(--error);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  font-size: 16px;
+}
+
+.remove-item-btn:hover { background: rgba(239,68,68,0.25); }
+
+/* MC Options */
+.mc-options { margin-top: 10px; }
+.mc-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.mc-option input[type="text"] {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: var(--transition);
+}
+
+.mc-option input[type="text"]:focus { border-color: var(--teal); }
+
+.mc-option input[type="radio"] {
+  width: 16px; height: 16px;
+  accent-color: var(--green);
+  cursor: pointer;
+}
+
+.mc-option label {
+  font-size: 11px;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+/* Tables */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.data-table thead th {
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-dim);
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.data-table tbody tr {
+  transition: var(--transition);
+}
+
+.data-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+.data-table tbody td {
+  padding: 12px 16px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.data-table tbody tr:last-child td { border-bottom: none; }
+
+/* Summary Cards */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.summary-card:hover { border-color: var(--royal); }
+
+.summary-card .value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.summary-card .label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+}
+
+.summary-card.total .value { color: var(--teal); }
+.summary-card.compliant .value { color: var(--green); }
+.summary-card.partial .value { color: var(--warning); }
+.summary-card.non-compliant .value { color: var(--error); }
+.summary-card.overdue .value { color: var(--error); }
+.summary-card.expiring .value { color: var(--warning); }
+
+/* Chart Container */
+.chart-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-top: 24px;
+}
+
+.chart-container h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 80px;
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-dim);
+}
+
+.empty-state svg { width: 64px; height: 64px; color: rgba(148,163,184,0.3); margin-bottom: 16px; }
+.empty-state h3 { font-size: 18px; margin-bottom: 8px; color: var(--text); }
+.empty-state p { font-size: 14px; margin-bottom: 20px; }
+
+/* Toast Notification */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 280px;
+}
+
+.toast.success { border-left: 4px solid var(--green); }
+.toast.error { border-left: 4px solid var(--error); }
+.toast.info { border-left: 4px solid var(--teal); }
+
+@keyframes toastIn { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateX(60px); } }
+
+/* Compliance Expand Row */
+.compliance-detail-row td {
+  padding: 0 !important;
+  border-bottom: 1px solid var(--border);
+}
+
+.compliance-detail-content {
+  padding: 16px 24px;
+  background: rgba(0,0,0,0.15);
+}
+
+.compliance-detail-content .detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.detail-item .d-label { color: var(--text-dim); }
+.detail-item .d-value { font-weight: 600; }
+
+/* Loading Spinner */
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .lms-header { padding: 0 16px; }
+  .tabs-bar { padding: 0 16px; overflow-x: auto; }
+  .tab-btn { padding: 12px 18px; font-size: 13px; }
+  .tab-content { padding: 20px 16px; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .form-row, .form-row-3 { grid-template-columns: 1fr; }
+  .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  .toolbar { flex-direction: column; }
+  .data-table { font-size: 12px; }
+  .data-table thead th, .data-table tbody td { padding: 8px 10px; }
+}
+
+/* Checkbox styled */
+.checkbox-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox-wrap input[type="checkbox"] {
+  width: 16px; height: 16px;
+  accent-color: var(--teal);
+  cursor: pointer;
+}
+
+/* Enroll Modal Specifics */
+.enroll-mode-toggle {
+  display: flex;
+  background: rgba(0,0,0,0.25);
+  border-radius: 8px;
+  padding: 3px;
+  margin-bottom: 16px;
+}
+
+.enroll-mode-btn {
+  flex: 1;
+  padding: 8px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.enroll-mode-btn.active {
+  background: var(--royal);
+  color: #fff;
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="lms-header">
+  <h1>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+    </svg>
+    LMS Administration
+  </h1>
+  <div class="header-actions">
+    <span id="userDisplay" style="font-size:13px; color:var(--text-dim);"></span>
+  </div>
+</header>
+
+<!-- Tabs -->
+<nav class="tabs-bar">
+  <button class="tab-btn active" data-tab="courses" onclick="switchTab('courses')">
+    Course Library
+  </button>
+  <button class="tab-btn" data-tab="enrollments" onclick="switchTab('enrollments')">
+    Enrollments
+  </button>
+  <button class="tab-btn" data-tab="compliance" onclick="switchTab('compliance')">
+    Compliance Dashboard
+  </button>
+</nav>
+
+<!-- TAB 1: COURSE LIBRARY -->
+<div id="tab-courses" class="tab-content active">
+  <div id="seedBanner" style="display:none; margin-bottom:20px; padding:16px 20px; background:rgba(0,180,216,0.08); border:1px solid rgba(0,180,216,0.2); border-radius:var(--radius-lg); text-align:center;">
+    <p style="font-size:14px; color:var(--text); margin-bottom:12px;">No courses found. Seed default courses to get started.</p>
+    <button class="btn btn-primary" onclick="seedCourses()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18m-6-6 6 6 6-6"/></svg>
+      Seed Default Courses
+    </button>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="courseSearch" placeholder="Search courses..." oninput="filterCourses()">
+    </div>
+    <select class="filter-select" id="filterCategory" onchange="filterCourses()">
+      <option value="">All Categories</option>
+      <option value="Mandatory">Mandatory</option>
+      <option value="Recommended">Recommended</option>
+      <option value="Optional">Optional</option>
+    </select>
+    <select class="filter-select" id="filterType" onchange="filterCourses()">
+      <option value="">All Types</option>
+      <option value="Online">Online</option>
+      <option value="In-Person">In-Person</option>
+      <option value="Blended">Blended</option>
+      <option value="Self-Paced">Self-Paced</option>
+    </select>
+    <select class="filter-select" id="filterStatus" onchange="filterCourses()">
+      <option value="">All Status</option>
+      <option value="Active">Active</option>
+      <option value="Draft">Draft</option>
+      <option value="Archived">Archived</option>
+    </select>
+    <button class="btn btn-primary" onclick="openCourseModal()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Course
+    </button>
+  </div>
+
+  <div id="coursesGrid" class="cards-grid"></div>
+  <div id="coursesEmpty" class="empty-state" style="display:none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    <h3>No Courses Found</h3>
+    <p>Create a new course or adjust your filters</p>
+  </div>
+</div>
+
+<!-- TAB 2: ENROLLMENTS -->
+<div id="tab-enrollments" class="tab-content">
+  <div class="toolbar">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="enrollmentSearch" placeholder="Search enrollments..." oninput="filterEnrollments()">
+    </div>
+    <select class="filter-select" id="filterEnrollCourse" onchange="filterEnrollments()">
+      <option value="">All Courses</option>
+    </select>
+    <select class="filter-select" id="filterEnrollStatus" onchange="filterEnrollments()">
+      <option value="">All Status</option>
+      <option value="Assigned">Assigned</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Completed">Completed</option>
+      <option value="Overdue">Overdue</option>
+      <option value="Expired">Expired</option>
+    </select>
+    <label class="checkbox-wrap" style="font-size:13px; color:var(--text-dim);">
+      <input type="checkbox" id="filterOverdueOnly" onchange="filterEnrollments()">
+      Overdue Only
+    </label>
+    <button class="btn btn-primary" onclick="openEnrollModal()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      Enroll Staff
+    </button>
+  </div>
+
+  <div style="overflow-x:auto;">
+    <table class="data-table" id="enrollmentsTable">
+      <thead>
+        <tr>
+          <th>Staff Name</th>
+          <th>Course</th>
+          <th>Assigned</th>
+          <th>Due</th>
+          <th>Status</th>
+          <th>Progress</th>
+          <th>Score</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="enrollmentsBody"></tbody>
+    </table>
+  </div>
+  <div id="enrollmentsEmpty" class="empty-state" style="display:none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    <h3>No Enrollments</h3>
+    <p>Enroll staff in courses to track their progress</p>
+  </div>
+</div>
+
+<!-- TAB 3: COMPLIANCE DASHBOARD -->
+<div id="tab-compliance" class="tab-content">
+  <div class="toolbar" style="justify-content:flex-end;">
+    <button class="btn btn-ghost" onclick="exportComplianceCSV()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export CSV
+    </button>
+    <button class="btn btn-primary" onclick="loadComplianceDashboard()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Refresh
+    </button>
+  </div>
+
+  <div class="summary-grid" id="complianceSummary">
+    <div class="summary-card total">
+      <div class="value" id="sumTotal">--</div>
+      <div class="label">Total Staff</div>
+    </div>
+    <div class="summary-card compliant">
+      <div class="value" id="sumCompliant">--</div>
+      <div class="label">Fully Compliant</div>
+    </div>
+    <div class="summary-card partial">
+      <div class="value" id="sumPartial">--</div>
+      <div class="label">Partially Compliant</div>
+    </div>
+    <div class="summary-card non-compliant">
+      <div class="value" id="sumNonCompliant">--</div>
+      <div class="label">Non-Compliant</div>
+    </div>
+    <div class="summary-card overdue">
+      <div class="value" id="sumOverdue">--</div>
+      <div class="label">Overdue</div>
+    </div>
+    <div class="summary-card expiring">
+      <div class="value" id="sumExpiring">--</div>
+      <div class="label">Expiring 30 Days</div>
+    </div>
+  </div>
+
+  <div style="overflow-x:auto;">
+    <table class="data-table" id="complianceTable">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Role</th>
+          <th>Mandatory Courses</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="complianceBody"></tbody>
+    </table>
+  </div>
+
+  <div class="chart-container" style="margin-top:24px;">
+    <h3>Course Completion Rates</h3>
+    <div style="position:relative; height:320px;">
+      <canvas id="completionChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- COURSE EDITOR MODAL -->
+<div class="modal-overlay" id="courseModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="courseModalTitle">New Course</h2>
+      <button class="modal-close" onclick="closeCourseModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="courseEditId">
+
+      <!-- Basic Info -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Course Name</label>
+          <input type="text" class="form-control" id="courseName" placeholder="e.g. Workplace Health & Safety">
+        </div>
+        <div class="form-group">
+          <label>Course Code</label>
+          <input type="text" class="form-control" id="courseCode" placeholder="e.g. WHS-101" style="font-family:'JetBrains Mono',monospace;">
+        </div>
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group">
+          <label>Category</label>
+          <select class="form-control" id="courseCategory">
+            <option value="Mandatory">Mandatory</option>
+            <option value="Recommended">Recommended</option>
+            <option value="Optional">Optional</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select class="form-control" id="courseType">
+            <option value="Online">Online</option>
+            <option value="In-Person">In-Person</option>
+            <option value="Blended">Blended</option>
+            <option value="Self-Paced">Self-Paced</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select class="form-control" id="courseStatus">
+            <option value="Active">Active</option>
+            <option value="Draft">Draft</option>
+            <option value="Archived">Archived</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea class="form-control" id="courseDescription" placeholder="Course description..."></textarea>
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group">
+          <label>Duration (minutes)</label>
+          <input type="number" class="form-control" id="courseDuration" placeholder="60" min="1">
+        </div>
+        <div class="form-group">
+          <label>Pass Mark (%)</label>
+          <input type="number" class="form-control" id="coursePassMark" placeholder="80" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label>Expiry (Months)</label>
+          <input type="number" class="form-control" id="courseExpiry" placeholder="12" min="0">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Related Compliance Field</label>
+        <select class="form-control" id="courseComplianceField">
+          <option value="">None</option>
+          <option value="First Aid Expiry">First Aid Expiry</option>
+          <option value="CPR Expiry">CPR Expiry</option>
+          <option value="WWCC Expiry">WWCC Expiry</option>
+          <option value="Insurance Expiry">Insurance Expiry</option>
+        </select>
+      </div>
+
+      <!-- Content Builder -->
+      <div class="builder-section">
+        <div class="builder-section-header">
+          <h3>Content Builder - Modules</h3>
+          <button class="btn btn-sm btn-ghost" onclick="addModule()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Module
+          </button>
+        </div>
+        <div id="modulesContainer"></div>
+      </div>
+
+      <!-- Assessment Builder -->
+      <div class="builder-section">
+        <div class="builder-section-header">
+          <h3>Assessment Builder - Questions</h3>
+          <button class="btn btn-sm btn-ghost" onclick="addQuestion()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Question
+          </button>
+        </div>
+        <div id="questionsContainer"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeCourseModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCourse()" id="saveCourseBtn">Save Course</button>
+    </div>
+  </div>
+</div>
+
+<!-- ENROLL MODAL -->
+<div class="modal-overlay" id="enrollModal">
+  <div class="modal" style="max-width:540px;">
+    <div class="modal-header">
+      <h2>Enroll Staff</h2>
+      <button class="modal-close" onclick="closeEnrollModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="enroll-mode-toggle">
+        <button class="enroll-mode-btn active" id="enrollModeIndividual" onclick="setEnrollMode('individual')">Individual</button>
+        <button class="enroll-mode-btn" id="enrollModeBulk" onclick="setEnrollMode('bulk')">Bulk by Job Title</button>
+      </div>
+
+      <!-- Individual -->
+      <div id="enrollIndividualSection">
+        <div class="form-group">
+          <label>Staff Member</label>
+          <select class="form-control" id="enrollStaffSelect">
+            <option value="">Search and select staff...</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Bulk -->
+      <div id="enrollBulkSection" style="display:none;">
+        <div class="form-group">
+          <label>Job Title</label>
+          <select class="form-control" id="enrollJobTitle">
+            <option value="">Select job title...</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Course</label>
+        <select class="form-control" id="enrollCourseSelect">
+          <option value="">Select course...</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Due Date</label>
+        <input type="date" class="form-control" id="enrollDueDate">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeEnrollModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitEnrollment()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        Assign
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ─── Configuration ───────────────────────────────────────────────
+const API_BASE = window.location.origin + '/api';
+
+function getAuthHeaders() {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': token ? `Bearer ${token}` : ''
+  };
+}
+
+async function apiFetch(endpoint, options = {}) {
+  const url = `${API_BASE}${endpoint}`;
+  const config = {
+    headers: getAuthHeaders(),
+    ...options
+  };
+  try {
+    const res = await fetch(url, config);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ message: res.statusText }));
+      throw new Error(err.message || `HTTP ${res.status}`);
+    }
+    if (res.status === 204) return null;
+    return await res.json();
+  } catch (error) {
+    console.error(`API Error [${endpoint}]:`, error);
+    throw error;
+  }
+}
+
+// ─── Toast Notifications ─────────────────────────────────────────
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  const icons = {
+    success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
+    error: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00B4D8" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+  };
+  toast.innerHTML = `${icons[type] || icons.info}<span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3000);
+}
+
+// ─── Tab Navigation ──────────────────────────────────────────────
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabName));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.toggle('active', t.id === `tab-${tabName}`));
+
+  if (tabName === 'courses') loadCourses();
+  else if (tabName === 'enrollments') loadEnrollments();
+  else if (tabName === 'compliance') loadComplianceDashboard();
+}
+
+// ─── State ───────────────────────────────────────────────────────
+let allCourses = [];
+let allEnrollments = [];
+let allStaff = [];
+let complianceData = null;
+let completionChart = null;
+let moduleCounter = 0;
+let questionCounter = 0;
+
+// ─── COURSES ─────────────────────────────────────────────────────
+async function loadCourses() {
+  try {
+    const data = await apiFetch('/courses');
+    allCourses = Array.isArray(data) ? data : (data.courses || data.data || []);
+    renderCourses();
+    populateEnrollCourseDropdown();
+  } catch (err) {
+    showToast('Failed to load courses: ' + err.message, 'error');
+    allCourses = [];
+    renderCourses();
+  }
+}
+
+function renderCourses() {
+  const grid = document.getElementById('coursesGrid');
+  const empty = document.getElementById('coursesEmpty');
+  const banner = document.getElementById('seedBanner');
+
+  const search = document.getElementById('courseSearch').value.toLowerCase();
+  const cat = document.getElementById('filterCategory').value;
+  const type = document.getElementById('filterType').value;
+  const status = document.getElementById('filterStatus').value;
+
+  let filtered = allCourses.filter(c => {
+    if (search && !(c.name || '').toLowerCase().includes(search) && !(c.code || '').toLowerCase().includes(search)) return false;
+    if (cat && c.category !== cat) return false;
+    if (type && c.type !== type) return false;
+    if (status && c.status !== status) return false;
+    return true;
+  });
+
+  banner.style.display = allCourses.length === 0 ? 'block' : 'none';
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = allCourses.length > 0 ? 'block' : 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  grid.innerHTML = filtered.map(c => {
+    const catClass = (c.category || '').toLowerCase();
+    const statusClass = (c.status || 'active').toLowerCase();
+    const modules = c.modules || [];
+    const questions = c.questions || [];
+
+    return `
+      <div class="course-card" onclick="toggleCourseExpand(this, event)">
+        <div class="course-card-header">
+          <h3>${esc(c.name)}</h3>
+          <span class="course-code">${esc(c.code || '')}</span>
+        </div>
+        <div class="course-card-meta">
+          <span class="badge badge-${catClass === 'mandatory' ? 'mandatory' : catClass === 'recommended' ? 'recommended' : 'optional'}">${esc(c.category)}</span>
+          <span class="badge badge-${statusClass}">${esc(c.status || 'Active')}</span>
+          <span style="font-size:12px; color:var(--text-dim);">${esc(c.type || '')}</span>
+        </div>
+        ${c.description ? `<p style="font-size:12px; color:var(--text-dim); margin-top:10px; line-height:1.5;">${esc(c.description).substring(0, 120)}${c.description.length > 120 ? '...' : ''}</p>` : ''}
+        <div class="course-card-footer">
+          <span>${c.duration ? c.duration + ' min' : '--'} ${c.pass_mark ? ' | Pass: ' + c.pass_mark + '%' : ''} ${c.expiry_months ? ' | Expires: ' + c.expiry_months + 'mo' : ''}</span>
+          <div class="course-card-actions">
+            <button class="btn btn-xs btn-ghost" onclick="event.stopPropagation(); editCourse(${c.id})" title="Edit">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="btn btn-xs btn-ghost" onclick="event.stopPropagation(); deleteCourse(${c.id})" title="Delete" style="color:var(--error);">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="course-expanded">
+          ${modules.length > 0 ? `
+            <div class="section-label">Modules (${modules.length})</div>
+            ${modules.map((m, i) => `
+              <div class="module-item">
+                <h4>Module ${i + 1}: ${esc(m.title)}</h4>
+                <p>${esc(m.content_type || 'Text')}${m.content_body ? ' - ' + esc(m.content_body).substring(0, 100) : ''}</p>
+              </div>
+            `).join('')}
+          ` : ''}
+          ${questions.length > 0 ? `
+            <div class="section-label">Assessment Questions (${questions.length})</div>
+            ${questions.map((q, i) => `
+              <div class="question-item">
+                <h4>Q${i + 1}: ${esc(q.question_text)}</h4>
+                <p>Type: ${esc(q.question_type || 'Multiple Choice')} | Correct: ${esc(q.correct_answer || '--')}</p>
+              </div>
+            `).join('')}
+          ` : ''}
+          ${modules.length === 0 && questions.length === 0 ? '<p style="font-size:12px; color:var(--text-dim);">No modules or questions added yet.</p>' : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleCourseExpand(card, event) {
+  const expanded = card.querySelector('.course-expanded');
+  if (expanded) expanded.classList.toggle('open');
+}
+
+function filterCourses() { renderCourses(); }
+
+// ─── Course Modal ────────────────────────────────────────────────
+function openCourseModal(courseId = null) {
+  document.getElementById('courseEditId').value = courseId || '';
+  document.getElementById('courseModalTitle').textContent = courseId ? 'Edit Course' : 'New Course';
+  document.getElementById('courseName').value = '';
+  document.getElementById('courseCode').value = '';
+  document.getElementById('courseCategory').value = 'Mandatory';
+  document.getElementById('courseType').value = 'Online';
+  document.getElementById('courseStatus').value = 'Active';
+  document.getElementById('courseDescription').value = '';
+  document.getElementById('courseDuration').value = '';
+  document.getElementById('coursePassMark').value = '';
+  document.getElementById('courseExpiry').value = '';
+  document.getElementById('courseComplianceField').value = '';
+  document.getElementById('modulesContainer').innerHTML = '';
+  document.getElementById('questionsContainer').innerHTML = '';
+  moduleCounter = 0;
+  questionCounter = 0;
+
+  if (courseId) {
+    const c = allCourses.find(x => x.id == courseId);
+    if (c) {
+      document.getElementById('courseName').value = c.name || '';
+      document.getElementById('courseCode').value = c.code || '';
+      document.getElementById('courseCategory').value = c.category || 'Mandatory';
+      document.getElementById('courseType').value = c.type || 'Online';
+      document.getElementById('courseStatus').value = c.status || 'Active';
+      document.getElementById('courseDescription').value = c.description || '';
+      document.getElementById('courseDuration').value = c.duration || '';
+      document.getElementById('coursePassMark').value = c.pass_mark || '';
+      document.getElementById('courseExpiry').value = c.expiry_months || '';
+      document.getElementById('courseComplianceField').value = c.compliance_field || '';
+      (c.modules || []).forEach(m => addModule(m));
+      (c.questions || []).forEach(q => addQuestion(q));
+    }
+  }
+
+  document.getElementById('courseModal').classList.add('open');
+}
+
+function closeCourseModal() {
+  document.getElementById('courseModal').classList.remove('open');
+}
+
+function addModule(data = null) {
+  moduleCounter++;
+  const n = moduleCounter;
+  const container = document.getElementById('modulesContainer');
+  const div = document.createElement('div');
+  div.className = 'builder-item';
+  div.id = `module-${n}`;
+  div.dataset.existingId = data && data.id ? data.id : '';
+  div.innerHTML = `
+    <div class="builder-item-header">
+      <span class="builder-item-num">Module ${n}</span>
+      <button class="remove-item-btn" onclick="removeModule(${n})" title="Remove module">&times;</button>
+    </div>
+    <div class="form-group">
+      <label>Title</label>
+      <input type="text" class="form-control module-title" placeholder="Module title" value="${esc(data?.title || '')}">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Content Type</label>
+        <select class="form-control module-content-type">
+          <option value="Text" ${data?.content_type === 'Text' ? 'selected' : ''}>Text</option>
+          <option value="Video" ${data?.content_type === 'Video' ? 'selected' : ''}>Video</option>
+          <option value="Document" ${data?.content_type === 'Document' ? 'selected' : ''}>Document</option>
+          <option value="Image" ${data?.content_type === 'Image' ? 'selected' : ''}>Image</option>
+        </select>
+      </div>
+      <div class="form-group" style="grid-column: span 1;"></div>
+    </div>
+    <div class="form-group">
+      <label>Content Body</label>
+      <textarea class="form-control module-content-body" placeholder="Module content...">${esc(data?.content_body || '')}</textarea>
+    </div>
+  `;
+  container.appendChild(div);
+}
+
+function removeModule(n) {
+  const el = document.getElementById(`module-${n}`);
+  if (el) el.remove();
+  renumberModules();
+}
+
+function renumberModules() {
+  document.querySelectorAll('#modulesContainer .builder-item').forEach((item, i) => {
+    item.querySelector('.builder-item-num').textContent = `Module ${i + 1}`;
+  });
+}
+
+function addQuestion(data = null) {
+  questionCounter++;
+  const n = questionCounter;
+  const container = document.getElementById('questionsContainer');
+  const div = document.createElement('div');
+  div.className = 'builder-item';
+  div.id = `question-${n}`;
+  div.dataset.existingId = data && data.id ? data.id : '';
+
+  const qType = data?.question_type || 'Multiple Choice';
+  const options = data?.options || ['', '', '', ''];
+  const correct = data?.correct_answer || '';
+
+  div.innerHTML = `
+    <div class="builder-item-header">
+      <span class="builder-item-num">Q${n}</span>
+      <button class="remove-item-btn" onclick="removeQuestion(${n})" title="Remove question">&times;</button>
+    </div>
+    <div class="form-group">
+      <label>Question Text</label>
+      <input type="text" class="form-control question-text" placeholder="Enter question..." value="${esc(data?.question_text || '')}">
+    </div>
+    <div class="form-group">
+      <label>Type</label>
+      <select class="form-control question-type" onchange="toggleQuestionType(${n})">
+        <option value="Multiple Choice" ${qType === 'Multiple Choice' ? 'selected' : ''}>Multiple Choice</option>
+        <option value="True False" ${qType === 'True False' ? 'selected' : ''}>True / False</option>
+      </select>
+    </div>
+    <div class="mc-options" id="mcOptions-${n}" style="${qType === 'True False' ? 'display:none;' : ''}">
+      ${[0,1,2,3].map(i => `
+        <div class="mc-option">
+          <input type="radio" name="correct-${n}" id="correct-${n}-${i}" value="${String.fromCharCode(65 + i)}" ${correct === String.fromCharCode(65 + i) ? 'checked' : ''}>
+          <label for="correct-${n}-${i}" style="min-width:14px;">${String.fromCharCode(65 + i)}</label>
+          <input type="text" class="mc-option-text" placeholder="Option ${String.fromCharCode(65 + i)}" value="${esc(options[i] || '')}">
+        </div>
+      `).join('')}
+    </div>
+    <div class="tf-options" id="tfOptions-${n}" style="${qType === 'True False' ? '' : 'display:none;'}">
+      <div class="mc-option">
+        <input type="radio" name="tf-correct-${n}" id="tf-correct-${n}-true" value="True" ${correct === 'True' ? 'checked' : ''}>
+        <label for="tf-correct-${n}-true">True</label>
+      </div>
+      <div class="mc-option">
+        <input type="radio" name="tf-correct-${n}" id="tf-correct-${n}-false" value="False" ${correct === 'False' ? 'checked' : ''}>
+        <label for="tf-correct-${n}-false">False</label>
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+}
+
+function removeQuestion(n) {
+  const el = document.getElementById(`question-${n}`);
+  if (el) el.remove();
+  renumberQuestions();
+}
+
+function renumberQuestions() {
+  document.querySelectorAll('#questionsContainer .builder-item').forEach((item, i) => {
+    item.querySelector('.builder-item-num').textContent = `Q${i + 1}`;
+  });
+}
+
+function toggleQuestionType(n) {
+  const type = document.querySelector(`#question-${n} .question-type`).value;
+  const mc = document.getElementById(`mcOptions-${n}`);
+  const tf = document.getElementById(`tfOptions-${n}`);
+  if (type === 'True False') {
+    mc.style.display = 'none';
+    tf.style.display = 'block';
+  } else {
+    mc.style.display = 'block';
+    tf.style.display = 'none';
+  }
+}
+
+function collectModules() {
+  const modules = [];
+  document.querySelectorAll('#modulesContainer .builder-item').forEach((item, i) => {
+    modules.push({
+      id: item.dataset.existingId || undefined,
+      title: item.querySelector('.module-title').value.trim(),
+      content_type: item.querySelector('.module-content-type').value,
+      content_body: item.querySelector('.module-content-body').value.trim(),
+      order: i + 1
+    });
+  });
+  return modules;
+}
+
+function collectQuestions() {
+  const questions = [];
+  document.querySelectorAll('#questionsContainer .builder-item').forEach((item) => {
+    const qType = item.querySelector('.question-type').value;
+    let correct = '';
+    let options = [];
+
+    if (qType === 'Multiple Choice') {
+      const radios = item.querySelectorAll('.mc-options input[type="radio"]');
+      radios.forEach(r => { if (r.checked) correct = r.value; });
+      const optInputs = item.querySelectorAll('.mc-option-text');
+      optInputs.forEach(o => options.push(o.value.trim()));
+    } else {
+      const radios = item.querySelectorAll('.tf-options input[type="radio"]');
+      radios.forEach(r => { if (r.checked) correct = r.value; });
+      options = ['True', 'False'];
+    }
+
+    questions.push({
+      id: item.dataset.existingId || undefined,
+      question_text: item.querySelector('.question-text').value.trim(),
+      question_type: qType,
+      options,
+      correct_answer: correct
+    });
+  });
+  return questions;
+}
+
+async function saveCourse() {
+  const editId = document.getElementById('courseEditId').value;
+  const name = document.getElementById('courseName').value.trim();
+  const code = document.getElementById('courseCode').value.trim();
+
+  if (!name) { showToast('Course name is required', 'error'); return; }
+  if (!code) { showToast('Course code is required', 'error'); return; }
+
+  const courseData = {
+    name,
+    code,
+    category: document.getElementById('courseCategory').value,
+    type: document.getElementById('courseType').value,
+    status: document.getElementById('courseStatus').value,
+    description: document.getElementById('courseDescription').value.trim(),
+    duration: parseInt(document.getElementById('courseDuration').value) || null,
+    pass_mark: parseInt(document.getElementById('coursePassMark').value) || null,
+    expiry_months: parseInt(document.getElementById('courseExpiry').value) || null,
+    compliance_field: document.getElementById('courseComplianceField').value || null,
+    modules: collectModules(),
+    questions: collectQuestions()
+  };
+
+  try {
+    if (editId) {
+      await apiFetch(`/courses/${editId}`, { method: 'PATCH', body: JSON.stringify(courseData) });
+
+      // Handle modules
+      for (const mod of courseData.modules) {
+        if (mod.id) {
+          await apiFetch(`/modules/${mod.id}`, { method: 'PATCH', body: JSON.stringify(mod) });
+        } else {
+          await apiFetch(`/courses/${editId}/modules`, { method: 'POST', body: JSON.stringify(mod) });
+        }
+      }
+
+      // Handle questions
+      for (const q of courseData.questions) {
+        if (q.id) {
+          await apiFetch(`/questions/${q.id}`, { method: 'PATCH', body: JSON.stringify(q) });
+        } else {
+          await apiFetch(`/courses/${editId}/questions`, { method: 'POST', body: JSON.stringify(q) });
+        }
+      }
+
+      showToast('Course updated successfully', 'success');
+    } else {
+      await apiFetch('/courses', { method: 'POST', body: JSON.stringify(courseData) });
+      showToast('Course created successfully', 'success');
+    }
+    closeCourseModal();
+    loadCourses();
+  } catch (err) {
+    showToast('Save failed: ' + err.message, 'error');
+  }
+}
+
+async function editCourse(id) {
+  openCourseModal(id);
+}
+
+async function deleteCourse(id) {
+  if (!confirm('Are you sure you want to delete this course?')) return;
+  try {
+    await apiFetch(`/courses/${id}`, { method: 'DELETE' });
+    showToast('Course deleted', 'success');
+    loadCourses();
+  } catch (err) {
+    showToast('Delete failed: ' + err.message, 'error');
+  }
+}
+
+async function seedCourses() {
+  try {
+    await apiFetch('/courses/seed', { method: 'POST' });
+    showToast('Default courses seeded successfully', 'success');
+    loadCourses();
+  } catch (err) {
+    showToast('Seed failed: ' + err.message, 'error');
+  }
+}
+
+// ─── ENROLLMENTS ─────────────────────────────────────────────────
+async function loadEnrollments() {
+  try {
+    const data = await apiFetch('/enrollments');
+    allEnrollments = Array.isArray(data) ? data : (data.enrollments || data.data || []);
+    renderEnrollments();
+  } catch (err) {
+    showToast('Failed to load enrollments: ' + err.message, 'error');
+    allEnrollments = [];
+    renderEnrollments();
+  }
+}
+
+function renderEnrollments() {
+  const body = document.getElementById('enrollmentsBody');
+  const empty = document.getElementById('enrollmentsEmpty');
+
+  const search = document.getElementById('enrollmentSearch').value.toLowerCase();
+  const course = document.getElementById('filterEnrollCourse').value;
+  const status = document.getElementById('filterEnrollStatus').value;
+  const overdueOnly = document.getElementById('filterOverdueOnly').checked;
+
+  let filtered = allEnrollments.filter(e => {
+    const staffName = (e.staff_name || e.staffName || '').toLowerCase();
+    const courseName = (e.course_name || e.courseName || '').toLowerCase();
+    if (search && !staffName.includes(search) && !courseName.includes(search)) return false;
+    if (course && (e.course_id || e.courseId) != course) return false;
+    if (status && e.status !== status) return false;
+    if (overdueOnly && e.status !== 'Overdue') return false;
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    body.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  body.innerHTML = filtered.map(e => {
+    const statusClass = (e.status || '').toLowerCase().replace(/\s+/g, '-');
+    const progress = e.progress || 0;
+    const progressColor = progress >= 100 ? 'var(--green)' : progress > 0 ? 'var(--teal)' : 'var(--text-dim)';
+
+    return `
+      <tr>
+        <td style="font-weight:600;">${esc(e.staff_name || e.staffName || '--')}</td>
+        <td>${esc(e.course_name || e.courseName || '--')}</td>
+        <td style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-dim);">${formatDate(e.assigned_date || e.assignedDate)}</td>
+        <td style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-dim);">${formatDate(e.due_date || e.dueDate)}</td>
+        <td><span class="badge badge-${statusClass}">${esc(e.status || '--')}</span></td>
+        <td>
+          <div class="progress-bar"><div class="progress-bar-fill" style="width:${progress}%; background:${progressColor};"></div></div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">${progress}%</span>
+        </td>
+        <td style="font-family:'JetBrains Mono',monospace; font-size:13px;">${e.score != null ? e.score + '%' : '--'}</td>
+        <td>
+          <div style="display:flex; gap:4px;">
+            ${e.status !== 'Completed' ? `
+              <button class="btn btn-xs btn-ghost" onclick="updateEnrollmentStatus(${e.id}, 'In Progress')" title="Mark In Progress">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </button>
+              <button class="btn btn-xs btn-ghost" onclick="updateEnrollmentStatus(${e.id}, 'Completed')" title="Mark Complete" style="color:var(--green);">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+            ` : ''}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function filterEnrollments() { renderEnrollments(); }
+
+async function updateEnrollmentStatus(id, status) {
+  try {
+    await apiFetch(`/enrollments/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status, progress: status === 'Completed' ? 100 : undefined })
+    });
+    showToast(`Enrollment updated to ${status}`, 'success');
+    loadEnrollments();
+  } catch (err) {
+    showToast('Update failed: ' + err.message, 'error');
+  }
+}
+
+// ─── Enroll Modal ────────────────────────────────────────────────
+let enrollMode = 'individual';
+
+function openEnrollModal() {
+  setEnrollMode('individual');
+  document.getElementById('enrollStaffSelect').value = '';
+  document.getElementById('enrollCourseSelect').value = '';
+  document.getElementById('enrollDueDate').value = '';
+  document.getElementById('enrollJobTitle').value = '';
+  loadStaffOptions();
+  loadJobTitles();
+  document.getElementById('enrollModal').classList.add('open');
+}
+
+function closeEnrollModal() {
+  document.getElementById('enrollModal').classList.remove('open');
+}
+
+function setEnrollMode(mode) {
+  enrollMode = mode;
+  document.getElementById('enrollModeIndividual').classList.toggle('active', mode === 'individual');
+  document.getElementById('enrollModeBulk').classList.toggle('active', mode === 'bulk');
+  document.getElementById('enrollIndividualSection').style.display = mode === 'individual' ? 'block' : 'none';
+  document.getElementById('enrollBulkSection').style.display = mode === 'bulk' ? 'block' : 'none';
+}
+
+async function loadStaffOptions() {
+  try {
+    const data = await apiFetch('/staff') || await apiFetch('/employees');
+    allStaff = Array.isArray(data) ? data : (data.staff || data.employees || data.data || []);
+    const select = document.getElementById('enrollStaffSelect');
+    select.innerHTML = '<option value="">Search and select staff...</option>';
+    allStaff.forEach(s => {
+      const name = s.name || `${s.first_name || s.firstName || ''} ${s.last_name || s.lastName || ''}`.trim();
+      select.innerHTML += `<option value="${s.id}">${esc(name)}</option>`;
+    });
+  } catch (err) {
+    console.log('Could not load staff list:', err.message);
+  }
+}
+
+async function loadJobTitles() {
+  try {
+    const select = document.getElementById('enrollJobTitle');
+    select.innerHTML = '<option value="">Select job title...</option>';
+    const titles = [...new Set(allStaff.map(s => s.job_title || s.jobTitle || s.role || '').filter(Boolean))];
+    titles.forEach(t => {
+      select.innerHTML += `<option value="${esc(t)}">${esc(t)}</option>`;
+    });
+  } catch (err) {
+    console.log('Could not load job titles');
+  }
+}
+
+function populateEnrollCourseDropdown() {
+  const selects = [document.getElementById('enrollCourseSelect'), document.getElementById('filterEnrollCourse')];
+  selects.forEach(select => {
+    if (!select) return;
+    const firstOpt = select.options[0].text;
+    select.innerHTML = `<option value="">${firstOpt}</option>`;
+    allCourses.forEach(c => {
+      select.innerHTML += `<option value="${c.id}">${esc(c.name)} (${esc(c.code || '')})</option>`;
+    });
+  });
+}
+
+async function submitEnrollment() {
+  const courseId = document.getElementById('enrollCourseSelect').value;
+  const dueDate = document.getElementById('enrollDueDate').value;
+
+  if (!courseId) { showToast('Please select a course', 'error'); return; }
+  if (!dueDate) { showToast('Please set a due date', 'error'); return; }
+
+  try {
+    if (enrollMode === 'individual') {
+      const staffId = document.getElementById('enrollStaffSelect').value;
+      if (!staffId) { showToast('Please select a staff member', 'error'); return; }
+      await apiFetch('/enrollments', {
+        method: 'POST',
+        body: JSON.stringify({ staff_id: staffId, course_id: courseId, due_date: dueDate })
+      });
+      showToast('Staff enrolled successfully', 'success');
+    } else {
+      const jobTitle = document.getElementById('enrollJobTitle').value;
+      if (!jobTitle) { showToast('Please select a job title', 'error'); return; }
+      await apiFetch('/enrollments/bulk', {
+        method: 'POST',
+        body: JSON.stringify({ job_title: jobTitle, course_id: courseId, due_date: dueDate })
+      });
+      showToast('Bulk enrollment successful', 'success');
+    }
+    closeEnrollModal();
+    loadEnrollments();
+  } catch (err) {
+    showToast('Enrollment failed: ' + err.message, 'error');
+  }
+}
+
+// ─── COMPLIANCE DASHBOARD ────────────────────────────────────────
+async function loadComplianceDashboard() {
+  try {
+    const data = await apiFetch('/compliance/dashboard');
+    complianceData = data;
+    renderComplianceSummary(data);
+    renderComplianceTable(data);
+    renderCompletionChart(data);
+  } catch (err) {
+    showToast('Failed to load compliance data: ' + err.message, 'error');
+  }
+}
+
+function renderComplianceSummary(data) {
+  const summary = data.summary || data;
+  document.getElementById('sumTotal').textContent = summary.total_staff ?? summary.totalStaff ?? '--';
+  document.getElementById('sumCompliant').textContent = summary.fully_compliant ?? summary.fullyCompliant ?? '--';
+  document.getElementById('sumPartial').textContent = summary.partially_compliant ?? summary.partiallyCompliant ?? '--';
+  document.getElementById('sumNonCompliant').textContent = summary.non_compliant ?? summary.nonCompliant ?? '--';
+  document.getElementById('sumOverdue').textContent = summary.overdue ?? '--';
+  document.getElementById('sumExpiring').textContent = summary.expiring_30_days ?? summary.expiring30Days ?? '--';
+}
+
+function renderComplianceTable(data) {
+  const staff = data.staff || data.staff_compliance || [];
+  const body = document.getElementById('complianceBody');
+
+  if (staff.length === 0) {
+    body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:32px; color:var(--text-dim);">No compliance data available</td></tr>';
+    return;
+  }
+
+  body.innerHTML = staff.map((s, idx) => {
+    const statusClass = (s.status || '').toLowerCase().replace(/\s+/g, '-').replace('fully', '').replace('partially', 'partial');
+    const mandatoryText = s.mandatory_completed != null ? `${s.mandatory_completed}/${s.mandatory_total}` : (s.mandatoryCompleted != null ? `${s.mandatoryCompleted}/${s.mandatoryTotal}` : '--');
+
+    let badgeClass = 'badge-active';
+    const st = (s.status || '').toLowerCase();
+    if (st.includes('non')) badgeClass = 'badge-overdue';
+    else if (st.includes('partial')) badgeClass = 'badge-recommended';
+    else if (st.includes('full') || st.includes('compliant')) badgeClass = 'badge-completed';
+
+    const details = s.details || s.courses || [];
+    const detailHtml = details.length > 0 ? `
+      <tr class="compliance-detail-row" id="compDetail-${idx}" style="display:none;">
+        <td colspan="5">
+          <div class="compliance-detail-content">
+            <div class="detail-grid">
+              ${details.map(d => `
+                <div class="detail-item">
+                  <span class="d-label">${esc(d.course_name || d.courseName || d.name || '')}</span>
+                  <span class="d-value" style="color:${d.status === 'Completed' ? 'var(--green)' : d.status === 'Overdue' ? 'var(--error)' : 'var(--text-dim)'};">${esc(d.status || '--')}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </td>
+      </tr>
+    ` : '';
+
+    return `
+      <tr onclick="toggleComplianceDetail(${idx})" style="cursor:pointer;">
+        <td style="width:30px;">
+          <svg id="compChevron-${idx}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2" style="transition:transform 0.2s;"><polyline points="9 18 15 12 9 6"/></svg>
+        </td>
+        <td style="font-weight:600;">${esc(s.name || s.staff_name || '--')}</td>
+        <td style="color:var(--text-dim);">${esc(s.role || s.job_title || '--')}</td>
+        <td style="font-family:'JetBrains Mono',monospace; font-size:13px;">${mandatoryText}</td>
+        <td><span class="badge ${badgeClass}">${esc(s.status || '--')}</span></td>
+      </tr>
+      ${detailHtml}
+    `;
+  }).join('');
+}
+
+function toggleComplianceDetail(idx) {
+  const row = document.getElementById(`compDetail-${idx}`);
+  const chevron = document.getElementById(`compChevron-${idx}`);
+  if (!row) return;
+  const open = row.style.display !== 'none';
+  row.style.display = open ? 'none' : 'table-row';
+  chevron.style.transform = open ? '' : 'rotate(90deg)';
+}
+
+function renderCompletionChart(data) {
+  const rates = data.completion_rates || data.completionRates || data.course_rates || [];
+  const ctx = document.getElementById('completionChart').getContext('2d');
+
+  if (completionChart) completionChart.destroy();
+
+  const labels = rates.map(r => r.course_name || r.courseName || r.name || '');
+  const values = rates.map(r => r.completion_rate ?? r.completionRate ?? r.rate ?? 0);
+
+  completionChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Completion Rate (%)',
+        data: values,
+        backgroundColor: values.map(v => v >= 80 ? 'rgba(16,185,129,0.7)' : v >= 50 ? 'rgba(245,158,11,0.7)' : 'rgba(239,68,68,0.7)'),
+        borderColor: values.map(v => v >= 80 ? '#10B981' : v >= 50 ? '#F59E0B' : '#EF4444'),
+        borderWidth: 1,
+        borderRadius: 6,
+        maxBarThickness: 48
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0F2440',
+          titleFont: { family: 'DM Sans', weight: '600' },
+          bodyFont: { family: 'JetBrains Mono' },
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          callbacks: {
+            label: ctx => `${ctx.parsed.y}% completion`
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 100,
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: {
+            color: '#94A3B8',
+            font: { family: 'JetBrains Mono', size: 11 },
+            callback: v => v + '%'
+          }
+        },
+        x: {
+          grid: { display: false },
+          ticks: {
+            color: '#94A3B8',
+            font: { family: 'DM Sans', size: 11 },
+            maxRotation: 45,
+            minRotation: 0
+          }
+        }
+      }
+    }
+  });
+}
+
+// ─── CSV Export ───────────────────────────────────────────────────
+function exportComplianceCSV() {
+  if (!complianceData || !complianceData.staff) {
+    const staffRows = complianceData?.staff_compliance || [];
+    if (staffRows.length === 0) {
+      showToast('No compliance data to export', 'error');
+      return;
+    }
+  }
+
+  const staff = complianceData.staff || complianceData.staff_compliance || [];
+  let csv = 'Name,Role,Mandatory Completed,Mandatory Total,Status\n';
+  staff.forEach(s => {
+    const name = (s.name || s.staff_name || '').replace(/,/g, ' ');
+    const role = (s.role || s.job_title || '').replace(/,/g, ' ');
+    const mc = s.mandatory_completed ?? s.mandatoryCompleted ?? '';
+    const mt = s.mandatory_total ?? s.mandatoryTotal ?? '';
+    const st = s.status || '';
+    csv += `${name},${role},${mc},${mt},${st}\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `compliance_report_${new Date().toISOString().split('T')[0]}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('CSV exported successfully', 'success');
+}
+
+// ─── Utilities ───────────────────────────────────────────────────
+function esc(str) {
+  if (str == null) return '';
+  const div = document.createElement('div');
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+
+function formatDate(d) {
+  if (!d) return '--';
+  try {
+    const date = new Date(d);
+    return date.toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' });
+  } catch { return d; }
+}
+
+// ─── Keyboard Shortcuts ──────────────────────────────────────────
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeCourseModal();
+    closeEnrollModal();
+  }
+});
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeCourseModal();
+      closeEnrollModal();
+    }
+  });
+});
+
+// ─── Init ────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    console.warn('No auth token found in localStorage. API calls may fail.');
+  }
+
+  // Display user info if available
+  try {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const display = document.getElementById('userDisplay');
+    if (user.name || user.email) {
+      display.textContent = user.name || user.email;
+    }
+  } catch {}
+
+  // Set default due date to 30 days from now
+  const defaultDue = new Date();
+  defaultDue.setDate(defaultDue.getDate() + 30);
+  document.getElementById('enrollDueDate').value = defaultDue.toISOString().split('T')[0];
+
+  // Load initial data
+  loadCourses();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NDIS Stakeholder Report — Titus CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--navy:#0B1D3A;--surface:#0F2440;--card:#152D50;--card2:#1A3562;--border:#1E4070;--royal:#2454A0;--teal:#00B4D8;--aqua:#48CAE4;--ok:#10B981;--warn:#F59E0B;--err:#EF4444;--text:#E8F0FE;--muted:#7BA0CC;--dim:#4A6E9A;--r:12px;--rs:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--text);height:100vh;overflow:hidden}
+
+/* === LAYOUT === */
+.app{display:grid;grid-template-columns:250px 1fr 380px;grid-template-rows:58px 1fr;height:100vh}
+.hdr{grid-column:1/-1;background:linear-gradient(135deg,var(--navy),var(--surface));border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-box{width:34px;height:34px;background:linear-gradient(135deg,var(--teal),var(--royal));border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff}
+.logo-t{font-size:16px;font-weight:700;background:linear-gradient(135deg,var(--aqua),var(--text));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-s{font-size:10px;color:var(--dim)}
+.hdr-r{display:flex;align-items:center;gap:12px}
+.hdr-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:var(--rs);font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;transition:all .2s}
+.hdr-btn:hover{background:var(--card2);color:var(--text);border-color:var(--teal)}
+.hdr-btn.primary{background:linear-gradient(135deg,var(--teal),var(--royal));color:#fff;border:none}
+.hdr-btn.primary:hover{opacity:.9;transform:translateY(-1px)}
+
+/* === SIDEBAR === */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:16px 12px;overflow-y:auto}
+.sb-label{font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.8px;padding:12px 10px 6px;margin-top:8px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all .15s;margin-bottom:2px}
+.sb-item:hover{background:var(--card);color:var(--text)}
+.sb-item.active{background:rgba(0,180,216,.1);color:var(--teal);border:1px solid rgba(0,180,216,.2)}
+.sb-item svg{width:18px;height:18px;flex-shrink:0}
+.sb-back{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:var(--rs);cursor:pointer;font-size:12px;font-weight:600;color:var(--teal);margin-bottom:16px;transition:all .15s}
+.sb-back:hover{background:rgba(0,180,216,.08)}
+
+/* === MAIN CONTENT === */
+.main{overflow-y:auto;padding:24px;background:var(--navy)}
+.main::-webkit-scrollbar{width:6px}
+.main::-webkit-scrollbar-track{background:transparent}
+.main::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+.page-title{font-size:22px;font-weight:700;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--dim);margin-bottom:24px}
+
+/* === STEP CARDS === */
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px;transition:all .3s}
+.step-card.collapsed{padding:16px 24px}
+.step-header{display:flex;align-items:center;gap:14px;cursor:pointer}
+.step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;transition:all .3s}
+.step-num.pending{background:var(--card);color:var(--dim);border:1px solid var(--border)}
+.step-num.active{background:rgba(0,180,216,.15);color:var(--teal);border:1px solid rgba(0,180,216,.3)}
+.step-num.done{background:rgba(16,185,129,.15);color:var(--ok);border:1px solid rgba(16,185,129,.3)}
+.step-title{font-size:15px;font-weight:600;flex:1}
+.step-status{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px}
+.step-status.pending{background:var(--card);color:var(--dim)}
+.step-status.active{background:rgba(0,180,216,.1);color:var(--teal)}
+.step-status.done{background:rgba(16,185,129,.1);color:var(--ok)}
+.step-body{margin-top:20px;padding-top:20px;border-top:1px solid var(--border)}
+
+/* === FORM ELEMENTS === */
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:10px 14px;font-size:13px;color:var(--text);font-family:inherit;outline:none;transition:all .2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,180,216,.1)}
+.fg select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237BA0CC' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.fg select option{background:var(--surface);color:var(--text)}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg .hint{font-size:11px;color:var(--dim);margin-top:4px}
+
+/* === PARTICIPANT SEARCH === */
+.search-wrap{position:relative}
+.search-results{position:absolute;top:100%;left:0;right:0;background:var(--card);border:1px solid var(--border);border-radius:0 0 var(--rs) var(--rs);max-height:240px;overflow-y:auto;z-index:50;display:none}
+.search-results.open{display:block}
+.sr-item{display:flex;align-items:center;gap:12px;padding:10px 14px;cursor:pointer;transition:background .15s;border-bottom:1px solid var(--border)}
+.sr-item:last-child{border-bottom:none}
+.sr-item:hover{background:var(--card2)}
+.sr-avatar{width:36px;height:36px;border-radius:50%;background:var(--royal);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0;overflow:hidden}
+.sr-avatar img{width:100%;height:100%;object-fit:cover}
+.sr-info{flex:1;min-width:0}
+.sr-name{font-size:13px;font-weight:600}
+.sr-meta{font-size:11px;color:var(--dim)}
+
+/* === SELECTED PARTICIPANT CARD === */
+.selected-participant{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid rgba(0,180,216,.2);border-radius:var(--rs);padding:14px;margin-top:10px}
+.sp-avatar{width:48px;height:48px;border-radius:50%;background:var(--royal);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden}
+.sp-avatar img{width:100%;height:100%;object-fit:cover}
+.sp-info{flex:1}
+.sp-name{font-size:15px;font-weight:600}
+.sp-detail{font-size:12px;color:var(--dim);margin-top:2px}
+.sp-remove{background:none;border:none;color:var(--dim);cursor:pointer;padding:6px;border-radius:4px;transition:all .15s}
+.sp-remove:hover{color:var(--err);background:rgba(239,68,68,.1)}
+
+/* === DATA PREVIEW CARDS === */
+.data-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.data-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:14px}
+.data-card .dc-icon{font-size:20px;margin-bottom:8px}
+.data-card .dc-label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
+.data-card .dc-value{font-size:22px;font-weight:700;margin-top:4px;font-family:'JetBrains Mono',monospace}
+.data-card .dc-value.teal{color:var(--teal)}
+.data-card .dc-value.ok{color:var(--ok)}
+.data-card .dc-value.warn{color:var(--warn)}
+.data-card .dc-value.err{color:var(--err)}
+
+/* === LOADING / PROGRESS === */
+.gen-progress{margin-top:20px}
+.gen-step{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:var(--dim)}
+.gen-step.active{color:var(--teal)}
+.gen-step.done{color:var(--ok)}
+.gen-step .gs-icon{width:20px;text-align:center}
+.gen-bar{height:4px;background:var(--card);border-radius:2px;margin-top:16px;overflow:hidden}
+.gen-bar-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--aqua));border-radius:2px;transition:width .5s ease}
+
+/* === RIGHT PANEL - REPORT PREVIEW === */
+.rpanel{background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.rpanel::-webkit-scrollbar{width:6px}
+.rpanel::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.rp-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.rp-title{font-size:14px;font-weight:600}
+.rp-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;color:var(--dim)}
+.rp-empty svg{width:64px;height:64px;margin-bottom:16px;opacity:.3}
+.rp-empty p{font-size:13px;line-height:1.6}
+
+/* === REPORT PREVIEW CONTENT === */
+.report-preview{flex:1;padding:20px;overflow-y:auto}
+.rpt-page{background:#fff;border-radius:8px;padding:0;margin-bottom:16px;color:#1a1a1a;box-shadow:0 2px 12px rgba(0,0,0,.3);overflow:hidden}
+.rpt-page-body{padding:28px 32px 32px}
+
+/* --- Branded Gradient Header --- */
+.rpt-header{background:linear-gradient(135deg,#6C3FA0 0%,#3B4FBF 40%,#2454A0 70%,#1E6FCF 100%);padding:28px 32px 24px;color:#fff;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;position:relative;overflow:hidden}
+.rpt-header::before{content:'';position:absolute;top:-40%;right:-10%;width:50%;height:180%;background:radial-gradient(ellipse,rgba(255,255,255,.06) 0%,transparent 70%);pointer-events:none}
+.rpt-header-left{flex:1;min-width:0;position:relative;z-index:1}
+.rpt-header-right{text-align:right;font-size:11px;line-height:1.7;color:rgba(255,255,255,.85);flex-shrink:0;position:relative;z-index:1;white-space:nowrap}
+.rpt-header-right strong{color:#fff;font-weight:600}
+.rpt-logo{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.rpt-logo-icon{width:36px;height:36px;position:relative}
+.rpt-logo-icon svg{width:100%;height:100%}
+.rpt-logo-brand{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.8)}
+.rpt-company{font-size:24px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:2px}
+.rpt-company-sub{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:14px}
+.rpt-report-label{font-size:14px;font-weight:600;color:#fff;margin-bottom:2px}
+.rpt-report-period{font-size:12px;color:rgba(255,255,255,.75)}
+.rpt-page-indicator{position:absolute;bottom:8px;right:12px;font-size:9px;color:rgba(255,255,255,.4);z-index:1}
+
+/* --- Titles below header --- */
+.rpt-participant-bar{background:#f8fafe;border-bottom:1px solid #e0e8f0;padding:14px 32px;display:flex;align-items:center;justify-content:space-between}
+.rpt-participant-name{font-size:17px;font-weight:700;color:#0B1D3A}
+.rpt-participant-meta{font-size:11px;color:#666}
+.rpt-participant-details{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid #e0e8f0}
+.rpt-pd-cell{padding:10px 32px;border-right:1px solid #e0e8f0}
+.rpt-pd-cell:last-child{border-right:none}
+.rpt-pd-label{font-size:9px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px}
+.rpt-pd-value{font-size:12px;font-weight:600;color:#0B1D3A}
+.rpt-confidential{background:linear-gradient(90deg,#fef2f2,#fff5f5);border-bottom:1px solid #fecaca;padding:6px 32px;display:flex;align-items:center;justify-content:space-between}
+.rpt-confidential-text{font-size:9px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:1.5px}
+.rpt-confidential-note{font-size:9px;color:#b91c1c}
+.rpt-section{margin-bottom:20px}
+.rpt-section h3{font-size:14px;font-weight:700;color:#0B1D3A;padding-bottom:6px;border-bottom:2px solid #00B4D8;margin-bottom:10px;display:inline-block}
+.rpt-section p{font-size:12px;color:#333;line-height:1.7}
+.rpt-goal-section{background:#f8fafe;border:1px solid #e0e8f0;border-radius:8px;padding:16px 18px;margin-bottom:12px}
+.rgs-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.rgs-heading{font-size:13px;font-weight:700;color:#2454A0;text-transform:uppercase;letter-spacing:.3px}
+.rgs-right{display:flex;align-items:center;gap:10px}
+.rgs-bar{width:80px;height:6px;background:#e0e8f0;border-radius:3px;overflow:hidden}
+.rgs-bar-fill{height:100%;border-radius:3px}
+.rgs-overview{font-size:12px;color:#444;line-height:1.6;margin-bottom:8px;font-style:italic}
+.rgs-evidence{margin:0;padding-left:18px;font-size:11.5px;color:#333;line-height:1.7}
+.rgs-evidence li{margin-bottom:4px}
+.rgs-evidence li:last-child{margin-bottom:0}
+.rpt-photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.rpt-photo{aspect-ratio:1;background:#f0f4f8;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #e0e8f0}
+.rpt-photo img{width:100%;height:100%;object-fit:cover}
+.rpt-photo .placeholder{font-size:10px;color:#999;text-align:center}
+.rpt-incident-chart{margin-top:10px;height:180px}
+.rpt-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:11px}
+.rpt-table th{background:#0B1D3A;color:#fff;padding:8px 10px;text-align:left;font-weight:600}
+.rpt-table td{padding:8px 10px;border-bottom:1px solid #e0e8f0;color:#333}
+.rpt-table tr:nth-child(even) td{background:#f8fafe}
+.rpt-footer{text-align:center;padding-top:16px;border-top:1px solid #e0e8f0;margin-top:20px;font-size:10px;color:#999}
+.rpt-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.rpt-badge.green{background:#dcfce7;color:#16a34a}
+.rpt-badge.amber{background:#fef3c7;color:#d97706}
+.rpt-badge.red{background:#fee2e2;color:#dc2626}
+
+/* === ANIMATIONS === */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.fade-in{animation:fadeIn .3s ease}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .6s linear infinite}
+
+/* === PRINT STYLES === */
+@media print{
+  body{background:#fff!important}
+  .app{display:block!important}
+  .sidebar,.hdr,.rpanel{display:none!important}
+  .main{padding:0!important;overflow:visible!important}
+  .step-card{display:none!important}
+  .print-report{display:block!important}
+  .rpt-page{box-shadow:none!important;page-break-after:always}
+}
+.print-report{display:none}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- HEADER -->
+  <header class="hdr">
+    <div class="logo">
+      <div class="logo-box">TV</div>
+      <div>
+        <div class="logo-t">Titus CRM</div>
+        <div class="logo-s">Delta Community Support</div>
+      </div>
+    </div>
+    <div class="hdr-r">
+      <button class="hdr-btn" onclick="window.location.href='/'">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+        Back to Dashboard
+      </button>
+      <button class="hdr-btn primary" id="btnDownloadPdf" style="display:none" onclick="downloadPdf()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        Download PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sb-back" onclick="window.location.href='/'">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+      Main Menu
+    </div>
+    <div class="sb-label">Report Builder</div>
+    <div class="sb-item active" data-step="1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0113 0"/></svg>
+      Select Participant
+    </div>
+    <div class="sb-item" data-step="2">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Reporting Period
+    </div>
+    <div class="sb-item" data-step="3">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Fetch Data
+    </div>
+    <div class="sb-item" data-step="4">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 110 20 10 10 0 010-20z"/><path d="M12 6v6l4 2"/></svg>
+      Generate Report
+    </div>
+
+    <div class="sb-label" style="margin-top:24px">Quick Info</div>
+    <div style="padding:8px 12px">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px;font-size:11px;color:var(--dim);line-height:1.6">
+        <strong style="color:var(--muted);display:block;margin-bottom:4px">NDIS Stakeholder Report</strong>
+        3-page evidence report for plan reviews, including goal progress, support summaries, incident analysis, and photo evidence.
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="mainContent">
+    <h1 class="page-title">NDIS Stakeholder Report</h1>
+    <p class="page-sub">Generate evidence-based reports for participant plan reviews and funding applications</p>
+
+    <!-- STEP 1: SELECT PARTICIPANT -->
+    <div class="step-card" id="step1">
+      <div class="step-header" onclick="toggleStep(1)">
+        <div class="step-num active" id="step1num">1</div>
+        <div class="step-title">Select Participant</div>
+        <div class="step-status active" id="step1status">Current</div>
+      </div>
+      <div class="step-body" id="step1body">
+        <div class="fg search-wrap">
+          <label>Search Participants</label>
+          <input type="text" id="participantSearch" placeholder="Start typing a name..." oninput="searchParticipants(this.value)" autocomplete="off">
+          <div class="search-results" id="searchResults"></div>
+        </div>
+        <div id="selectedParticipant" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- STEP 2: REPORTING PERIOD -->
+    <div class="step-card collapsed" id="step2" style="opacity:.5;pointer-events:none">
+      <div class="step-header" onclick="toggleStep(2)">
+        <div class="step-num pending" id="step2num">2</div>
+        <div class="step-title">Reporting Period</div>
+        <div class="step-status pending" id="step2status">Pending</div>
+      </div>
+      <div class="step-body" id="step2body" style="display:none">
+        <div class="fg-row">
+          <div class="fg">
+            <label>From Date</label>
+            <input type="date" id="dateFrom">
+          </div>
+          <div class="fg">
+            <label>To Date</label>
+            <input type="date" id="dateTo">
+          </div>
+        </div>
+        <div class="fg">
+          <label>Report Context</label>
+          <select id="reportContext">
+            <option value="plan-review">Plan Review</option>
+            <option value="funding-increase">Funding Increase Application</option>
+            <option value="progress-update">Progress Update</option>
+            <option value="incident-review">Incident Review</option>
+          </select>
+          <div class="hint">This determines the tone and focus of the generated report</div>
+        </div>
+        <div class="fg">
+          <label>Additional Notes (optional)</label>
+          <textarea id="additionalNotes" rows="3" placeholder="Any specific points to highlight or areas of concern..."></textarea>
+        </div>
+        <button class="hdr-btn primary" style="margin-top:8px" onclick="proceedToStep3()">
+          Continue to Data Fetch
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 3: FETCH DATA -->
+    <div class="step-card collapsed" id="step3" style="opacity:.5;pointer-events:none">
+      <div class="step-header" onclick="toggleStep(3)">
+        <div class="step-num pending" id="step3num">3</div>
+        <div class="step-title">Fetch Airtable Data</div>
+        <div class="step-status pending" id="step3status">Pending</div>
+      </div>
+      <div class="step-body" id="step3body" style="display:none">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Data will be fetched from Airtable for the selected participant and date range.</p>
+        <div class="data-grid" id="dataPreview">
+          <div class="data-card">
+            <div class="dc-icon">📝</div>
+            <div class="dc-label">Progress Notes</div>
+            <div class="dc-value teal" id="countNotes">—</div>
+          </div>
+          <div class="data-card">
+            <div class="dc-icon">⚠️</div>
+            <div class="dc-label">Incidents</div>
+            <div class="dc-value warn" id="countIncidents">—</div>
+          </div>
+          <div class="data-card">
+            <div class="dc-icon">💰</div>
+            <div class="dc-label">Budget Records</div>
+            <div class="dc-value ok" id="countBudget">—</div>
+          </div>
+          <div class="data-card">
+            <div class="dc-icon">📷</div>
+            <div class="dc-label">Photos</div>
+            <div class="dc-value teal" id="countPhotos">—</div>
+          </div>
+        </div>
+        <button class="hdr-btn primary" style="margin-top:20px" id="btnFetch" onclick="fetchParticipantData()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Fetch Data from Airtable
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 4: GENERATE REPORT -->
+    <div class="step-card collapsed" id="step4" style="opacity:.5;pointer-events:none">
+      <div class="step-header" onclick="toggleStep(4)">
+        <div class="step-num pending" id="step4num">4</div>
+        <div class="step-title">Generate Report</div>
+        <div class="step-status pending" id="step4status">Pending</div>
+      </div>
+      <div class="step-body" id="step4body" style="display:none">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Claude AI will analyze the participant data and generate a 3-page stakeholder report with goal evidence, photo documentation, and incident analysis.</p>
+        <div class="gen-progress" id="genProgress" style="display:none">
+          <div class="gen-step" id="gs1">
+            <span class="gs-icon">○</span> Analyzing progress notes...
+          </div>
+          <div class="gen-step" id="gs2">
+            <span class="gs-icon">○</span> Assessing goal alignment...
+          </div>
+          <div class="gen-step" id="gs3">
+            <span class="gs-icon">○</span> Processing incident data...
+          </div>
+          <div class="gen-step" id="gs4">
+            <span class="gs-icon">○</span> Compiling budget utilisation...
+          </div>
+          <div class="gen-step" id="gs5">
+            <span class="gs-icon">○</span> Generating narrative report...
+          </div>
+          <div class="gen-bar"><div class="gen-bar-fill" id="genBarFill" style="width:0%"></div></div>
+        </div>
+        <button class="hdr-btn primary" style="margin-top:16px" id="btnGenerate" onclick="generateReport()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 110 20 10 10 0 010-20z"/><path d="M12 6v6l4 2"/></svg>
+          Generate Stakeholder Report
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- RIGHT PANEL - REPORT PREVIEW -->
+  <aside class="rpanel" id="rightPanel">
+    <div class="rp-header">
+      <div class="rp-title">Report Preview</div>
+      <button class="hdr-btn" id="btnPrintPreview" style="display:none;font-size:11px;padding:5px 10px" onclick="printReport()">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print
+      </button>
+    </div>
+    <div class="rp-empty" id="previewEmpty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M9 12h6M9 16h6M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9l-7-7z"/>
+        <path d="M13 2v7h7"/>
+      </svg>
+      <p><strong style="color:var(--muted);display:block;margin-bottom:6px">No report generated yet</strong>
+      Select a participant and generate a report to see the preview here.</p>
+    </div>
+    <div class="report-preview" id="reportPreview" style="display:none"></div>
+  </aside>
+</div>
+
+<!-- PRINT-ONLY REPORT (hidden, used for PDF) -->
+<div class="print-report" id="printReport"></div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  participant: null,
+  dateFrom: null,
+  dateTo: null,
+  context: 'plan-review',
+  notes: '',
+  data: { progressNotes: [], incidents: [], budget: [], photos: [] },
+  report: null,
+  currentStep: 1
+};
+
+// ============================================================
+// PARTICIPANT SEARCH
+// ============================================================
+let searchTimeout = null;
+
+function searchParticipants(query) {
+  clearTimeout(searchTimeout);
+  const results = document.getElementById('searchResults');
+  if (query.length < 2) { results.classList.remove('open'); return; }
+  
+  searchTimeout = setTimeout(async () => {
+    try {
+      const res = await fetch(`/api/contacts/search?q=${encodeURIComponent(query)}`);
+      const contacts = await res.json();
+      
+      if (contacts.length === 0) {
+        results.innerHTML = '<div style="padding:14px;font-size:12px;color:var(--dim);text-align:center">No participants found</div>';
+      } else {
+        results.innerHTML = contacts.map(c => `
+          <div class="sr-item" onclick='selectParticipant(${JSON.stringify(c).replace(/'/g,"&#39;")})'>
+            <div class="sr-avatar">
+              ${c.photo ? `<img src="${c.photo}" alt="">` : getInitials(c.name)}
+            </div>
+            <div class="sr-info">
+              <div class="sr-name">${c.name}</div>
+              <div class="sr-meta">${c.ndisRef || c.type || ''} ${c.suburb ? '• ' + c.suburb : ''}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+      results.classList.add('open');
+    } catch (err) {
+      console.error('Search failed:', err);
+      results.innerHTML = '<div style="padding:14px;font-size:12px;color:var(--err)">Search failed — check connection</div>';
+      results.classList.add('open');
+    }
+  }, 300);
+}
+
+function getInitials(name) {
+  return (name || '?').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+}
+
+function selectParticipant(contact) {
+  state.participant = contact;
+  document.getElementById('searchResults').classList.remove('open');
+  document.getElementById('participantSearch').value = '';
+  
+  document.getElementById('selectedParticipant').style.display = 'block';
+  document.getElementById('selectedParticipant').innerHTML = `
+    <div class="selected-participant fade-in">
+      <div class="sp-avatar">
+        ${contact.photo ? `<img src="${contact.photo}" alt="">` : getInitials(contact.name)}
+      </div>
+      <div class="sp-info">
+        <div class="sp-name">${contact.name}</div>
+        <div class="sp-detail">${[contact.ndisRef, contact.type, contact.suburb].filter(Boolean).join(' • ')}</div>
+      </div>
+      <button class="sp-remove" onclick="clearParticipant()" title="Remove">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  `;
+  
+  activateStep(2);
+}
+
+function clearParticipant() {
+  state.participant = null;
+  document.getElementById('selectedParticipant').style.display = 'none';
+  deactivateStepsFrom(2);
+}
+
+// Close search on click outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.search-wrap')) {
+    document.getElementById('searchResults').classList.remove('open');
+  }
+});
+
+// ============================================================
+// STEP NAVIGATION
+// ============================================================
+function activateStep(n) {
+  state.currentStep = n;
+  const card = document.getElementById(`step${n}`);
+  card.style.opacity = '1';
+  card.style.pointerEvents = 'auto';
+  card.classList.remove('collapsed');
+  document.getElementById(`step${n}body`).style.display = 'block';
+  document.getElementById(`step${n}num`).className = 'step-num active';
+  document.getElementById(`step${n}status`).className = 'step-status active';
+  document.getElementById(`step${n}status`).textContent = 'Current';
+  
+  // Mark previous steps as done
+  for (let i = 1; i < n; i++) {
+    document.getElementById(`step${i}num`).className = 'step-num done';
+    document.getElementById(`step${i}status`).className = 'step-status done';
+    document.getElementById(`step${i}status`).textContent = 'Complete';
+    document.getElementById(`step${i}body`).style.display = 'none';
+    document.getElementById(`step${i}`).classList.add('collapsed');
+  }
+  
+  // Update sidebar
+  document.querySelectorAll('.sb-item[data-step]').forEach(el => {
+    el.classList.toggle('active', parseInt(el.dataset.step) === n);
+  });
+  
+  // Scroll to step
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  
+  // Set default dates if step 2
+  if (n === 2) {
+    const today = new Date();
+    const threeMonthsAgo = new Date(today);
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    document.getElementById('dateTo').value = today.toISOString().split('T')[0];
+    document.getElementById('dateFrom').value = threeMonthsAgo.toISOString().split('T')[0];
+  }
+}
+
+function deactivateStepsFrom(n) {
+  for (let i = n; i <= 4; i++) {
+    const card = document.getElementById(`step${i}`);
+    card.style.opacity = '.5';
+    card.style.pointerEvents = 'none';
+    card.classList.add('collapsed');
+    document.getElementById(`step${i}body`).style.display = 'none';
+    document.getElementById(`step${i}num`).className = 'step-num pending';
+    document.getElementById(`step${i}status`).className = 'step-status pending';
+    document.getElementById(`step${i}status`).textContent = 'Pending';
+  }
+  state.currentStep = n - 1;
+}
+
+function toggleStep(n) {
+  if (n > state.currentStep) return;
+  const body = document.getElementById(`step${n}body`);
+  const card = document.getElementById(`step${n}`);
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    card.classList.remove('collapsed');
+  } else {
+    body.style.display = 'none';
+    card.classList.add('collapsed');
+  }
+}
+
+function proceedToStep3() {
+  state.dateFrom = document.getElementById('dateFrom').value;
+  state.dateTo = document.getElementById('dateTo').value;
+  state.context = document.getElementById('reportContext').value;
+  state.notes = document.getElementById('additionalNotes').value;
+  
+  if (!state.dateFrom || !state.dateTo) {
+    alert('Please select both dates');
+    return;
+  }
+  activateStep(3);
+}
+
+// ============================================================
+// FETCH PARTICIPANT DATA FROM AIRTABLE
+// ============================================================
+async function fetchParticipantData() {
+  const btn = document.getElementById('btnFetch');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Fetching data...';
+  
+  try {
+    const params = new URLSearchParams({
+      contactId: state.participant.id,
+      contactName: state.participant.name,
+      from: state.dateFrom,
+      to: state.dateTo
+    });
+    
+    const res = await fetch(`/api/stakeholder-report/data?${params}`);
+    if (!res.ok) throw new Error('Failed to fetch data');
+    const data = await res.json();
+    
+    state.data = data;
+    
+    // Update counts
+    document.getElementById('countNotes').textContent = data.progressNotes?.length || 0;
+    document.getElementById('countIncidents').textContent = data.incidents?.length || 0;
+    document.getElementById('countBudget').textContent = data.budget?.length || 0;
+    document.getElementById('countPhotos').textContent = data.photos?.length || 0;
+    
+    btn.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Data Fetched`;
+    btn.style.background = 'var(--ok)';
+    
+    setTimeout(() => activateStep(4), 800);
+    
+  } catch (err) {
+    console.error('Fetch error:', err);
+    btn.disabled = false;
+    btn.innerHTML = '❌ Fetch Failed — Retry';
+    btn.style.background = 'var(--err)';
+  }
+}
+
+// ============================================================
+// GENERATE REPORT VIA CLAUDE
+// ============================================================
+async function generateReport() {
+  const btn = document.getElementById('btnGenerate');
+  const progress = document.getElementById('genProgress');
+  btn.style.display = 'none';
+  progress.style.display = 'block';
+  
+  // Animate progress steps
+  const steps = ['gs1','gs2','gs3','gs4','gs5'];
+  const bar = document.getElementById('genBarFill');
+  
+  for (let i = 0; i < steps.length; i++) {
+    document.getElementById(steps[i]).classList.add('active');
+    document.getElementById(steps[i]).querySelector('.gs-icon').textContent = '◉';
+    bar.style.width = `${((i + 1) / steps.length) * 80}%`;
+    
+    if (i > 0) {
+      document.getElementById(steps[i-1]).classList.remove('active');
+      document.getElementById(steps[i-1]).classList.add('done');
+      document.getElementById(steps[i-1]).querySelector('.gs-icon').textContent = '✓';
+    }
+    
+    // Don't wait on last step — that's the real API call
+    if (i < steps.length - 1) {
+      await new Promise(r => setTimeout(r, 600));
+    }
+  }
+  
+  try {
+    const res = await fetch('/api/stakeholder-report/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        participant: state.participant,
+        dateFrom: state.dateFrom,
+        dateTo: state.dateTo,
+        context: state.context,
+        notes: state.notes,
+        data: state.data
+      })
+    });
+    
+    if (!res.ok) throw new Error('Report generation failed');
+    const result = await res.json();
+    state.report = result;
+    
+    // Complete progress
+    bar.style.width = '100%';
+    steps.forEach(s => {
+      document.getElementById(s).classList.remove('active');
+      document.getElementById(s).classList.add('done');
+      document.getElementById(s).querySelector('.gs-icon').textContent = '✓';
+    });
+    
+    // Render preview
+    renderReportPreview(result);
+    
+    // Show download button
+    document.getElementById('btnDownloadPdf').style.display = 'flex';
+    document.getElementById('btnPrintPreview').style.display = 'flex';
+    
+    // Update step 4 status
+    document.getElementById('step4num').className = 'step-num done';
+    document.getElementById('step4status').className = 'step-status done';
+    document.getElementById('step4status').textContent = 'Complete';
+    
+  } catch (err) {
+    console.error('Generate error:', err);
+    bar.style.width = '100%';
+    bar.style.background = 'var(--err)';
+    btn.style.display = 'flex';
+    btn.innerHTML = '❌ Generation Failed — Retry';
+    btn.style.background = 'var(--err)';
+    progress.style.display = 'none';
+  }
+}
+
+// ============================================================
+// RENDER REPORT PREVIEW (3 PAGES)
+// ============================================================
+function renderReportPreview(report) {
+  const container = document.getElementById('reportPreview');
+  const empty = document.getElementById('previewEmpty');
+  empty.style.display = 'none';
+  container.style.display = 'block';
+  
+  const r = report;
+  const participantName = state.participant.name;
+  const periodStr = formatDate(state.dateFrom) + ' — ' + formatDate(state.dateTo);
+  const profile = state.data.participantProfile || state.participant || {};
+  const contextLabels = {
+    'plan-review': 'Plan Review',
+    'funding-increase': 'Funding Increase Application',
+    'progress-update': 'Progress Update',
+    'incident-review': 'Incident Review'
+  };
+  
+  // ---- CLIENT-SIDE SANITIZATION ----
+  // Remove Health & Behaviour Concerns from goal sections
+  const cleanGoals = (r.goalSections || r.goals || []).filter(g => {
+    const h = (g.goalHeading || g.category || '').toLowerCase();
+    return !(h.includes('health') && h.includes('behaviour'));
+  });
+  
+  // Strip "About This Report" from executive summary
+  let cleanSummary = (r.executiveSummary || 'No summary generated.')
+    .replace(/About This Report[:\-—\s].*$/is, '')
+    .replace(/This report (is structured|was generated|has been prepared).*$/is, '')
+    .trim();
+  
+  // Strip disclaimer from recommendations
+  let cleanRecommendations = (r.recommendations || '')
+    .replace(/This report (is structured|was generated|has been prepared).*$/is, '')
+    .replace(/All analysis is generated from.*$/is, '')
+    .trim();
+  
+  // Cap photos at exactly 6
+  const reportPhotos = (r.photos || state.data.photos || []).slice(0, 6);
+  
+  const totalPages = 3;
+  
+  container.innerHTML = `
+    <!-- PAGE 1: GOAL PROGRESS & EVIDENCE -->
+    <div class="rpt-page fade-in">
+      ${reportHeader(participantName, periodStr, contextLabels[state.context], '1 of ' + totalPages, profile)}
+      
+      <div class="rpt-section">
+        <h3>Executive Summary</h3>
+        <p>${cleanSummary}</p>
+      </div>
+      
+      <div class="rpt-section">
+        <h3>Participant Outcomes & Goal Progress</h3>
+        ${cleanGoals.map(g => `
+          <div class="rpt-goal-section">
+            <div class="rgs-header">
+              <div class="rgs-heading">${g.goalHeading || g.category || 'Goal'}</div>
+              <div class="rgs-right">
+                <div class="rgs-bar"><div class="rgs-bar-fill" style="width:${g.progress || 0}%;background:${(g.progress||0) >= 75 ? '#10B981' : (g.progress||0) >= 40 ? '#F59E0B' : '#EF4444'}"></div></div>
+                <span class="rpt-badge ${(g.progress||0) >= 75 ? 'green' : (g.progress||0) >= 40 ? 'amber' : 'red'}">${g.status || 'In Progress'}</span>
+              </div>
+            </div>
+            ${g.overview ? `<p class="rgs-overview">${g.overview}</p>` : ''}
+            <ul class="rgs-evidence">
+              ${(g.evidence || []).map(e => `<li>${e}</li>`).join('')}
+              ${(!g.evidence || g.evidence.length === 0) ? `<li>${g.title || 'Evidence pending collection'}</li>` : ''}
+            </ul>
+          </div>
+        `).join('')}
+      </div>
+      
+      <div class="rpt-section">
+        <h3>Support Summary</h3>
+        <p>${r.supportSummary || ''}</p>
+      </div>
+      
+      ${reportFooter('1', totalPages)}
+    </div>
+    
+    <!-- PAGE 2: PHOTO EVIDENCE & BUDGET -->
+    <div class="rpt-page fade-in" style="animation-delay:.15s">
+      ${reportHeader(participantName, periodStr, contextLabels[state.context], '2 of ' + totalPages, profile)}
+      
+      <div class="rpt-section">
+        <h3>Photo Evidence</h3>
+        <p style="margin-bottom:8px">${r.photoNarrative || 'Photographic evidence of community participation and goal-related activities.'}</p>
+        <div class="rpt-photo-grid">
+          ${reportPhotos.map(p => `
+            <div class="rpt-photo">
+              ${p.url ? `<img src="${p.url}" alt="${p.caption || ''}">` : `<div class="placeholder">📷<br>${p.caption || 'Photo'}</div>`}
+            </div>
+          `).join('')}
+          ${reportPhotos.length === 0 ? '<div class="rpt-photo"><div class="placeholder">No photos available</div></div>'.repeat(3) : ''}
+        </div>
+      </div>
+      
+      <div class="rpt-section">
+        <h3>Plan Budget Utilisation</h3>
+        <table class="rpt-table">
+          <thead>
+            <tr><th>Budget Category</th><th>Allocated</th><th>Invoiced</th><th>Remaining</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            ${(r.budgetRows || []).map(b => `
+              <tr>
+                <td><strong>${b.category}</strong></td>
+                <td>$${(b.allocated || 0).toLocaleString()}</td>
+                <td>$${(b.invoiced || 0).toLocaleString()}</td>
+                <td>$${(b.remaining || 0).toLocaleString()}</td>
+                <td><span class="rpt-badge ${b.utilPct > 90 ? 'red' : b.utilPct > 70 ? 'amber' : 'green'}">${b.utilPct || 0}%</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <p style="margin-top:10px;font-size:11px;color:#666">${r.budgetNarrative || ''}</p>
+      </div>
+      
+      ${reportFooter('2', totalPages)}
+    </div>
+    
+    <!-- PAGE 3: INCIDENTS & RECOMMENDATIONS -->
+    <div class="rpt-page fade-in" style="animation-delay:.3s">
+      ${reportHeader(participantName, periodStr, contextLabels[state.context], '3 of ' + totalPages, profile)}
+      
+      <div class="rpt-section">
+        <h3>Incident, Risk & Safeguarding</h3>
+        <p>${r.incidentSummary || 'No incidents recorded during this period.'}</p>
+        <div style="margin-top:12px">
+          <canvas id="incidentChart" style="max-height:160px"></canvas>
+        </div>
+      </div>
+      
+      <div class="rpt-section">
+        <h3>Participant & Family Voice</h3>
+        <p>${r.participantVoice || 'Participant feedback pending collection.'}</p>
+      </div>
+      
+      <div class="rpt-section">
+        <h3>Recommendations</h3>
+        <p>${cleanRecommendations}</p>
+      </div>
+      
+      <div class="rpt-section">
+        <h3>Report Prepared By</h3>
+        <table class="rpt-table">
+          <tbody>
+            <tr><td><strong>Organisation</strong></td><td>Delta Community Support</td></tr>
+            <tr><td><strong>Author</strong></td><td>${r.author || 'Titus CRM AI — Reviewed by Support Coordinator'}</td></tr>
+            <tr><td><strong>Date Generated</strong></td><td>${new Date().toLocaleDateString('en-AU')}</td></tr>
+            <tr><td><strong>Report Type</strong></td><td>${contextLabels[state.context]}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      
+      ${reportFooter('3', totalPages)}
+    </div>
+  `;
+  
+  // Render incident chart if data exists
+  setTimeout(() => renderIncidentChart(r.incidentChartData), 300);
+}
+
+function reportHeader(name, period, type, pageNum, participantData) {
+  const now = new Date();
+  const genDate = now.toLocaleDateString('en-AU', { day:'numeric', month:'short', year:'numeric' });
+  const genTime = now.toLocaleTimeString('en-AU', { hour:'numeric', minute:'2-digit', hour12:true }).toLowerCase();
+  
+  const p = participantData || {};
+  const ndisRef = p.ndisRef || state.participant?.ndisRef || '—';
+  const dob = p.dob ? formatDate(p.dob) : '—';
+  const address = p.address || state.participant?.suburb || '—';
+  
+  return `
+    <div class="rpt-header">
+      <div class="rpt-header-left">
+        <div class="rpt-logo">
+          <div class="rpt-logo-icon">
+            <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22 2L2 38h40L22 2z" fill="#F5C842" stroke="#E5B832" stroke-width="0.5"/>
+              <path d="M22 12L12 32h20L22 12z" fill="#FFDE59"/>
+              <path d="M22 2L2 38h40L22 2z" fill="url(#logoGrad)" opacity="0.3"/>
+              <defs><linearGradient id="logoGrad" x1="22" y1="2" x2="22" y2="38"><stop stop-color="#fff" stop-opacity="0.5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+            </svg>
+          </div>
+          <div class="rpt-logo-brand">Delta<br>Community<br>Support</div>
+        </div>
+        <div class="rpt-company">Delta Community Support</div>
+        <div class="rpt-company-sub">Therapeutic and Disability Care Pty Ltd</div>
+        <div class="rpt-report-label">NDIS Stakeholder Report</div>
+        <div class="rpt-report-period">Reporting Period: ${period}</div>
+      </div>
+      <div class="rpt-header-right">
+        <strong>NDIS Provider: 405 001 8246</strong><br>
+        ABN: 28 616 760 206<br>
+        Unit 2 / 67 Robinson Rd, Virginia, 4034<br>
+        0488 810 958<br>
+        rosters@deltacommunity.com.au<br><br>
+        Generated: ${genDate}, ${genTime}
+      </div>
+      <div class="rpt-page-indicator">Page ${pageNum}</div>
+    </div>
+    
+    <div class="rpt-participant-bar">
+      <div class="rpt-participant-name">${name}</div>
+      <div class="rpt-participant-meta">${type} • Pg ${pageNum}</div>
+    </div>
+    
+    <div class="rpt-participant-details">
+      <div class="rpt-pd-cell">
+        <div class="rpt-pd-label">NDIS Reference</div>
+        <div class="rpt-pd-value">${ndisRef}</div>
+      </div>
+      <div class="rpt-pd-cell">
+        <div class="rpt-pd-label">Date of Birth</div>
+        <div class="rpt-pd-value">${dob}</div>
+      </div>
+      <div class="rpt-pd-cell">
+        <div class="rpt-pd-label">Plan Period</div>
+        <div class="rpt-pd-value">${period}</div>
+      </div>
+    </div>
+    
+    <div class="rpt-confidential">
+      <div class="rpt-confidential-text">⛔ Confidential — NDIS Protected Information</div>
+      <div class="rpt-confidential-note">This document contains personal and sensitive information protected under the NDIS Act 2013</div>
+    </div>
+    
+    <div class="rpt-page-body">
+  `;
+}
+
+function reportFooter(pageNum, totalPages) {
+  return `
+    </div>
+    <div style="padding:0 32px 16px">
+      <div class="rpt-footer">
+        Delta Community Support • ABN: 28 616 760 206 • NDIS Provider: 405 001 8246 • Confidential — Pg ${pageNum} of ${totalPages || 3}
+      </div>
+    </div>
+  `;
+}
+
+function renderIncidentChart(chartData) {
+  const canvas = document.getElementById('incidentChart');
+  if (!canvas || !chartData) return;
+  
+  new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: chartData.labels || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets: [
+        {
+          label: 'Critical',
+          data: chartData.critical || [0,0,0,0,0,0,0],
+          backgroundColor: '#EF4444',
+          borderRadius: 3
+        },
+        {
+          label: 'Moderate',
+          data: chartData.moderate || [0,0,0,0,0,0,0],
+          backgroundColor: '#F59E0B',
+          borderRadius: 3
+        },
+        {
+          label: 'Low',
+          data: chartData.low || [0,0,0,0,0,0,0],
+          backgroundColor: '#10B981',
+          borderRadius: 3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10, family: 'DM Sans' } } } },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 } } },
+        y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  const parts = d.split('-');
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+// ============================================================
+// PDF DOWNLOAD
+// ============================================================
+function downloadPdf() {
+  // Try server-side first, fallback to print
+  const reportHtml = document.getElementById('reportPreview').innerHTML;
+  
+  fetch('/api/stakeholder-report/pdf', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ html: reportHtml, participantName: state.participant.name })
+  })
+  .then(res => {
+    if (res.ok) return res.blob();
+    throw new Error('Server PDF failed');
+  })
+  .then(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `NDIS_Stakeholder_Report_${state.participant.name.replace(/\s+/g,'_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+  })
+  .catch(() => {
+    // Fallback: print
+    printReport();
+  });
+}
+
+function printReport() {
+  const content = document.getElementById('reportPreview').innerHTML;
+  // Grab all styles from the page for accurate PDF/print rendering
+  const allStyles = document.querySelector('style').textContent;
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>NDIS Stakeholder Report — ${state.participant.name}</title>
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+      <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'DM Sans',sans-serif;background:#fff;padding:0}
+        .rpt-page{page-break-after:always;overflow:hidden;border-radius:0!important;box-shadow:none!important}
+        .rpt-header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        .rpt-participant-bar{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        .rpt-participant-details{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        .rpt-confidential{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        .rpt-table th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        .rpt-goal .rg-bar-fill{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        .rpt-badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        ${allStyles}
+      </style>
+    </head>
+    <body>${content}</body>
+    </html>
+  `);
+  win.document.close();
+  setTimeout(() => { win.print(); }, 800);
+}
+
+// ============================================================
+// SIDEBAR CLICK HANDLERS
+// ============================================================
+document.querySelectorAll('.sb-item[data-step]').forEach(el => {
+  el.addEventListener('click', () => {
+    const step = parseInt(el.dataset.step);
+    if (step <= state.currentStep) {
+      toggleStep(step);
+    }
+  });
+});
+</script>
+</body>
+</html>

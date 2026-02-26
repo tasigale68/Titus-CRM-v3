@@ -1,0 +1,22 @@
+{
+  "name": "Titus Messenger",
+  "short_name": "Messenger",
+  "description": "DCS Team Messaging",
+  "start_url": "/messenger/",
+  "display": "standalone",
+  "background_color": "#1B3A5C",
+  "theme_color": "#1B3A5C",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0B1D3A">
+<title>Service Agreements — Delta Community Support</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   CSS — Service Agreements (Unified)
+   ═══════════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --navy:#0B1D3A;--surface:#0F2440;--royal:#2454A0;--teal:#00B4D8;--aqua:#48CAE4;
+  --green:#10B981;--warning:#F59E0B;--error:#EF4444;--text:#FFFFFF;--muted:#94A3B8;
+  --card:#162B4D;--card-border:#1E3A5F;--input-bg:#0F2440;--input-border:#1E3A5F;
+  --r:10px;--rs:6px;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--text);overflow-x:hidden;}
+body{display:flex;flex-direction:column;min-height:100vh;}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--royal);}
+
+/* ── Header ── */
+.page-header{background:var(--surface);border-bottom:1px solid var(--card-border);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0;position:sticky;top:0;z-index:50;}
+.header-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--teal),var(--aqua));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--navy);flex-shrink:0;}
+.header-text{flex:1;min-width:0;}
+.header-text h1{font-size:18px;font-weight:800;letter-spacing:-.02em;}
+.header-text span{font-size:11px;color:var(--muted);font-weight:500;}
+.back-link{display:flex;align-items:center;gap:5px;color:var(--teal);font-size:13px;font-weight:600;text-decoration:none;padding:7px 12px;border-radius:8px;transition:background .15s;flex-shrink:0;}
+.back-link:hover{background:rgba(0,180,216,.1);}
+.back-link svg{width:16px;height:16px;}
+
+/* ── Main Layout ── */
+.main-content{flex:1;padding:20px;max-width:1400px;width:100%;margin:0 auto;overflow-y:auto;}
+
+/* ── Summary Cards ── */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
+.summary-card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:18px;transition:transform .1s,box-shadow .15s;}
+.summary-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2);}
+.summary-card .label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;}
+.summary-card .value{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--text);}
+.summary-card .value.teal{color:var(--teal);}
+.summary-card .value.green{color:var(--green);}
+.summary-card .value.warning{color:var(--warning);}
+.summary-card .value.error{color:var(--error);}
+
+/* ── Filter Tabs ── */
+.tabs{display:flex;gap:4px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;flex-wrap:wrap;}
+.tab{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid transparent;background:transparent;color:var(--muted);transition:all .15s;font-family:inherit;white-space:nowrap;}
+.tab:hover{background:var(--card);color:var(--text);}
+.tab.active{background:var(--royal);color:#fff;border-color:transparent;}
+.tab .count{display:inline-block;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;font-size:10px;margin-left:4px;}
+.tab.active .count{background:rgba(255,255,255,.25);}
+
+/* ── Toolbar ── */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.toolbar-left{display:flex;align-items:center;gap:10px;flex:1;flex-wrap:wrap;min-width:0;}
+.toolbar-right{display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap;}
+.search-box{position:relative;flex:1;min-width:180px;max-width:320px;}
+.search-box input{width:100%;padding:10px 14px 10px 36px;background:var(--surface);border:1.5px solid var(--input-border);border-radius:10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;}
+.search-box input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,180,216,.12);}
+.search-box input::placeholder{color:var(--muted);}
+.search-box svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted);pointer-events:none;}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--royal));color:#fff;}
+.btn-primary:hover:not(:disabled){box-shadow:0 4px 12px rgba(0,180,216,.3);}
+.btn-success{background:var(--green);color:#fff;}
+.btn-success:hover:not(:disabled){background:#059669;}
+.btn-danger{background:rgba(239,68,68,.15);color:var(--error);border:1px solid rgba(239,68,68,.25);}
+.btn-danger:hover:not(:disabled){background:rgba(239,68,68,.25);}
+.btn-outline{background:transparent;color:var(--muted);border:1px solid var(--card-border);}
+.btn-outline:hover:not(:disabled){background:var(--card);color:var(--text);}
+.btn-teal{background:rgba(0,180,216,.12);color:var(--teal);border:1px solid rgba(0,180,216,.25);}
+.btn-teal:hover:not(:disabled){background:var(--teal);color:#fff;}
+.btn-warning{background:rgba(245,158,11,.12);color:var(--warning);border:1px solid rgba(245,158,11,.25);}
+.btn-warning:hover:not(:disabled){background:var(--warning);color:#fff;}
+.btn-sm{padding:6px 10px;font-size:11px;border-radius:6px;}
+
+/* ── Table ── */
+.table-wrap{background:var(--card);border:1px solid var(--card-border);border-radius:12px;overflow:hidden;}
+.data-table{width:100%;border-collapse:collapse;}
+.data-table thead th{padding:12px 16px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;background:var(--surface);border-bottom:1px solid var(--card-border);white-space:nowrap;position:sticky;top:0;z-index:2;}
+.data-table tbody tr{border-bottom:1px solid var(--card-border);cursor:pointer;transition:background .1s;}
+.data-table tbody tr:last-child{border-bottom:none;}
+.data-table tbody tr:hover{background:rgba(0,180,216,.04);}
+.data-table td{padding:12px 16px;font-size:13px;vertical-align:middle;}
+.data-table td.mono{font-family:'JetBrains Mono',monospace;font-size:12px;}
+.data-table td.center{text-align:center;}
+
+/* ── Status Badges ── */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+.badge-draft{background:rgba(148,163,184,.15);color:var(--muted);}
+.badge-sent{background:rgba(36,84,160,.25);color:var(--aqua);}
+.badge-signed{background:rgba(16,185,129,.15);color:var(--green);}
+.badge-active{background:rgba(0,180,216,.15);color:var(--teal);}
+.badge-expired{background:rgba(239,68,68,.15);color:var(--error);}
+
+/* ── Wizard ── */
+.wizard-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;}
+.wizard-overlay.show{display:flex;}
+.wizard{background:var(--surface);border:1px solid var(--card-border);border-radius:16px;width:100%;max-width:900px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;}
+.wizard-header{padding:20px 24px 16px;border-bottom:1px solid var(--card-border);flex-shrink:0;}
+.wizard-header h2{font-size:18px;font-weight:800;margin-bottom:4px;}
+.wizard-header .sub{font-size:12px;color:var(--muted);}
+.wizard-close{position:absolute;top:18px;right:20px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:22px;line-height:1;padding:4px;border-radius:6px;transition:all .15s;}
+.wizard-close:hover{background:var(--card);color:var(--text);}
+
+/* ── Wizard Steps Bar ── */
+.steps-bar{display:flex;gap:2px;padding:16px 24px;background:var(--navy);border-bottom:1px solid var(--card-border);flex-shrink:0;overflow-x:auto;align-items:center;}
+.step-item{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;transition:all .15s;flex-shrink:0;}
+.step-item .step-num{width:22px;height:22px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;transition:all .15s;}
+.step-item.active{color:var(--teal);}
+.step-item.active .step-num{background:var(--teal);color:var(--navy);}
+.step-item.done{color:var(--green);}
+.step-item.done .step-num{background:var(--green);color:#fff;}
+.step-connector{width:16px;height:2px;background:var(--card-border);flex-shrink:0;align-self:center;}
+
+/* ── Wizard Body ── */
+.wizard-body{flex:1;overflow-y:auto;padding:24px;}
+.wizard-step{display:none;}
+.wizard-step.active{display:block;}
+
+/* ── Wizard Footer ── */
+.wizard-footer{padding:16px 24px;border-top:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:10px;}
+
+/* ── Form Elements ── */
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:5px;}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:11px 14px;background:var(--navy);border:1.5px solid var(--input-border);border-radius:10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,180,216,.12);}
+.form-group input::placeholder,.form-group textarea::placeholder{color:var(--muted);}
+.form-group textarea{resize:vertical;min-height:80px;}
+.form-group.error input,.form-group.error select{border-color:var(--error)!important;box-shadow:0 0 0 3px rgba(239,68,68,.12)!important;}
+.form-group .error-msg{font-size:10px;color:var(--error);margin-top:3px;display:none;}
+.form-group.error .error-msg{display:block;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+
+/* ── Searchable Dropdown ── */
+.search-dropdown{position:relative;}
+.search-dropdown input{padding-right:36px;}
+.search-dropdown .dd-arrow{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
+.search-dropdown .dd-list{position:absolute;top:100%;left:0;right:0;background:var(--card);border:1px solid var(--card-border);border-radius:10px;max-height:220px;overflow-y:auto;z-index:10;display:none;margin-top:4px;box-shadow:0 12px 32px rgba(0,0,0,.4);}
+.search-dropdown .dd-list.open{display:block;}
+.search-dropdown .dd-item{padding:10px 14px;font-size:13px;cursor:pointer;transition:background .1s;display:flex;flex-direction:column;gap:2px;border-bottom:1px solid var(--card-border);}
+.search-dropdown .dd-item:last-child{border-bottom:none;}
+.search-dropdown .dd-item:hover{background:rgba(0,180,216,.08);}
+.search-dropdown .dd-item .dd-name{font-weight:600;}
+.search-dropdown .dd-item .dd-sub{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+
+/* ── Service Selection ── */
+.service-card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:16px;margin-bottom:12px;transition:all .15s;}
+.service-card.selected{border-color:var(--teal);background:rgba(0,180,216,.04);}
+.service-card-header{display:flex;align-items:center;gap:12px;margin-bottom:0;cursor:pointer;}
+.service-card-header input[type="checkbox"]{width:18px;height:18px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;}
+.service-card-header .svc-label{font-size:14px;font-weight:700;flex:1;}
+.service-card-body{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--card-border);}
+.service-card.selected .service-card-body{display:block;}
+.rate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:10px;}
+.rate-item{background:var(--navy);border:1px solid var(--input-border);border-radius:8px;padding:10px;text-align:center;}
+.rate-item .rate-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px;}
+.rate-item .rate-value{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--teal);}
+
+/* ── Terms Clauses ── */
+.clause-list{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+.clause-item{display:flex;align-items:flex-start;gap:12px;padding:12px;background:var(--card);border:1px solid var(--card-border);border-radius:10px;cursor:pointer;transition:all .15s;}
+.clause-item:hover{border-color:var(--teal);}
+.clause-item input[type="checkbox"]{width:18px;height:18px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;margin-top:2px;}
+.clause-item .clause-text{flex:1;}
+.clause-item .clause-title{font-size:13px;font-weight:700;margin-bottom:2px;}
+.clause-item .clause-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+
+/* ── Review Panel ── */
+.review-panel{background:var(--navy);border:1px solid var(--card-border);border-radius:12px;padding:24px;max-height:60vh;overflow-y:auto;}
+.review-section{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--card-border);}
+.review-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.review-section h3{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--teal);margin-bottom:10px;}
+.review-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;}
+.review-row .rlabel{color:var(--muted);}
+.review-row .rvalue{font-weight:600;text-align:right;}
+.review-row .rvalue.mono{font-family:'JetBrains Mono',monospace;}
+
+/* ── SOS Items Table (used inside wizard step 4) ── */
+.sos-items-table{width:100%;border-collapse:collapse;margin-top:16px;}
+.sos-items-table thead th{padding:10px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;background:var(--surface);border-bottom:1px solid var(--card-border);}
+.sos-items-table thead th.right{text-align:right;}
+.sos-items-table tbody td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--card-border);vertical-align:middle;}
+.sos-items-table tbody td.right{text-align:right;}
+.sos-items-table tbody td.mono{font-family:'JetBrains Mono',monospace;font-size:12px;}
+.sos-items-table tbody td input,.sos-items-table tbody td select{padding:8px 10px;background:var(--navy);border:1.5px solid var(--input-border);border-radius:8px;color:var(--text);font-size:12px;font-family:inherit;outline:none;width:100%;transition:border-color .15s;}
+.sos-items-table tbody td input:focus,.sos-items-table tbody td select:focus{border-color:var(--teal);}
+.sos-items-table tfoot td{padding:12px 14px;font-weight:700;background:var(--surface);border-top:2px solid var(--card-border);}
+
+/* ── Budget Comparison ── */
+.budget-bar{margin-top:20px;background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:18px;}
+.budget-bar h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:12px;}
+.budget-progress{height:20px;background:var(--navy);border-radius:10px;overflow:hidden;position:relative;margin-bottom:8px;}
+.budget-progress-fill{height:100%;border-radius:10px;transition:width .4s ease;background:var(--green);}
+.budget-progress-fill.over{background:var(--error);}
+.budget-progress-fill.warn{background:var(--warning);}
+.budget-labels{display:flex;justify-content:space-between;font-size:12px;}
+.budget-labels .bl-used{font-weight:700;color:var(--teal);font-family:'JetBrains Mono',monospace;}
+.budget-labels .bl-total{color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.budget-warning{margin-top:10px;padding:10px 14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;font-size:12px;color:var(--error);font-weight:600;display:none;}
+.budget-warning.show{display:flex;align-items:center;gap:8px;}
+
+/* ── Toast ── */
+.toast-container{position:fixed;top:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;pointer-events:auto;animation:toastIn .3s ease;min-width:240px;box-shadow:0 8px 24px rgba(0,0,0,.3);}
+.toast.success{background:rgba(16,185,129,.95);color:#fff;}
+.toast.error{background:rgba(239,68,68,.95);color:#fff;}
+.toast.info{background:rgba(36,84,160,.95);color:#fff;}
+.toast.out{animation:toastOut .3s ease forwards;}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(40px)}}
+
+/* ── Loading / Empty ── */
+.spinner{width:20px;height:20px;border:2.5px solid rgba(255,255,255,.2);border-top-color:var(--teal);border-radius:50%;animation:spin .6s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-overlay{display:flex;align-items:center;justify-content:center;padding:60px 20px;flex-direction:column;gap:12px;}
+.loading-overlay p{font-size:13px;color:var(--muted);}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty-state .icon{font-size:40px;margin-bottom:10px;opacity:.5;}
+.empty-state p{font-size:13px;margin-bottom:16px;}
+
+/* ── Detail View ── */
+.detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:90;display:none;align-items:center;justify-content:center;padding:20px;}
+.detail-overlay.show{display:flex;}
+.detail-panel{background:var(--surface);border:1px solid var(--card-border);border-radius:16px;width:100%;max-width:700px;max-height:85vh;overflow-y:auto;padding:24px;}
+.detail-panel h2{font-size:18px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.detail-field{padding:10px;background:var(--navy);border-radius:8px;}
+.detail-field .df-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px;}
+.detail-field .df-value{font-size:13px;font-weight:600;}
+.detail-field .df-value.mono{font-family:'JetBrains Mono',monospace;font-size:12px;}
+.detail-actions{display:flex;gap:8px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--card-border);}
+
+/* ── Weekly Cost Total Bar ── */
+.total-weekly-bar{margin-top:18px;padding:16px;background:var(--navy);border:1px solid var(--teal);border-radius:12px;display:flex;justify-content:space-between;align-items:center;}
+.total-weekly-bar .tw-label{font-size:13px;font-weight:700;color:var(--muted);}
+.total-weekly-bar .tw-value{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--teal);}
+
+/* ═══ Responsive ═══ */
+@media(max-width:768px){
+  .main-content{padding:14px;}
+  .summary-grid{grid-template-columns:1fr 1fr;gap:10px;}
+  .summary-card{padding:14px;}
+  .summary-card .value{font-size:20px;}
+  .toolbar{flex-direction:column;align-items:stretch;}
+  .toolbar-left,.toolbar-right{width:100%;}
+  .search-box{max-width:100%;min-width:auto;}
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .data-table{min-width:700px;}
+  .page-header{padding:12px 14px;gap:10px;}
+  .header-text h1{font-size:15px;}
+  .back-link span{display:none;}
+  .wizard{max-width:100%;border-radius:14px;}
+  .wizard-body{padding:16px;}
+  .form-row,.form-row-3{grid-template-columns:1fr;}
+  .detail-grid{grid-template-columns:1fr;}
+  .steps-bar{padding:12px 16px;}
+  .rate-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:480px){
+  .summary-grid{grid-template-columns:1fr;gap:8px;}
+  .tabs{gap:3px;}
+  .tab{padding:7px 12px;font-size:11px;}
+  .page-header .header-logo{display:none;}
+  .step-item span:not(.step-num){display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     HTML Structure
+     ═══════════════════════════════════════════════════════ -->
+
+<!-- Header -->
+<header class="page-header">
+  <a href="/" class="back-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    <span>Back</span>
+  </a>
+  <div class="header-logo">DCS</div>
+  <div class="header-text">
+    <h1>Service Agreements</h1>
+    <span>Delta Community Support</span>
+  </div>
+</header>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Main Content -->
+<div class="main-content" id="mainContent">
+
+  <!-- Summary Cards -->
+  <div class="summary-grid" id="summaryCards">
+    <div class="summary-card"><div class="label">Total Agreements</div><div class="value teal" id="sumTotal">0</div></div>
+    <div class="summary-card"><div class="label">Active</div><div class="value green" id="sumActive">0</div></div>
+    <div class="summary-card"><div class="label">Drafts</div><div class="value" id="sumDraft">0</div></div>
+    <div class="summary-card"><div class="label">Expiring Soon</div><div class="value warning" id="sumExpiring">0</div></div>
+    <div class="summary-card"><div class="label">Expired</div><div class="value error" id="sumExpired">0</div></div>
+  </div>
+
+  <!-- Status Filter Tabs -->
+  <div class="tabs" id="statusTabs">
+    <button class="tab active" data-status="all" onclick="filterByStatus('all')">All <span class="count" id="cntAll">0</span></button>
+    <button class="tab" data-status="draft" onclick="filterByStatus('draft')">Draft <span class="count" id="cntDraft">0</span></button>
+    <button class="tab" data-status="sent" onclick="filterByStatus('sent')">Sent <span class="count" id="cntSent">0</span></button>
+    <button class="tab" data-status="signed" onclick="filterByStatus('signed')">Signed <span class="count" id="cntSigned">0</span></button>
+    <button class="tab" data-status="active" onclick="filterByStatus('active')">Active <span class="count" id="cntActive">0</span></button>
+    <button class="tab" data-status="expired" onclick="filterByStatus('expired')">Expired <span class="count" id="cntExpired">0</span></button>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="searchInput" placeholder="Search by client or NDIS#..." oninput="renderAgreements()">
+      </div>
+    </div>
+    <div class="toolbar-right">
+      <button class="btn btn-primary" onclick="openWizard()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+        + New Agreement
+      </button>
+    </div>
+  </div>
+
+  <!-- Agreements Table -->
+  <div class="table-wrap" id="tableWrap">
+    <table class="data-table" id="agreementsTable">
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>NDIS #</th>
+          <th>Agreement Date</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="agreementsBody"></tbody>
+    </table>
+  </div>
+  <div class="empty-state" id="emptyAgreements" style="display:none;">
+    <div class="icon">&#128196;</div>
+    <p>No agreements found</p>
+    <button class="btn btn-primary" onclick="openWizard()">+ Create First Agreement</button>
+  </div>
+  <div class="loading-overlay" id="loadingAgreements">
+    <div class="spinner"></div>
+    <p>Loading agreements...</p>
+  </div>
+</div>
+
+<!-- ═══ Agreement Detail Overlay ═══ -->
+<div class="detail-overlay" id="detailOverlay" onclick="if(event.target===this)closeDetail()">
+  <div class="detail-panel" id="detailPanel">
+    <h2 id="detailTitle">Agreement Detail <span class="badge" id="detailBadge"></span></h2>
+    <div class="detail-grid" id="detailGrid"></div>
+    <div id="detailServices"></div>
+    <div class="detail-actions" id="detailActions"></div>
+  </div>
+</div>
+
+<!-- ═══ Unified 7-Step Agreement Wizard Overlay ═══ -->
+<div class="wizard-overlay" id="wizardOverlay" onclick="if(event.target===this)closeWizard()">
+  <div class="wizard" style="position:relative;">
+    <button class="wizard-close" onclick="closeWizard()">&times;</button>
+    <div class="wizard-header">
+      <h2>New Service Agreement</h2>
+      <div class="sub">Complete all steps to generate an agreement with schedule of supports</div>
+    </div>
+
+    <!-- Steps Bar (7 Steps) -->
+    <div class="steps-bar" id="stepsBar">
+      <div class="step-item active" data-step="0"><span class="step-num">1</span><span>Client</span></div>
+      <div class="step-connector"></div>
+      <div class="step-item" data-step="1"><span class="step-num">2</span><span>Details</span></div>
+      <div class="step-connector"></div>
+      <div class="step-item" data-step="2"><span class="step-num">3</span><span>Services</span></div>
+      <div class="step-connector"></div>
+      <div class="step-item" data-step="3"><span class="step-num">4</span><span>SOS</span></div>
+      <div class="step-connector"></div>
+      <div class="step-item" data-step="4"><span class="step-num">5</span><span>Terms</span></div>
+      <div class="step-connector"></div>
+      <div class="step-item" data-step="5"><span class="step-num">6</span><span>Review</span></div>
+      <div class="step-connector"></div>
+      <div class="step-item" data-step="6"><span class="step-num">7</span><span>Generate</span></div>
+    </div>
+
+    <!-- Wizard Body -->
+    <div class="wizard-body">
+
+      <!-- Step 1: Select Client -->
+      <div class="wizard-step active" id="wizStep0">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">Select Client</h3>
+        <div class="form-group">
+          <label>Search Client</label>
+          <div class="search-dropdown" id="wizClientDropdown">
+            <input type="text" id="wizClientSearch" placeholder="Type client name or NDIS number..." oninput="filterWizClients()" onfocus="openWizClientList()">
+            <svg class="dd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><polyline points="6 9 12 15 18 9"/></svg>
+            <div class="dd-list" id="wizClientList"></div>
+          </div>
+        </div>
+        <div id="wizSelectedClient" style="display:none;margin-top:14px;padding:16px;background:var(--card);border:1px solid var(--teal);border-radius:12px;">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--teal);margin-bottom:6px;">Selected Client</div>
+          <div id="wizSelectedName" style="font-size:16px;font-weight:700;margin-bottom:2px;"></div>
+          <div id="wizSelectedSub" style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;"></div>
+        </div>
+      </div>
+
+      <!-- Step 2: Participant Details (auto-populated) -->
+      <div class="wizard-step" id="wizStep1">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">Participant Details</h3>
+        <div class="form-row">
+          <div class="form-group" id="fgName">
+            <label>Participant Name *</label>
+            <input type="text" id="wizName">
+            <div class="error-msg">Required field</div>
+          </div>
+          <div class="form-group" id="fgNdis">
+            <label>NDIS Number *</label>
+            <input type="text" id="wizNdis">
+            <div class="error-msg">Required field</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" id="fgDob">
+            <label>Date of Birth</label>
+            <input type="date" id="wizDob">
+          </div>
+          <div class="form-group" id="fgPhone">
+            <label>Phone</label>
+            <input type="tel" id="wizPhone">
+          </div>
+        </div>
+        <div class="form-group" id="fgAddress">
+          <label>Address</label>
+          <input type="text" id="wizAddress">
+        </div>
+        <div class="form-group" id="fgEmail">
+          <label>Email</label>
+          <input type="email" id="wizEmail">
+        </div>
+        <div class="form-row">
+          <div class="form-group" id="fgPlanStart">
+            <label>Plan Start Date</label>
+            <input type="date" id="wizPlanStart">
+          </div>
+          <div class="form-group" id="fgPlanEnd">
+            <label>Plan End Date</label>
+            <input type="date" id="wizPlanEnd">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Support Coordinator</label>
+            <input type="text" id="wizCoordinator">
+          </div>
+          <div class="form-group">
+            <label>Emergency Contact</label>
+            <input type="text" id="wizEmergency">
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Select Services + Hours/Rates -->
+      <div class="wizard-step" id="wizStep2">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">Select Services &amp; Hours</h3>
+        <div id="servicesList">
+          <!-- SIL -->
+          <div class="service-card" id="svcSIL">
+            <div class="service-card-header" onclick="toggleService('SIL')">
+              <input type="checkbox" id="chkSIL" onchange="toggleService('SIL')">
+              <div class="svc-label">Supported Independent Living (SIL)</div>
+            </div>
+            <div class="service-card-body">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Hours per Week</label>
+                  <input type="number" id="silHours" value="0" min="0" step="0.5" oninput="calcServiceTotal('SIL')">
+                </div>
+                <div class="form-group">
+                  <label>Primary Day Type</label>
+                  <select id="silDayType" onchange="calcServiceTotal('SIL')">
+                    <option value="weekday">Weekday</option>
+                    <option value="saturday">Saturday</option>
+                    <option value="sunday">Sunday</option>
+                    <option value="evening">Evening</option>
+                  </select>
+                </div>
+              </div>
+              <div class="rate-grid">
+                <div class="rate-item"><div class="rate-label">Weekday</div><div class="rate-value">$67.56</div></div>
+                <div class="rate-item"><div class="rate-label">Saturday</div><div class="rate-value">$94.69</div></div>
+                <div class="rate-item"><div class="rate-label">Sunday</div><div class="rate-value">$121.59</div></div>
+                <div class="rate-item"><div class="rate-label">Evening</div><div class="rate-value">$74.42</div></div>
+              </div>
+              <div style="margin-top:12px;padding:10px;background:var(--navy);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:12px;color:var(--muted);">Estimated Weekly Cost</span>
+                <span id="silWeekly" style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--teal);">$0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Community Access -->
+          <div class="service-card" id="svcCAS">
+            <div class="service-card-header" onclick="toggleService('CAS')">
+              <input type="checkbox" id="chkCAS" onchange="toggleService('CAS')">
+              <div class="svc-label">Community Access</div>
+            </div>
+            <div class="service-card-body">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Hours per Week</label>
+                  <input type="number" id="casHours" value="0" min="0" step="0.5" oninput="calcServiceTotal('CAS')">
+                </div>
+                <div class="form-group">
+                  <label>Primary Day Type</label>
+                  <select id="casDayType" onchange="calcServiceTotal('CAS')">
+                    <option value="weekday">Weekday</option>
+                    <option value="saturday">Saturday</option>
+                    <option value="sunday">Sunday</option>
+                    <option value="evening">Evening</option>
+                  </select>
+                </div>
+              </div>
+              <div class="rate-grid">
+                <div class="rate-item"><div class="rate-label">Weekday</div><div class="rate-value">$67.56</div></div>
+                <div class="rate-item"><div class="rate-label">Saturday</div><div class="rate-value">$94.69</div></div>
+                <div class="rate-item"><div class="rate-label">Sunday</div><div class="rate-value">$121.59</div></div>
+                <div class="rate-item"><div class="rate-label">Evening</div><div class="rate-value">$74.42</div></div>
+              </div>
+              <div style="margin-top:12px;padding:10px;background:var(--navy);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:12px;color:var(--muted);">Estimated Weekly Cost</span>
+                <span id="casWeekly" style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--teal);">$0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transport -->
+          <div class="service-card" id="svcTransport">
+            <div class="service-card-header" onclick="toggleService('Transport')">
+              <input type="checkbox" id="chkTransport" onchange="toggleService('Transport')">
+              <div class="svc-label">Transport</div>
+            </div>
+            <div class="service-card-body">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Hours per Week</label>
+                  <input type="number" id="transportHours" value="0" min="0" step="0.5" oninput="calcServiceTotal('Transport')">
+                </div>
+                <div class="form-group">
+                  <label>Primary Day Type</label>
+                  <select id="transportDayType" onchange="calcServiceTotal('Transport')">
+                    <option value="weekday">Weekday</option>
+                    <option value="saturday">Saturday</option>
+                    <option value="sunday">Sunday</option>
+                    <option value="evening">Evening</option>
+                  </select>
+                </div>
+              </div>
+              <div class="rate-grid">
+                <div class="rate-item"><div class="rate-label">Weekday</div><div class="rate-value">$67.56</div></div>
+                <div class="rate-item"><div class="rate-label">Saturday</div><div class="rate-value">$94.69</div></div>
+                <div class="rate-item"><div class="rate-label">Sunday</div><div class="rate-value">$121.59</div></div>
+                <div class="rate-item"><div class="rate-label">Evening</div><div class="rate-value">$74.42</div></div>
+              </div>
+              <div style="margin-top:12px;padding:10px;background:var(--navy);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:12px;color:var(--muted);">Estimated Weekly Cost</span>
+                <span id="transportWeekly" style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--teal);">$0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Other -->
+          <div class="service-card" id="svcOther">
+            <div class="service-card-header" onclick="toggleService('Other')">
+              <input type="checkbox" id="chkOther" onchange="toggleService('Other')">
+              <div class="svc-label">Other</div>
+            </div>
+            <div class="service-card-body">
+              <div class="form-group">
+                <label>Service Description</label>
+                <input type="text" id="otherDesc" placeholder="Describe the service...">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Hours per Week</label>
+                  <input type="number" id="otherHours" value="0" min="0" step="0.5" oninput="calcServiceTotal('Other')">
+                </div>
+                <div class="form-group">
+                  <label>Primary Day Type</label>
+                  <select id="otherDayType" onchange="calcServiceTotal('Other')">
+                    <option value="weekday">Weekday</option>
+                    <option value="saturday">Saturday</option>
+                    <option value="sunday">Sunday</option>
+                    <option value="evening">Evening</option>
+                  </select>
+                </div>
+              </div>
+              <div class="rate-grid">
+                <div class="rate-item"><div class="rate-label">Weekday</div><div class="rate-value">$67.56</div></div>
+                <div class="rate-item"><div class="rate-label">Saturday</div><div class="rate-value">$94.69</div></div>
+                <div class="rate-item"><div class="rate-label">Sunday</div><div class="rate-value">$121.59</div></div>
+                <div class="rate-item"><div class="rate-label">Evening</div><div class="rate-value">$74.42</div></div>
+              </div>
+              <div style="margin-top:12px;padding:10px;background:var(--navy);border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:12px;color:var(--muted);">Estimated Weekly Cost</span>
+                <span id="otherWeekly" style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--teal);">$0.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total weekly cost across all services -->
+        <div class="total-weekly-bar">
+          <div class="tw-label">Total Weekly Cost (All Services)</div>
+          <div class="tw-value" id="totalWeeklyCost">$0.00</div>
+        </div>
+      </div>
+
+      <!-- Step 4: Schedule of Supports (auto-built from Step 3) -->
+      <div class="wizard-step" id="wizStep3">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:4px;">Schedule of Supports</h3>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">Itemised budget breakdown auto-populated from your selected services. You can edit values and add additional items.</p>
+
+        <div class="form-row" style="margin-bottom:16px;">
+          <div class="form-group">
+            <label>Plan Weeks</label>
+            <input type="number" id="sosPlanWeeks" value="52" min="1" max="260" oninput="recalcSos()">
+          </div>
+          <div class="form-group">
+            <label>Plan Budget ($)</label>
+            <input type="number" id="sosPlanBudget" value="0" min="0" step="0.01" oninput="recalcSos()">
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="sos-items-table" id="sosTable">
+            <thead>
+              <tr>
+                <th style="width:22%">Support Category</th>
+                <th style="width:24%">Item Description</th>
+                <th style="width:12%" class="right">Unit Price ($)</th>
+                <th style="width:10%" class="right">Qty / Week</th>
+                <th style="width:14%" class="right">Weekly Total</th>
+                <th style="width:14%" class="right">Plan Total</th>
+                <th style="width:40px"></th>
+              </tr>
+            </thead>
+            <tbody id="sosBody"></tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" style="text-align:right;font-size:12px;color:var(--muted);">TOTALS</td>
+                <td class="right" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);" id="sosWeeklyTotal">$0.00</td>
+                <td class="right" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);" id="sosPlanTotal">$0.00</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div style="margin-top:12px;">
+          <button class="btn btn-teal btn-sm" onclick="addSosItem()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+            + Add Item
+          </button>
+        </div>
+
+        <!-- Budget Comparison -->
+        <div class="budget-bar" id="budgetBar">
+          <h4>Budget Comparison</h4>
+          <div class="budget-progress">
+            <div class="budget-progress-fill" id="budgetFill" style="width:0%"></div>
+          </div>
+          <div class="budget-labels">
+            <span class="bl-used" id="budgetUsed">$0.00 used</span>
+            <span class="bl-total" id="budgetTotal">of $0.00 budget</span>
+          </div>
+          <div class="budget-warning" id="budgetWarning">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>SOS total exceeds plan budget!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: Terms & Conditions -->
+      <div class="wizard-step" id="wizStep4">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">Terms &amp; Conditions</h3>
+        <div class="form-group">
+          <label>Agreement Terms Template</label>
+          <textarea id="wizTermsText" rows="8" style="min-height:140px;font-size:12px;line-height:1.7;">This Service Agreement is entered into between Delta Community Support Pty Ltd (ABN: XX XXX XXX XXX) ("the Provider") and the Participant named in this agreement.
+
+The Provider agrees to deliver the supports outlined in this agreement in accordance with the NDIS Practice Standards and Code of Conduct. All services will be delivered in a manner that respects the dignity, rights, and autonomy of the Participant.
+
+The Participant (or their nominee/representative) agrees to the terms set out in this agreement, including the supports to be delivered, the associated costs, and the responsibilities of both parties.
+
+This agreement will commence on the Start Date and remain in effect until the End Date unless terminated earlier by either party with reasonable notice (minimum 14 days written notice).
+
+Payment for supports will be claimed from the Participant's NDIS plan in accordance with the NDIS Price Guide and Support Catalogue current at the time the support is delivered.</textarea>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em;">Optional Clauses</div>
+        <div class="clause-list" id="clauseList">
+          <div class="clause-item" onclick="this.querySelector('input').click()">
+            <input type="checkbox" id="clauseCancel" checked onclick="event.stopPropagation()">
+            <div class="clause-text">
+              <div class="clause-title">Cancellation Policy (48hr Notice)</div>
+              <div class="clause-desc">The Participant must provide at least 48 hours notice to cancel a scheduled support. Supports cancelled with less than 48 hours notice may be charged at 100% of the agreed rate, in accordance with NDIS cancellation policy.</div>
+            </div>
+          </div>
+          <div class="clause-item" onclick="this.querySelector('input').click()">
+            <input type="checkbox" id="clauseTransport" onclick="event.stopPropagation()">
+            <div class="clause-text">
+              <div class="clause-title">Transport</div>
+              <div class="clause-desc">Transport will be provided as part of community access supports. Kilometre charges may apply at the NDIS rate where the Participant's plan includes transport funding. The Provider will maintain appropriate vehicle insurance and driver qualifications.</div>
+            </div>
+          </div>
+          <div class="clause-item" onclick="this.querySelector('input').click()">
+            <input type="checkbox" id="clauseMedication" onclick="event.stopPropagation()">
+            <div class="clause-text">
+              <div class="clause-title">Medication Management</div>
+              <div class="clause-desc">The Provider will assist with medication prompting and/or administration as outlined in the Participant's medication management plan. Staff will follow the Participant's prescribed medication schedule and maintain accurate medication records.</div>
+            </div>
+          </div>
+          <div class="clause-item" onclick="this.querySelector('input').click()">
+            <input type="checkbox" id="clauseRestrictive" onclick="event.stopPropagation()">
+            <div class="clause-text">
+              <div class="clause-title">Restrictive Practices</div>
+              <div class="clause-desc">Any restrictive practices will only be implemented in accordance with an approved Behaviour Support Plan, relevant state legislation, and NDIS Quality and Safeguards Commission requirements. The Provider will report the use of any restrictive practices as required.</div>
+            </div>
+          </div>
+          <div class="clause-item" onclick="this.querySelector('input').click()">
+            <input type="checkbox" id="clausePrivacy" checked onclick="event.stopPropagation()">
+            <div class="clause-text">
+              <div class="clause-title">Privacy &amp; Confidentiality</div>
+              <div class="clause-desc">The Provider will handle all personal information in accordance with the Australian Privacy Principles and the Privacy Act 1988. Information will only be shared with the Participant's consent or as required by law.</div>
+            </div>
+          </div>
+          <div class="clause-item" onclick="this.querySelector('input').click()">
+            <input type="checkbox" id="clauseComplaints" checked onclick="event.stopPropagation()">
+            <div class="clause-text">
+              <div class="clause-title">Complaints &amp; Feedback</div>
+              <div class="clause-desc">The Participant may raise complaints or provide feedback directly to the Provider, or to the NDIS Quality and Safeguards Commission (1800 035 544). The Provider will respond to complaints within 5 business days and work towards a fair resolution.</div>
+            </div>
+          </div>
+          <div class="clause-item" onclick="this.querySelector('input').click()">
+            <input type="checkbox" id="clauseReview" onclick="event.stopPropagation()">
+            <div class="clause-text">
+              <div class="clause-title">Review Period</div>
+              <div class="clause-desc">This agreement will be reviewed at least every 12 months, or sooner if requested by either party. Reviews will consider the Participant's goals, satisfaction with services, and any changes to the Participant's NDIS plan.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 6: Review -->
+      <div class="wizard-step" id="wizStep5">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">Review Agreement</h3>
+        <div class="review-panel" id="reviewPanel"></div>
+      </div>
+
+      <!-- Step 7: Generate -->
+      <div class="wizard-step" id="wizStep6">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">Generate Agreement</h3>
+        <div style="text-align:center;padding:40px 20px;">
+          <div style="font-size:48px;margin-bottom:16px;opacity:.6;">&#128196;</div>
+          <p style="font-size:14px;color:var(--muted);margin-bottom:24px;">Your agreement is ready. Choose an action below.</p>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <button class="btn btn-success" onclick="saveAsDraft()" id="btnSaveDraft" style="padding:14px 28px;font-size:14px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save as Draft
+            </button>
+            <button class="btn btn-primary" onclick="generatePdf()" id="btnGenPdf" style="padding:14px 28px;font-size:14px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              Generate PDF
+            </button>
+          </div>
+          <div id="genResult" style="margin-top:24px;display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wizard Footer -->
+    <div class="wizard-footer">
+      <button class="btn btn-outline" id="wizBtnBack" onclick="wizardBack()" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+      <div style="flex:1;"></div>
+      <div style="font-size:11px;color:var(--muted);font-weight:600;" id="wizStepLabel">Step 1 of 7</div>
+      <button class="btn btn-primary" id="wizBtnNext" onclick="wizardNext()">
+        Next
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     JavaScript
+     ═══════════════════════════════════════════════════════ -->
+<script>
+/* ── Constants ── */
+var API_BASE = window.location.origin;
+var TOKEN = localStorage.getItem('authToken') || '';
+var RATES = { weekday: 67.56, saturday: 94.69, sunday: 121.59, evening: 74.42 };
+var SERVICES_MAP = { SIL: 'Supported Independent Living', CAS: 'Community Access', Transport: 'Transport', Other: 'Other' };
+var TOTAL_STEPS = 7;
+
+/* SOS category options */
+var SOS_CATEGORIES = [
+  'Core Supports \u2014 Daily Activities',
+  'Core Supports \u2014 Community Access',
+  'Core Supports \u2014 Transport',
+  'Capacity Building \u2014 Support Coordination',
+  'Capacity Building \u2014 Improved Living',
+  'Capital Supports \u2014 Assistive Technology'
+];
+
+/* Service to SOS category mapping */
+var SVC_TO_SOS = {
+  SIL: { category: 'Core Supports \u2014 Daily Activities', desc: 'Supported Independent Living' },
+  CAS: { category: 'Core Supports \u2014 Community Access', desc: 'Community Access Support' },
+  Transport: { category: 'Core Supports \u2014 Transport', desc: 'Transport' },
+  Other: { category: 'Capacity Building \u2014 Improved Living', desc: 'Other Support' }
+};
+
+/* ── State ── */
+var allAgreements = [];
+var allClients = [];
+var currentFilter = 'all';
+var wizardStep = 0;
+var wizSelectedClient = null;
+var savedAgreementId = null;
+var sosItems = [];
+
+/* ── Auth Headers ── */
+function authHeaders() {
+  return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN, 'x-auth-token': TOKEN };
+}
+
+/* ── Toast ── */
+function showToast(msg, type) {
+  type = type || 'info';
+  var c = document.getElementById('toastContainer');
+  var t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(function() { t.classList.add('out'); }, 3000);
+  setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 3400);
+}
+
+/* ── Format Helpers ── */
+function fmtDate(d) {
+  if (!d) return '-';
+  var dt = new Date(d);
+  if (isNaN(dt)) return d;
+  return dt.toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function fmtMoney(n) {
+  return '$' + (parseFloat(n) || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+function esc(s) {
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+/* ── Badge HTML ── */
+function badgeHtml(status) {
+  var s = (status || 'draft').toLowerCase();
+  var map = { draft: 'draft', sent: 'sent', signed: 'signed', active: 'active', expired: 'expired' };
+  var cls = map[s] || 'draft';
+  return '<span class="badge badge-' + cls + '">' + s + '</span>';
+}
+
+/* ═══════════════════════════════════════════════════════
+   Load Data
+   ═══════════════════════════════════════════════════════ */
+function loadClients() {
+  return fetch(API_BASE + '/api/clients/ndis', { headers: authHeaders() })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      allClients = Array.isArray(data) ? data : (data.clients || data.records || []);
+      console.log('NDIS clients loaded:', allClients.length, allClients);
+    })
+    .catch(function(e) { console.error('Load clients error:', e); allClients = []; });
+}
+
+function loadAgreements() {
+  return fetch(API_BASE + '/api/agreements', { headers: authHeaders() })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      allAgreements = Array.isArray(data) ? data : (data.agreements || data.records || []);
+      updateSummary();
+      renderAgreements();
+    })
+    .catch(function(e) {
+      console.error('Load agreements error:', e);
+      allAgreements = [];
+      updateSummary();
+      renderAgreements();
+    })
+    .finally(function() {
+      document.getElementById('loadingAgreements').style.display = 'none';
+    });
+}
+
+/* ═══════════════════════════════════════════════════════
+   Summary Cards
+   ═══════════════════════════════════════════════════════ */
+function updateSummary() {
+  var counts = { all: 0, draft: 0, sent: 0, signed: 0, active: 0, expired: 0 };
+  var expiringSoon = 0;
+  var now = new Date();
+  var thirtyDays = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+  allAgreements.forEach(function(a) {
+    var s = (a.status || 'draft').toLowerCase();
+    counts.all++;
+    if (counts[s] !== undefined) counts[s]++;
+    if (s === 'active' && a.endDate) {
+      var end = new Date(a.endDate);
+      if (end <= thirtyDays && end > now) expiringSoon++;
+    }
+  });
+  document.getElementById('sumTotal').textContent = counts.all;
+  document.getElementById('sumActive').textContent = counts.active;
+  document.getElementById('sumDraft').textContent = counts.draft;
+  document.getElementById('sumExpiring').textContent = expiringSoon;
+  document.getElementById('sumExpired').textContent = counts.expired;
+  document.getElementById('cntAll').textContent = counts.all;
+  document.getElementById('cntDraft').textContent = counts.draft;
+  document.getElementById('cntSent').textContent = counts.sent;
+  document.getElementById('cntSigned').textContent = counts.signed;
+  document.getElementById('cntActive').textContent = counts.active;
+  document.getElementById('cntExpired').textContent = counts.expired;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Filter & Render Agreements
+   ═══════════════════════════════════════════════════════ */
+function filterByStatus(status) {
+  currentFilter = status;
+  document.querySelectorAll('#statusTabs .tab').forEach(function(el) {
+    el.classList.toggle('active', el.getAttribute('data-status') === status);
+  });
+  renderAgreements();
+}
+
+function renderAgreements() {
+  var search = (document.getElementById('searchInput').value || '').toLowerCase();
+  var filtered = allAgreements.filter(function(a) {
+    if (currentFilter !== 'all' && (a.status || 'draft').toLowerCase() !== currentFilter) return false;
+    if (search) {
+      var clientName = (a.clientName || a.client || '').toLowerCase();
+      var ndis = (a.ndisNumber || a.ndis || '').toLowerCase();
+      if (clientName.indexOf(search) === -1 && ndis.indexOf(search) === -1) return false;
+    }
+    return true;
+  });
+
+  var tbody = document.getElementById('agreementsBody');
+  var empty = document.getElementById('emptyAgreements');
+  var wrap = document.getElementById('tableWrap');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    wrap.style.display = 'none';
+    empty.style.display = '';
+    return;
+  }
+  wrap.style.display = '';
+  empty.style.display = 'none';
+
+  var html = '';
+  filtered.forEach(function(a) {
+    var id = a.id || a._id || '';
+    html += '<tr onclick="viewAgreement(\'' + id + '\')">';
+    html += '<td><strong>' + esc(a.clientName || a.client || '-') + '</strong></td>';
+    html += '<td class="mono">' + esc(a.ndisNumber || a.ndis || '-') + '</td>';
+    html += '<td>' + fmtDate(a.agreementDate || a.createdAt) + '</td>';
+    html += '<td>' + fmtDate(a.startDate) + '</td>';
+    html += '<td>' + fmtDate(a.endDate) + '</td>';
+    html += '<td>' + badgeHtml(a.status) + '</td>';
+    html += '<td>';
+    html += '<button class="btn btn-teal btn-sm" onclick="event.stopPropagation();downloadAgreementPdf(\'' + id + '\')" title="Download PDF">';
+    html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> PDF</button> ';
+    html += '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();viewAgreement(\'' + id + '\')" title="View">';
+    html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> View</button>';
+    html += '</td></tr>';
+  });
+  tbody.innerHTML = html;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Agreement Detail View
+   ═══════════════════════════════════════════════════════ */
+function viewAgreement(id) {
+  var a = allAgreements.find(function(x) { return (x.id || x._id) === id; });
+  if (!a) return;
+  var det = document.getElementById('detailOverlay');
+  document.getElementById('detailTitle').innerHTML = 'Agreement Detail ' + badgeHtml(a.status);
+
+  var grid = document.getElementById('detailGrid');
+  var fields = [
+    ['Client', a.clientName || a.client || '-'],
+    ['NDIS Number', a.ndisNumber || a.ndis || '-'],
+    ['Date of Birth', fmtDate(a.dob)],
+    ['Phone', a.phone || '-'],
+    ['Email', a.email || '-'],
+    ['Address', a.address || '-'],
+    ['Plan Start', fmtDate(a.startDate || a.planStart)],
+    ['Plan End', fmtDate(a.endDate || a.planEnd)],
+    ['Support Coordinator', a.coordinator || '-'],
+    ['Emergency Contact', a.emergencyContact || '-'],
+    ['Agreement Date', fmtDate(a.agreementDate || a.createdAt)],
+    ['Status', (a.status || 'Draft').charAt(0).toUpperCase() + (a.status || 'draft').slice(1)]
+  ];
+  grid.innerHTML = fields.map(function(f) {
+    return '<div class="detail-field"><div class="df-label">' + f[0] + '</div><div class="df-value">' + esc(f[1]) + '</div></div>';
+  }).join('');
+
+  var svcs = a.services || [];
+  if (typeof svcs === 'string') { try { svcs = JSON.parse(svcs); } catch(e) { svcs = []; } }
+  var svcHtml = '';
+  if (svcs.length > 0) {
+    svcHtml = '<div style="margin-bottom:16px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--teal);margin-bottom:8px;">Services</div>';
+    svcs.forEach(function(s) {
+      svcHtml += '<div style="padding:10px;background:var(--navy);border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">';
+      svcHtml += '<div><strong>' + esc(s.name || s.service || '-') + '</strong><br><span style="font-size:11px;color:var(--muted);">' + (s.hours || 0) + ' hrs/wk @ ' + fmtMoney(s.rate) + '/hr (' + (s.dayType || 'weekday') + ')</span></div>';
+      svcHtml += '<div style="font-family:\'JetBrains Mono\',monospace;font-weight:700;color:var(--teal);">' + fmtMoney((s.hours || 0) * (s.rate || 0)) + '/wk</div>';
+      svcHtml += '</div>';
+    });
+    svcHtml += '</div>';
+  }
+  document.getElementById('detailServices').innerHTML = svcHtml;
+
+  var status = (a.status || 'draft').toLowerCase();
+  var actions = '<button class="btn btn-teal" onclick="downloadAgreementPdf(\'' + id + '\')">Download PDF</button>';
+  if (status === 'draft') {
+    actions += '<button class="btn btn-primary" onclick="patchAgreementStatus(\'' + id + '\',\'sent\');closeDetail();">Mark as Sent</button>';
+  }
+  if (status === 'sent') {
+    actions += '<button class="btn btn-success" onclick="patchAgreementStatus(\'' + id + '\',\'signed\');closeDetail();">Mark as Signed</button>';
+  }
+  if (status === 'signed') {
+    actions += '<button class="btn btn-success" onclick="patchAgreementStatus(\'' + id + '\',\'active\');closeDetail();">Activate</button>';
+  }
+  actions += '<button class="btn btn-outline" onclick="closeDetail()">Close</button>';
+  document.getElementById('detailActions').innerHTML = actions;
+
+  det.classList.add('show');
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('show');
+}
+
+/* ═══════════════════════════════════════════════════════
+   Agreement Status Update
+   ═══════════════════════════════════════════════════════ */
+function patchAgreementStatus(id, status) {
+  fetch(API_BASE + '/api/agreements/' + id, {
+    method: 'PATCH',
+    headers: authHeaders(),
+    body: JSON.stringify({ status: status })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function() {
+    showToast('Agreement marked as ' + status, 'success');
+    loadAgreements();
+  })
+  .catch(function(e) { showToast('Failed to update status', 'error'); });
+}
+
+function downloadAgreementPdf(id) {
+  showToast('Generating PDF...', 'info');
+  fetch(API_BASE + '/api/agreements/' + id + '/pdf', { headers: authHeaders() })
+    .then(function(r) {
+      if (!r.ok) throw new Error('PDF generation failed');
+      return r.blob();
+    })
+    .then(function(blob) {
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement('a');
+      link.href = url;
+      link.download = 'agreement-' + id + '.pdf';
+      link.click();
+      URL.revokeObjectURL(url);
+      showToast('PDF downloaded', 'success');
+    })
+    .catch(function(e) { showToast('PDF generation failed: ' + e.message, 'error'); });
+}
+
+/* ═══════════════════════════════════════════════════════
+   Wizard Logic (7 Steps)
+   ═══════════════════════════════════════════════════════ */
+function openWizard() {
+  wizardStep = 0;
+  wizSelectedClient = null;
+  savedAgreementId = null;
+  sosItems = [];
+
+  /* Reset Step 1 */
+  document.getElementById('wizClientSearch').value = '';
+  document.getElementById('wizSelectedClient').style.display = 'none';
+  document.getElementById('genResult').style.display = 'none';
+
+  /* Reset Step 2 */
+  ['wizName','wizNdis','wizDob','wizPhone','wizAddress','wizEmail','wizPlanStart','wizPlanEnd','wizCoordinator','wizEmergency'].forEach(function(id) {
+    document.getElementById(id).value = '';
+  });
+  ['fgName','fgNdis'].forEach(function(id) {
+    document.getElementById(id).classList.remove('error');
+  });
+
+  /* Reset Step 3 services */
+  ['SIL','CAS','Transport','Other'].forEach(function(svc) {
+    document.getElementById('chk' + svc).checked = false;
+    document.getElementById('svc' + svc).classList.remove('selected');
+  });
+  ['silHours','casHours','transportHours','otherHours'].forEach(function(id) {
+    document.getElementById(id).value = '0';
+  });
+  ['silDayType','casDayType','transportDayType','otherDayType'].forEach(function(id) {
+    document.getElementById(id).value = 'weekday';
+  });
+  ['silWeekly','casWeekly','transportWeekly','otherWeekly'].forEach(function(id) {
+    document.getElementById(id).textContent = '$0.00';
+  });
+  document.getElementById('totalWeeklyCost').textContent = '$0.00';
+  if (document.getElementById('otherDesc')) document.getElementById('otherDesc').value = '';
+
+  /* Reset Step 4 SOS */
+  document.getElementById('sosPlanWeeks').value = '52';
+  document.getElementById('sosPlanBudget').value = '0';
+
+  /* Reset Step 5 terms */
+  document.getElementById('wizTermsText').value = document.getElementById('wizTermsText').defaultValue;
+  ['clauseCancel','clausePrivacy','clauseComplaints'].forEach(function(id) { document.getElementById(id).checked = true; });
+  ['clauseTransport','clauseMedication','clauseRestrictive','clauseReview'].forEach(function(id) { document.getElementById(id).checked = false; });
+
+  updateWizardStep();
+  document.getElementById('wizardOverlay').classList.add('show');
+}
+
+function closeWizard() {
+  document.getElementById('wizardOverlay').classList.remove('show');
+}
+
+function updateWizardStep() {
+  /* Show/hide steps */
+  document.querySelectorAll('.wizard-step').forEach(function(el, i) {
+    el.classList.toggle('active', i === wizardStep);
+  });
+
+  /* Update steps bar */
+  document.querySelectorAll('.step-item').forEach(function(el, i) {
+    el.classList.remove('active', 'done');
+    if (i === wizardStep) el.classList.add('active');
+    else if (i < wizardStep) el.classList.add('done');
+  });
+
+  /* Update done step numbers to checkmarks */
+  document.querySelectorAll('.step-item').forEach(function(el, i) {
+    var numEl = el.querySelector('.step-num');
+    if (i < wizardStep) {
+      numEl.innerHTML = '&#10003;';
+    } else {
+      numEl.textContent = (i + 1);
+    }
+  });
+
+  /* Footer buttons */
+  document.getElementById('wizBtnBack').style.display = wizardStep > 0 ? '' : 'none';
+  var nextBtn = document.getElementById('wizBtnNext');
+  if (wizardStep >= TOTAL_STEPS - 1) {
+    nextBtn.style.display = 'none';
+  } else {
+    nextBtn.style.display = '';
+    nextBtn.innerHTML = 'Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>';
+  }
+  document.getElementById('wizStepLabel').textContent = 'Step ' + (wizardStep + 1) + ' of ' + TOTAL_STEPS;
+
+  /* Build SOS table when entering step 4 */
+  if (wizardStep === 3) buildSosFromServices();
+  /* Build review when entering step 6 */
+  if (wizardStep === 5) buildReview();
+}
+
+function wizardNext() {
+  if (!validateStep(wizardStep)) return;
+  if (wizardStep < TOTAL_STEPS - 1) {
+    wizardStep++;
+    updateWizardStep();
+  }
+}
+
+function wizardBack() {
+  if (wizardStep > 0) {
+    wizardStep--;
+    updateWizardStep();
+  }
+}
+
+function validateStep(step) {
+  if (step === 0) {
+    if (!wizSelectedClient) {
+      showToast('Please select a client', 'error');
+      return false;
+    }
+    return true;
+  }
+  if (step === 1) {
+    var valid = true;
+    var required = [
+      { id: 'wizName', fg: 'fgName' },
+      { id: 'wizNdis', fg: 'fgNdis' }
+    ];
+    required.forEach(function(f) {
+      var el = document.getElementById(f.id);
+      var fg = document.getElementById(f.fg);
+      if (!el.value.trim()) {
+        fg.classList.add('error');
+        valid = false;
+      } else {
+        fg.classList.remove('error');
+      }
+    });
+    if (!valid) { showToast('Please fill in required fields (Name and NDIS#)', 'error'); }
+    return valid;
+  }
+  if (step === 2) {
+    var any = ['SIL','CAS','Transport','Other'].some(function(s) {
+      return document.getElementById('chk' + s).checked;
+    });
+    if (!any) { showToast('Please select at least one service', 'error'); return false; }
+    return true;
+  }
+  return true;
+}
+
+/* ── Wizard Client Dropdown ── */
+function filterWizClients() {
+  var q = (document.getElementById('wizClientSearch').value || '').toLowerCase();
+  var list = document.getElementById('wizClientList');
+  var items = allClients.filter(function(c) {
+    var name = (c.name || c.Name || c.clientName || '').toLowerCase();
+    var ndis = (c.ndisNumber || c.ndis || c.NDIS || '').toLowerCase();
+    var type = (c.type || c.clientType || '').toLowerCase();
+    return name.indexOf(q) !== -1 || ndis.indexOf(q) !== -1 || type.indexOf(q) !== -1;
+  }).slice(0, 20);
+
+  if (items.length === 0) {
+    list.innerHTML = '<div style="padding:14px;text-align:center;color:var(--muted);font-size:12px;">No clients found</div>';
+  } else {
+    list.innerHTML = items.map(function(c, i) {
+      var name = c.name || c.Name || c.clientName || 'Unknown';
+      var ndis = c.ndisNumber || c.ndis || c.NDIS || '-';
+      var type = c.type || c.clientType || '';
+      return '<div class="dd-item" onclick="selectWizClient(' + i + ')">' +
+        '<div class="dd-name">' + esc(name) + '</div>' +
+        '<div class="dd-sub">' + esc(ndis) + (type ? ' \u00b7 ' + esc(type) : '') + '</div></div>';
+    }).join('');
+  }
+  list.classList.add('open');
+}
+
+function openWizClientList() { filterWizClients(); }
+
+function selectWizClient(idx) {
+  var q = (document.getElementById('wizClientSearch').value || '').toLowerCase();
+  var items = allClients.filter(function(c) {
+    var n = (c.name || c.Name || c.clientName || '').toLowerCase();
+    var ndis = (c.ndisNumber || c.ndis || c.NDIS || '').toLowerCase();
+    var type = (c.type || c.clientType || '').toLowerCase();
+    return n.indexOf(q) !== -1 || ndis.indexOf(q) !== -1 || type.indexOf(q) !== -1;
+  }).slice(0, 20);
+  var c = items[idx];
+  if (!c) return;
+
+  wizSelectedClient = c;
+  var clientName = c.name || c.Name || c.clientName || 'Unknown';
+  var ndis = c.ndisNumber || c.ndis || c.NDIS || '-';
+  var type = c.type || c.clientType || '';
+
+  document.getElementById('wizClientSearch').value = clientName;
+  document.getElementById('wizClientList').classList.remove('open');
+  document.getElementById('wizSelectedClient').style.display = '';
+  document.getElementById('wizSelectedName').textContent = clientName;
+  document.getElementById('wizSelectedSub').textContent = ndis + (type ? ' | ' + type : '');
+
+  /* Auto-populate Step 2 */
+  document.getElementById('wizName').value = clientName;
+  document.getElementById('wizNdis').value = ndis;
+  document.getElementById('wizDob').value = c.dob || c.DOB || c.dateOfBirth || '';
+  document.getElementById('wizPhone').value = c.phone || c.Phone || c.mobile || '';
+  document.getElementById('wizAddress').value = c.address || c.Address || '';
+  document.getElementById('wizEmail').value = c.email || c.Email || '';
+  document.getElementById('wizPlanStart').value = c.planStart || c.planStartDate || '';
+  document.getElementById('wizPlanEnd').value = c.planEnd || c.planEndDate || '';
+  document.getElementById('wizCoordinator').value = c.coordinator || c.supportCoordinator || '';
+  document.getElementById('wizEmergency').value = c.emergencyContact || c.emergency || '';
+
+  /* Auto-set plan budget if available */
+  var budget = parseFloat(c.planBudget || c.budget || c.coreBudget || 0);
+  if (budget > 0) document.getElementById('sosPlanBudget').value = budget;
+}
+
+/* ── Close dropdown when clicking outside ── */
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#wizClientDropdown')) {
+    document.getElementById('wizClientList').classList.remove('open');
+  }
+});
+
+/* ═══════════════════════════════════════════════════════
+   Service Toggle & Calculation
+   ═══════════════════════════════════════════════════════ */
+function toggleService(svc) {
+  var chk = document.getElementById('chk' + svc);
+  var card = document.getElementById('svc' + svc);
+  /* If called from card header click, toggle checkbox */
+  if (event && event.target !== chk) {
+    chk.checked = !chk.checked;
+  }
+  card.classList.toggle('selected', chk.checked);
+  if (chk.checked) calcServiceTotal(svc);
+  updateTotalWeeklyCost();
+}
+
+function calcServiceTotal(svc) {
+  var idMap = { SIL: 'sil', CAS: 'cas', Transport: 'transport', Other: 'other' };
+  var prefix = idMap[svc];
+  var hours = parseFloat(document.getElementById(prefix + 'Hours').value) || 0;
+  var dayType = document.getElementById(prefix + 'DayType').value;
+  var rate = RATES[dayType] || RATES.weekday;
+  var weekly = hours * rate;
+  document.getElementById(prefix + 'Weekly').textContent = fmtMoney(weekly);
+  updateTotalWeeklyCost();
+}
+
+function updateTotalWeeklyCost() {
+  var services = getSelectedServices();
+  var total = services.reduce(function(s, svc) { return s + svc.weeklyTotal; }, 0);
+  document.getElementById('totalWeeklyCost').textContent = fmtMoney(total);
+}
+
+function getSelectedServices() {
+  var services = [];
+  var svcs = ['SIL', 'CAS', 'Transport', 'Other'];
+  var idMap = { SIL: 'sil', CAS: 'cas', Transport: 'transport', Other: 'other' };
+  svcs.forEach(function(svc) {
+    if (!document.getElementById('chk' + svc).checked) return;
+    var prefix = idMap[svc];
+    var hours = parseFloat(document.getElementById(prefix + 'Hours').value) || 0;
+    var dayType = document.getElementById(prefix + 'DayType').value;
+    var rate = RATES[dayType] || RATES.weekday;
+    var desc = svc === 'Other' ? (document.getElementById('otherDesc').value || 'Other Service') : SERVICES_MAP[svc];
+    services.push({
+      service: svc,
+      name: desc,
+      hours: hours,
+      dayType: dayType,
+      rate: rate,
+      weeklyTotal: hours * rate
+    });
+  });
+  return services;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Schedule of Supports (Step 4)
+   ═══════════════════════════════════════════════════════ */
+function buildSosFromServices() {
+  var services = getSelectedServices();
+  var existingManual = sosItems.filter(function(it) { return it.manual; });
+
+  /* Build SOS items from selected services */
+  sosItems = [];
+  services.forEach(function(svc) {
+    var mapping = SVC_TO_SOS[svc.service] || { category: 'Core Supports \u2014 Daily Activities', desc: svc.name };
+    sosItems.push({
+      category: mapping.category,
+      item: svc.service === 'Other' ? (svc.name || mapping.desc) : mapping.desc,
+      unitPrice: svc.rate,
+      qtyWeek: svc.hours,
+      manual: false
+    });
+  });
+
+  /* Re-add any manually added items */
+  existingManual.forEach(function(it) { sosItems.push(it); });
+
+  renderSosItems();
+  recalcSos();
+}
+
+function addSosItem() {
+  sosItems.push({ category: '', item: '', unitPrice: 0, qtyWeek: 0, manual: true });
+  renderSosItems();
+  recalcSos();
+}
+
+function removeSosItem(idx) {
+  sosItems.splice(idx, 1);
+  renderSosItems();
+  recalcSos();
+}
+
+function renderSosItems() {
+  var tbody = document.getElementById('sosBody');
+  var weeks = parseInt(document.getElementById('sosPlanWeeks').value) || 52;
+  var html = '';
+  sosItems.forEach(function(item, i) {
+    var weekly = (parseFloat(item.unitPrice) || 0) * (parseFloat(item.qtyWeek) || 0);
+    var planTotal = weekly * weeks;
+    html += '<tr>';
+    /* Category dropdown */
+    html += '<td><select onchange="sosItems[' + i + '].category=this.value;recalcSos()" style="min-width:120px;">';
+    html += '<option value="">Select...</option>';
+    SOS_CATEGORIES.forEach(function(cat) {
+      html += '<option value="' + esc(cat) + '"' + (item.category === cat ? ' selected' : '') + '>' + esc(cat) + '</option>';
+    });
+    html += '</select></td>';
+    /* Item description */
+    html += '<td><input type="text" value="' + esc(item.item) + '" onchange="sosItems[' + i + '].item=this.value" placeholder="Item description..."></td>';
+    /* Unit price */
+    html += '<td class="right"><input type="number" value="' + (item.unitPrice || '') + '" onchange="sosItems[' + i + '].unitPrice=parseFloat(this.value)||0;renderSosItems();recalcSos()" step="0.01" min="0" style="text-align:right;max-width:110px;"></td>';
+    /* Qty/week */
+    html += '<td class="right"><input type="number" value="' + (item.qtyWeek || '') + '" onchange="sosItems[' + i + '].qtyWeek=parseFloat(this.value)||0;renderSosItems();recalcSos()" step="0.5" min="0" style="text-align:right;max-width:90px;"></td>';
+    /* Weekly total (read-only display) */
+    html += '<td class="right" style="font-family:\'JetBrains Mono\',monospace;font-size:12px;color:var(--aqua);">' + fmtMoney(weekly) + '</td>';
+    /* Plan total (read-only display) */
+    html += '<td class="right" style="font-family:\'JetBrains Mono\',monospace;font-size:12px;">' + fmtMoney(planTotal) + '</td>';
+    /* Remove button */
+    html += '<td><button class="btn btn-danger btn-sm" onclick="removeSosItem(' + i + ')" title="Remove">&times;</button></td>';
+    html += '</tr>';
+  });
+  if (sosItems.length === 0) {
+    html = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted);font-size:12px;">No items yet. Items will be auto-populated from your selected services.</td></tr>';
+  }
+  tbody.innerHTML = html;
+}
+
+function recalcSos() {
+  var weeks = parseInt(document.getElementById('sosPlanWeeks').value) || 52;
+  var budget = parseFloat(document.getElementById('sosPlanBudget').value) || 0;
+  var totalWeekly = 0;
+
+  sosItems.forEach(function(item) {
+    totalWeekly += (parseFloat(item.unitPrice) || 0) * (parseFloat(item.qtyWeek) || 0);
+  });
+
+  var totalPlan = totalWeekly * weeks;
+
+  document.getElementById('sosWeeklyTotal').textContent = fmtMoney(totalWeekly);
+  document.getElementById('sosPlanTotal').textContent = fmtMoney(totalPlan);
+
+  /* Budget bar */
+  var pct = budget > 0 ? Math.min((totalPlan / budget) * 100, 100) : 0;
+  var fill = document.getElementById('budgetFill');
+  fill.style.width = pct + '%';
+  fill.className = 'budget-progress-fill';
+  if (totalPlan > budget && budget > 0) fill.classList.add('over');
+  else if (pct > 80) fill.classList.add('warn');
+
+  document.getElementById('budgetUsed').textContent = fmtMoney(totalPlan) + ' used';
+  document.getElementById('budgetTotal').textContent = 'of ' + fmtMoney(budget) + ' budget';
+
+  var warn = document.getElementById('budgetWarning');
+  if (totalPlan > budget && budget > 0) {
+    warn.classList.add('show');
+    warn.querySelector('span').textContent = 'SOS total (' + fmtMoney(totalPlan) + ') exceeds plan budget (' + fmtMoney(budget) + ') by ' + fmtMoney(totalPlan - budget) + '!';
+  } else {
+    warn.classList.remove('show');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Build Review (Step 6)
+   ═══════════════════════════════════════════════════════ */
+function buildReview() {
+  var panel = document.getElementById('reviewPanel');
+  var services = getSelectedServices();
+  var totalWeekly = services.reduce(function(s, svc) { return s + svc.weeklyTotal; }, 0);
+  var weeks = parseInt(document.getElementById('sosPlanWeeks').value) || 52;
+  var totalAnnual = totalWeekly * weeks;
+
+  var clauses = [];
+  if (document.getElementById('clauseCancel').checked) clauses.push('Cancellation (48hr)');
+  if (document.getElementById('clauseTransport').checked) clauses.push('Transport');
+  if (document.getElementById('clauseMedication').checked) clauses.push('Medication');
+  if (document.getElementById('clauseRestrictive').checked) clauses.push('Restrictive Practices');
+  if (document.getElementById('clausePrivacy').checked) clauses.push('Privacy');
+  if (document.getElementById('clauseComplaints').checked) clauses.push('Complaints');
+  if (document.getElementById('clauseReview').checked) clauses.push('Review Period');
+
+  var html = '';
+
+  /* Participant Details */
+  html += '<div class="review-section"><h3>Participant Details</h3>';
+  html += reviewRow('Name', document.getElementById('wizName').value);
+  html += reviewRow('NDIS Number', document.getElementById('wizNdis').value);
+  html += reviewRow('Date of Birth', fmtDate(document.getElementById('wizDob').value));
+  html += reviewRow('Phone', document.getElementById('wizPhone').value || '-');
+  html += reviewRow('Email', document.getElementById('wizEmail').value || '-');
+  html += reviewRow('Address', document.getElementById('wizAddress').value || '-');
+  html += reviewRow('Plan Start', fmtDate(document.getElementById('wizPlanStart').value));
+  html += reviewRow('Plan End', fmtDate(document.getElementById('wizPlanEnd').value));
+  html += reviewRow('Support Coordinator', document.getElementById('wizCoordinator').value || '-');
+  html += reviewRow('Emergency Contact', document.getElementById('wizEmergency').value || '-');
+  html += '</div>';
+
+  /* Services & Costs */
+  html += '<div class="review-section"><h3>Services &amp; Costs</h3>';
+  services.forEach(function(s) {
+    html += '<div style="padding:10px;background:var(--card);border-radius:8px;margin-bottom:6px;">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+    html += '<div><strong>' + esc(s.name) + '</strong></div>';
+    html += '<div style="font-family:\'JetBrains Mono\',monospace;font-weight:700;color:var(--teal);">' + fmtMoney(s.weeklyTotal) + '/wk</div></div>';
+    html += '<div style="font-size:11px;color:var(--muted);margin-top:4px;">' + s.hours + ' hrs/wk @ ' + fmtMoney(s.rate) + '/hr (' + s.dayType + ')</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  /* Schedule of Supports Table */
+  html += '<div class="review-section"><h3>Schedule of Supports</h3>';
+  if (sosItems.length > 0) {
+    html += '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;">';
+    html += '<thead><tr style="border-bottom:1px solid var(--card-border);">';
+    html += '<th style="text-align:left;padding:8px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;">Category</th>';
+    html += '<th style="text-align:left;padding:8px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;">Description</th>';
+    html += '<th style="text-align:right;padding:8px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;">Unit $</th>';
+    html += '<th style="text-align:right;padding:8px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;">Qty/Wk</th>';
+    html += '<th style="text-align:right;padding:8px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;">Weekly</th>';
+    html += '<th style="text-align:right;padding:8px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;">Plan Total</th>';
+    html += '</tr></thead><tbody>';
+    var sosTotalWeekly = 0;
+    var sosTotalPlan = 0;
+    sosItems.forEach(function(it) {
+      var wk = (parseFloat(it.unitPrice) || 0) * (parseFloat(it.qtyWeek) || 0);
+      var pt = wk * weeks;
+      sosTotalWeekly += wk;
+      sosTotalPlan += pt;
+      html += '<tr style="border-bottom:1px solid var(--card-border);">';
+      html += '<td style="padding:8px;font-size:11px;">' + esc(it.category || '-') + '</td>';
+      html += '<td style="padding:8px;">' + esc(it.item || '-') + '</td>';
+      html += '<td style="padding:8px;text-align:right;font-family:\'JetBrains Mono\',monospace;">' + fmtMoney(it.unitPrice) + '</td>';
+      html += '<td style="padding:8px;text-align:right;font-family:\'JetBrains Mono\',monospace;">' + (it.qtyWeek || 0) + '</td>';
+      html += '<td style="padding:8px;text-align:right;font-family:\'JetBrains Mono\',monospace;color:var(--aqua);">' + fmtMoney(wk) + '</td>';
+      html += '<td style="padding:8px;text-align:right;font-family:\'JetBrains Mono\',monospace;">' + fmtMoney(pt) + '</td>';
+      html += '</tr>';
+    });
+    html += '<tr style="border-top:2px solid var(--card-border);font-weight:700;">';
+    html += '<td colspan="4" style="padding:8px;text-align:right;color:var(--muted);font-size:11px;">TOTALS</td>';
+    html += '<td style="padding:8px;text-align:right;font-family:\'JetBrains Mono\',monospace;color:var(--teal);">' + fmtMoney(sosTotalWeekly) + '</td>';
+    html += '<td style="padding:8px;text-align:right;font-family:\'JetBrains Mono\',monospace;color:var(--teal);">' + fmtMoney(sosTotalPlan) + '</td>';
+    html += '</tr></tbody></table></div>';
+  } else {
+    html += '<div style="font-size:12px;color:var(--muted);">No SOS items configured</div>';
+  }
+  html += '</div>';
+
+  /* Terms & Clauses */
+  html += '<div class="review-section"><h3>Terms &amp; Included Clauses</h3>';
+  html += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px;max-height:80px;overflow-y:auto;padding:8px;background:var(--card);border-radius:8px;line-height:1.6;">' + esc(document.getElementById('wizTermsText').value).substring(0, 300) + '...</div>';
+  if (clauses.length === 0) {
+    html += '<div style="font-size:12px;color:var(--muted);">No optional clauses selected</div>';
+  } else {
+    clauses.forEach(function(c) {
+      html += '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px;">';
+      html += '<span style="color:var(--green);font-weight:700;">&#10003;</span> ' + esc(c) + '</div>';
+    });
+  }
+  html += '</div>';
+
+  /* Total Costs */
+  html += '<div class="review-section"><h3>Cost Summary</h3>';
+  html += reviewRow('Total Weekly Cost', fmtMoney(totalWeekly), true);
+  html += reviewRow('Plan Period', weeks + ' weeks', false);
+  html += reviewRow('Total Plan Cost (estimated)', fmtMoney(totalAnnual), true);
+  var budget = parseFloat(document.getElementById('sosPlanBudget').value) || 0;
+  if (budget > 0) {
+    html += reviewRow('Plan Budget', fmtMoney(budget), true);
+    var remaining = budget - totalAnnual;
+    html += '<div class="review-row"><span class="rlabel">Remaining Budget</span><span class="rvalue mono" style="color:' + (remaining >= 0 ? 'var(--green)' : 'var(--error)') + ';">' + fmtMoney(remaining) + '</span></div>';
+  }
+  html += '</div>';
+
+  panel.innerHTML = html;
+}
+
+function reviewRow(label, value, isMono) {
+  return '<div class="review-row"><span class="rlabel">' + esc(label) + '</span><span class="rvalue' + (isMono ? ' mono' : '') + '">' + esc(value) + '</span></div>';
+}
+
+/* ═══════════════════════════════════════════════════════
+   Save / Generate Agreement (Step 7)
+   ═══════════════════════════════════════════════════════ */
+function buildAgreementPayload() {
+  var services = getSelectedServices();
+  var clauses = [];
+  if (document.getElementById('clauseCancel').checked) clauses.push('cancellation');
+  if (document.getElementById('clauseTransport').checked) clauses.push('transport');
+  if (document.getElementById('clauseMedication').checked) clauses.push('medication');
+  if (document.getElementById('clauseRestrictive').checked) clauses.push('restrictive_practices');
+  if (document.getElementById('clausePrivacy').checked) clauses.push('privacy');
+  if (document.getElementById('clauseComplaints').checked) clauses.push('complaints');
+  if (document.getElementById('clauseReview').checked) clauses.push('review_period');
+
+  return {
+    clientName: document.getElementById('wizName').value,
+    ndisNumber: document.getElementById('wizNdis').value,
+    dob: document.getElementById('wizDob').value,
+    phone: document.getElementById('wizPhone').value,
+    email: document.getElementById('wizEmail').value,
+    address: document.getElementById('wizAddress').value,
+    planStart: document.getElementById('wizPlanStart').value,
+    planEnd: document.getElementById('wizPlanEnd').value,
+    startDate: document.getElementById('wizPlanStart').value,
+    endDate: document.getElementById('wizPlanEnd').value,
+    coordinator: document.getElementById('wizCoordinator').value,
+    emergencyContact: document.getElementById('wizEmergency').value,
+    services: JSON.stringify(services),
+    termsText: document.getElementById('wizTermsText').value,
+    clauses: clauses,
+    status: 'Draft',
+    agreementDate: new Date().toISOString().split('T')[0]
+  };
+}
+
+function saveSosData() {
+  var clientName = document.getElementById('wizName').value;
+  var ndisNumber = document.getElementById('wizNdis').value;
+  var weeks = parseInt(document.getElementById('sosPlanWeeks').value) || 52;
+  var budget = parseFloat(document.getElementById('sosPlanBudget').value) || 0;
+
+  var payload = {
+    clientName: clientName,
+    ndisNumber: ndisNumber,
+    planWeeks: weeks,
+    planBudget: budget,
+    items: sosItems.filter(function(it) { return it.category && it.item; })
+  };
+
+  return fetch(API_BASE + '/api/sos', {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(payload)
+  }).then(function(r) { return r.json(); });
+}
+
+function saveAsDraft() {
+  var payload = buildAgreementPayload();
+  payload.status = 'Draft';
+
+  var btn = document.getElementById('btnSaveDraft');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Saving...';
+
+  /* Save agreement first, then SOS data */
+  fetch(API_BASE + '/api/agreements', {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(payload)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    savedAgreementId = data.id || data._id || null;
+    /* Also save SOS data */
+    return saveSosData().catch(function() { /* SOS save is best-effort */ });
+  })
+  .then(function() {
+    showToast('Agreement saved as draft', 'success');
+    var res = document.getElementById('genResult');
+    res.style.display = '';
+    res.innerHTML = '<div style="padding:16px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);border-radius:10px;color:var(--green);font-weight:600;">Draft saved successfully' + (savedAgreementId ? ' (ID: ' + savedAgreementId + ')' : '') + '</div>';
+    loadAgreements();
+  })
+  .catch(function(e) {
+    showToast('Failed to save: ' + e.message, 'error');
+  })
+  .finally(function() {
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save as Draft';
+  });
+}
+
+function generatePdf() {
+  var btn = document.getElementById('btnGenPdf');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Generating...';
+
+  /* Save first if not saved */
+  var saveProm;
+  if (!savedAgreementId) {
+    var payload = buildAgreementPayload();
+    saveProm = fetch(API_BASE + '/api/agreements', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify(payload)
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      savedAgreementId = data.id || data._id;
+      /* Also save SOS data */
+      return saveSosData().catch(function() {});
+    });
+  } else {
+    saveProm = Promise.resolve();
+  }
+
+  saveProm.then(function() {
+    if (!savedAgreementId) throw new Error('Failed to save agreement');
+    return fetch(API_BASE + '/api/agreements/' + savedAgreementId + '/pdf', { headers: authHeaders() });
+  })
+  .then(function(r) {
+    if (!r.ok) throw new Error('PDF generation failed');
+    return r.blob();
+  })
+  .then(function(blob) {
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = 'agreement-' + (document.getElementById('wizName').value || 'draft').replace(/\s+/g, '-') + '.pdf';
+    link.click();
+    URL.revokeObjectURL(url);
+    showToast('PDF generated and downloaded', 'success');
+    var res = document.getElementById('genResult');
+    res.style.display = '';
+    res.innerHTML = '<div style="padding:16px;background:rgba(0,180,216,.1);border:1px solid rgba(0,180,216,.25);border-radius:10px;color:var(--teal);font-weight:600;">PDF generated successfully!</div>';
+    loadAgreements();
+  })
+  .catch(function(e) {
+    showToast('PDF generation failed: ' + e.message, 'error');
+    var res = document.getElementById('genResult');
+    res.style.display = '';
+    res.innerHTML = '<div style="padding:16px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:10px;color:var(--error);font-weight:600;">Error: ' + esc(e.message) + '</div>';
+  })
+  .finally(function() {
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Generate PDF';
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   Init
+   ═══════════════════════════════════════════════════════ */
+(function init() {
+  loadClients().then(function() {
+    loadAgreements();
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,2415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Course Learning - LMS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --navy: #0B1D3A;
+  --surface: #0F2440;
+  --surface2: #162d50;
+  --royal: #2454A0;
+  --teal: #00B4D8;
+  --green: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --text: #E2E8F0;
+  --text-dim: #94A3B8;
+  --border: rgba(255,255,255,0.08);
+  --border-light: rgba(255,255,255,0.12);
+  --glass: rgba(15,36,64,0.85);
+  --radius: 10px;
+  --radius-lg: 14px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.5);
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --sidebar-width: 280px;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--navy);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--royal); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--teal); }
+
+/* ── Top Bar ─────────────────────────────────────────────── */
+.top-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+}
+
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  flex: 1;
+}
+
+.top-bar-left .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: var(--transition);
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(0,180,216,0.08);
+  border: 1px solid rgba(0,180,216,0.15);
+}
+
+.top-bar-left .back-link:hover {
+  background: rgba(0,180,216,0.15);
+  transform: translateX(-2px);
+}
+
+.top-bar-left .back-link svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+.course-title-area {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.course-title-area h1 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.course-title-area .course-code-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--teal);
+}
+
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.progress-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.progress-bar-top {
+  width: 140px;
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-top-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--royal), var(--teal));
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--teal);
+  white-space: nowrap;
+}
+
+.sidebar-toggle {
+  display: none;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-dim);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.sidebar-toggle:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+.sidebar-toggle svg { width: 20px; height: 20px; }
+
+/* ── Layout ──────────────────────────────────────────────── */
+.layout {
+  display: flex;
+  margin-top: 64px;
+  min-height: calc(100vh - 64px);
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  height: calc(100vh - 64px);
+  position: sticky;
+  top: 64px;
+  overflow-y: auto;
+  transition: var(--transition);
+  z-index: 50;
+}
+
+.sidebar-header {
+  padding: 20px 20px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-header h2 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+
+.sidebar-header .module-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--teal);
+}
+
+.module-list {
+  padding: 10px 0;
+}
+
+.module-nav-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: var(--transition);
+  border-left: 3px solid transparent;
+  position: relative;
+}
+
+.module-nav-item:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+.module-nav-item.active {
+  background: rgba(36,84,160,0.12);
+  border-left-color: var(--teal);
+}
+
+.module-nav-item.completed .module-status-icon {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+
+.module-nav-item.current .module-status-icon {
+  background: var(--royal);
+  border-color: var(--teal);
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(0,180,216,0.2);
+}
+
+.module-nav-item.locked .module-status-icon {
+  background: transparent;
+  border-color: var(--text-dim);
+  color: transparent;
+  opacity: 0.4;
+}
+
+.module-nav-item.locked {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.module-status-icon {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  transition: var(--transition);
+}
+
+.module-status-icon svg { width: 12px; height: 12px; }
+
+.module-nav-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.module-nav-info .module-nav-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.module-nav-info .module-nav-type {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.module-nav-info .module-nav-type svg { width: 12px; height: 12px; }
+
+/* Assessment nav item */
+.module-nav-item.assessment-nav {
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
+  padding-top: 16px;
+}
+
+.module-nav-item.assessment-nav .module-status-icon {
+  background: rgba(245,158,11,0.15);
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.module-nav-item.assessment-nav.unlocked .module-status-icon {
+  background: var(--warning);
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.2);
+}
+
+.module-nav-item.assessment-nav.passed .module-status-icon {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+
+/* ── Main Content ────────────────────────────────────────── */
+.main-content {
+  flex: 1;
+  padding: 32px 40px;
+  max-width: 900px;
+  min-width: 0;
+}
+
+/* Loading State */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-screen p {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+/* Error State */
+.error-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+  text-align: center;
+}
+
+.error-screen svg { width: 56px; height: 56px; color: var(--error); }
+.error-screen h2 { font-size: 20px; color: var(--text); }
+.error-screen p { font-size: 14px; color: var(--text-dim); max-width: 400px; }
+
+/* ── Module Content ──────────────────────────────────────── */
+.module-header {
+  margin-bottom: 28px;
+}
+
+.module-header .module-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--teal);
+  background: rgba(0,180,216,0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.module-header h2 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.module-header .module-type-label {
+  font-size: 13px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.module-header .module-type-label svg { width: 16px; height: 16px; }
+
+.module-body {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  margin-bottom: 24px;
+  line-height: 1.75;
+}
+
+.module-body p {
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.module-body p:last-child { margin-bottom: 0; }
+
+/* Video Embed */
+.video-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #000;
+  margin-bottom: 16px;
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Document Card */
+.document-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--surface2);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: var(--transition);
+  margin-bottom: 16px;
+}
+
+.document-card:hover {
+  border-color: var(--teal);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.document-card .doc-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  background: rgba(0,180,216,0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--teal);
+}
+
+.document-card .doc-icon svg { width: 24px; height: 24px; }
+
+.document-card .doc-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.document-card .doc-info h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.document-card .doc-info p {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 0;
+}
+
+.document-card .doc-download {
+  color: var(--teal);
+  flex-shrink: 0;
+}
+
+.document-card .doc-download svg { width: 20px; height: 20px; }
+
+/* Image */
+.module-image {
+  max-width: 100%;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  display: block;
+}
+
+/* ── Module Actions ──────────────────────────────────────── */
+.module-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 14px 24px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 0.2px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn svg { width: 18px; height: 18px; }
+
+.btn-complete {
+  background: var(--green);
+  color: #fff;
+  width: 100%;
+  box-shadow: 0 2px 12px rgba(16,185,129,0.25);
+}
+
+.btn-complete:hover:not(:disabled) {
+  background: #0ea572;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(16,185,129,0.35);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--royal), var(--teal));
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(0,180,216,0.25);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0,180,216,0.35);
+}
+
+.btn-warning {
+  background: var(--warning);
+  color: #000;
+}
+
+.btn-warning:hover:not(:disabled) {
+  background: #d97706;
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: var(--error);
+  color: #fff;
+}
+
+.btn-danger:hover:not(:disabled) { background: #dc2626; }
+
+.btn-ghost {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: rgba(255,255,255,0.1);
+  color: var(--text);
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-buttons .btn { flex: 1; }
+
+/* ── Assessment Section ──────────────────────────────────── */
+.assessment-container {
+  margin-top: 0;
+}
+
+.assessment-header {
+  text-align: center;
+  padding: 40px 20px;
+  margin-bottom: 32px;
+}
+
+.assessment-header svg {
+  width: 56px;
+  height: 56px;
+  color: var(--warning);
+  margin-bottom: 16px;
+}
+
+.assessment-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.assessment-header p {
+  font-size: 14px;
+  color: var(--text-dim);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.assessment-start-btn {
+  width: 100%;
+  max-width: 400px;
+  margin: 24px auto 0;
+  display: flex;
+}
+
+/* Question Card */
+.question-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  margin-bottom: 20px;
+  transition: var(--transition);
+}
+
+.question-card:hover {
+  border-color: rgba(255,255,255,0.12);
+}
+
+.question-card.answered {
+  border-color: rgba(0,180,216,0.3);
+}
+
+.question-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--teal);
+  background: rgba(0,180,216,0.1);
+  padding: 3px 10px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.question-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+/* Multiple Choice Options */
+.option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.option-item:hover {
+  background: rgba(0,0,0,0.3);
+  border-color: var(--border-light);
+}
+
+.option-item.selected {
+  background: rgba(36,84,160,0.15);
+  border-color: var(--royal);
+}
+
+.option-item input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--teal);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.option-item label {
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  flex: 1;
+  line-height: 1.4;
+}
+
+.option-letter {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.06);
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.option-item.selected .option-letter {
+  background: var(--royal);
+  color: #fff;
+}
+
+/* True/False Toggle Buttons */
+.tf-group {
+  display: flex;
+  gap: 12px;
+}
+
+.tf-btn {
+  flex: 1;
+  padding: 14px 20px;
+  background: rgba(0,0,0,0.2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+}
+
+.tf-btn:hover {
+  background: rgba(0,0,0,0.3);
+  border-color: var(--border-light);
+  color: var(--text);
+}
+
+.tf-btn.selected {
+  background: rgba(36,84,160,0.2);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+/* Assessment Progress */
+.assessment-progress {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 24px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 64px;
+  z-index: 10;
+  backdrop-filter: blur(20px);
+}
+
+.assessment-progress .progress-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.assessment-progress .progress-label span {
+  color: var(--teal);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.assessment-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  margin: 0 16px;
+  overflow: hidden;
+}
+
+.assessment-progress-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--royal), var(--teal));
+  transition: width 0.4s ease;
+}
+
+.submit-assessment-area {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.submit-assessment-area .btn {
+  min-width: 280px;
+  padding: 16px 32px;
+  font-size: 16px;
+}
+
+/* ── Results Section ─────────────────────────────────────── */
+.results-container {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.results-hero {
+  text-align: center;
+  padding: 40px 20px;
+  margin-bottom: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.results-hero.passed {
+  border-color: rgba(16,185,129,0.3);
+}
+
+.results-hero.passed::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--green), var(--teal));
+}
+
+.results-hero.failed {
+  border-color: rgba(239,68,68,0.3);
+}
+
+.results-hero.failed::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--error);
+}
+
+.result-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 10px 28px;
+  border-radius: 30px;
+  margin-bottom: 20px;
+}
+
+.result-badge.pass {
+  background: rgba(16,185,129,0.15);
+  color: var(--green);
+}
+
+.result-badge.fail {
+  background: rgba(239,68,68,0.15);
+  color: var(--error);
+}
+
+.result-badge svg { width: 24px; height: 24px; }
+
+.score-display {
+  margin-bottom: 20px;
+}
+
+.score-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.score-number.pass-score { color: var(--green); }
+.score-number.fail-score { color: var(--error); }
+
+.score-detail {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.score-detail span {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+}
+
+.result-message {
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.6;
+  max-width: 420px;
+  margin: 0 auto 24px;
+}
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.result-actions .btn { min-width: 280px; }
+
+.certificate-expiry {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 8px;
+}
+
+.certificate-expiry span {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--warning);
+}
+
+/* Confetti */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -10px;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* Answer Review */
+.answer-review {
+  margin-top: 32px;
+}
+
+.answer-review h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.review-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 12px;
+}
+
+.review-item.correct {
+  border-left: 4px solid var(--green);
+}
+
+.review-item.incorrect {
+  border-left: 4px solid var(--error);
+}
+
+.review-question {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.review-question .review-q-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--teal);
+  background: rgba(0,180,216,0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.review-answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.review-answer-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.review-answer-tag.your-answer {
+  background: rgba(239,68,68,0.1);
+  color: var(--error);
+}
+
+.review-answer-tag.your-answer.is-correct {
+  background: rgba(16,185,129,0.1);
+  color: var(--green);
+}
+
+.review-answer-tag.correct-answer {
+  background: rgba(16,185,129,0.1);
+  color: var(--green);
+}
+
+.review-answer-tag svg { width: 14px; height: 14px; }
+
+/* ── Toast Notification ──────────────────────────────────── */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 280px;
+}
+
+.toast.success { border-left: 4px solid var(--green); }
+.toast.error { border-left: 4px solid var(--error); }
+.toast.info { border-left: 4px solid var(--teal); }
+
+@keyframes toastIn { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateX(60px); } }
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .main-content { padding: 24px 24px; }
+}
+
+@media (max-width: 768px) {
+  .sidebar-toggle { display: flex; }
+
+  .sidebar {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    z-index: 200;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    top: 64px;
+    background: rgba(0,0,0,0.6);
+    z-index: 199;
+  }
+
+  .sidebar-overlay.open {
+    display: block;
+  }
+
+  .main-content {
+    padding: 20px 16px;
+    max-width: 100%;
+  }
+
+  .top-bar { padding: 0 12px; }
+
+  .top-bar-left .back-link span { display: none; }
+
+  .course-title-area h1 { font-size: 14px; }
+
+  .progress-bar-top { width: 80px; }
+
+  .module-body { padding: 20px; }
+
+  .module-header h2 { font-size: 20px; }
+
+  .nav-buttons { flex-direction: column; }
+
+  .tf-group { flex-direction: column; }
+
+  .assessment-progress {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .assessment-progress-bar { margin: 4px 0; }
+
+  .question-card { padding: 20px; }
+
+  .results-hero { padding: 28px 16px; }
+
+  .score-number { font-size: 42px; }
+
+  .result-actions .btn { min-width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .progress-summary { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<header class="top-bar">
+  <div class="top-bar-left">
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+    <a href="lms.html" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      <span>Back to My Training</span>
+    </a>
+    <div class="course-title-area">
+      <h1 id="courseTitle">Loading course...</h1>
+      <span class="course-code-badge" id="courseCode"></span>
+    </div>
+  </div>
+  <div class="top-bar-right">
+    <div class="progress-summary">
+      <div class="progress-bar-top">
+        <div class="progress-bar-top-fill" id="progressBarFill" style="width:0%"></div>
+      </div>
+      <span class="progress-text" id="progressText">0 / 0 modules</span>
+    </div>
+  </div>
+</header>
+
+<!-- Layout -->
+<div class="layout">
+  <!-- Sidebar Overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>Course Modules</h2>
+      <span class="module-count" id="sidebarModuleCount">0 modules</span>
+    </div>
+    <nav class="module-list" id="moduleList">
+      <!-- Populated dynamically -->
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content" id="mainContent">
+    <div class="loading-screen" id="loadingScreen">
+      <div class="spinner"></div>
+      <p>Loading course content...</p>
+    </div>
+  </main>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// =========================================================================
+//  Configuration
+// =========================================================================
+const API_BASE = window.location.origin + '/api';
+
+function getAuthHeaders() {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': token ? 'Bearer ' + token : ''
+  };
+}
+
+async function apiFetch(endpoint, options) {
+  options = options || {};
+  const url = API_BASE + endpoint;
+  const config = Object.assign({ headers: getAuthHeaders() }, options);
+  try {
+    const res = await fetch(url, config);
+    if (!res.ok) {
+      const err = await res.json().catch(function() { return { message: res.statusText }; });
+      throw new Error(err.message || 'HTTP ' + res.status);
+    }
+    if (res.status === 204) return null;
+    const ct = res.headers.get('content-type') || '';
+    if (ct.includes('application/json')) return await res.json();
+    return res;
+  } catch (error) {
+    console.error('API Error [' + endpoint + ']:', error);
+    throw error;
+  }
+}
+
+// =========================================================================
+//  Toast
+// =========================================================================
+function showToast(message, type) {
+  type = type || 'info';
+  var container = document.getElementById('toastContainer');
+  var toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  var icons = {
+    success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
+    error: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00B4D8" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+  };
+  toast.innerHTML = (icons[type] || icons.info) + '<span>' + escHtml(message) + '</span>';
+  container.appendChild(toast);
+  setTimeout(function() { if (toast.parentNode) toast.remove(); }, 3000);
+}
+
+// =========================================================================
+//  Utility
+// =========================================================================
+function escHtml(str) {
+  if (str == null) return '';
+  var div = document.createElement('div');
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+
+function getUrlParams() {
+  var params = new URLSearchParams(window.location.search);
+  return {
+    enrollmentId: params.get('enrollmentId') || params.get('enrollmentid') || '',
+    courseId: params.get('courseId') || params.get('courseid') || ''
+  };
+}
+
+function formatDate(d) {
+  if (!d) return '--';
+  try {
+    var date = new Date(d);
+    return date.toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' });
+  } catch(e) { return d; }
+}
+
+// =========================================================================
+//  State
+// =========================================================================
+var state = {
+  enrollmentId: '',
+  courseId: '',
+  course: null,
+  enrollment: null,
+  modules: [],
+  questions: [],
+  currentModuleIndex: 0,
+  completedModules: [],
+  view: 'module',          // 'module' | 'assessment' | 'results'
+  assessmentStarted: false,
+  assessmentAnswers: {},
+  assessmentResults: null,
+  submitting: false
+};
+
+function getProgressKey() {
+  return 'lms_progress_' + state.enrollmentId;
+}
+
+function loadLocalProgress() {
+  try {
+    var data = localStorage.getItem(getProgressKey());
+    if (data) {
+      state.completedModules = JSON.parse(data);
+      if (!Array.isArray(state.completedModules)) state.completedModules = [];
+    }
+  } catch(e) {
+    state.completedModules = [];
+  }
+}
+
+function saveLocalProgress() {
+  try {
+    localStorage.setItem(getProgressKey(), JSON.stringify(state.completedModules));
+  } catch(e) {}
+}
+
+function isModuleCompleted(moduleId) {
+  return state.completedModules.indexOf(String(moduleId)) !== -1;
+}
+
+function allModulesCompleted() {
+  return state.modules.every(function(m) {
+    return isModuleCompleted(m.id || m._id);
+  });
+}
+
+function getCompletedCount() {
+  return state.modules.filter(function(m) {
+    return isModuleCompleted(m.id || m._id);
+  }).length;
+}
+
+// =========================================================================
+//  Sidebar Toggle (Mobile)
+// =========================================================================
+function toggleSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+}
+
+// =========================================================================
+//  Initialization
+// =========================================================================
+async function init() {
+  var params = getUrlParams();
+  state.enrollmentId = params.enrollmentId;
+  state.courseId = params.courseId;
+
+  if (!state.enrollmentId || !state.courseId) {
+    showError('Missing Parameters', 'This page requires enrollmentId and courseId URL parameters.');
+    return;
+  }
+
+  var token = localStorage.getItem('token');
+  if (!token) {
+    showError('Authentication Required', 'Please log in to access course content.');
+    return;
+  }
+
+  try {
+    // Fetch course and enrollment data in parallel
+    var results = await Promise.all([
+      apiFetch('/courses/' + state.courseId),
+      apiFetch('/enrollments/' + state.enrollmentId)
+    ]);
+
+    var courseData = results[0];
+    var enrollmentData = results[1];
+
+    state.course = courseData;
+    state.enrollment = enrollmentData;
+    state.modules = courseData.modules || [];
+    state.questions = courseData.questions || [];
+
+    // Sort modules by order
+    state.modules.sort(function(a, b) {
+      return (a.order || 0) - (b.order || 0);
+    });
+
+    // Load local progress
+    loadLocalProgress();
+
+    // If enrollment status is "Assigned", update to "In Progress"
+    var enrollStatus = (enrollmentData.status || '').toLowerCase();
+    if (enrollStatus === 'assigned') {
+      try {
+        await apiFetch('/enrollments/' + state.enrollmentId, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            status: 'In Progress',
+            startedDate: new Date().toISOString(),
+            started_date: new Date().toISOString()
+          })
+        });
+        state.enrollment.status = 'In Progress';
+      } catch(e) {
+        console.warn('Could not update enrollment status:', e);
+      }
+    }
+
+    // Check if assessment was already passed
+    if (state.enrollment.score != null && state.enrollment.status === 'Completed') {
+      // Mark all modules completed in local state
+      state.modules.forEach(function(m) {
+        var mid = String(m.id || m._id);
+        if (state.completedModules.indexOf(mid) === -1) {
+          state.completedModules.push(mid);
+        }
+      });
+      saveLocalProgress();
+    }
+
+    // Set current module to first incomplete, or last
+    var firstIncomplete = state.modules.findIndex(function(m) {
+      return !isModuleCompleted(m.id || m._id);
+    });
+    state.currentModuleIndex = firstIncomplete >= 0 ? firstIncomplete : 0;
+
+    // Check enrollment's currentModule field
+    if (enrollmentData.currentModule || enrollmentData.current_module) {
+      var cmId = String(enrollmentData.currentModule || enrollmentData.current_module);
+      var cmIdx = state.modules.findIndex(function(m) {
+        return String(m.id || m._id) === cmId;
+      });
+      if (cmIdx >= 0) state.currentModuleIndex = cmIdx;
+    }
+
+    // Render everything
+    renderTopBar();
+    renderSidebar();
+    renderCurrentView();
+    hideLoading();
+
+  } catch(err) {
+    showError('Failed to Load Course', err.message || 'An unexpected error occurred. Please try again.');
+  }
+}
+
+function hideLoading() {
+  var el = document.getElementById('loadingScreen');
+  if (el) el.style.display = 'none';
+}
+
+function showError(title, message) {
+  var main = document.getElementById('mainContent');
+  main.innerHTML = '<div class="error-screen">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>' +
+    '</svg>' +
+    '<h2>' + escHtml(title) + '</h2>' +
+    '<p>' + escHtml(message) + '</p>' +
+    '<a href="lms.html" class="btn btn-primary" style="text-decoration:none; margin-top:12px;">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;">' +
+    '<polyline points="15 18 9 12 15 6"></polyline></svg> Back to Training</a>' +
+    '</div>';
+}
+
+// =========================================================================
+//  Top Bar
+// =========================================================================
+function renderTopBar() {
+  document.getElementById('courseTitle').textContent = state.course.name || 'Course';
+  document.getElementById('courseCode').textContent = state.course.code || '';
+  updateProgress();
+}
+
+function updateProgress() {
+  var completed = getCompletedCount();
+  var total = state.modules.length;
+  var pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  document.getElementById('progressBarFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = completed + ' / ' + total + ' modules';
+
+  // Update enrollment progress on server
+  updateEnrollmentProgress(pct);
+}
+
+async function updateEnrollmentProgress(pct) {
+  try {
+    var currentMod = state.modules[state.currentModuleIndex];
+    var payload = {
+      progressPct: pct,
+      progress: pct
+    };
+    if (currentMod) {
+      payload.currentModule = currentMod.id || currentMod._id;
+      payload.current_module = currentMod.id || currentMod._id;
+    }
+    await apiFetch('/enrollments/' + state.enrollmentId, {
+      method: 'PATCH',
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {
+    // Silently fail progress updates
+  }
+}
+
+// =========================================================================
+//  Sidebar
+// =========================================================================
+function renderSidebar() {
+  var total = state.modules.length;
+  document.getElementById('sidebarModuleCount').textContent = total + ' module' + (total !== 1 ? 's' : '') + (state.questions.length > 0 ? ' + Assessment' : '');
+
+  var html = '';
+  state.modules.forEach(function(mod, idx) {
+    var mid = String(mod.id || mod._id);
+    var completed = isModuleCompleted(mid);
+    var isCurrent = idx === state.currentModuleIndex && state.view === 'module';
+
+    var statusClass = '';
+    var iconHtml = '';
+    if (completed) {
+      statusClass = 'completed';
+      iconHtml = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+    } else if (isCurrent) {
+      statusClass = 'current';
+      iconHtml = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4"></circle></svg>';
+    } else {
+      statusClass = 'locked';
+      iconHtml = '';
+    }
+
+    var activeClass = isCurrent ? ' active' : '';
+    var typeIcon = getContentTypeIcon(mod.content_type || mod.contentType || 'Text');
+
+    html += '<div class="module-nav-item ' + statusClass + activeClass + '" onclick="navigateToModule(' + idx + ')" data-module-idx="' + idx + '">' +
+      '<div class="module-status-icon">' + iconHtml + '</div>' +
+      '<div class="module-nav-info">' +
+        '<div class="module-nav-title">' + escHtml(mod.title || 'Module ' + (idx + 1)) + '</div>' +
+        '<div class="module-nav-type">' + typeIcon + ' ' + escHtml(mod.content_type || mod.contentType || 'Text') + '</div>' +
+      '</div>' +
+    '</div>';
+  });
+
+  // Assessment nav item
+  if (state.questions.length > 0) {
+    var allDone = allModulesCompleted();
+    var assessmentActive = state.view === 'assessment' || state.view === 'results';
+    var assessmentPassed = state.enrollment && state.enrollment.status === 'Completed' && state.enrollment.score != null;
+
+    var aStatusClass = assessmentPassed ? 'passed' : (allDone ? 'unlocked' : '');
+    var aActiveClass = assessmentActive ? ' active' : '';
+    var aIconHtml = '';
+    if (assessmentPassed) {
+      aIconHtml = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+    } else {
+      aIconHtml = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>';
+    }
+
+    html += '<div class="module-nav-item assessment-nav ' + aStatusClass + aActiveClass + (allDone ? '' : ' locked') + '" onclick="' + (allDone ? 'navigateToAssessment()' : '') + '">' +
+      '<div class="module-status-icon">' + aIconHtml + '</div>' +
+      '<div class="module-nav-info">' +
+        '<div class="module-nav-title">Assessment</div>' +
+        '<div class="module-nav-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg> ' +
+          state.questions.length + ' question' + (state.questions.length !== 1 ? 's' : '') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  document.getElementById('moduleList').innerHTML = html;
+}
+
+function getContentTypeIcon(type) {
+  switch ((type || '').toLowerCase()) {
+    case 'video':
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
+    case 'document':
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
+    case 'image':
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
+    default:
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+  }
+}
+
+// =========================================================================
+//  Navigation
+// =========================================================================
+function navigateToModule(idx) {
+  if (idx < 0 || idx >= state.modules.length) return;
+  state.currentModuleIndex = idx;
+  state.view = 'module';
+  renderSidebar();
+  renderCurrentView();
+  closeMobileSidebar();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function navigateToAssessment() {
+  if (!allModulesCompleted()) {
+    showToast('Please complete all modules before taking the assessment.', 'error');
+    return;
+  }
+
+  // If already has results (completed), show results
+  if (state.assessmentResults) {
+    state.view = 'results';
+  } else if (state.enrollment && state.enrollment.status === 'Completed' && state.enrollment.score != null) {
+    state.view = 'results';
+    // Reconstruct minimal results
+    state.assessmentResults = {
+      passed: true,
+      score: state.enrollment.score,
+      total: state.questions.length,
+      correct: Math.round((state.enrollment.score / 100) * state.questions.length),
+      percentage: state.enrollment.score
+    };
+  } else {
+    state.view = 'assessment';
+    state.assessmentStarted = false;
+    state.assessmentAnswers = {};
+  }
+
+  renderSidebar();
+  renderCurrentView();
+  closeMobileSidebar();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function closeMobileSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+}
+
+// =========================================================================
+//  Render Current View
+// =========================================================================
+function renderCurrentView() {
+  var main = document.getElementById('mainContent');
+
+  switch (state.view) {
+    case 'module':
+      renderModuleContent(main);
+      break;
+    case 'assessment':
+      renderAssessment(main);
+      break;
+    case 'results':
+      renderResults(main);
+      break;
+  }
+}
+
+// =========================================================================
+//  Module Content Rendering
+// =========================================================================
+function renderModuleContent(container) {
+  var mod = state.modules[state.currentModuleIndex];
+  if (!mod) {
+    container.innerHTML = '<div class="error-screen"><h2>No modules found</h2><p>This course has no content modules.</p></div>';
+    return;
+  }
+
+  var mid = String(mod.id || mod._id);
+  var completed = isModuleCompleted(mid);
+  var contentType = (mod.content_type || mod.contentType || 'text').toLowerCase();
+  var contentBody = mod.content_body || mod.contentBody || mod.content || '';
+
+  var html = '';
+
+  // Module Header
+  html += '<div class="module-header">';
+  html += '<div class="module-badge">MODULE ' + (state.currentModuleIndex + 1) + ' OF ' + state.modules.length + '</div>';
+  html += '<h2>' + escHtml(mod.title || 'Module ' + (state.currentModuleIndex + 1)) + '</h2>';
+  html += '<div class="module-type-label">' + getContentTypeIcon(contentType) + ' ' + escHtml(capitalizeFirst(contentType)) + ' Content</div>';
+  html += '</div>';
+
+  // Module Body
+  html += '<div class="module-body">';
+  html += renderContentByType(contentType, contentBody);
+  html += '</div>';
+
+  // Actions
+  html += '<div class="module-actions">';
+
+  if (!completed) {
+    html += '<button class="btn btn-complete" onclick="markModuleComplete()">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
+      'Mark as Complete</button>';
+  } else {
+    html += '<div style="display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:var(--radius); color:var(--green); font-weight:600; font-size:14px;">' +
+      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
+      'Module Completed</div>';
+  }
+
+  // Navigation Buttons
+  html += '<div class="nav-buttons">';
+
+  if (state.currentModuleIndex > 0) {
+    html += '<button class="btn btn-ghost" onclick="navigateToModule(' + (state.currentModuleIndex - 1) + ')">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>' +
+      'Previous</button>';
+  }
+
+  if (state.currentModuleIndex < state.modules.length - 1) {
+    html += '<button class="btn btn-primary" onclick="navigateToModule(' + (state.currentModuleIndex + 1) + ')">' +
+      'Next Module' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>';
+  } else if (allModulesCompleted() && state.questions.length > 0) {
+    html += '<button class="btn btn-warning" onclick="navigateToAssessment()">' +
+      'Take Assessment' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></button>';
+  } else if (allModulesCompleted() && state.questions.length === 0) {
+    html += '<button class="btn btn-complete" onclick="finishCourseNoAssessment()">' +
+      'Complete Course' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></button>';
+  }
+
+  html += '</div>'; // nav-buttons
+  html += '</div>'; // module-actions
+
+  container.innerHTML = html;
+}
+
+function renderContentByType(type, body) {
+  if (!body) return '<p style="color:var(--text-dim); font-style:italic;">No content available for this module.</p>';
+
+  switch (type) {
+    case 'video':
+      return renderVideoContent(body);
+    case 'document':
+      return renderDocumentContent(body);
+    case 'image':
+      return renderImageContent(body);
+    case 'text':
+    default:
+      return renderTextContent(body);
+  }
+}
+
+function renderTextContent(body) {
+  // Convert newlines to paragraphs
+  var paragraphs = body.split(/\n\s*\n/);
+  if (paragraphs.length <= 1) {
+    paragraphs = body.split(/\n/);
+  }
+  return paragraphs
+    .map(function(p) { return p.trim(); })
+    .filter(function(p) { return p.length > 0; })
+    .map(function(p) { return '<p>' + escHtml(p) + '</p>'; })
+    .join('');
+}
+
+function renderVideoContent(body) {
+  var embedUrl = getVideoEmbedUrl(body.trim());
+  var html = '';
+  if (embedUrl) {
+    html += '<div class="video-container">' +
+      '<iframe src="' + escHtml(embedUrl) + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>' +
+      '</div>';
+  } else {
+    // Maybe the body contains text alongside a URL; try to extract
+    var urlMatch = body.match(/(https?:\/\/[^\s]+)/);
+    if (urlMatch) {
+      var embUrl = getVideoEmbedUrl(urlMatch[1]);
+      if (embUrl) {
+        html += '<div class="video-container">' +
+          '<iframe src="' + escHtml(embUrl) + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>' +
+          '</div>';
+      }
+      // Remaining text
+      var remaining = body.replace(urlMatch[0], '').trim();
+      if (remaining) {
+        html += renderTextContent(remaining);
+      }
+    } else {
+      html += renderTextContent(body);
+    }
+  }
+  return html;
+}
+
+function getVideoEmbedUrl(url) {
+  if (!url) return null;
+
+  // YouTube
+  var ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]+)/);
+  if (ytMatch) {
+    return 'https://www.youtube.com/embed/' + ytMatch[1];
+  }
+
+  // Vimeo
+  var vimeoMatch = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/);
+  if (vimeoMatch) {
+    return 'https://player.vimeo.com/video/' + vimeoMatch[1];
+  }
+
+  // Already an embed URL
+  if (url.indexOf('youtube.com/embed') !== -1 || url.indexOf('player.vimeo.com') !== -1) {
+    return url;
+  }
+
+  return null;
+}
+
+function renderDocumentContent(body) {
+  // Body could be a URL or filename
+  var url = body.trim();
+  var filename = url.split('/').pop() || 'Document';
+
+  // Try to get file extension
+  var ext = filename.split('.').pop().toUpperCase();
+  if (ext.length > 5) ext = 'FILE';
+
+  return '<a href="' + escHtml(url) + '" target="_blank" rel="noopener" class="document-card" download>' +
+    '<div class="doc-icon">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>' +
+    '<polyline points="14 2 14 8 20 8"></polyline></svg>' +
+    '</div>' +
+    '<div class="doc-info">' +
+    '<h4>' + escHtml(decodeURIComponent(filename)) + '</h4>' +
+    '<p>' + ext + ' Document - Click to download</p>' +
+    '</div>' +
+    '<div class="doc-download">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>' +
+    '<polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>' +
+    '</div>' +
+    '</a>';
+}
+
+function renderImageContent(body) {
+  var url = body.trim();
+  return '<img src="' + escHtml(url) + '" alt="Module Image" class="module-image" onerror="this.style.display=\'none\'">';
+}
+
+function capitalizeFirst(str) {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// =========================================================================
+//  Mark Module Complete
+// =========================================================================
+function markModuleComplete() {
+  var mod = state.modules[state.currentModuleIndex];
+  if (!mod) return;
+
+  var mid = String(mod.id || mod._id);
+  if (state.completedModules.indexOf(mid) === -1) {
+    state.completedModules.push(mid);
+    saveLocalProgress();
+  }
+
+  showToast('Module marked as complete!', 'success');
+  updateProgress();
+  renderSidebar();
+  renderCurrentView();
+}
+
+// =========================================================================
+//  Course completion without assessment
+// =========================================================================
+async function finishCourseNoAssessment() {
+  try {
+    await apiFetch('/enrollments/' + state.enrollmentId, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        status: 'Completed',
+        progress: 100,
+        progressPct: 100,
+        completedDate: new Date().toISOString(),
+        completed_date: new Date().toISOString()
+      })
+    });
+    state.enrollment.status = 'Completed';
+    showToast('Course completed! Well done!', 'success');
+    launchConfetti();
+    // After a moment, redirect
+    setTimeout(function() {
+      window.location.href = 'lms.html';
+    }, 3000);
+  } catch(e) {
+    showToast('Failed to complete course: ' + e.message, 'error');
+  }
+}
+
+// =========================================================================
+//  Assessment Rendering
+// =========================================================================
+function renderAssessment(container) {
+  if (!state.assessmentStarted) {
+    renderAssessmentLanding(container);
+  } else {
+    renderAssessmentQuestions(container);
+  }
+}
+
+function renderAssessmentLanding(container) {
+  var passMark = state.course.pass_mark || state.course.passMark || 80;
+  var html = '<div class="assessment-container">';
+  html += '<div class="assessment-header">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>' +
+    '<h2>Course Assessment</h2>' +
+    '<p>You have completed all modules. Now it is time to test your knowledge. ' +
+    'The assessment contains <strong>' + state.questions.length + ' question' + (state.questions.length !== 1 ? 's' : '') + '</strong>. ' +
+    'You need to score at least <strong>' + passMark + '%</strong> to pass.</p>' +
+    '<div class="assessment-start-btn">' +
+    '<button class="btn btn-warning" onclick="startAssessment()" style="width:100%;">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>' +
+    'Take Assessment</button>' +
+    '</div>' +
+    '</div>';
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function startAssessment() {
+  state.assessmentStarted = true;
+  state.assessmentAnswers = {};
+  renderCurrentView();
+}
+
+function renderAssessmentQuestions(container) {
+  var answeredCount = Object.keys(state.assessmentAnswers).length;
+  var totalQuestions = state.questions.length;
+  var progressPct = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
+
+  var html = '<div class="assessment-container">';
+
+  // Sticky progress
+  html += '<div class="assessment-progress">' +
+    '<div class="progress-label">Question <span>' + answeredCount + '</span> of <span>' + totalQuestions + '</span> answered</div>' +
+    '<div class="assessment-progress-bar"><div class="assessment-progress-bar-fill" style="width:' + progressPct + '%"></div></div>' +
+    '</div>';
+
+  // All questions
+  state.questions.forEach(function(q, idx) {
+    var qId = String(q.id || q._id || idx);
+    var answered = state.assessmentAnswers[qId] != null;
+    var qType = (q.question_type || q.questionType || 'Multiple Choice').toLowerCase();
+
+    html += '<div class="question-card' + (answered ? ' answered' : '') + '" id="question-' + qId + '">';
+    html += '<span class="question-number">Question ' + (idx + 1) + ' of ' + totalQuestions + '</span>';
+    html += '<div class="question-text">' + escHtml(q.question_text || q.questionText || q.text || '') + '</div>';
+
+    if (qType === 'true false' || qType === 'true_false' || qType === 'truefalse' || qType === 'boolean') {
+      html += renderTrueFalseQuestion(qId);
+    } else {
+      html += renderMultipleChoiceQuestion(q, qId);
+    }
+
+    html += '</div>';
+  });
+
+  // Submit
+  html += '<div class="submit-assessment-area">';
+  html += '<button class="btn btn-primary" onclick="submitAssessment()" id="submitAssessmentBtn"' +
+    (state.submitting ? ' disabled' : '') + '>' +
+    (state.submitting ? '<div class="spinner" style="width:18px;height:18px;border-width:2px;"></div> Submitting...' :
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> Submit Assessment') +
+    '</button>';
+
+  if (answeredCount < totalQuestions) {
+    html += '<p style="font-size:12px; color:var(--text-dim); margin-top:12px;">Please answer all questions before submitting. ' +
+      '<strong>' + (totalQuestions - answeredCount) + '</strong> remaining.</p>';
+  }
+
+  html += '</div>';
+  html += '</div>';
+
+  container.innerHTML = html;
+
+  // Re-apply selections (because innerHTML wipes event state)
+  Object.keys(state.assessmentAnswers).forEach(function(qId) {
+    highlightSelection(qId, state.assessmentAnswers[qId]);
+  });
+}
+
+function renderMultipleChoiceQuestion(q, qId) {
+  var options = q.options || [];
+  var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+  var html = '<div class="option-group">';
+
+  options.forEach(function(opt, i) {
+    var letter = letters[i] || String(i + 1);
+    var selected = state.assessmentAnswers[qId] === letter;
+    html += '<div class="option-item' + (selected ? ' selected' : '') + '" onclick="selectAnswer(\'' + qId + '\', \'' + letter + '\')">' +
+      '<input type="radio" name="q_' + qId + '" id="q_' + qId + '_' + letter + '" value="' + letter + '"' + (selected ? ' checked' : '') + '>' +
+      '<span class="option-letter">' + letter + '</span>' +
+      '<label for="q_' + qId + '_' + letter + '">' + escHtml(opt) + '</label>' +
+      '</div>';
+  });
+
+  html += '</div>';
+  return html;
+}
+
+function renderTrueFalseQuestion(qId) {
+  var selectedTrue = state.assessmentAnswers[qId] === 'True';
+  var selectedFalse = state.assessmentAnswers[qId] === 'False';
+
+  return '<div class="tf-group">' +
+    '<button class="tf-btn' + (selectedTrue ? ' selected' : '') + '" onclick="selectAnswer(\'' + qId + '\', \'True\')">' +
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline; vertical-align:middle; margin-right:6px;"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
+    'True</button>' +
+    '<button class="tf-btn' + (selectedFalse ? ' selected' : '') + '" onclick="selectAnswer(\'' + qId + '\', \'False\')">' +
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline; vertical-align:middle; margin-right:6px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
+    'False</button>' +
+    '</div>';
+}
+
+function selectAnswer(qId, value) {
+  state.assessmentAnswers[qId] = value;
+
+  // Re-render the assessment to update progress and highlights
+  renderCurrentView();
+
+  // Scroll back to the question that was just answered
+  var qEl = document.getElementById('question-' + qId);
+  if (qEl) {
+    // Only scroll if the element is not visible
+    var rect = qEl.getBoundingClientRect();
+    if (rect.top < 64 || rect.bottom > window.innerHeight) {
+      // Don't scroll, user is looking at it
+    }
+  }
+}
+
+function highlightSelection(qId, value) {
+  // MC options
+  var container = document.getElementById('question-' + qId);
+  if (!container) return;
+  container.querySelectorAll('.option-item').forEach(function(el) {
+    var radio = el.querySelector('input[type="radio"]');
+    if (radio && radio.value === value) {
+      el.classList.add('selected');
+      radio.checked = true;
+    }
+  });
+  // TF buttons
+  container.querySelectorAll('.tf-btn').forEach(function(el) {
+    if (el.textContent.trim() === value) {
+      el.classList.add('selected');
+    }
+  });
+}
+
+// =========================================================================
+//  Submit Assessment
+// =========================================================================
+async function submitAssessment() {
+  var totalQuestions = state.questions.length;
+  var answeredCount = Object.keys(state.assessmentAnswers).length;
+
+  if (answeredCount < totalQuestions) {
+    showToast('Please answer all ' + totalQuestions + ' questions before submitting.', 'error');
+    return;
+  }
+
+  if (state.submitting) return;
+  state.submitting = true;
+  renderCurrentView();
+
+  try {
+    // Build answers payload: { questionId: selectedAnswer }
+    var answers = {};
+    state.questions.forEach(function(q) {
+      var qId = String(q.id || q._id);
+      answers[qId] = state.assessmentAnswers[qId] || '';
+    });
+
+    var response = await apiFetch('/enrollments/' + state.enrollmentId + '/submit-assessment', {
+      method: 'POST',
+      body: JSON.stringify({ answers: answers })
+    });
+
+    // Process results
+    state.assessmentResults = response;
+    state.view = 'results';
+
+    // If response has score info, update enrollment state
+    if (response.passed || response.score != null) {
+      if (response.passed) {
+        state.enrollment.status = 'Completed';
+        state.enrollment.score = response.score || response.percentage;
+      }
+    }
+
+    renderSidebar();
+    renderCurrentView();
+
+    if (response.passed) {
+      launchConfetti();
+    }
+
+  } catch(err) {
+    showToast('Failed to submit assessment: ' + err.message, 'error');
+  } finally {
+    state.submitting = false;
+  }
+}
+
+// =========================================================================
+//  Results Rendering
+// =========================================================================
+function renderResults(container) {
+  var results = state.assessmentResults;
+  if (!results) {
+    container.innerHTML = '<div class="error-screen"><h2>No results available</h2></div>';
+    return;
+  }
+
+  var passed = results.passed;
+  var score = results.score || results.percentage || 0;
+  var correct = results.correct || results.correctCount || 0;
+  var total = results.total || results.totalQuestions || state.questions.length;
+  var percentage = results.percentage || results.score || (total > 0 ? Math.round((correct / total) * 100) : 0);
+  var passMark = state.course.pass_mark || state.course.passMark || 80;
+  var answers = results.answers || results.details || [];
+  var expiryDate = results.certificateExpiry || results.certificate_expiry || null;
+  var expiryMonths = state.course.expiry_months || state.course.expiryMonths || null;
+
+  // Calculate expiry if not provided
+  if (!expiryDate && expiryMonths && passed) {
+    var exp = new Date();
+    exp.setMonth(exp.getMonth() + expiryMonths);
+    expiryDate = exp.toISOString();
+  }
+
+  var html = '<div class="results-container">';
+
+  // Hero
+  html += '<div class="results-hero ' + (passed ? 'passed' : 'failed') + '">';
+
+  // Badge
+  if (passed) {
+    html += '<div class="result-badge pass">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>' +
+      'PASSED</div>';
+  } else {
+    html += '<div class="result-badge fail">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>' +
+      'DID NOT PASS</div>';
+  }
+
+  // Score
+  html += '<div class="score-display">';
+  html += '<div class="score-number ' + (passed ? 'pass-score' : 'fail-score') + '">' + percentage + '%</div>';
+  html += '<div class="score-detail"><span>' + correct + '</span> out of <span>' + total + '</span> correct</div>';
+  html += '</div>';
+
+  // Message
+  if (passed) {
+    html += '<p class="result-message" style="color:var(--green);">Congratulations! You have successfully passed the assessment for <strong>' + escHtml(state.course.name) + '</strong>.</p>';
+  } else {
+    html += '<p class="result-message" style="color:var(--error);">You scored below the pass mark of ' + passMark + '%. Please review the material and try again.</p>';
+  }
+
+  // Actions
+  html += '<div class="result-actions">';
+
+  if (passed) {
+    html += '<button class="btn btn-complete" onclick="downloadCertificate()">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>' +
+      '<polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>' +
+      'Download Certificate</button>';
+
+    if (expiryDate) {
+      html += '<p class="certificate-expiry">Certificate expires: <span>' + formatDate(expiryDate) + '</span></p>';
+    }
+
+    html += '<a href="lms.html" class="btn btn-primary" style="text-decoration:none;">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;">' +
+      '<polyline points="15 18 9 12 15 6"></polyline></svg>' +
+      'Back to My Training</a>';
+  } else {
+    html += '<button class="btn btn-warning" onclick="retakeAssessment()">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>' +
+      'Retake Assessment</button>';
+
+    html += '<a href="lms.html" class="btn btn-ghost" style="text-decoration:none;">Back to My Training</a>';
+  }
+
+  html += '</div>'; // result-actions
+  html += '</div>'; // results-hero
+
+  // Answer Review
+  if (answers.length > 0 || state.questions.length > 0) {
+    html += '<div class="answer-review">';
+    html += '<h3>Answer Review</h3>';
+
+    state.questions.forEach(function(q, idx) {
+      var qId = String(q.id || q._id);
+      var userAnswer = state.assessmentAnswers[qId] || '';
+      var correctAnswer = q.correct_answer || q.correctAnswer || '';
+
+      // Try to find detailed answer from server response
+      var detail = answers.find(function(a) {
+        return String(a.questionId || a.question_id || a.id) === qId;
+      });
+
+      if (detail) {
+        userAnswer = detail.userAnswer || detail.user_answer || userAnswer;
+        correctAnswer = detail.correctAnswer || detail.correct_answer || correctAnswer;
+      }
+
+      var isCorrect = userAnswer === correctAnswer;
+
+      html += '<div class="review-item ' + (isCorrect ? 'correct' : 'incorrect') + '">';
+      html += '<div class="review-question">' +
+        '<span class="review-q-num">Q' + (idx + 1) + '</span>' +
+        '<span>' + escHtml(q.question_text || q.questionText || q.text || '') + '</span>' +
+        '</div>';
+
+      html += '<div class="review-answers">';
+
+      // User's answer
+      html += '<span class="review-answer-tag your-answer' + (isCorrect ? ' is-correct' : '') + '">' +
+        (isCorrect ?
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' :
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>') +
+        'Your answer: ' + escHtml(getAnswerDisplayText(q, userAnswer)) +
+        '</span>';
+
+      // Correct answer (show if wrong)
+      if (!isCorrect) {
+        html += '<span class="review-answer-tag correct-answer">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
+          'Correct: ' + escHtml(getAnswerDisplayText(q, correctAnswer)) +
+          '</span>';
+      }
+
+      html += '</div>'; // review-answers
+      html += '</div>'; // review-item
+    });
+
+    html += '</div>'; // answer-review
+  }
+
+  html += '</div>'; // results-container
+  container.innerHTML = html;
+}
+
+function getAnswerDisplayText(question, answerKey) {
+  if (!answerKey) return 'No answer';
+
+  // If it's True/False
+  if (answerKey === 'True' || answerKey === 'False') return answerKey;
+
+  // If it's a letter (A, B, C, D), find option text
+  var options = question.options || [];
+  var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+  var letterIdx = letters.indexOf(answerKey);
+  if (letterIdx >= 0 && options[letterIdx]) {
+    return answerKey + ') ' + options[letterIdx];
+  }
+
+  return answerKey;
+}
+
+// =========================================================================
+//  Retake Assessment
+// =========================================================================
+function retakeAssessment() {
+  state.view = 'assessment';
+  state.assessmentStarted = false;
+  state.assessmentAnswers = {};
+  state.assessmentResults = null;
+  state.submitting = false;
+  renderSidebar();
+  renderCurrentView();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// =========================================================================
+//  Download Certificate
+// =========================================================================
+async function downloadCertificate() {
+  try {
+    showToast('Downloading certificate...', 'info');
+    var res = await fetch(API_BASE + '/enrollments/' + state.enrollmentId + '/certificate', {
+      headers: {
+        'Authorization': 'Bearer ' + (localStorage.getItem('token') || '')
+      }
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to download certificate (HTTP ' + res.status + ')');
+    }
+
+    var blob = await res.blob();
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = (state.course.name || 'certificate').replace(/[^a-zA-Z0-9]/g, '_') + '_certificate.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Certificate downloaded!', 'success');
+  } catch(err) {
+    showToast('Certificate download failed: ' + err.message, 'error');
+  }
+}
+
+// =========================================================================
+//  Confetti
+// =========================================================================
+function launchConfetti() {
+  var container = document.createElement('div');
+  container.className = 'confetti-container';
+  document.body.appendChild(container);
+
+  var colors = ['#10B981', '#00B4D8', '#2454A0', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#fff'];
+  var shapes = ['square', 'circle'];
+
+  for (var i = 0; i < 100; i++) {
+    (function(index) {
+      setTimeout(function() {
+        var piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        var color = colors[Math.floor(Math.random() * colors.length)];
+        var shape = shapes[Math.floor(Math.random() * shapes.length)];
+        var size = Math.random() * 8 + 6;
+        var leftPos = Math.random() * 100;
+        var duration = Math.random() * 2 + 2;
+        var delay = Math.random() * 0.5;
+
+        piece.style.left = leftPos + '%';
+        piece.style.width = size + 'px';
+        piece.style.height = size + 'px';
+        piece.style.background = color;
+        piece.style.borderRadius = shape === 'circle' ? '50%' : '2px';
+        piece.style.animationDuration = duration + 's';
+        piece.style.animationDelay = delay + 's';
+        piece.style.opacity = '1';
+
+        container.appendChild(piece);
+      }, index * 20);
+    })(i);
+  }
+
+  // Remove after animation
+  setTimeout(function() {
+    if (container.parentNode) container.remove();
+  }, 5000);
+}
+
+// =========================================================================
+//  Keyboard Shortcuts
+// =========================================================================
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeMobileSidebar();
+  }
+
+  // Arrow keys for module navigation (only if not in assessment)
+  if (state.view === 'module' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    if (e.key === 'ArrowLeft' && state.currentModuleIndex > 0) {
+      navigateToModule(state.currentModuleIndex - 1);
+    } else if (e.key === 'ArrowRight' && state.currentModuleIndex < state.modules.length - 1) {
+      navigateToModule(state.currentModuleIndex + 1);
+    }
+  }
+});
+
+// =========================================================================
+//  Init on DOM ready
+// =========================================================================
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

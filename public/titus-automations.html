@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Titus — Automations</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #181c26;
+    --surface2: #1e2433;
+    --surface3: #252b3b;
+    --border: #2a3147;
+    --border2: #333d57;
+    --accent: #4f7ef8;
+    --accent2: #6b95ff;
+    --accent-glow: rgba(79,126,248,0.15);
+    --green: #22c984;
+    --green-bg: rgba(34,201,132,0.1);
+    --amber: #f5a623;
+    --amber-bg: rgba(245,166,35,0.1);
+    --red: #f05252;
+    --red-bg: rgba(240,82,82,0.1);
+    --purple: #a78bfa;
+    --purple-bg: rgba(167,139,250,0.1);
+    --text: #e8ecf5;
+    --text2: #8b95b0;
+    --text3: #5a6380;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    padding: 28px 32px 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .page-title-block h1 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+  }
+
+  .page-title-block p {
+    font-size: 13px;
+    color: var(--text2);
+    margin-top: 3px;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(79,126,248,0.35); }
+
+  .btn-ghost {
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--surface3); color: var(--text); border-color: var(--border2); }
+
+  /* ── STATS BAR ── */
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    padding: 20px 32px;
+  }
+
+  .stat-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .stat-chip .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  .stat-chip strong { color: var(--text); font-weight: 600; }
+
+  /* ── LAYOUT ── */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 0;
+    height: calc(100vh - 130px);
+  }
+
+  /* ── AUTOMATIONS LIST ── */
+  .automations-panel {
+    padding: 0 0 0 32px;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    padding-right: 24px;
+  }
+
+  .automations-panel::-webkit-scrollbar { width: 4px; }
+  .automations-panel::-webkit-scrollbar-track { background: transparent; }
+  .automations-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 16px 0 8px;
+  }
+
+  .automation-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .automation-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: transparent;
+    transition: background 0.15s;
+  }
+
+  .automation-card:hover {
+    border-color: var(--border2);
+    background: var(--surface2);
+  }
+
+  .automation-card.active {
+    border-color: var(--accent);
+    background: var(--surface2);
+    box-shadow: 0 0 0 1px var(--accent), 0 4px 24px rgba(79,126,248,0.1);
+  }
+
+  .automation-card.active::before { background: var(--accent); }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .card-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .card-info h3 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-info p {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 100px;
+  }
+
+  .tag-green { background: var(--green-bg); color: var(--green); }
+  .tag-amber { background: var(--amber-bg); color: var(--amber); }
+  .tag-red { background: var(--red-bg); color: var(--red); }
+  .tag-purple { background: var(--purple-bg); color: var(--purple); }
+  .tag-blue { background: var(--accent-glow); color: var(--accent2); }
+
+  .card-runs {
+    font-size: 11px;
+    color: var(--text3);
+    margin-left: auto;
+  }
+
+  /* Toggle Switch */
+  .toggle-wrap {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .toggle {
+    width: 36px;
+    height: 20px;
+    background: var(--surface3);
+    border-radius: 100px;
+    border: 1px solid var(--border2);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .toggle.on { background: var(--accent); border-color: var(--accent); }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+
+  .toggle.on::after { transform: translateX(16px); }
+
+  /* ── BUILDER PANEL ── */
+  .builder-panel {
+    padding: 0 32px 32px;
+    overflow-y: auto;
+    background: var(--bg);
+  }
+
+  .builder-panel::-webkit-scrollbar { width: 4px; }
+  .builder-panel::-webkit-scrollbar-track { background: transparent; }
+  .builder-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+  .builder-header {
+    padding: 16px 0 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .builder-header h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .builder-header span {
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  /* Builder Sections */
+  .builder-section {
+    margin-bottom: 16px;
+  }
+
+  .builder-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .builder-section-label .step-num {
+    width: 18px;
+    height: 18px;
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: var(--text2);
+    font-weight: 700;
+  }
+
+  .builder-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+
+  .field-row {
+    margin-bottom: 14px;
+  }
+
+  .field-row:last-child { margin-bottom: 0; }
+
+  .field-label {
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+
+  .field-select, .field-input, .field-textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+  }
+
+  .field-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235a6380' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; cursor: pointer; }
+
+  .field-select:focus, .field-input:focus, .field-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .field-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+  /* Channel buttons */
+  .channel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .channel-btn {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text2);
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .channel-btn:hover { border-color: var(--border2); color: var(--text); }
+
+  .channel-btn.selected {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+    color: var(--accent2);
+  }
+
+  .channel-icon { font-size: 15px; }
+
+  /* Connector line */
+  .connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 0;
+    position: relative;
+  }
+
+  .connector::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .connector-label {
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    border-radius: 100px;
+    padding: 3px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text3);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Message preview */
+  .msg-preview {
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    margin-top: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  .msg-preview .var-token {
+    background: var(--accent-glow);
+    color: var(--accent2);
+    border-radius: 3px;
+    padding: 1px 4px;
+    font-size: 10px;
+  }
+
+  /* Save button */
+  .builder-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .btn-save {
+    flex: 1;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-save:hover { background: var(--accent2); box-shadow: 0 4px 16px rgba(79,126,248,0.3); }
+
+  .btn-test {
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 11px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn-test:hover { background: var(--surface3); color: var(--text); }
+
+  /* ── LOG PANEL ── */
+  .log-section {
+    margin-top: 16px;
+  }
+
+  .log-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+
+  .log-entry:last-child { border-bottom: none; }
+
+  .log-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+
+  .log-info { flex: 1; }
+  .log-name { font-weight: 500; color: var(--text); }
+  .log-detail { color: var(--text2); margin-top: 1px; }
+  .log-time { color: var(--text3); font-size: 11px; white-space: nowrap; }
+
+  /* Empty state */
+  .builder-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60%;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .builder-empty-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .builder-empty h3 { font-size: 15px; font-weight: 500; }
+  .builder-empty p { font-size: 12px; color: var(--text2); max-width: 200px; line-height: 1.5; }
+
+  /* Modal overlay */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 14px;
+    width: 480px;
+    max-width: 95vw;
+    padding: 28px;
+    animation: modalIn 0.2s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal h3 { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+  .modal p { font-size: 13px; color: var(--text2); margin-bottom: 20px; line-height: 1.5; }
+
+  .modal-field { margin-bottom: 14px; }
+  .modal-field label { font-size: 11px; color: var(--text3); font-weight: 500; display: block; margin-bottom: 5px; }
+
+  .modal-actions { display: flex; gap: 8px; margin-top: 20px; }
+
+  /* Template cards in modal */
+  .template-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .template-card {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .template-card:hover { border-color: var(--accent); background: var(--surface3); }
+  .template-card.selected { border-color: var(--accent); background: var(--accent-glow); }
+
+  .template-card .t-icon { font-size: 20px; margin-bottom: 6px; }
+  .template-card .t-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .template-card .t-desc { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* Scrollbar on modal */
+  .modal::-webkit-scrollbar { width: 4px; }
+
+</style>
+</head>
+<body>
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+  <div class="page-title-block">
+    <h1>⚡ Automations</h1>
+    <p>Configure automated workflows and notifications — Super Admin only</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="openLogModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Activity Log
+    </button>
+    <button class="btn btn-primary" onclick="openNewModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Automation
+    </button>
+  </div>
+</div>
+
+<!-- ── STATS BAR ── -->
+<div class="stats-row">
+  <div class="stat-chip"><div class="dot" style="background:var(--green)"></div><strong>5</strong> Active</div>
+  <div class="stat-chip"><div class="dot" style="background:var(--text3)"></div><strong>2</strong> Inactive</div>
+  <div class="stat-chip"><div class="dot" style="background:var(--accent)"></div><strong>47</strong> Triggered this month</div>
+</div>
+
+<!-- ── MAIN LAYOUT ── -->
+<div class="main-layout">
+
+  <!-- AUTOMATIONS LIST -->
+  <div class="automations-panel">
+
+    <div class="section-label">Recruitment</div>
+
+    <!-- Card 1 -->
+    <div class="automation-card active" onclick="selectCard(this, 'phone-interview')">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-icon" style="background:var(--purple-bg)">📞</div>
+          <div class="card-info">
+            <h3>Phone Interview Invitation</h3>
+            <p>When stage → Phone Interview</p>
+          </div>
+        </div>
+        <div class="toggle-wrap">
+          <div class="toggle on" onclick="toggleSwitch(event, this)"></div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span class="tag tag-green">Active</span>
+        <span class="tag tag-blue">SMS + Email</span>
+        <span class="card-runs">12 runs this month</span>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="automation-card" onclick="selectCard(this, 'registration')">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-icon" style="background:var(--green-bg)">📋</div>
+          <div class="card-info">
+            <h3>Complete Registration Form</h3>
+            <p>When stage → Registration</p>
+          </div>
+        </div>
+        <div class="toggle-wrap">
+          <div class="toggle on" onclick="toggleSwitch(event, this)"></div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span class="tag tag-green">Active</span>
+        <span class="tag tag-blue">SMS</span>
+        <span class="card-runs">18 runs this month</span>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="automation-card" onclick="selectCard(this, 'in-person')">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-icon" style="background:var(--amber-bg)">🏢</div>
+          <div class="card-info">
+            <h3>In-Person Interview Invite</h3>
+            <p>When stage → In-Person Interview</p>
+          </div>
+        </div>
+        <div class="toggle-wrap">
+          <div class="toggle on" onclick="toggleSwitch(event, this)"></div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span class="tag tag-green">Active</span>
+        <span class="tag tag-blue">Email</span>
+        <span class="card-runs">8 runs this month</span>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="automation-card" onclick="selectCard(this, 'unsuccessful')">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-icon" style="background:var(--red-bg)">❌</div>
+          <div class="card-info">
+            <h3>Unsuccessful Notification</h3>
+            <p>When stage → Unsuccessful</p>
+          </div>
+        </div>
+        <div class="toggle-wrap">
+          <div class="toggle on" onclick="toggleSwitch(event, this)"></div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span class="tag tag-green">Active</span>
+        <span class="tag tag-blue">SMS + Email</span>
+        <span class="card-runs">5 runs this month</span>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="automation-card" onclick="selectCard(this, 'offer')">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-icon" style="background:var(--accent-glow)">🎉</div>
+          <div class="card-info">
+            <h3>Offer Extended</h3>
+            <p>When stage → Offer Made</p>
+          </div>
+        </div>
+        <div class="toggle-wrap">
+          <div class="toggle on" onclick="toggleSwitch(event, this)"></div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span class="tag tag-green">Active</span>
+        <span class="tag tag-blue">SMS + Email</span>
+        <span class="card-runs">4 runs this month</span>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:8px">Client & NDIS</div>
+
+    <!-- Card 6 -->
+    <div class="automation-card" onclick="selectCard(this, 'plan-expiry')">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-icon" style="background:var(--amber-bg)">📅</div>
+          <div class="card-info">
+            <h3>NDIS Plan Expiry Reminder</h3>
+            <p>30 days before plan end date</p>
+          </div>
+        </div>
+        <div class="toggle-wrap">
+          <div class="toggle" onclick="toggleSwitch(event, this)"></div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span class="tag tag-amber">Inactive</span>
+        <span class="tag tag-blue">Email</span>
+        <span class="card-runs">0 runs this month</span>
+      </div>
+    </div>
+
+    <!-- Card 7 -->
+    <div class="automation-card" onclick="selectCard(this, 'budget-low')">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-icon" style="background:var(--red-bg)">💸</div>
+          <div class="card-info">
+            <h3>Client Budget Low Alert</h3>
+            <p>When budget drops below 20%</p>
+          </div>
+        </div>
+        <div class="toggle-wrap">
+          <div class="toggle" onclick="toggleSwitch(event, this)"></div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span class="tag tag-amber">Inactive</span>
+        <span class="tag tag-blue">SMS</span>
+        <span class="card-runs">0 runs this month</span>
+      </div>
+    </div>
+
+    <div style="height:32px"></div>
+
+  </div>
+
+  <!-- ── BUILDER PANEL ── -->
+  <div class="builder-panel" id="builderPanel">
+
+    <!-- Default: Phone Interview selected -->
+    <div id="builderContent">
+      <div class="builder-header">
+        <div>
+          <h2>📞 Phone Interview Invitation</h2>
+          <span>Recruitment · Last edited 2 days ago</span>
+        </div>
+        <div class="toggle on" onclick="toggleSwitch(event, this)" style="margin-top:2px"></div>
+      </div>
+
+      <!-- TRIGGER -->
+      <div class="builder-section">
+        <div class="builder-section-label"><span class="step-num">1</span> Trigger</div>
+        <div class="builder-block">
+          <div class="field-row">
+            <div class="field-label">MODULE</div>
+            <select class="field-select">
+              <option>HR / Recruitment</option>
+              <option>Contacts</option>
+              <option>Client Budget</option>
+              <option>Rosters</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field-label">TRIGGER EVENT</div>
+            <select class="field-select">
+              <option>Stage changes to...</option>
+              <option>Record created</option>
+              <option>Field value changes</option>
+              <option>Scheduled (date-based)</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field-label">STAGE VALUE</div>
+            <select class="field-select">
+              <option selected>Phone Interview</option>
+              <option>Registration Form</option>
+              <option>In-Person Interview</option>
+              <option>Offer Made</option>
+              <option>Unsuccessful</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector"><span class="connector-label">then</span></div>
+
+      <!-- CONDITION -->
+      <div class="builder-section">
+        <div class="builder-section-label"><span class="step-num">2</span> Condition (Optional)</div>
+        <div class="builder-block">
+          <div class="field-row">
+            <div class="field-label">ONLY RUN IF</div>
+            <select class="field-select">
+              <option>No condition — always run</option>
+              <option>Candidate has email</option>
+              <option>Candidate has mobile</option>
+              <option>Source is Indeed / Seek</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector"><span class="connector-label">send</span></div>
+
+      <!-- ACTION -->
+      <div class="builder-section">
+        <div class="builder-section-label"><span class="step-num">3</span> Action</div>
+        <div class="builder-block">
+          <div class="field-row">
+            <div class="field-label">NOTIFICATION CHANNEL</div>
+            <div class="channel-grid">
+              <button class="channel-btn selected">
+                <span class="channel-icon">💬</span> SMS (Twilio)
+              </button>
+              <button class="channel-btn selected">
+                <span class="channel-icon">✉️</span> Email
+              </button>
+            </div>
+          </div>
+          <div class="field-row" style="margin-top:12px">
+            <div class="field-label">DELAY BEFORE SENDING</div>
+            <select class="field-select">
+              <option>Immediately</option>
+              <option>After 30 minutes</option>
+              <option>After 1 hour</option>
+              <option>Next business day (9am)</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field-label">SMS MESSAGE</div>
+            <textarea class="field-textarea">Hi {{first_name}}, thanks for applying to Delta Community Support! We'd love to invite you to a phone interview. A team member will be in touch within 24 hours to schedule a convenient time. 😊</textarea>
+            <div class="msg-preview">
+              Preview: Hi <span class="var-token">{{first_name}}</span>, thanks for applying to Delta Community Support! We'd love to invite you to a phone interview...
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-label">EMAIL SUBJECT</div>
+            <input type="text" class="field-input" value="Phone Interview Invitation — Delta Community Support">
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="builder-actions">
+        <button class="btn-test">▶ Test Run</button>
+        <button class="btn-save">Save Automation</button>
+      </div>
+
+      <!-- LOG -->
+      <div class="log-section">
+        <div class="section-label" style="padding-top:20px">Recent Activity</div>
+        <div class="builder-block">
+          <div class="log-entry">
+            <div class="log-dot" style="background:var(--green)"></div>
+            <div class="log-info">
+              <div class="log-name">Sarah M. — SMS + Email sent</div>
+              <div class="log-detail">Stage changed to Phone Interview</div>
+            </div>
+            <div class="log-time">2h ago</div>
+          </div>
+          <div class="log-entry">
+            <div class="log-dot" style="background:var(--green)"></div>
+            <div class="log-info">
+              <div class="log-name">James T. — SMS + Email sent</div>
+              <div class="log-detail">Stage changed to Phone Interview</div>
+            </div>
+            <div class="log-time">Yesterday</div>
+          </div>
+          <div class="log-entry">
+            <div class="log-dot" style="background:var(--red)"></div>
+            <div class="log-info">
+              <div class="log-name">Anna K. — SMS failed</div>
+              <div class="log-detail">No mobile number on file — email only sent</div>
+            </div>
+            <div class="log-time">3 days ago</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── NEW AUTOMATION MODAL ── -->
+<div class="modal-overlay" id="newModal" onclick="closeModal('newModal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>New Automation</h3>
+    <p>Start from a template or build from scratch.</p>
+
+    <div class="template-grid">
+      <div class="template-card selected" onclick="selectTemplate(this)">
+        <div class="t-icon">🔁</div>
+        <div class="t-name">Stage Change</div>
+        <div class="t-desc">Trigger when a record moves to a new stage</div>
+      </div>
+      <div class="template-card" onclick="selectTemplate(this)">
+        <div class="t-icon">📅</div>
+        <div class="t-name">Date-Based</div>
+        <div class="t-desc">Trigger X days before or after a date field</div>
+      </div>
+      <div class="template-card" onclick="selectTemplate(this)">
+        <div class="t-icon">📝</div>
+        <div class="t-name">Field Change</div>
+        <div class="t-desc">Trigger when a specific field value changes</div>
+      </div>
+      <div class="template-card" onclick="selectTemplate(this)">
+        <div class="t-icon">✨</div>
+        <div class="t-name">From Scratch</div>
+        <div class="t-desc">Build a custom automation step by step</div>
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label>AUTOMATION NAME</label>
+      <input type="text" class="field-input" placeholder="e.g. Send offer letter when stage = Offer Made">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('newModal')">Cancel</button>
+      <button class="btn btn-primary" style="flex:1" onclick="closeModal('newModal')">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ACTIVITY LOG MODAL ── -->
+<div class="modal-overlay" id="logModal" onclick="closeModal('logModal')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-height:85vh;overflow-y:auto">
+    <h3>Automation Activity Log</h3>
+    <p>All automation triggers across the system.</p>
+
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <select class="field-select" style="flex:1">
+        <option>All automations</option>
+        <option>Phone Interview Invitation</option>
+        <option>Registration Form</option>
+        <option>In-Person Interview</option>
+      </select>
+      <select class="field-select" style="width:130px">
+        <option>Last 30 days</option>
+        <option>Last 7 days</option>
+        <option>All time</option>
+      </select>
+    </div>
+
+    <div>
+      <div class="log-entry"><div class="log-dot" style="background:var(--green)"></div><div class="log-info"><div class="log-name">Phone Interview — Sarah M.</div><div class="log-detail">SMS + Email sent · Recruitment</div></div><div class="log-time">2h ago</div></div>
+      <div class="log-entry"><div class="log-dot" style="background:var(--green)"></div><div class="log-info"><div class="log-name">Registration Form — Lia K.</div><div class="log-detail">SMS sent · Recruitment</div></div><div class="log-time">5h ago</div></div>
+      <div class="log-entry"><div class="log-dot" style="background:var(--green)"></div><div class="log-info"><div class="log-name">Unsuccessful — Peter H.</div><div class="log-detail">SMS + Email sent · Recruitment</div></div><div class="log-time">Yesterday</div></div>
+      <div class="log-entry"><div class="log-dot" style="background:var(--red)"></div><div class="log-info"><div class="log-name">Phone Interview — Anna K.</div><div class="log-detail">SMS failed — no mobile on file</div></div><div class="log-time">3 days ago</div></div>
+      <div class="log-entry"><div class="log-dot" style="background:var(--green)"></div><div class="log-info"><div class="log-name">In-Person Interview — Tom R.</div><div class="log-detail">Email sent · Recruitment</div></div><div class="log-time">4 days ago</div></div>
+      <div class="log-entry"><div class="log-dot" style="background:var(--green)"></div><div class="log-info"><div class="log-name">Offer Extended — Maria S.</div><div class="log-detail">SMS + Email sent · Recruitment</div></div><div class="log-time">5 days ago</div></div>
+    </div>
+
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('logModal')">Close</button>
+      <button class="btn btn-primary" style="flex:1">Export CSV</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function selectCard(el, id) {
+    document.querySelectorAll('.automation-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function toggleSwitch(e, el) {
+    e.stopPropagation();
+    el.classList.toggle('on');
+  }
+
+  function openNewModal() {
+    document.getElementById('newModal').classList.add('open');
+  }
+
+  function openLogModal() {
+    document.getElementById('logModal').classList.add('open');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+
+  function selectTemplate(el) {
+    document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  // Channel button toggle
+  document.querySelectorAll('.channel-btn').forEach(btn => {
+    btn.addEventListener('click', () => btn.classList.toggle('selected'));
+  });
+</script>
+
+</body>
+</html>

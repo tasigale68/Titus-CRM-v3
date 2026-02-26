@@ -1,0 +1,19 @@
+{
+  "name": "DCS Support Worker",
+  "short_name": "DCS Worker",
+  "description": "Delta Community Support — Support Worker Portal",
+  "start_url": "/support-worker.html",
+  "display": "standalone",
+  "background_color": "#0B1D3A",
+  "theme_color": "#0B1D3A",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%230B1D3A'/><text x='96' y='120' font-size='100' text-anchor='middle' fill='%2300B4D8'>D</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

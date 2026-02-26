@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Participant Portal — Delta Community Support</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+<style>
+:root {
+  --navy: #0B1D3A;
+  --navy-light: #122B52;
+  --teal: #00B4D8;
+  --royal: #2454A0;
+  --green: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --text: #1a202c;
+  --muted: #64748b;
+  --border: #e2e8f0;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+/* Header */
+.portal-header {
+  background:linear-gradient(135deg,var(--navy),var(--navy-light));
+  color:#fff; padding:16px 24px; display:flex; align-items:center; gap:16px;
+  box-shadow:0 2px 12px rgba(0,0,0,.2);
+}
+.portal-header .logo { font-size:28px; }
+.portal-header h1 { font-size:18px; font-weight:700; letter-spacing:-.3px; }
+.portal-header .sub { font-size:11px; opacity:.7; }
+.portal-header .user-info { margin-left:auto; display:flex; align-items:center; gap:10px; }
+.portal-header .user-avatar { width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,.3); }
+.portal-header .user-name { font-size:13px; font-weight:600; }
+
+/* Auth screen */
+.auth-screen { display:flex; align-items:center; justify-content:center; min-height:80vh; padding:20px; }
+.auth-card { background:var(--card); border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.08); max-width:420px; width:100%; overflow:hidden; }
+.auth-card-header { background:linear-gradient(135deg,var(--navy),var(--royal)); color:#fff; padding:32px; text-align:center; }
+.auth-card-header .icon { font-size:48px; margin-bottom:12px; }
+.auth-card-header h2 { font-size:20px; font-weight:700; margin-bottom:4px; }
+.auth-card-header p { font-size:12px; opacity:.7; }
+.auth-card-body { padding:24px; }
+.auth-input { width:100%; padding:12px 16px; border:2px solid var(--border); border-radius:10px; font-size:14px; font-family:inherit; margin-bottom:12px; transition:border .2s; }
+.auth-input:focus { outline:none; border-color:var(--teal); }
+.auth-btn { width:100%; padding:12px; background:linear-gradient(135deg,var(--teal),#0E9AA7); color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:700; font-family:inherit; cursor:pointer; transition:all .15s; }
+.auth-btn:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,180,216,.3); }
+.auth-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; box-shadow:none; }
+.auth-error { background:#FEF2F2; color:var(--error); padding:10px; border-radius:8px; font-size:12px; font-weight:600; text-align:center; margin-bottom:12px; display:none; }
+
+/* Dashboard container */
+.dashboard { max-width:1100px; margin:0 auto; padding:20px 16px; }
+
+/* Tab bar */
+.tab-bar { display:flex; gap:4px; background:var(--card); border-radius:12px; padding:4px; box-shadow:0 2px 8px rgba(0,0,0,.04); margin-bottom:20px; overflow-x:auto; }
+.tab-btn { padding:10px 18px; border:none; background:transparent; border-radius:8px; font-size:13px; font-weight:600; font-family:inherit; color:var(--muted); cursor:pointer; white-space:nowrap; transition:all .15s; }
+.tab-btn.active { background:var(--navy); color:#fff; }
+.tab-btn:hover:not(.active) { background:#f1f5f9; }
+.tab-badge { display:inline-block; background:var(--teal); color:#fff; font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; margin-left:4px; }
+
+/* Summary cards */
+.summary-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:20px; }
+.summary-card { background:var(--card); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); }
+.summary-card .label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:4px; }
+.summary-card .value { font-size:22px; font-weight:800; color:var(--text); }
+.summary-card .sub { font-size:11px; color:var(--muted); margin-top:2px; }
+
+/* Card */
+.card { background:var(--card); border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.04); margin-bottom:16px; overflow:hidden; }
+.card-header { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.card-header .icon { font-size:18px; }
+.card-header .title { font-size:14px; font-weight:700; flex:1; }
+.card-body { padding:18px; }
+
+/* Data table */
+.data-table { width:100%; border-collapse:collapse; font-size:13px; }
+.data-table th { text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); padding:8px 10px; border-bottom:2px solid var(--border); }
+.data-table td { padding:10px; border-bottom:1px solid #f1f5f9; vertical-align:top; }
+.data-table tr:last-child td { border-bottom:none; }
+.data-table tr:hover { background:#f8fafc; }
+
+/* Badges */
+.badge { font-size:10px; font-weight:700; padding:3px 8px; border-radius:5px; text-transform:uppercase; letter-spacing:.3px; display:inline-block; }
+.badge-green { background:#D1FAE5; color:#059669; }
+.badge-yellow { background:#FEF3C7; color:#D97706; }
+.badge-red { background:#FEE2E2; color:#DC2626; }
+.badge-blue { background:#DBEAFE; color:#2563EB; }
+.badge-gray { background:#F1F5F9; color:#64748b; }
+
+/* Budget bars */
+.budget-bar-wrap { width:100%; height:8px; background:#e2e8f0; border-radius:4px; overflow:hidden; }
+.budget-bar { height:100%; border-radius:4px; transition:width .3s; }
+
+/* Notes list */
+.note-item { padding:14px; border-bottom:1px solid #f1f5f9; }
+.note-item:last-child { border-bottom:none; }
+.note-meta { display:flex; gap:12px; align-items:center; margin-bottom:6px; flex-wrap:wrap; }
+.note-date { font-size:11px; font-weight:700; color:var(--royal); }
+.note-author { font-size:11px; color:var(--muted); }
+.note-category { font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:#EDE9FE; color:#7C3AED; }
+.note-text { font-size:13px; line-height:1.6; color:#334155; }
+
+/* Report list */
+.report-item { display:flex; align-items:center; gap:12px; padding:12px; border-bottom:1px solid #f1f5f9; }
+.report-item:last-child { border-bottom:none; }
+.report-icon { font-size:28px; }
+.report-info { flex:1; }
+.report-title { font-size:13px; font-weight:700; }
+.report-dates { font-size:11px; color:var(--muted); }
+.report-dl { padding:6px 14px; background:var(--teal); color:#fff; border:none; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; text-decoration:none; transition:all .15s; }
+.report-dl:hover { background:#0097B2; }
+
+/* Profile section */
+.profile-card { display:flex; align-items:center; gap:20px; padding:24px; }
+.profile-avatar { width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid var(--teal); }
+.profile-avatar-placeholder { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,var(--navy),var(--royal)); display:flex; align-items:center; justify-content:center; font-size:32px; color:#fff; }
+.profile-details .name { font-size:18px; font-weight:700; }
+.profile-details .ndis { font-size:12px; color:var(--teal); font-weight:600; }
+.profile-details .location { font-size:12px; color:var(--muted); margin-top:2px; }
+
+/* Footer */
+.portal-footer { text-align:center; padding:24px; color:var(--muted); font-size:11px; border-top:1px solid var(--border); margin-top:20px; }
+
+/* Loading */
+.loading { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 20px; gap:16px; }
+.spinner { width:40px; height:40px; border:4px solid #e2e8f0; border-top-color:var(--teal); border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* Empty state */
+.empty-state { text-align:center; padding:40px 20px; color:var(--muted); }
+.empty-state .icon { font-size:40px; margin-bottom:8px; }
+.empty-state p { font-size:13px; }
+
+/* Responsive */
+@media(max-width:600px) {
+  .dashboard { padding:12px 8px; }
+  .tab-btn { padding:8px 12px; font-size:12px; }
+  .summary-cards { grid-template-columns:1fr 1fr; }
+  .profile-card { flex-direction:column; text-align:center; }
+  .data-table { font-size:11px; }
+  .data-table th, .data-table td { padding:6px 4px; }
+}
+</style>
+</head>
+<body>
+<div id="headerEl" class="portal-header">
+  <span class="logo">🏠</span>
+  <div>
+    <h1>Participant Portal</h1>
+    <div class="sub">Delta Community Support · NDIS Provider</div>
+  </div>
+  <div class="user-info" id="userInfo" style="display:none">
+    <span class="user-name" id="userName"></span>
+  </div>
+</div>
+
+<div id="authScreen" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-card-header">
+      <div class="icon">🔐</div>
+      <h2>Participant Portal</h2>
+      <p>Access your NDIS support information securely</p>
+    </div>
+    <div class="auth-card-body">
+      <div id="authError" class="auth-error"></div>
+      <div id="pinSection" style="display:none">
+        <div style="font-size:13px;color:#64748b;margin-bottom:8px;text-align:center">Enter your 4-digit PIN to continue</div>
+        <input type="password" id="pinInput" class="auth-input" placeholder="Enter PIN" maxlength="6" inputmode="numeric" pattern="[0-9]*">
+      </div>
+      <button id="authBtn" class="auth-btn" onclick="authenticate()">Access Portal</button>
+      <div style="text-align:center;margin-top:12px;font-size:11px;color:#94a3b8">
+        If you have trouble accessing your portal, contact<br>
+        <a href="mailto:rosters@deltacommunity.com.au" style="color:#00B4D8">rosters@deltacommunity.com.au</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="dashboardScreen" style="display:none">
+  <div class="dashboard">
+    <div class="tab-bar" id="tabBar">
+      <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">Overview</button>
+      <button class="tab-btn" data-tab="notes" onclick="switchTab('notes')">Progress Notes</button>
+      <button class="tab-btn" data-tab="budget" onclick="switchTab('budget')">Budget</button>
+      <button class="tab-btn" data-tab="incidents" onclick="switchTab('incidents')">Incidents</button>
+      <button class="tab-btn" data-tab="reports" onclick="switchTab('reports')">Reports</button>
+    </div>
+    <div id="dashContent"></div>
+  </div>
+</div>
+
+<div class="portal-footer">
+  Delta Community Support · NDIS Registered Provider<br>
+  This is a secure portal. All access is logged for your protection.
+</div>
+
+<script>
+(function() {
+  var portalToken = new URLSearchParams(window.location.search).get("token") || "";
+  var portalData = null;
+  var currentTab = "overview";
+
+  // Auto-authenticate if token in URL
+  if (portalToken) {
+    authenticate();
+  }
+
+  window.authenticate = function() {
+    var errorEl = document.getElementById("authError");
+    var btn = document.getElementById("authBtn");
+    var pin = (document.getElementById("pinInput") || {}).value || "";
+    errorEl.style.display = "none";
+
+    if (!portalToken) {
+      errorEl.textContent = "No access link found. Please use the link sent to you.";
+      errorEl.style.display = "block";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Verifying...";
+
+    fetch("/api/stakeholder-portal/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: portalToken, pin: pin })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) {
+        if (d.needsPin) {
+          document.getElementById("pinSection").style.display = "block";
+          errorEl.textContent = "Please enter your PIN to continue.";
+          errorEl.style.display = "block";
+          btn.disabled = false;
+          btn.textContent = "Verify PIN";
+          return;
+        }
+        errorEl.textContent = d.error;
+        errorEl.style.display = "block";
+        btn.disabled = false;
+        btn.textContent = "Access Portal";
+        return;
+      }
+      // Success - load dashboard
+      loadDashboard(d.contactName);
+    })
+    .catch(function(err) {
+      errorEl.textContent = "Connection error. Please try again.";
+      errorEl.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Access Portal";
+    });
+  };
+
+  function loadDashboard(name) {
+    document.getElementById("authScreen").style.display = "none";
+    document.getElementById("dashboardScreen").style.display = "block";
+    document.getElementById("userInfo").style.display = "flex";
+    document.getElementById("userName").textContent = name || "Participant";
+    document.getElementById("dashContent").innerHTML = '<div class="loading"><div class="spinner"></div><div style="color:#64748b;font-size:14px">Loading your information...</div></div>';
+
+    fetch("/api/stakeholder-portal/data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: portalToken })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) {
+        document.getElementById("dashContent").innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>' + esc(d.error) + '</p></div>';
+        return;
+      }
+      portalData = d;
+      renderTab();
+    })
+    .catch(function() {
+      document.getElementById("dashContent").innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Error loading data. Please try refreshing the page.</p></div>';
+    });
+  }
+
+  window.switchTab = function(tab) {
+    currentTab = tab;
+    var btns = document.querySelectorAll(".tab-btn");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.toggle("active", btns[i].getAttribute("data-tab") === tab);
+    }
+    renderTab();
+  };
+
+  function renderTab() {
+    if (!portalData) return;
+    var content = document.getElementById("dashContent");
+    if (currentTab === "overview") renderOverview(content);
+    else if (currentTab === "notes") renderNotes(content);
+    else if (currentTab === "budget") renderBudget(content);
+    else if (currentTab === "incidents") renderIncidents(content);
+    else if (currentTab === "reports") renderReports(content);
+  }
+
+  function renderOverview(el) {
+    var c = portalData.contact || {};
+    var notes = portalData.progressNotes || [];
+    var incidents = portalData.incidents || [];
+    var budget = portalData.budget || [];
+    var reports = portalData.reports || [];
+
+    // Calculate budget totals
+    var totalBudget = 0, totalInvoiced = 0;
+    budget.forEach(function(b) {
+      totalBudget += (b.silBudget || 0) + (b.communityBudget || 0) + (b.transportBudget || 0) + (b.totalBudget || 0);
+      totalInvoiced += (b.invoiced || 0);
+    });
+    if (totalBudget === 0 && budget.length > 0) totalBudget = 1; // Prevent division by zero display
+    var utilPct = totalBudget > 0 ? Math.round((totalInvoiced / totalBudget) * 100) : 0;
+
+    var html = '';
+    // Profile card
+    html += '<div class="card"><div class="profile-card">';
+    if (c.photo) {
+      html += '<img class="profile-avatar" src="' + esc(c.photo) + '" alt="Photo">';
+    } else {
+      html += '<div class="profile-avatar-placeholder">' + (c.name ? c.name.charAt(0).toUpperCase() : '?') + '</div>';
+    }
+    html += '<div class="profile-details">';
+    html += '<div class="name">' + esc(c.name || "Participant") + '</div>';
+    if (c.ndisRef) html += '<div class="ndis">NDIS: ' + esc(c.ndisRef) + '</div>';
+    if (c.suburb) html += '<div class="location">📍 ' + esc(c.suburb) + '</div>';
+    html += '</div></div></div>';
+
+    // Summary cards
+    html += '<div class="summary-cards">';
+    html += '<div class="summary-card"><div class="label">Progress Notes</div><div class="value">' + notes.length + '</div><div class="sub">Recent entries</div></div>';
+    html += '<div class="summary-card"><div class="label">Budget Utilisation</div><div class="value">' + utilPct + '%</div><div class="sub">$' + fmt(totalInvoiced) + ' of $' + fmt(totalBudget) + '</div></div>';
+    html += '<div class="summary-card"><div class="label">Incidents</div><div class="value">' + incidents.length + '</div><div class="sub">Recorded incidents</div></div>';
+    html += '<div class="summary-card"><div class="label">Reports</div><div class="value">' + reports.length + '</div><div class="sub">Available reports</div></div>';
+    html += '</div>';
+
+    // Recent notes
+    html += '<div class="card"><div class="card-header"><span class="icon">📝</span><span class="title">Recent Progress Notes</span></div>';
+    if (notes.length === 0) {
+      html += '<div class="card-body"><div class="empty-state"><div class="icon">📋</div><p>No progress notes yet</p></div></div>';
+    } else {
+      html += '<div class="card-body" style="padding:0">';
+      notes.slice(0, 5).forEach(function(n) {
+        html += '<div class="note-item"><div class="note-meta">';
+        html += '<span class="note-date">' + formatDate(n.date) + '</span>';
+        if (n.author) html += '<span class="note-author">by ' + esc(n.author) + '</span>';
+        if (n.category) html += '<span class="note-category">' + esc(n.category) + '</span>';
+        html += '</div><div class="note-text">' + esc(n.notes).substring(0, 200) + (n.notes.length > 200 ? '...' : '') + '</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+
+    // Budget overview
+    if (budget.length > 0) {
+      html += '<div class="card"><div class="card-header"><span class="icon">💰</span><span class="title">Budget Summary</span></div><div class="card-body">';
+      var cats = [
+        { label: "SIL", key: "silBudget" },
+        { label: "Community Access", key: "communityBudget" },
+        { label: "Transport", key: "transportBudget" }
+      ];
+      cats.forEach(function(cat) {
+        var catTotal = 0;
+        budget.forEach(function(b) { catTotal += (b[cat.key] || 0); });
+        if (catTotal > 0) {
+          var catInv = totalInvoiced > 0 ? Math.min(Math.round((totalInvoiced / totalBudget) * catTotal), catTotal) : 0;
+          var catPct = Math.round((catInv / catTotal) * 100);
+          var barColor = catPct > 90 ? "var(--error)" : catPct > 75 ? "var(--warning)" : "var(--green)";
+          html += '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:600">' + cat.label + '</span><span style="font-size:11px;color:#64748b">$' + fmt(catInv) + ' / $' + fmt(catTotal) + '</span></div>';
+          html += '<div class="budget-bar-wrap"><div class="budget-bar" style="width:' + catPct + '%;background:' + barColor + '"></div></div></div>';
+        }
+      });
+      html += '</div></div>';
+    }
+
+    el.innerHTML = html;
+  }
+
+  function renderNotes(el) {
+    var notes = portalData.progressNotes || [];
+    var html = '<div class="card"><div class="card-header"><span class="icon">📝</span><span class="title">Progress Notes</span><span class="tab-badge">' + notes.length + '</span></div>';
+    if (notes.length === 0) {
+      html += '<div class="card-body"><div class="empty-state"><div class="icon">📋</div><p>No progress notes available</p></div></div>';
+    } else {
+      html += '<div class="card-body" style="padding:0">';
+      notes.forEach(function(n) {
+        html += '<div class="note-item"><div class="note-meta">';
+        html += '<span class="note-date">' + formatDate(n.date) + '</span>';
+        if (n.author) html += '<span class="note-author">by ' + esc(n.author) + '</span>';
+        if (n.category) html += '<span class="note-category">' + esc(n.category) + '</span>';
+        if (n.goalArea) html += '<span class="note-category" style="background:#DBEAFE;color:#2563EB">' + esc(n.goalArea) + '</span>';
+        html += '</div><div class="note-text">' + esc(n.notes) + '</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  function renderBudget(el) {
+    var budget = portalData.budget || [];
+    var html = '<div class="card"><div class="card-header"><span class="icon">💰</span><span class="title">NDIS Budget</span></div><div class="card-body">';
+
+    if (budget.length === 0) {
+      html += '<div class="empty-state"><div class="icon">💳</div><p>No budget information available</p></div>';
+    } else {
+      html += '<table class="data-table"><thead><tr><th>Category</th><th>SIL</th><th>Community Access</th><th>Transport</th><th>Invoiced</th><th>Status</th></tr></thead><tbody>';
+      var totSil = 0, totCa = 0, totTr = 0, totInv = 0;
+      budget.forEach(function(b) {
+        var sil = b.silBudget || 0;
+        var ca = b.communityBudget || 0;
+        var tr = b.transportBudget || 0;
+        var inv = b.invoiced || 0;
+        var total = sil + ca + tr + (b.totalBudget || 0);
+        var pct = total > 0 ? Math.round((inv / total) * 100) : 0;
+        var statusBadge = pct > 90 ? '<span class="badge badge-red">Critical</span>' : pct > 75 ? '<span class="badge badge-yellow">Warning</span>' : '<span class="badge badge-green">On Track</span>';
+        totSil += sil; totCa += ca; totTr += tr; totInv += inv;
+        html += '<tr><td><strong>' + esc(b.category || "General") + '</strong></td>';
+        html += '<td>$' + fmt(sil) + '</td><td>$' + fmt(ca) + '</td><td>$' + fmt(tr) + '</td>';
+        html += '<td>$' + fmt(inv) + '</td><td>' + statusBadge + '</td></tr>';
+      });
+      html += '</tbody></table>';
+
+      // Totals row
+      var grandTotal = totSil + totCa + totTr;
+      html += '<div style="margin-top:16px;padding:14px;background:#f8fafc;border-radius:8px;display:flex;gap:20px;flex-wrap:wrap">';
+      html += '<div><span style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase">Total Allocated</span><div style="font-size:18px;font-weight:800">$' + fmt(grandTotal) + '</div></div>';
+      html += '<div><span style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase">Total Invoiced</span><div style="font-size:18px;font-weight:800;color:' + (totInv > grandTotal * 0.9 ? 'var(--error)' : 'var(--green)') + '">$' + fmt(totInv) + '</div></div>';
+      html += '<div><span style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase">Remaining</span><div style="font-size:18px;font-weight:800">$' + fmt(Math.max(0, grandTotal - totInv)) + '</div></div>';
+      html += '</div>';
+    }
+    html += '</div></div>';
+    el.innerHTML = html;
+  }
+
+  function renderIncidents(el) {
+    var incidents = portalData.incidents || [];
+    var html = '<div class="card"><div class="card-header"><span class="icon">⚠️</span><span class="title">Incident Reports</span><span class="tab-badge">' + incidents.length + '</span></div>';
+    if (incidents.length === 0) {
+      html += '<div class="card-body"><div class="empty-state"><div class="icon">✅</div><p>No incidents recorded</p></div></div>';
+    } else {
+      html += '<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>Date</th><th>Type</th><th>Severity</th><th>Status</th></tr></thead><tbody>';
+      incidents.forEach(function(inc) {
+        var sevBadge = (inc.severity || "").toLowerCase().indexOf("high") >= 0 ? "badge-red" : (inc.severity || "").toLowerCase().indexOf("med") >= 0 ? "badge-yellow" : "badge-blue";
+        var statusBadge = (inc.status || "").toLowerCase().indexOf("closed") >= 0 || (inc.status || "").toLowerCase().indexOf("resolved") >= 0 ? "badge-green" : "badge-yellow";
+        html += '<tr>';
+        html += '<td>' + formatDate(inc.date) + '</td>';
+        html += '<td>' + esc(inc.type || "—") + '</td>';
+        html += '<td><span class="badge ' + sevBadge + '">' + esc(inc.severity || "—") + '</span></td>';
+        html += '<td><span class="badge ' + statusBadge + '">' + esc(inc.status || "Open") + '</span></td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  function renderReports(el) {
+    var reports = portalData.reports || [];
+    var html = '<div class="card"><div class="card-header"><span class="icon">📊</span><span class="title">Stakeholder Reports</span><span class="tab-badge">' + reports.length + '</span></div>';
+    if (reports.length === 0) {
+      html += '<div class="card-body"><div class="empty-state"><div class="icon">📄</div><p>No reports available yet</p></div></div>';
+    } else {
+      html += '<div class="card-body" style="padding:0">';
+      reports.forEach(function(r) {
+        html += '<div class="report-item">';
+        html += '<div class="report-icon">📊</div>';
+        html += '<div class="report-info">';
+        html += '<div class="report-title">Stakeholder Report</div>';
+        html += '<div class="report-dates">' + formatDate(r.reportFrom) + ' — ' + formatDate(r.reportTo) + '</div>';
+        html += '<div class="report-dates">Created: ' + formatDate(r.dateCreated) + '</div>';
+        html += '</div>';
+        if (r.pdfUrl) {
+          html += '<a class="report-dl" href="' + esc(r.pdfUrl) + '" target="_blank">Download PDF</a>';
+        } else {
+          html += '<span class="badge badge-gray">No PDF</span>';
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  // Helpers
+  function esc(str) {
+    var div = document.createElement("div");
+    div.textContent = String(str || "");
+    return div.innerHTML;
+  }
+  function fmt(n) {
+    return (Number(n) || 0).toLocaleString("en-AU", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  }
+  function formatDate(d) {
+    if (!d) return "—";
+    try {
+      var dt = new Date(d);
+      if (isNaN(dt.getTime())) return esc(d);
+      return dt.toLocaleDateString("en-AU", { day:"numeric", month:"short", year:"numeric" });
+    } catch(e) { return esc(d); }
+  }
+})();
+</script>
+</body>
+</html>

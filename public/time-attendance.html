@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DCS Attendance">
+<meta name="theme-color" content="#0B1D3A">
+<title>Time &amp; Attendance — Delta Community Support</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --navy:#0B1D3A;--surface:#0F2440;--royal:#2454A0;--teal:#00B4D8;--aqua:#48CAE4;
+  --green:#10B981;--warning:#F59E0B;--error:#EF4444;--text:#FFFFFF;--muted:#94A3B8;
+  --card:#162B4D;--card-border:#1E3A5F;--input-bg:#0F2440;--input-border:#1E3A5F;
+  --r:12px;--rs:8px;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--text);overflow-x:hidden;}
+body{display:flex;flex-direction:column;min-height:100vh;}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:3px;}
+
+/* ── Header ── */
+.header{background:var(--surface);border-bottom:1px solid var(--card-border);padding:14px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;position:sticky;top:0;z-index:50;}
+.header .back-link{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:var(--card);border:1px solid var(--card-border);color:var(--teal);text-decoration:none;font-size:18px;flex-shrink:0;transition:background .15s;}
+.header .back-link:hover{background:var(--royal);}
+.header .branding{flex:1;min-width:0;}
+.header .branding h1{font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.header .branding span{font-size:11px;color:var(--muted);font-weight:500;}
+.header .logo-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--royal));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;}
+.header .user-role{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em;background:rgba(0,180,216,.15);color:var(--teal);flex-shrink:0;}
+
+/* ── Main Content ── */
+.main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom,20px);}
+.main::-webkit-scrollbar{display:none;}
+
+/* ── View Toggle ── */
+.view-toggle{display:none;padding:12px 16px 0;gap:8px;}
+.view-toggle.visible{display:flex;}
+.view-toggle button{flex:1;padding:10px;background:var(--card);border:1.5px solid var(--card-border);border-radius:10px;color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+.view-toggle button.active{background:var(--royal);border-color:var(--royal);color:#fff;}
+
+/* ── Section ── */
+.section{padding:16px;}
+.section-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.section-title .count{background:var(--royal);color:var(--aqua);font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;}
+
+/* ── Cards ── */
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--r);padding:16px;margin-bottom:12px;}
+
+/* ── Worker View ── */
+#workerView{display:none;}
+#workerView.active{display:block;}
+
+.shift-info{margin-bottom:6px;}
+.shift-info .client-name{font-size:18px;font-weight:800;margin-bottom:4px;}
+.shift-info .address{font-size:13px;color:var(--muted);margin-bottom:8px;display:flex;align-items:flex-start;gap:6px;}
+.shift-info .address svg{flex-shrink:0;margin-top:2px;}
+.shift-info .schedule{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--aqua);}
+.shift-info .schedule svg{flex-shrink:0;}
+
+.geo-status{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--rs);font-size:12px;font-weight:600;margin-top:12px;}
+.geo-status.acquiring{background:rgba(0,180,216,.1);color:var(--teal);}
+.geo-status.verified{background:rgba(16,185,129,.1);color:var(--green);}
+.geo-status.warning{background:rgba(245,158,11,.1);color:var(--warning);}
+.geo-status.error{background:rgba(239,68,68,.1);color:var(--error);}
+
+.clock-btn{width:100%;min-height:56px;padding:14px 20px;border:none;border-radius:var(--r);font-size:17px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .15s;position:relative;overflow:hidden;}
+.clock-btn:disabled{opacity:.5;cursor:not-allowed;}
+.clock-btn:active:not(:disabled){transform:scale(.97);}
+.clock-in-btn{background:linear-gradient(135deg,var(--green),#059669);color:#fff;box-shadow:0 4px 20px rgba(16,185,129,.3);}
+.clock-out-btn{background:linear-gradient(135deg,var(--error),#DC2626);color:#fff;box-shadow:0 4px 20px rgba(239,68,68,.3);}
+.clock-override-btn{background:linear-gradient(135deg,var(--warning),#D97706);color:#fff;box-shadow:0 4px 20px rgba(245,158,11,.3);}
+
+.clock-btn .spinner{display:none;width:20px;height:20px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;}
+.clock-btn.loading .spinner{display:block;}
+.clock-btn.loading .btn-text{display:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Elapsed Timer */
+.elapsed-wrap{text-align:center;padding:20px 0;}
+.elapsed-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px;}
+.elapsed-time{font-family:'JetBrains Mono',monospace;font-size:42px;font-weight:700;color:var(--green);letter-spacing:2px;}
+.elapsed-since{font-size:12px;color:var(--muted);margin-top:4px;}
+
+/* Confirmation */
+.confirmation{display:none;text-align:center;padding:16px;animation:fadeIn .3s ease;}
+.confirmation.show{display:block;}
+.confirmation .check-circle{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;}
+.confirmation .check-circle.success{background:rgba(16,185,129,.15);color:var(--green);}
+.confirmation .check-circle.warn{background:rgba(245,158,11,.15);color:var(--warning);}
+.confirmation .conf-time{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;margin-bottom:4px;}
+.confirmation .conf-msg{font-size:13px;color:var(--muted);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Override Panel */
+.override-panel{display:none;margin-top:12px;animation:fadeIn .3s ease;}
+.override-panel.show{display:block;}
+.override-panel .warning-banner{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.2);color:var(--warning);padding:12px 14px;border-radius:var(--rs);font-size:13px;font-weight:600;text-align:center;margin-bottom:12px;}
+.override-panel .distance-info{text-align:center;margin-bottom:12px;}
+.override-panel .distance-value{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:var(--warning);}
+.override-panel .distance-label{font-size:12px;color:var(--muted);}
+.override-panel textarea{width:100%;padding:12px 14px;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;resize:vertical;min-height:80px;transition:border-color .15s;margin-bottom:12px;}
+.override-panel textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,180,216,.12);}
+.override-panel textarea::placeholder{color:var(--muted);}
+
+/* History */
+.history-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:1px solid var(--card-border);border-radius:var(--rs);margin-bottom:8px;}
+.history-item .hi-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.history-item .hi-icon.in{background:rgba(16,185,129,.12);color:var(--green);}
+.history-item .hi-icon.out{background:rgba(239,68,68,.12);color:var(--error);}
+.history-item .hi-icon.override{background:rgba(245,158,11,.12);color:var(--warning);}
+.history-item .hi-info{flex:1;min-width:0;}
+.history-item .hi-client{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.history-item .hi-date{font-size:11px;color:var(--muted);}
+.history-item .hi-time{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--aqua);text-align:right;white-space:nowrap;}
+.history-item .hi-status{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;text-transform:uppercase;white-space:nowrap;}
+
+/* ── Supervisor View ── */
+#supervisorView{display:none;}
+#supervisorView.active{display:block;}
+
+/* Summary Cards */
+.summary-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+@media(min-width:768px){.summary-row{grid-template-columns:repeat(4,1fr);}}
+.summary-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--r);padding:14px;text-align:center;}
+.summary-card .sc-value{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;margin-bottom:2px;}
+.summary-card .sc-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+.summary-card.clocked-in .sc-value{color:var(--green);}
+.summary-card.late .sc-value{color:var(--warning);}
+.summary-card.no-show .sc-value{color:var(--error);}
+.summary-card.completed .sc-value{color:var(--aqua);}
+
+/* Filters */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.filters select,.filters input[type="date"]{padding:10px 12px;background:var(--input-bg);border:1.5px solid var(--input-border);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;flex:1;min-width:140px;-webkit-appearance:none;appearance:none;}
+.filters select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394A3B8'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+.filters select:focus,.filters input[type="date"]:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,180,216,.12);}
+.filters input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.5;}
+
+.export-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:var(--royal);border:none;border-radius:var(--rs);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s;white-space:nowrap;}
+.export-btn:hover{background:#1E4BA0;}
+.export-btn svg{flex-shrink:0;}
+
+/* Data Table */
+.table-wrap{overflow-x:auto;border:1px solid var(--card-border);border-radius:var(--r);background:var(--card);}
+.data-table{width:100%;border-collapse:collapse;min-width:800px;}
+.data-table th{background:var(--surface);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:12px 14px;text-align:left;white-space:nowrap;position:sticky;top:0;border-bottom:1px solid var(--card-border);}
+.data-table td{padding:11px 14px;font-size:13px;border-bottom:1px solid var(--card-border);white-space:nowrap;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table .mono{font-family:'JetBrains Mono',monospace;font-size:12px;}
+.data-table .status-pill{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em;display:inline-block;}
+.data-table .status-verified{background:rgba(16,185,129,.12);color:var(--green);}
+.data-table .status-late{background:rgba(245,158,11,.12);color:var(--warning);}
+.data-table .status-override{background:rgba(245,158,11,.12);color:var(--warning);}
+.data-table .status-no-show{background:rgba(239,68,68,.12);color:var(--error);}
+.data-table .status-failed{background:rgba(239,68,68,.12);color:var(--error);}
+.data-table .status-active{background:rgba(0,180,216,.12);color:var(--teal);}
+.data-table .status-completed{background:rgba(148,163,184,.12);color:var(--muted);}
+
+/* Row highlight colours */
+.data-table tr.row-green td{background:rgba(16,185,129,.04);}
+.data-table tr.row-amber td{background:rgba(245,158,11,.04);}
+.data-table tr.row-red td{background:rgba(239,68,68,.04);}
+
+.distance-cell{font-family:'JetBrains Mono',monospace;font-size:12px;}
+.distance-cell.in-range{color:var(--green);}
+.distance-cell.out-range{color:var(--warning);}
+
+/* Empty state */
+.empty{text-align:center;padding:40px 20px;color:var(--muted);}
+.empty .icon{font-size:40px;margin-bottom:10px;opacity:.5;}
+.empty p{font-size:13px;line-height:1.5;}
+
+/* Loading skeleton */
+.skeleton{background:linear-gradient(90deg,var(--card) 25%,var(--card-border) 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--rs);height:16px;margin-bottom:8px;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--card-border);border-radius:var(--r);padding:12px 20px;font-size:13px;font-weight:600;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.3);transition:transform .3s ease;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 32px);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.success{border-color:rgba(16,185,129,.3);color:var(--green);}
+.toast.error{border-color:rgba(239,68,68,.3);color:var(--error);}
+.toast.warning{border-color:rgba(245,158,11,.3);color:var(--warning);}
+
+/* ── Responsive ── */
+@media(min-width:768px){
+  .header{padding:14px 24px;}
+  .section{padding:20px 24px;}
+  .clock-btn{max-width:400px;margin-left:auto;margin-right:auto;}
+  .summary-row{gap:14px;}
+}
+@media(min-width:1024px){
+  .main{max-width:1200px;margin:0 auto;width:100%;}
+  .section{padding:24px 32px;}
+}
+
+/* ── Print ── */
+@media print{
+  .header,.view-toggle,.filters,.export-btn,.clock-btn,.override-panel{display:none!important;}
+  body{background:#fff;color:#000;}
+  .data-table th{background:#f5f5f5;color:#333;}
+  .data-table td{color:#000;border-color:#ddd;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     HEADER
+     ══════════════════════════════════════════════════════════════ -->
+<header class="header">
+  <a href="/" class="back-link" title="Back to Titus CRM">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <div class="branding">
+    <h1>Time &amp; Attendance</h1>
+    <span>Delta Community Support</span>
+  </div>
+  <span class="user-role" id="headerRole">WORKER</span>
+  <div class="logo-mark">DCS</div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════════
+     VIEW TOGGLE (visible to admins who can switch views)
+     ══════════════════════════════════════════════════════════════ -->
+<div class="view-toggle" id="viewToggle">
+  <button id="btnWorkerView" class="active" onclick="switchView('worker')">My Clock</button>
+  <button id="btnSuperView" onclick="switchView('supervisor')">Dashboard</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     MAIN CONTENT
+     ══════════════════════════════════════════════════════════════ -->
+<div class="main">
+
+  <!-- ────────────────── WORKER VIEW ────────────────── -->
+  <div id="workerView">
+
+    <!-- Current Shift -->
+    <div class="section" id="shiftSection">
+      <div class="section-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Current Shift
+      </div>
+
+      <div class="card" id="shiftCard">
+        <div class="shift-info">
+          <div class="client-name" id="shiftClient">Loading...</div>
+          <div class="address" id="shiftAddress">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>--</span>
+          </div>
+          <div class="schedule" id="shiftSchedule">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>--:-- - --:--</span>
+          </div>
+        </div>
+
+        <div class="geo-status acquiring" id="geoStatus" style="display:none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          <span id="geoStatusText">Acquiring GPS...</span>
+        </div>
+      </div>
+
+      <!-- Pre-clock state: CLOCK IN button -->
+      <div id="preClockState">
+        <button class="clock-btn clock-in-btn" id="btnClockIn" onclick="handleClockIn()">
+          <span class="btn-text">CLOCK IN</span>
+          <div class="spinner"></div>
+        </button>
+      </div>
+
+      <!-- Override panel (shown when outside geo-fence) -->
+      <div class="override-panel" id="overridePanel">
+        <div class="warning-banner">You are outside the geo-fence</div>
+        <div class="distance-info">
+          <div class="distance-value" id="overrideDistance">--m</div>
+          <div class="distance-label">from site boundary</div>
+        </div>
+        <textarea id="overrideNote" placeholder="Please provide a reason for clocking in from this location..." maxlength="500"></textarea>
+        <button class="clock-btn clock-override-btn" id="btnOverride" onclick="handleOverrideClockIn()">
+          <span class="btn-text">CLOCK IN ANYWAY</span>
+          <div class="spinner"></div>
+        </button>
+      </div>
+
+      <!-- Confirmation (shown after successful clock-in) -->
+      <div class="confirmation" id="clockInConfirmation">
+        <div class="check-circle success">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="conf-time" id="confInTime">--:--</div>
+        <div class="conf-msg" id="confInMsg">Clocked in successfully</div>
+      </div>
+
+      <!-- Active shift state: elapsed + CLOCK OUT -->
+      <div id="activeShiftState" style="display:none;">
+        <div class="elapsed-wrap">
+          <div class="elapsed-label">Time on shift</div>
+          <div class="elapsed-time" id="elapsedTime">00:00:00</div>
+          <div class="elapsed-since" id="elapsedSince">Clocked in at --:--</div>
+        </div>
+        <button class="clock-btn clock-out-btn" id="btnClockOut" onclick="handleClockOut()">
+          <span class="btn-text">CLOCK OUT</span>
+          <div class="spinner"></div>
+        </button>
+      </div>
+
+      <!-- Clock-out confirmation -->
+      <div class="confirmation" id="clockOutConfirmation">
+        <div class="check-circle success">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="conf-time" id="confOutTime">--:--</div>
+        <div class="conf-msg" id="confOutMsg">Clocked out successfully</div>
+      </div>
+    </div>
+
+    <!-- Recent History -->
+    <div class="section">
+      <div class="section-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Recent History
+        <span class="count" id="historyCount">0</span>
+      </div>
+      <div id="historyList">
+        <div class="empty">
+          <div class="icon">&#128203;</div>
+          <p>No recent records</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────────── SUPERVISOR VIEW ────────────────── -->
+  <div id="supervisorView">
+
+    <!-- Summary Cards -->
+    <div class="section" style="padding-bottom:0;">
+      <div class="section-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Today's Overview
+      </div>
+      <div class="summary-row">
+        <div class="summary-card clocked-in">
+          <div class="sc-value" id="sumClockedIn">--</div>
+          <div class="sc-label">Clocked In</div>
+        </div>
+        <div class="summary-card late">
+          <div class="sc-value" id="sumLate">--</div>
+          <div class="sc-label">Late</div>
+        </div>
+        <div class="summary-card no-show">
+          <div class="sc-value" id="sumNoShow">--</div>
+          <div class="sc-label">No-Show</div>
+        </div>
+        <div class="summary-card completed">
+          <div class="sc-value" id="sumCompleted">--</div>
+          <div class="sc-label">Completed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="section" style="padding-top:0;padding-bottom:12px;">
+      <div class="filters">
+        <input type="date" id="filterDate" title="Filter by date">
+        <select id="filterStaff" title="Filter by staff">
+          <option value="">All Staff</option>
+        </select>
+        <select id="filterClient" title="Filter by client">
+          <option value="">All Clients</option>
+        </select>
+        <select id="filterGeo" title="Filter by geo-fence status">
+          <option value="">All Statuses</option>
+          <option value="verified">Verified</option>
+          <option value="late">Late</option>
+          <option value="override">Override</option>
+          <option value="no-show">No-Show</option>
+          <option value="failed">Failed</option>
+        </select>
+        <button class="export-btn" onclick="exportCSV()" title="Export to CSV">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="section" style="padding-top:0;">
+      <div class="table-wrap" id="tableWrap">
+        <table class="data-table" id="attendanceTable">
+          <thead>
+            <tr>
+              <th>Staff Name</th>
+              <th>Client</th>
+              <th>Scheduled</th>
+              <th>Actual In</th>
+              <th>Actual Out</th>
+              <th>Status</th>
+              <th>Distance</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted);">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ══════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  'use strict';
+
+  /* ── Configuration ── */
+  var API_BASE = '';
+  var authToken = localStorage.getItem('authToken');
+  var currentUser = null;
+  var isAdmin = false;
+  var currentView = 'worker';
+
+  /* ── Active shift state ── */
+  var activeRecord = null;
+  var clockInTime = null;
+  var elapsedInterval = null;
+  var lastGeoPosition = null;
+
+  /* ── Supervisor state ── */
+  var allRecords = [];
+  var staffList = [];
+  var clientList = [];
+
+  /* ══════════════════════════════════════════════════════════
+     AUTH HELPERS
+     ══════════════════════════════════════════════════════════ */
+  function authHeaders() {
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + authToken
+    };
+  }
+
+  function apiGet(path) {
+    return fetch(API_BASE + path, { headers: authHeaders() })
+      .then(function(r) {
+        if (r.status === 401) {
+          localStorage.removeItem('authToken');
+          window.location.href = '/';
+          throw new Error('Unauthorized');
+        }
+        return r.json();
+      });
+  }
+
+  function apiPost(path, body) {
+    return fetch(API_BASE + path, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify(body)
+    }).then(function(r) {
+      if (r.status === 401) {
+        localStorage.removeItem('authToken');
+        window.location.href = '/';
+        throw new Error('Unauthorized');
+      }
+      return r.json();
+    });
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     TOAST
+     ══════════════════════════════════════════════════════════ */
+  var toastTimer = null;
+  function showToast(msg, type) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + (type || 'success');
+    clearTimeout(toastTimer);
+    requestAnimationFrame(function() {
+      t.classList.add('show');
+      toastTimer = setTimeout(function() {
+        t.classList.remove('show');
+      }, 3500);
+    });
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     GEOLOCATION
+     ══════════════════════════════════════════════════════════ */
+  function getGPS() {
+    return new Promise(function(resolve, reject) {
+      if (!navigator.geolocation) {
+        reject(new Error('Geolocation is not supported by this browser'));
+        return;
+      }
+      var geoEl = document.getElementById('geoStatus');
+      var geoText = document.getElementById('geoStatusText');
+      geoEl.style.display = 'flex';
+      geoEl.className = 'geo-status acquiring';
+      geoText.textContent = 'Acquiring GPS location...';
+
+      navigator.geolocation.getCurrentPosition(
+        function(pos) {
+          lastGeoPosition = {
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            accuracy: pos.coords.accuracy
+          };
+          geoEl.className = 'geo-status verified';
+          geoText.textContent = 'GPS acquired (' + Math.round(pos.coords.accuracy) + 'm accuracy)';
+          resolve(lastGeoPosition);
+        },
+        function(err) {
+          geoEl.className = 'geo-status error';
+          geoText.textContent = 'GPS error: ' + err.message;
+          reject(err);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 30000
+        }
+      );
+    });
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     TIME FORMATTING
+     ══════════════════════════════════════════════════════════ */
+  function formatTime(date) {
+    if (!date) return '--:--';
+    var d = date instanceof Date ? date : new Date(date);
+    if (isNaN(d.getTime())) return '--:--';
+    return d.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+
+  function formatDate(date) {
+    if (!date) return '--';
+    var d = date instanceof Date ? date : new Date(date);
+    if (isNaN(d.getTime())) return '--';
+    return d.toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function formatDateTime(date) {
+    if (!date) return '--';
+    var d = date instanceof Date ? date : new Date(date);
+    if (isNaN(d.getTime())) return '--';
+    return d.toLocaleDateString('en-AU', { day: '2-digit', month: 'short' }) + ' ' + formatTime(d);
+  }
+
+  function formatElapsed(ms) {
+    var secs = Math.floor(ms / 1000);
+    var h = Math.floor(secs / 3600);
+    var m = Math.floor((secs % 3600) / 60);
+    var s = secs % 60;
+    return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     BUTTON LOADING STATE
+     ══════════════════════════════════════════════════════════ */
+  function setLoading(btn, loading) {
+    if (loading) {
+      btn.classList.add('loading');
+      btn.disabled = true;
+    } else {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     CLOCK IN
+     ══════════════════════════════════════════════════════════ */
+  window.handleClockIn = function() {
+    var btn = document.getElementById('btnClockIn');
+    setLoading(btn, true);
+
+    getGPS().then(function(gps) {
+      return apiPost('/api/attendance/clock-in', {
+        latitude: gps.latitude,
+        longitude: gps.longitude,
+        accuracy: gps.accuracy
+      });
+    }).then(function(res) {
+      setLoading(btn, false);
+
+      if (res.error) {
+        showToast(res.error, 'error');
+        return;
+      }
+
+      if (res.outsideGeofence || res.outside_geofence) {
+        /* Show override panel */
+        var dist = res.distance || res.distanceMetres || 0;
+        document.getElementById('overrideDistance').textContent = Math.round(dist) + 'm';
+        document.getElementById('overridePanel').classList.add('show');
+        document.getElementById('preClockState').style.display = 'none';
+
+        var geoEl = document.getElementById('geoStatus');
+        var geoText = document.getElementById('geoStatusText');
+        geoEl.className = 'geo-status warning';
+        geoText.textContent = 'Outside geo-fence (' + Math.round(dist) + 'm away)';
+        return;
+      }
+
+      /* Success */
+      onClockInSuccess(res);
+    }).catch(function(err) {
+      setLoading(btn, false);
+      showToast('Failed to clock in: ' + err.message, 'error');
+    });
+  };
+
+  function onClockInSuccess(res) {
+    activeRecord = res.record || res;
+    clockInTime = new Date(activeRecord.clockIn || activeRecord.clock_in || activeRecord.actualIn || new Date());
+
+    /* Hide pre-clock, show confirmation briefly, then active state */
+    document.getElementById('preClockState').style.display = 'none';
+    document.getElementById('overridePanel').classList.remove('show');
+
+    var conf = document.getElementById('clockInConfirmation');
+    document.getElementById('confInTime').textContent = formatTime(clockInTime);
+
+    var isOverride = activeRecord.override || activeRecord.isOverride;
+    if (isOverride) {
+      conf.querySelector('.check-circle').className = 'check-circle warn';
+      document.getElementById('confInMsg').textContent = 'Clocked in with override';
+    } else {
+      conf.querySelector('.check-circle').className = 'check-circle success';
+      document.getElementById('confInMsg').textContent = 'Geo-fence verified. Clocked in successfully.';
+    }
+    conf.classList.add('show');
+
+    var geoEl = document.getElementById('geoStatus');
+    var geoText = document.getElementById('geoStatusText');
+    geoEl.className = 'geo-status verified';
+    geoText.textContent = 'Location verified';
+
+    setTimeout(function() {
+      conf.classList.remove('show');
+      showActiveShift();
+    }, 2500);
+
+    showToast('Clocked in at ' + formatTime(clockInTime), 'success');
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     OVERRIDE CLOCK IN
+     ══════════════════════════════════════════════════════════ */
+  window.handleOverrideClockIn = function() {
+    var btn = document.getElementById('btnOverride');
+    var note = document.getElementById('overrideNote').value.trim();
+
+    if (!note) {
+      showToast('Please provide a reason for the override', 'warning');
+      document.getElementById('overrideNote').focus();
+      return;
+    }
+
+    setLoading(btn, true);
+
+    var gps = lastGeoPosition || { latitude: 0, longitude: 0, accuracy: 0 };
+
+    apiPost('/api/attendance/clock-in', {
+      latitude: gps.latitude,
+      longitude: gps.longitude,
+      accuracy: gps.accuracy,
+      override: true,
+      overrideNote: note
+    }).then(function(res) {
+      setLoading(btn, false);
+
+      if (res.error) {
+        showToast(res.error, 'error');
+        return;
+      }
+
+      onClockInSuccess(res);
+    }).catch(function(err) {
+      setLoading(btn, false);
+      showToast('Override failed: ' + err.message, 'error');
+    });
+  };
+
+  /* ══════════════════════════════════════════════════════════
+     ACTIVE SHIFT (Elapsed Timer)
+     ══════════════════════════════════════════════════════════ */
+  function showActiveShift() {
+    document.getElementById('preClockState').style.display = 'none';
+    document.getElementById('overridePanel').classList.remove('show');
+    document.getElementById('clockInConfirmation').classList.remove('show');
+    document.getElementById('clockOutConfirmation').classList.remove('show');
+    document.getElementById('activeShiftState').style.display = 'block';
+    document.getElementById('elapsedSince').textContent = 'Clocked in at ' + formatTime(clockInTime);
+
+    /* Start elapsed counter */
+    if (elapsedInterval) clearInterval(elapsedInterval);
+    updateElapsed();
+    elapsedInterval = setInterval(updateElapsed, 1000);
+  }
+
+  function updateElapsed() {
+    if (!clockInTime) return;
+    var elapsed = Date.now() - clockInTime.getTime();
+    document.getElementById('elapsedTime').textContent = formatElapsed(elapsed);
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     CLOCK OUT
+     ══════════════════════════════════════════════════════════ */
+  window.handleClockOut = function() {
+    var btn = document.getElementById('btnClockOut');
+    setLoading(btn, true);
+
+    getGPS().then(function(gps) {
+      var recordId = activeRecord ? (activeRecord.id || activeRecord._id || activeRecord.recordId) : null;
+
+      return apiPost('/api/attendance/clock-out', {
+        recordId: recordId,
+        latitude: gps.latitude,
+        longitude: gps.longitude,
+        accuracy: gps.accuracy
+      });
+    }).then(function(res) {
+      setLoading(btn, false);
+
+      if (res.error) {
+        showToast(res.error, 'error');
+        return;
+      }
+
+      /* Stop elapsed timer */
+      if (elapsedInterval) {
+        clearInterval(elapsedInterval);
+        elapsedInterval = null;
+      }
+
+      /* Show clock-out confirmation */
+      var outTime = new Date(res.clockOut || res.clock_out || res.actualOut || new Date());
+      document.getElementById('activeShiftState').style.display = 'none';
+
+      var conf = document.getElementById('clockOutConfirmation');
+      document.getElementById('confOutTime').textContent = formatTime(outTime);
+
+      var elapsed = '';
+      if (clockInTime) {
+        var diff = outTime.getTime() - clockInTime.getTime();
+        var hrs = Math.floor(diff / 3600000);
+        var mins = Math.floor((diff % 3600000) / 60000);
+        elapsed = hrs + 'h ' + mins + 'm total';
+      }
+      document.getElementById('confOutMsg').textContent = 'Clocked out. ' + elapsed;
+      conf.classList.add('show');
+
+      showToast('Clocked out at ' + formatTime(outTime), 'success');
+
+      /* Reset after delay */
+      setTimeout(function() {
+        conf.classList.remove('show');
+        resetWorkerState();
+        loadWorkerData();
+      }, 3000);
+
+    }).catch(function(err) {
+      setLoading(btn, false);
+      showToast('Failed to clock out: ' + err.message, 'error');
+    });
+  };
+
+  function resetWorkerState() {
+    activeRecord = null;
+    clockInTime = null;
+    if (elapsedInterval) {
+      clearInterval(elapsedInterval);
+      elapsedInterval = null;
+    }
+    document.getElementById('preClockState').style.display = 'block';
+    document.getElementById('activeShiftState').style.display = 'none';
+    document.getElementById('overridePanel').classList.remove('show');
+    document.getElementById('clockInConfirmation').classList.remove('show');
+    document.getElementById('clockOutConfirmation').classList.remove('show');
+    document.getElementById('geoStatus').style.display = 'none';
+    document.getElementById('overrideNote').value = '';
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     LOAD WORKER DATA
+     ══════════════════════════════════════════════════════════ */
+  function loadWorkerData() {
+    loadCurrentShift();
+    loadHistory();
+  }
+
+  function loadCurrentShift() {
+    apiGet('/api/attendance/current-shift').then(function(res) {
+      var shift = res.shift || res;
+
+      if (shift && shift.clientName) {
+        document.getElementById('shiftClient').textContent = shift.clientName || shift.client_name || 'No Client';
+        var addrSpan = document.getElementById('shiftAddress').querySelector('span');
+        addrSpan.textContent = shift.address || shift.location || 'No address';
+        var schedSpan = document.getElementById('shiftSchedule').querySelector('span');
+        var startTime = shift.startTime || shift.start_time || shift.scheduledStart;
+        var endTime = shift.endTime || shift.end_time || shift.scheduledEnd;
+        schedSpan.textContent = formatTime(startTime) + ' - ' + formatTime(endTime);
+
+        /* Check if already clocked in */
+        if (shift.clockedIn || shift.clocked_in || shift.activeRecord) {
+          activeRecord = shift.activeRecord || shift;
+          clockInTime = new Date(shift.clockIn || shift.clock_in || shift.actualIn || shift.clockedInAt);
+          showActiveShift();
+        }
+      } else {
+        document.getElementById('shiftClient').textContent = 'No shift scheduled';
+        document.getElementById('shiftAddress').querySelector('span').textContent = 'Check your roster for upcoming shifts';
+        document.getElementById('shiftSchedule').querySelector('span').textContent = '--:-- - --:--';
+      }
+    }).catch(function() {
+      document.getElementById('shiftClient').textContent = 'Unable to load shift';
+      document.getElementById('shiftAddress').querySelector('span').textContent = 'Please check your connection';
+    });
+  }
+
+  function loadHistory() {
+    apiGet('/api/attendance').then(function(res) {
+      var records = res.records || res.data || res || [];
+      if (!Array.isArray(records)) records = [];
+
+      document.getElementById('historyCount').textContent = records.length;
+
+      if (records.length === 0) {
+        document.getElementById('historyList').innerHTML =
+          '<div class="empty"><div class="icon">&#128203;</div><p>No recent attendance records</p></div>';
+        return;
+      }
+
+      var html = '';
+      records.forEach(function(rec) {
+        var clientName = rec.clientName || rec.client_name || rec.client || 'Unknown';
+        var inTime = rec.clockIn || rec.clock_in || rec.actualIn;
+        var outTime = rec.clockOut || rec.clock_out || rec.actualOut;
+        var status = rec.status || 'completed';
+        var isOverride = rec.override || rec.isOverride || status === 'override';
+
+        var iconClass = 'in';
+        var iconSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+        if (isOverride) {
+          iconClass = 'override';
+          iconSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+        } else if (status === 'no-show' || status === 'failed') {
+          iconClass = 'out';
+          iconSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+        }
+
+        var timeText = formatTime(inTime);
+        if (outTime) {
+          timeText += ' - ' + formatTime(outTime);
+        }
+
+        var statusBg = 'rgba(16,185,129,.12)';
+        var statusColor = 'var(--green)';
+        if (status === 'late' || isOverride) { statusBg = 'rgba(245,158,11,.12)'; statusColor = 'var(--warning)'; }
+        else if (status === 'no-show' || status === 'failed') { statusBg = 'rgba(239,68,68,.12)'; statusColor = 'var(--error)'; }
+        else if (status === 'active') { statusBg = 'rgba(0,180,216,.12)'; statusColor = 'var(--teal)'; }
+
+        html += '<div class="history-item">'
+          + '<div class="hi-icon ' + iconClass + '">' + iconSvg + '</div>'
+          + '<div class="hi-info">'
+          + '<div class="hi-client">' + escapeHtml(clientName) + '</div>'
+          + '<div class="hi-date">' + formatDate(inTime) + '</div>'
+          + '</div>'
+          + '<div style="text-align:right;">'
+          + '<div class="hi-time">' + timeText + '</div>'
+          + '<span class="hi-status" style="background:' + statusBg + ';color:' + statusColor + ';">' + escapeHtml(status) + '</span>'
+          + '</div>'
+          + '</div>';
+      });
+
+      document.getElementById('historyList').innerHTML = html;
+    }).catch(function() {
+      document.getElementById('historyList').innerHTML =
+        '<div class="empty"><div class="icon">&#9888;&#65039;</div><p>Failed to load history</p></div>';
+    });
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     SUPERVISOR: LOAD DATA
+     ══════════════════════════════════════════════════════════ */
+  function loadSupervisorData() {
+    loadTodaySummary();
+    loadAttendanceTable();
+  }
+
+  function loadTodaySummary() {
+    apiGet('/api/attendance/today').then(function(res) {
+      var data = res.summary || res;
+      document.getElementById('sumClockedIn').textContent = data.clockedIn || data.clocked_in || data.active || 0;
+      document.getElementById('sumLate').textContent = data.late || 0;
+      document.getElementById('sumNoShow').textContent = data.noShow || data.no_show || 0;
+      document.getElementById('sumCompleted').textContent = data.completed || 0;
+    }).catch(function() {
+      document.getElementById('sumClockedIn').textContent = '--';
+      document.getElementById('sumLate').textContent = '--';
+      document.getElementById('sumNoShow').textContent = '--';
+      document.getElementById('sumCompleted').textContent = '--';
+    });
+  }
+
+  function loadAttendanceTable() {
+    var dateFilter = document.getElementById('filterDate').value;
+    var staffFilter = document.getElementById('filterStaff').value;
+    var clientFilter = document.getElementById('filterClient').value;
+    var geoFilter = document.getElementById('filterGeo').value;
+
+    var params = [];
+    if (dateFilter) params.push('date=' + encodeURIComponent(dateFilter));
+    if (staffFilter) params.push('staff=' + encodeURIComponent(staffFilter));
+    if (clientFilter) params.push('client=' + encodeURIComponent(clientFilter));
+    if (geoFilter) params.push('status=' + encodeURIComponent(geoFilter));
+
+    var url = '/api/attendance/today' + (params.length ? '?' + params.join('&') : '');
+
+    apiGet(url).then(function(res) {
+      allRecords = res.records || res.data || res.attendanceRecords || [];
+      if (!Array.isArray(allRecords)) allRecords = [];
+
+      /* Populate filter dropdowns with unique values */
+      populateFilters(allRecords);
+      renderTable(allRecords);
+    }).catch(function() {
+      document.getElementById('tableBody').innerHTML =
+        '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--error);">Failed to load data</td></tr>';
+    });
+  }
+
+  function populateFilters(records) {
+    var staffSet = {};
+    var clientSet = {};
+
+    records.forEach(function(r) {
+      var name = r.staffName || r.staff_name || r.workerName || '';
+      var client = r.clientName || r.client_name || r.client || '';
+      if (name) staffSet[name] = true;
+      if (client) clientSet[client] = true;
+    });
+
+    var staffSelect = document.getElementById('filterStaff');
+    var currentStaff = staffSelect.value;
+    var staffOpts = '<option value="">All Staff</option>';
+    Object.keys(staffSet).sort().forEach(function(s) {
+      staffOpts += '<option value="' + escapeHtml(s) + '"' + (s === currentStaff ? ' selected' : '') + '>' + escapeHtml(s) + '</option>';
+    });
+    staffSelect.innerHTML = staffOpts;
+
+    var clientSelect = document.getElementById('filterClient');
+    var currentClient = clientSelect.value;
+    var clientOpts = '<option value="">All Clients</option>';
+    Object.keys(clientSet).sort().forEach(function(c) {
+      clientOpts += '<option value="' + escapeHtml(c) + '"' + (c === currentClient ? ' selected' : '') + '>' + escapeHtml(c) + '</option>';
+    });
+    clientSelect.innerHTML = clientOpts;
+  }
+
+  function renderTable(records) {
+    /* Apply local filters (in case server doesn't filter) */
+    var staffFilter = document.getElementById('filterStaff').value;
+    var clientFilter = document.getElementById('filterClient').value;
+    var geoFilter = document.getElementById('filterGeo').value;
+
+    var filtered = records.filter(function(r) {
+      var name = r.staffName || r.staff_name || r.workerName || '';
+      var client = r.clientName || r.client_name || r.client || '';
+      var status = (r.status || '').toLowerCase();
+
+      if (staffFilter && name !== staffFilter) return false;
+      if (clientFilter && client !== clientFilter) return false;
+      if (geoFilter && status !== geoFilter) return false;
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      document.getElementById('tableBody').innerHTML =
+        '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted);">No records found</td></tr>';
+      return;
+    }
+
+    var html = '';
+    filtered.forEach(function(r) {
+      var staffName = r.staffName || r.staff_name || r.workerName || '--';
+      var clientName = r.clientName || r.client_name || r.client || '--';
+      var scheduled = (r.scheduledStart || r.scheduled_start ? formatTime(r.scheduledStart || r.scheduled_start) : '--') +
+                      (r.scheduledEnd || r.scheduled_end ? ' - ' + formatTime(r.scheduledEnd || r.scheduled_end) : '');
+      var actualIn = formatTime(r.clockIn || r.clock_in || r.actualIn || r.actual_in);
+      var actualOut = formatTime(r.clockOut || r.clock_out || r.actualOut || r.actual_out);
+      var status = (r.status || 'unknown').toLowerCase();
+      var distance = r.distance || r.distanceMetres || r.distance_metres;
+
+      /* Row colour */
+      var rowClass = '';
+      if (status === 'verified' || status === 'completed' || status === 'on-time') rowClass = 'row-green';
+      else if (status === 'late' || status === 'override') rowClass = 'row-amber';
+      else if (status === 'no-show' || status === 'failed') rowClass = 'row-red';
+
+      /* Status pill */
+      var statusClass = 'status-' + status.replace(/[^a-z-]/g, '');
+
+      /* Distance display */
+      var distText = '--';
+      var distClass = '';
+      if (distance !== undefined && distance !== null) {
+        distText = Math.round(distance) + 'm';
+        distClass = distance <= 100 ? 'in-range' : 'out-range';
+      }
+
+      html += '<tr class="' + rowClass + '">'
+        + '<td>' + escapeHtml(staffName) + '</td>'
+        + '<td>' + escapeHtml(clientName) + '</td>'
+        + '<td class="mono">' + escapeHtml(scheduled) + '</td>'
+        + '<td class="mono">' + actualIn + '</td>'
+        + '<td class="mono">' + actualOut + '</td>'
+        + '<td><span class="status-pill ' + statusClass + '">' + escapeHtml(status) + '</span></td>'
+        + '<td class="distance-cell ' + distClass + '">' + distText + '</td>'
+        + '</tr>';
+    });
+
+    document.getElementById('tableBody').innerHTML = html;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     EXPORT CSV
+     ══════════════════════════════════════════════════════════ */
+  window.exportCSV = function() {
+    if (!allRecords || allRecords.length === 0) {
+      showToast('No data to export', 'warning');
+      return;
+    }
+
+    var headers = ['Staff Name', 'Client', 'Scheduled Start', 'Scheduled End', 'Actual In', 'Actual Out', 'Status', 'Distance (m)', 'Override Note'];
+    var rows = [headers.join(',')];
+
+    allRecords.forEach(function(r) {
+      var row = [
+        csvEscape(r.staffName || r.staff_name || r.workerName || ''),
+        csvEscape(r.clientName || r.client_name || r.client || ''),
+        csvEscape(formatTime(r.scheduledStart || r.scheduled_start)),
+        csvEscape(formatTime(r.scheduledEnd || r.scheduled_end)),
+        csvEscape(formatTime(r.clockIn || r.clock_in || r.actualIn || r.actual_in)),
+        csvEscape(formatTime(r.clockOut || r.clock_out || r.actualOut || r.actual_out)),
+        csvEscape(r.status || ''),
+        r.distance || r.distanceMetres || r.distance_metres || '',
+        csvEscape(r.overrideNote || r.override_note || '')
+      ];
+      rows.push(row.join(','));
+    });
+
+    var csv = rows.join('\n');
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+
+    var dateStr = document.getElementById('filterDate').value || new Date().toISOString().slice(0, 10);
+    a.download = 'attendance-' + dateStr + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast('CSV exported', 'success');
+  };
+
+  function csvEscape(val) {
+    if (val === null || val === undefined) return '';
+    var str = String(val);
+    if (str.indexOf(',') !== -1 || str.indexOf('"') !== -1 || str.indexOf('\n') !== -1) {
+      return '"' + str.replace(/"/g, '""') + '"';
+    }
+    return str;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     VIEW SWITCHING
+     ══════════════════════════════════════════════════════════ */
+  window.switchView = function(view) {
+    currentView = view;
+
+    document.getElementById('workerView').classList.remove('active');
+    document.getElementById('supervisorView').classList.remove('active');
+    document.getElementById('btnWorkerView').classList.remove('active');
+    document.getElementById('btnSuperView').classList.remove('active');
+
+    if (view === 'worker') {
+      document.getElementById('workerView').classList.add('active');
+      document.getElementById('btnWorkerView').classList.add('active');
+      loadWorkerData();
+    } else {
+      document.getElementById('supervisorView').classList.add('active');
+      document.getElementById('btnSuperView').classList.add('active');
+      loadSupervisorData();
+    }
+  };
+
+  /* ══════════════════════════════════════════════════════════
+     FILTER EVENT LISTENERS
+     ══════════════════════════════════════════════════════════ */
+  function setupFilters() {
+    var debounceTimer = null;
+    function onFilterChange() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(function() {
+        loadAttendanceTable();
+      }, 300);
+    }
+
+    document.getElementById('filterDate').addEventListener('change', onFilterChange);
+    document.getElementById('filterStaff').addEventListener('change', function() {
+      renderTable(allRecords);
+    });
+    document.getElementById('filterClient').addEventListener('change', function() {
+      renderTable(allRecords);
+    });
+    document.getElementById('filterGeo').addEventListener('change', function() {
+      renderTable(allRecords);
+    });
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     UTILITY
+     ══════════════════════════════════════════════════════════ */
+  function escapeHtml(str) {
+    if (!str) return '';
+    var div = document.createElement('div');
+    div.textContent = String(str);
+    return div.innerHTML;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     INITIALIZATION
+     ══════════════════════════════════════════════════════════ */
+  function init() {
+    if (!authToken) {
+      window.location.href = '/';
+      return;
+    }
+
+    /* Set today's date in filter */
+    var today = new Date().toISOString().slice(0, 10);
+    document.getElementById('filterDate').value = today;
+
+    /* Check user role */
+    apiGet('/api/auth/me').then(function(res) {
+      currentUser = res.user || res;
+      var role = (currentUser.role || '').toLowerCase();
+      isAdmin = (role === 'admin' || role === 'superadmin' || role === 'supervisor' || role === 'manager');
+
+      /* Update header role badge */
+      var roleBadge = document.getElementById('headerRole');
+      roleBadge.textContent = role.toUpperCase() || 'WORKER';
+
+      if (isAdmin) {
+        /* Show toggle and default to supervisor */
+        document.getElementById('viewToggle').classList.add('visible');
+        switchView('supervisor');
+      } else {
+        /* Worker only */
+        switchView('worker');
+      }
+    }).catch(function() {
+      /* Default to worker view if /me fails */
+      switchView('worker');
+    });
+
+    /* Setup filter listeners */
+    setupFilters();
+
+    /* Auto-refresh every 60 seconds */
+    setInterval(function() {
+      if (currentView === 'supervisor') {
+        loadTodaySummary();
+      }
+    }, 60000);
+  }
+
+  /* ── Start ── */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
+</body>
+</html>

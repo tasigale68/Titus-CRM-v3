@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0B1D3A">
+<title>Invoices — Delta Community Support</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   CSS — Titus CRM Invoice Management
+   ═══════════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --navy:#0B1D3A;--surface:#0F2440;--royal:#2454A0;--teal:#00B4D8;--aqua:#48CAE4;
+  --green:#10B981;--warning:#F59E0B;--error:#EF4444;--text:#FFFFFF;--muted:#94A3B8;
+  --card:#162B4D;--card-border:#1E3A5F;--input-bg:#0F2440;--input-border:#1E3A5F;
+  --r:10px;--rs:6px;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--text);overflow-x:hidden;}
+body{display:flex;flex-direction:column;min-height:100vh;}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--royal);}
+
+/* ── Header ── */
+.page-header{background:var(--surface);border-bottom:1px solid var(--card-border);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0;position:sticky;top:0;z-index:50;}
+.header-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--teal),var(--aqua));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--navy);flex-shrink:0;}
+.header-text{flex:1;min-width:0;}
+.header-text h1{font-size:18px;font-weight:800;letter-spacing:-.02em;}
+.header-text span{font-size:11px;color:var(--muted);font-weight:500;}
+.back-link{display:flex;align-items:center;gap:5px;color:var(--teal);font-size:13px;font-weight:600;text-decoration:none;padding:7px 12px;border-radius:8px;transition:background .15s;flex-shrink:0;}
+.back-link:hover{background:rgba(0,180,216,.1);}
+.back-link svg{width:16px;height:16px;}
+
+/* ── Main Layout ── */
+.main-content{flex:1;padding:20px;max-width:1400px;width:100%;margin:0 auto;overflow-y:auto;}
+
+/* ── Summary Cards ── */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;}
+.summary-card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:18px;transition:transform .1s,box-shadow .15s;}
+.summary-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2);}
+.summary-card .label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;}
+.summary-card .value{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--text);}
+.summary-card .value.teal{color:var(--teal);}
+.summary-card .value.green{color:var(--green);}
+.summary-card .value.warning{color:var(--warning);}
+.summary-card .sub{font-size:11px;color:var(--muted);margin-top:4px;}
+
+/* ── Tabs ── */
+.tabs{display:flex;gap:4px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;flex-wrap:wrap;}
+.tab{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid transparent;background:transparent;color:var(--muted);transition:all .15s;font-family:inherit;white-space:nowrap;}
+.tab:hover{background:var(--card);color:var(--text);}
+.tab.active{background:var(--royal);color:#fff;border-color:transparent;}
+.tab .count{display:inline-block;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:10px;font-size:10px;margin-left:4px;}
+.tab.active .count{background:rgba(255,255,255,.25);}
+
+/* ── Toolbar ── */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.toolbar-left{display:flex;align-items:center;gap:10px;flex:1;flex-wrap:wrap;min-width:0;}
+.toolbar-right{display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap;}
+.search-box{position:relative;flex:1;min-width:180px;max-width:320px;}
+.search-box input{width:100%;padding:10px 14px 10px 36px;background:var(--surface);border:1.5px solid var(--input-border);border-radius:10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;}
+.search-box input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,180,216,.12);}
+.search-box input::placeholder{color:var(--muted);}
+.search-box svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted);pointer-events:none;}
+.filter-group{display:flex;align-items:center;gap:8px;}
+.filter-group label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+.filter-group select,.filter-group input[type="date"]{padding:9px 12px;background:var(--surface);border:1.5px solid var(--input-border);border-radius:8px;color:var(--text);font-size:12px;font-family:inherit;outline:none;-webkit-appearance:none;appearance:none;cursor:pointer;transition:border-color .15s;}
+.filter-group select:focus,.filter-group input[type="date"]:focus{border-color:var(--teal);}
+.filter-group select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394A3B8'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--royal));color:#fff;}
+.btn-primary:hover:not(:disabled){box-shadow:0 4px 12px rgba(0,180,216,.3);}
+.btn-success{background:var(--green);color:#fff;}
+.btn-success:hover:not(:disabled){background:#059669;}
+.btn-danger{background:rgba(239,68,68,.15);color:var(--error);border:1px solid rgba(239,68,68,.25);}
+.btn-danger:hover:not(:disabled){background:rgba(239,68,68,.25);}
+.btn-outline{background:transparent;color:var(--muted);border:1px solid var(--card-border);}
+.btn-outline:hover:not(:disabled){background:var(--card);color:var(--text);}
+.btn-teal{background:rgba(0,180,216,.12);color:var(--teal);border:1px solid rgba(0,180,216,.25);}
+.btn-teal:hover:not(:disabled){background:var(--teal);color:#fff;}
+.btn-warning{background:rgba(245,158,11,.12);color:var(--warning);border:1px solid rgba(245,158,11,.25);}
+.btn-warning:hover:not(:disabled){background:var(--warning);color:#fff;}
+.btn-sm{padding:6px 10px;font-size:11px;border-radius:6px;}
+
+/* ── Invoice Table ── */
+.invoice-table-wrap{background:var(--card);border:1px solid var(--card-border);border-radius:12px;overflow:hidden;}
+.invoice-table{width:100%;border-collapse:collapse;}
+.invoice-table thead th{padding:12px 16px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;background:var(--surface);border-bottom:1px solid var(--card-border);white-space:nowrap;position:sticky;top:0;z-index:2;}
+.invoice-table thead th.center{text-align:center;}
+.invoice-table tbody tr{border-bottom:1px solid var(--card-border);cursor:pointer;transition:background .1s;}
+.invoice-table tbody tr:last-child{border-bottom:none;}
+.invoice-table tbody tr:hover{background:rgba(0,180,216,.04);}
+.invoice-table tbody tr.expanded{background:rgba(36,84,160,.08);}
+.invoice-table td{padding:12px 16px;font-size:13px;vertical-align:middle;}
+.invoice-table td.mono{font-family:'JetBrains Mono',monospace;font-size:12px;}
+.invoice-table td.center{text-align:center;}
+.invoice-table td.right{text-align:right;}
+.invoice-table .inv-num{color:var(--teal);font-weight:700;font-family:'JetBrains Mono',monospace;font-size:12px;}
+.invoice-table .client-info{display:flex;flex-direction:column;gap:1px;}
+.invoice-table .client-info .name{font-weight:600;font-size:13px;}
+.invoice-table .client-info .email{font-size:11px;color:var(--muted);}
+.invoice-table .amount{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:13px;}
+.invoice-table .hours{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--aqua);}
+.invoice-table .checkbox-cell{width:40px;text-align:center;}
+.invoice-table .checkbox-cell input[type="checkbox"]{width:16px;height:16px;accent-color:var(--teal);cursor:pointer;}
+
+/* ── Status Badges ── */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+.badge-draft{background:rgba(148,163,184,.15);color:var(--muted);}
+.badge-submitted{background:rgba(36,84,160,.25);color:var(--aqua);}
+.badge-approved{background:rgba(16,185,129,.15);color:var(--green);}
+.badge-paid{background:rgba(0,180,216,.15);color:var(--teal);}
+.badge-rejected{background:rgba(239,68,68,.15);color:var(--error);}
+
+/* ── Expanded Row / Line Items ── */
+.line-items-row{display:none;}
+.line-items-row.visible{display:table-row;}
+.line-items-row td{padding:0 16px 16px;background:rgba(15,36,64,.6);}
+.line-items-wrap{border:1px solid var(--card-border);border-radius:8px;overflow:hidden;margin-top:8px;}
+.line-items-table{width:100%;border-collapse:collapse;}
+.line-items-table th{padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;background:var(--surface);border-bottom:1px solid var(--card-border);}
+.line-items-table th.right{text-align:right;}
+.line-items-table td{padding:8px 12px;font-size:12px;border-bottom:1px solid var(--card-border);}
+.line-items-table td.right{text-align:right;}
+.line-items-table td.mono{font-family:'JetBrains Mono',monospace;}
+.line-items-table tbody tr:last-child td{border-bottom:none;}
+.line-items-footer{display:flex;align-items:center;justify-content:space-between;padding:10px 0;gap:10px;flex-wrap:wrap;}
+.line-items-total{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--teal);}
+.line-items-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.line-items-notes{margin-top:8px;padding:10px 12px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:12px;color:var(--warning);}
+.line-items-notes strong{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+
+/* ── Admin: Monthly Summary ── */
+.monthly-summary{margin-top:24px;}
+.monthly-summary h3{font-size:14px;font-weight:700;margin-bottom:12px;color:var(--text);}
+.summary-table-wrap{background:var(--card);border:1px solid var(--card-border);border-radius:12px;overflow:hidden;}
+.summary-table{width:100%;border-collapse:collapse;}
+.summary-table th{padding:10px 16px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;background:var(--surface);border-bottom:1px solid var(--card-border);}
+.summary-table th.right{text-align:right;}
+.summary-table td{padding:10px 16px;font-size:13px;border-bottom:1px solid var(--card-border);}
+.summary-table td.right{text-align:right;}
+.summary-table td.mono{font-family:'JetBrains Mono',monospace;font-size:12px;}
+.summary-table tbody tr:last-child td{border-bottom:none;}
+.summary-table tfoot td{background:var(--surface);font-weight:700;border-top:2px solid var(--card-border);}
+
+/* ── Approval Queue ── */
+.approval-section{margin-bottom:24px;}
+.approval-section h3{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.approval-section h3 .count-badge{background:var(--royal);color:var(--aqua);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.bulk-bar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surface);border:1px solid var(--card-border);border-radius:10px;margin-bottom:12px;flex-wrap:wrap;}
+.bulk-bar .sel-count{font-size:12px;color:var(--muted);font-weight:500;}
+.bulk-bar .sel-count strong{color:var(--text);}
+
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--card-border);border-radius:16px;width:100%;max-width:560px;max-height:85vh;overflow-y:auto;padding:24px;}
+.modal h2{font-size:18px;font-weight:800;margin-bottom:4px;}
+.modal .modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.modal .form-group{margin-bottom:14px;}
+.modal .form-group label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:5px;}
+.modal .form-group input,.modal .form-group textarea,.modal .form-group select{width:100%;padding:11px 14px;background:var(--navy);border:1.5px solid var(--input-border);border-radius:10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;}
+.modal .form-group input:focus,.modal .form-group textarea:focus,.modal .form-group select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,180,216,.12);}
+.modal .form-group textarea{resize:vertical;min-height:80px;}
+.modal-footer{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--card-border);}
+
+/* ── Shift Picker (inside Generate Invoice modal) ── */
+.shift-picker{max-height:280px;overflow-y:auto;border:1px solid var(--card-border);border-radius:10px;margin-top:6px;}
+.shift-picker-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--card-border);transition:background .1s;cursor:pointer;}
+.shift-picker-item:last-child{border-bottom:none;}
+.shift-picker-item:hover{background:rgba(0,180,216,.04);}
+.shift-picker-item input[type="checkbox"]{width:16px;height:16px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;}
+.shift-picker-item .shift-detail{flex:1;min-width:0;}
+.shift-picker-item .shift-detail .client-name{font-size:13px;font-weight:600;}
+.shift-picker-item .shift-detail .shift-date{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.shift-picker-item .shift-hrs{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--aqua);font-weight:500;flex-shrink:0;}
+
+/* ── Toast ── */
+.toast-container{position:fixed;top:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;pointer-events:auto;animation:toastIn .3s ease;min-width:240px;box-shadow:0 8px 24px rgba(0,0,0,.3);}
+.toast.success{background:rgba(16,185,129,.95);color:#fff;}
+.toast.error{background:rgba(239,68,68,.95);color:#fff;}
+.toast.info{background:rgba(36,84,160,.95);color:#fff;}
+.toast.out{animation:toastOut .3s ease forwards;}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(40px)}}
+
+/* ── Loading Spinner ── */
+.spinner{width:20px;height:20px;border:2.5px solid rgba(255,255,255,.2);border-top-color:var(--teal);border-radius:50%;animation:spin .6s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-overlay{display:flex;align-items:center;justify-content:center;padding:60px 20px;flex-direction:column;gap:12px;}
+.loading-overlay p{font-size:13px;color:var(--muted);}
+
+/* ── Empty State ── */
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty-state .icon{font-size:40px;margin-bottom:10px;opacity:.5;}
+.empty-state p{font-size:13px;margin-bottom:16px;}
+
+/* ── Role Indicator ── */
+.role-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em;margin-left:10px;}
+.role-badge.admin{background:rgba(245,158,11,.15);color:var(--warning);}
+.role-badge.contractor{background:rgba(0,180,216,.15);color:var(--teal);}
+
+/* ═══ Responsive ═══ */
+@media(max-width:768px){
+  .main-content{padding:14px;}
+  .summary-grid{grid-template-columns:1fr 1fr;gap:10px;}
+  .summary-card{padding:14px;}
+  .summary-card .value{font-size:20px;}
+  .toolbar{flex-direction:column;align-items:stretch;}
+  .toolbar-left,.toolbar-right{width:100%;}
+  .search-box{max-width:100%;min-width:auto;}
+  .filter-group{flex-wrap:wrap;}
+  .filter-group select,.filter-group input[type="date"]{flex:1;min-width:0;}
+  .invoice-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .invoice-table{min-width:700px;}
+  .page-header{padding:12px 14px;gap:10px;}
+  .header-text h1{font-size:15px;}
+  .back-link span{display:none;}
+  .bulk-bar{flex-direction:column;align-items:stretch;gap:8px;}
+  .modal{max-width:100%;border-radius:14px;padding:18px;}
+}
+@media(max-width:480px){
+  .summary-grid{grid-template-columns:1fr;gap:8px;}
+  .tabs{gap:3px;}
+  .tab{padding:7px 12px;font-size:11px;}
+  .page-header .header-logo{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     HTML Structure
+     ═══════════════════════════════════════════════════════ -->
+
+<!-- Header -->
+<header class="page-header">
+  <a href="/" class="back-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    <span>Back</span>
+  </a>
+  <div class="header-logo">DCS</div>
+  <div class="header-text">
+    <h1>Invoices <span id="roleBadge" class="role-badge"></span></h1>
+    <span>Delta Community Support</span>
+  </div>
+  <div id="headerActions" style="display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;"></div>
+</header>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Main Content -->
+<div class="main-content" id="mainContent">
+  <div class="loading-overlay" id="loadingState">
+    <div class="spinner"></div>
+    <p>Loading invoices...</p>
+  </div>
+</div>
+
+<!-- ── Notes Modal (Admin approve/reject) ── -->
+<div class="modal-overlay" id="notesModal">
+  <div class="modal">
+    <h2 id="notesModalTitle">Review Invoice</h2>
+    <p class="modal-sub" id="notesModalSub">Add optional notes for this action.</p>
+    <div class="form-group">
+      <label>Notes (optional)</label>
+      <textarea id="notesInput" placeholder="Enter any notes or reason..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeNotesModal()">Cancel</button>
+      <button class="btn" id="notesConfirmBtn" onclick="confirmNotesAction()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Generate Invoice Modal (Contractor) ── -->
+<div class="modal-overlay" id="generateModal">
+  <div class="modal" style="max-width:680px;">
+    <h2>Generate Invoice</h2>
+    <p class="modal-sub">Select completed shifts to include in a new invoice.</p>
+    <div id="contractorSelector" style="display:none;margin-bottom:16px;">
+      <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:600;">Select Contractor</label>
+      <select id="contractorDropdown" onchange="onContractorSelected()" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:13px;">
+        <option value="">-- Choose a contractor --</option>
+      </select>
+    </div>
+    <div id="shiftPickerLoading" class="loading-overlay" style="padding:30px;display:none;">
+      <div class="spinner"></div>
+      <p>Loading uninvoiced shifts...</p>
+    </div>
+    <div id="shiftPickerEmpty" class="empty-state" style="display:none;padding:30px;">
+      <div class="icon">&#128203;</div>
+      <p>No uninvoiced shifts found.</p>
+    </div>
+    <div id="shiftPickerContent" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;">
+          <input type="checkbox" id="selectAllShifts" style="width:16px;height:16px;accent-color:var(--teal);cursor:pointer;" onchange="toggleAllShifts()">
+          Select All
+        </label>
+        <span id="shiftSelCount" style="font-size:12px;color:var(--aqua);font-weight:600;margin-left:auto;"></span>
+      </div>
+      <div class="shift-picker" id="shiftPicker" style="max-height:340px;overflow-y:auto;"></div>
+      <div id="shiftTotalSummary" style="margin-top:12px;padding:12px 14px;background:var(--bg);border-radius:8px;border:1px solid var(--border);display:flex;justify-content:space-between;font-size:13px;font-weight:600;">
+        <span id="shiftTotalHours" style="color:var(--muted);">0 hours</span>
+        <span id="shiftTotalAmount" style="color:var(--aqua);">$0.00</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeGenerateModal()">Cancel</button>
+      <button class="btn btn-primary" id="generateConfirmBtn" onclick="confirmGenerate()" disabled>Generate Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     JavaScript
+     ═══════════════════════════════════════════════════════ -->
+<script>
+(function(){
+'use strict';
+
+/* ── State ── */
+var state = {
+  role: 'contractor',   // 'contractor' | 'admin'
+  userEmail: '',
+  userName: '',
+  invoices: [],
+  filteredInvoices: [],
+  currentTab: 'all',
+  expandedId: null,
+  selectedIds: new Set(),
+  monthlySummary: [],
+  // admin filters
+  filterContractor: '',
+  filterStatus: '',
+  filterFrom: '',
+  filterTo: '',
+  searchQuery: '',
+  // notes modal
+  notesAction: null,    // { type: 'approve'|'reject', invoiceId }
+  // generate modal
+  uninvoicedShifts: [],
+  selectedShiftIds: new Set()
+};
+
+/* ── Auth ── */
+function getAuthToken() {
+  var token = localStorage.getItem('authToken');
+  if (token) return token;
+  var match = document.cookie.match(/(?:^|;\s*)authToken=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function parseJwt(token) {
+  try {
+    var base64 = token.split('.')[1];
+    var json = atob(base64.replace(/-/g,'+').replace(/_/g,'/'));
+    return JSON.parse(json);
+  } catch(e) { return null; }
+}
+
+function detectRole() {
+  var token = getAuthToken();
+  if (!token) return;
+  // Try JWT decode
+  var payload = parseJwt(token);
+  if (payload) {
+    state.role = (payload.role === 'superadmin' || payload.role === 'admin') ? 'admin' : 'contractor';
+    state.userEmail = payload.email || '';
+    state.userName = payload.name || payload.email || '';
+    return;
+  }
+  // Fallback: check localStorage for user info
+  try {
+    var user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user.role === 'superadmin' || user.role === 'admin') {
+      state.role = 'admin';
+    }
+    state.userEmail = user.email || '';
+    state.userName = user.name || user.email || '';
+  } catch(e) {}
+}
+
+function authHeaders() {
+  var token = getAuthToken();
+  var headers = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  return headers;
+}
+
+/* ── API ── */
+function apiGet(url) {
+  return fetch(url, { headers: authHeaders() }).then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  });
+}
+
+function apiPatch(url, body) {
+  return fetch(url, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify(body) }).then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  });
+}
+
+function apiPost(url, body) {
+  return fetch(url, { method: 'POST', headers: authHeaders(), body: JSON.stringify(body) }).then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  });
+}
+
+/* ── Data Loading ── */
+function loadInvoices() {
+  var params = [];
+  if (state.role === 'contractor' && state.userEmail) {
+    params.push('contractor=' + encodeURIComponent(state.userEmail));
+  }
+  if (state.role === 'admin') {
+    if (state.filterContractor) params.push('contractor=' + encodeURIComponent(state.filterContractor));
+    if (state.filterStatus && state.filterStatus !== 'all') params.push('status=' + encodeURIComponent(state.filterStatus));
+    if (state.filterFrom) params.push('from=' + encodeURIComponent(state.filterFrom));
+    if (state.filterTo) params.push('to=' + encodeURIComponent(state.filterTo));
+  }
+  var url = '/api/invoices' + (params.length ? '?' + params.join('&') : '');
+  return apiGet(url).then(function(data) {
+    state.invoices = Array.isArray(data) ? data : (data.invoices || []);
+    applyFilters();
+  });
+}
+
+function loadInvoiceDetail(id) {
+  return apiGet('/api/invoices/' + encodeURIComponent(id));
+}
+
+/* ── Filtering ── */
+function applyFilters() {
+  var list = state.invoices.slice();
+  // tab filter (contractor view)
+  if (state.currentTab !== 'all') {
+    list = list.filter(function(inv) { return inv.status === state.currentTab; });
+  }
+  // search query
+  if (state.searchQuery) {
+    var q = state.searchQuery.toLowerCase();
+    list = list.filter(function(inv) {
+      return (
+        (inv.invoiceNumber || '').toLowerCase().indexOf(q) !== -1 ||
+        (inv.contractorName || '').toLowerCase().indexOf(q) !== -1 ||
+        (inv.contractorEmail || '').toLowerCase().indexOf(q) !== -1 ||
+        (inv.clientName || '').toLowerCase().indexOf(q) !== -1
+      );
+    });
+  }
+  state.filteredInvoices = list;
+}
+
+/* ── Formatting Helpers ── */
+function currency(v) {
+  var num = parseFloat(v) || 0;
+  return '$' + num.toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function fmtDate(d) {
+  if (!d) return '--';
+  var dt = new Date(d);
+  return dt.toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function statusBadge(s) {
+  var cls = 'badge badge-' + (s || 'draft');
+  return '<span class="' + cls + '">' + (s || 'draft') + '</span>';
+}
+
+/* ── Toast Notifications ── */
+function showToast(message, type) {
+  var container = document.getElementById('toastContainer');
+  var toast = document.createElement('div');
+  toast.className = 'toast ' + (type || 'info');
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(function() {
+    toast.classList.add('out');
+    setTimeout(function() { toast.remove(); }, 300);
+  }, 3500);
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER — Contractor View
+   ═══════════════════════════════════════════════════════ */
+function renderContractorView() {
+  var main = document.getElementById('mainContent');
+  var inv = state.invoices;
+
+  // Calculate summaries
+  var outstanding = 0, paidThisMonth = 0, pendingApproval = 0;
+  var now = new Date();
+  var thisMonth = now.getMonth();
+  var thisYear = now.getFullYear();
+  inv.forEach(function(i) {
+    var amt = parseFloat(i.total) || 0;
+    if (i.status === 'submitted' || i.status === 'approved') outstanding += amt;
+    if (i.status === 'submitted') pendingApproval += amt;
+    if (i.status === 'paid') {
+      var pd = new Date(i.paidDate || i.updatedAt || i.date);
+      if (pd.getMonth() === thisMonth && pd.getFullYear() === thisYear) paidThisMonth += amt;
+    }
+  });
+
+  // Counts per status
+  var counts = { draft: 0, submitted: 0, approved: 0, paid: 0, rejected: 0, all: inv.length };
+  inv.forEach(function(i) { if (counts[i.status] !== undefined) counts[i.status]++; });
+
+  var html = '';
+
+  // ── Summary Cards
+  html += '<div class="summary-grid">';
+  html += '<div class="summary-card"><div class="label">Total Outstanding</div><div class="value warning">' + currency(outstanding) + '</div><div class="sub">Submitted + Approved</div></div>';
+  html += '<div class="summary-card"><div class="label">Paid This Month</div><div class="value green">' + currency(paidThisMonth) + '</div><div class="sub">' + fmtDate(now) + '</div></div>';
+  html += '<div class="summary-card"><div class="label">Pending Approval</div><div class="value teal">' + currency(pendingApproval) + '</div><div class="sub">' + counts.submitted + ' invoice' + (counts.submitted !== 1 ? 's' : '') + '</div></div>';
+  html += '</div>';
+
+  // ── Tabs
+  html += '<div class="tabs">';
+  var tabOrder = ['all','draft','submitted','approved','paid','rejected'];
+  tabOrder.forEach(function(t) {
+    var label = t.charAt(0).toUpperCase() + t.slice(1);
+    var active = state.currentTab === t ? ' active' : '';
+    var c = counts[t] !== undefined ? counts[t] : 0;
+    html += '<button class="tab' + active + '" data-tab="' + t + '">' + label + '<span class="count">' + c + '</span></button>';
+  });
+  html += '</div>';
+
+  // ── Toolbar
+  html += '<div class="toolbar">';
+  html += '<div class="toolbar-left">';
+  html += '<div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" id="contractorSearch" placeholder="Search invoices..." value="' + escHtml(state.searchQuery) + '"></div>';
+  html += '</div>';
+  html += '<div class="toolbar-right">';
+  html += '<button class="btn btn-primary" onclick="openGenerateModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Generate Invoice</button>';
+  html += '</div>';
+  html += '</div>';
+
+  // ── Invoice Table
+  applyFilters();
+  var filtered = state.filteredInvoices;
+
+  if (filtered.length === 0) {
+    html += '<div class="empty-state"><div class="icon">&#128196;</div><p>No invoices found.</p></div>';
+  } else {
+    html += '<div class="invoice-table-wrap">';
+    html += '<table class="invoice-table"><thead><tr>';
+    html += '<th>Invoice #</th><th>Date</th><th>Client</th><th class="center">Hours</th><th class="center">Total</th><th class="center">Status</th><th class="center">Actions</th>';
+    html += '</tr></thead><tbody>';
+    filtered.forEach(function(inv) {
+      var expanded = state.expandedId === inv.id;
+      html += '<tr class="' + (expanded ? 'expanded' : '') + '" data-inv-id="' + inv.id + '">';
+      html += '<td class="inv-num">' + escHtml(inv.invoiceNumber || '--') + '</td>';
+      html += '<td class="mono">' + fmtDate(inv.date) + '</td>';
+      html += '<td><div class="client-info"><span class="name">' + escHtml(inv.clientName || '--') + '</span><span class="email">' + escHtml(inv.clientEmail || '') + '</span></div></td>';
+      html += '<td class="center hours">' + (inv.totalHours != null ? parseFloat(inv.totalHours).toFixed(1) : '--') + '</td>';
+      html += '<td class="center amount">' + currency(inv.total) + '</td>';
+      html += '<td class="center">' + statusBadge(inv.status) + '</td>';
+      html += '<td class="center" style="white-space:nowrap;">';
+      if (inv.status === 'draft') {
+        html += '<button class="btn btn-teal btn-sm" onclick="event.stopPropagation();submitInvoice(\'' + inv.id + '\')">Submit</button> ';
+      }
+      html += '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();downloadPdf(\'' + inv.id + '\')" title="Download PDF"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>';
+      html += '</td>';
+      html += '</tr>';
+      // Expanded line items row
+      html += '<tr class="line-items-row' + (expanded ? ' visible' : '') + '" data-detail-for="' + inv.id + '">';
+      html += '<td colspan="7" id="detail-' + inv.id + '">';
+      if (expanded) {
+        html += renderLineItems(inv);
+      }
+      html += '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+
+  main.innerHTML = html;
+  bindContractorEvents();
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER — Admin View
+   ═══════════════════════════════════════════════════════ */
+function renderAdminView() {
+  var main = document.getElementById('mainContent');
+  var inv = state.invoices;
+
+  // Summaries
+  var totalSubmitted = 0, totalApproved = 0, totalPaid = 0, totalAll = 0;
+  var submittedList = [];
+  inv.forEach(function(i) {
+    var amt = parseFloat(i.total) || 0;
+    totalAll += amt;
+    if (i.status === 'submitted') { totalSubmitted += amt; submittedList.push(i); }
+    if (i.status === 'approved') totalApproved += amt;
+    if (i.status === 'paid') totalPaid += amt;
+  });
+
+  var html = '';
+
+  // ── Summary Cards
+  html += '<div class="summary-grid">';
+  html += '<div class="summary-card"><div class="label">Awaiting Review</div><div class="value warning">' + currency(totalSubmitted) + '</div><div class="sub">' + submittedList.length + ' invoice' + (submittedList.length !== 1 ? 's' : '') + '</div></div>';
+  html += '<div class="summary-card"><div class="label">Approved (Unpaid)</div><div class="value teal">' + currency(totalApproved) + '</div></div>';
+  html += '<div class="summary-card"><div class="label">Paid</div><div class="value green">' + currency(totalPaid) + '</div></div>';
+  html += '<div class="summary-card"><div class="label">All Invoices Total</div><div class="value">' + currency(totalAll) + '</div><div class="sub">' + inv.length + ' total</div></div>';
+  html += '</div>';
+
+  // ── Approval Queue
+  if (submittedList.length > 0) {
+    html += '<div class="approval-section">';
+    html += '<h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg> Approval Queue <span class="count-badge">' + submittedList.length + '</span></h3>';
+
+    // Bulk bar
+    html += '<div class="bulk-bar">';
+    html += '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--muted);"><input type="checkbox" id="selectAllApproval" style="width:16px;height:16px;accent-color:var(--teal);cursor:pointer;" onchange="toggleAllApproval()"> Select All</label>';
+    html += '<span class="sel-count" id="approvalSelCount"><strong>0</strong> selected</span>';
+    html += '<button class="btn btn-success btn-sm" id="bulkApproveBtn" onclick="bulkApprove()" disabled>Approve Selected</button>';
+    html += '</div>';
+
+    html += '<div class="invoice-table-wrap">';
+    html += '<table class="invoice-table"><thead><tr>';
+    html += '<th class="checkbox-cell"></th><th>Invoice #</th><th>Contractor</th><th>Date</th><th>Client</th><th class="center">Hours</th><th class="center">Total</th><th class="center">Actions</th>';
+    html += '</tr></thead><tbody>';
+    submittedList.forEach(function(inv) {
+      var chk = state.selectedIds.has(inv.id) ? ' checked' : '';
+      var expanded = state.expandedId === inv.id;
+      html += '<tr class="' + (expanded ? 'expanded' : '') + '" data-inv-id="' + inv.id + '">';
+      html += '<td class="checkbox-cell" onclick="event.stopPropagation()"><input type="checkbox" class="approval-chk" data-id="' + inv.id + '"' + chk + ' onchange="updateApprovalSelection()"></td>';
+      html += '<td class="inv-num">' + escHtml(inv.invoiceNumber || '--') + '</td>';
+      html += '<td><div class="client-info"><span class="name">' + escHtml(inv.contractorName || '--') + '</span><span class="email">' + escHtml(inv.contractorEmail || '') + '</span></div></td>';
+      html += '<td class="mono">' + fmtDate(inv.date) + '</td>';
+      html += '<td>' + escHtml(inv.clientName || '--') + '</td>';
+      html += '<td class="center hours">' + (inv.totalHours != null ? parseFloat(inv.totalHours).toFixed(1) : '--') + '</td>';
+      html += '<td class="center amount">' + currency(inv.total) + '</td>';
+      html += '<td class="center" style="white-space:nowrap;">';
+      html += '<button class="btn btn-success btn-sm" onclick="event.stopPropagation();openNotesModal(\'approve\',\'' + inv.id + '\')">Approve</button> ';
+      html += '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();openNotesModal(\'reject\',\'' + inv.id + '\')">Reject</button>';
+      html += '</td>';
+      html += '</tr>';
+      html += '<tr class="line-items-row' + (expanded ? ' visible' : '') + '" data-detail-for="' + inv.id + '">';
+      html += '<td colspan="8" id="detail-' + inv.id + '">';
+      if (expanded) html += renderLineItems(inv);
+      html += '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    html += '</div>';
+  }
+
+  // ── All Invoices Table (with filters)
+  html += '<h3 style="font-size:14px;font-weight:700;margin-bottom:12px;margin-top:8px;">All Invoices</h3>';
+
+  // Toolbar with filters
+  html += '<div class="toolbar">';
+  html += '<div class="toolbar-left">';
+  html += '<div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" id="adminSearch" placeholder="Search invoices..." value="' + escHtml(state.searchQuery) + '"></div>';
+  html += '<div class="filter-group"><label>Status</label><select id="filterStatus"><option value="all">All Statuses</option><option value="draft"' + (state.filterStatus === 'draft' ? ' selected' : '') + '>Draft</option><option value="submitted"' + (state.filterStatus === 'submitted' ? ' selected' : '') + '>Submitted</option><option value="approved"' + (state.filterStatus === 'approved' ? ' selected' : '') + '>Approved</option><option value="paid"' + (state.filterStatus === 'paid' ? ' selected' : '') + '>Paid</option><option value="rejected"' + (state.filterStatus === 'rejected' ? ' selected' : '') + '>Rejected</option></select></div>';
+  html += '<div class="filter-group"><label>From</label><input type="date" id="filterFrom" value="' + escHtml(state.filterFrom) + '"></div>';
+  html += '<div class="filter-group"><label>To</label><input type="date" id="filterTo" value="' + escHtml(state.filterTo) + '"></div>';
+  html += '</div>';
+  html += '<div class="toolbar-right">';
+  html += '<button class="btn btn-outline" onclick="applyAdminFilters()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filter</button>';
+  html += '<button class="btn btn-teal" onclick="exportCsv()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button>';
+  html += '</div>';
+  html += '</div>';
+
+  // Filtered list for admin "all" table
+  applyFilters();
+  var filtered = state.filteredInvoices;
+
+  if (filtered.length === 0) {
+    html += '<div class="empty-state"><div class="icon">&#128196;</div><p>No invoices match your filters.</p></div>';
+  } else {
+    html += '<div class="invoice-table-wrap">';
+    html += '<table class="invoice-table"><thead><tr>';
+    html += '<th>Invoice #</th><th>Contractor</th><th>Date</th><th>Client</th><th class="center">Hours</th><th class="center">Total</th><th class="center">Status</th><th class="center">Actions</th>';
+    html += '</tr></thead><tbody>';
+    filtered.forEach(function(inv) {
+      var expanded = state.expandedId === inv.id;
+      html += '<tr class="' + (expanded ? 'expanded' : '') + '" data-inv-id="' + inv.id + '">';
+      html += '<td class="inv-num">' + escHtml(inv.invoiceNumber || '--') + '</td>';
+      html += '<td><div class="client-info"><span class="name">' + escHtml(inv.contractorName || '--') + '</span><span class="email">' + escHtml(inv.contractorEmail || '') + '</span></div></td>';
+      html += '<td class="mono">' + fmtDate(inv.date) + '</td>';
+      html += '<td>' + escHtml(inv.clientName || '--') + '</td>';
+      html += '<td class="center hours">' + (inv.totalHours != null ? parseFloat(inv.totalHours).toFixed(1) : '--') + '</td>';
+      html += '<td class="center amount">' + currency(inv.total) + '</td>';
+      html += '<td class="center">' + statusBadge(inv.status) + '</td>';
+      html += '<td class="center" style="white-space:nowrap;">';
+      if (inv.status === 'submitted') {
+        html += '<button class="btn btn-success btn-sm" onclick="event.stopPropagation();openNotesModal(\'approve\',\'' + inv.id + '\')">Approve</button> ';
+        html += '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();openNotesModal(\'reject\',\'' + inv.id + '\')">Reject</button> ';
+      }
+      html += '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();downloadPdf(\'' + inv.id + '\')" title="Download PDF"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>';
+      html += '</td>';
+      html += '</tr>';
+      html += '<tr class="line-items-row' + (expanded ? ' visible' : '') + '" data-detail-for="' + inv.id + '">';
+      html += '<td colspan="8" id="detail-' + inv.id + '">';
+      if (expanded) html += renderLineItems(inv);
+      html += '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+
+  // ── Monthly Summary Section
+  html += renderMonthlySummary(inv);
+
+  main.innerHTML = html;
+  bindAdminEvents();
+}
+
+/* ── Line Items Renderer ── */
+function renderLineItems(inv) {
+  var items = inv.lineItems || inv.items || [];
+  var h = '<div class="line-items-wrap">';
+  if (items.length > 0) {
+    h += '<table class="line-items-table"><thead><tr>';
+    h += '<th>Description</th><th>Date</th><th class="right">Hours</th><th class="right">Rate</th><th class="right">Amount</th>';
+    h += '</tr></thead><tbody>';
+    items.forEach(function(item) {
+      h += '<tr>';
+      h += '<td>' + escHtml(item.description || '--') + '</td>';
+      h += '<td class="mono">' + fmtDate(item.date) + '</td>';
+      h += '<td class="right mono">' + (item.hours != null ? parseFloat(item.hours).toFixed(1) : '--') + '</td>';
+      h += '<td class="right mono">' + currency(item.rate) + '</td>';
+      h += '<td class="right mono">' + currency(item.amount || (parseFloat(item.hours || 0) * parseFloat(item.rate || 0))) + '</td>';
+      h += '</tr>';
+    });
+    h += '</tbody></table>';
+  } else {
+    h += '<div style="padding:16px;text-align:center;color:var(--muted);font-size:12px;">No line items available. Click to load details.</div>';
+  }
+  h += '</div>';
+
+  // Notes (rejection/approval)
+  if (inv.notes) {
+    h += '<div class="line-items-notes"><strong>Notes</strong>' + escHtml(inv.notes) + '</div>';
+  }
+
+  // Footer actions
+  h += '<div class="line-items-footer">';
+  h += '<div class="line-items-total">Total: ' + currency(inv.total) + '</div>';
+  h += '<div class="line-items-actions">';
+  if (inv.status === 'draft' && state.role === 'contractor') {
+    h += '<button class="btn btn-teal btn-sm" onclick="event.stopPropagation();submitInvoice(\'' + inv.id + '\')">Submit Invoice</button>';
+  }
+  h += '<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();downloadPdf(\'' + inv.id + '\')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download PDF</button>';
+  h += '</div>';
+  h += '</div>';
+
+  return h;
+}
+
+/* ── Monthly Summary (Admin) ── */
+function renderMonthlySummary(invoices) {
+  // Group paid/approved invoices by contractor for current month context
+  var byContractor = {};
+  invoices.forEach(function(inv) {
+    var key = inv.contractorEmail || inv.contractorName || 'Unknown';
+    if (!byContractor[key]) {
+      byContractor[key] = { name: inv.contractorName || key, email: inv.contractorEmail || '', totalHours: 0, totalAmount: 0, invoiceCount: 0 };
+    }
+    byContractor[key].totalHours += parseFloat(inv.totalHours) || 0;
+    byContractor[key].totalAmount += parseFloat(inv.total) || 0;
+    byContractor[key].invoiceCount++;
+  });
+
+  var contractors = Object.values(byContractor).sort(function(a, b) { return b.totalAmount - a.totalAmount; });
+  if (contractors.length === 0) return '';
+
+  var grandHours = 0, grandAmount = 0;
+
+  var h = '<div class="monthly-summary">';
+  h += '<h3>Summary by Contractor</h3>';
+  h += '<div class="summary-table-wrap">';
+  h += '<table class="summary-table"><thead><tr>';
+  h += '<th>Contractor</th><th class="right">Invoices</th><th class="right">Total Hours</th><th class="right">Total Amount</th>';
+  h += '</tr></thead><tbody>';
+  contractors.forEach(function(c) {
+    grandHours += c.totalHours;
+    grandAmount += c.totalAmount;
+    h += '<tr>';
+    h += '<td><div class="client-info"><span class="name">' + escHtml(c.name) + '</span><span class="email">' + escHtml(c.email) + '</span></div></td>';
+    h += '<td class="right mono">' + c.invoiceCount + '</td>';
+    h += '<td class="right mono">' + c.totalHours.toFixed(1) + '</td>';
+    h += '<td class="right mono">' + currency(c.totalAmount) + '</td>';
+    h += '</tr>';
+  });
+  h += '</tbody><tfoot><tr>';
+  h += '<td>Grand Total</td><td class="right mono">' + invoices.length + '</td><td class="right mono">' + grandHours.toFixed(1) + '</td><td class="right mono">' + currency(grandAmount) + '</td>';
+  h += '</tr></tfoot></table></div></div>';
+
+  return h;
+}
+
+/* ═══════════════════════════════════════════════════════
+   EVENT BINDINGS
+   ═══════════════════════════════════════════════════════ */
+function bindContractorEvents() {
+  // Tab clicks
+  document.querySelectorAll('.tab[data-tab]').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      state.currentTab = this.getAttribute('data-tab');
+      state.expandedId = null;
+      renderContractorView();
+    });
+  });
+  // Search
+  var searchEl = document.getElementById('contractorSearch');
+  if (searchEl) {
+    searchEl.addEventListener('input', debounce(function() {
+      state.searchQuery = searchEl.value.trim();
+      state.expandedId = null;
+      renderContractorView();
+    }, 300));
+    searchEl.focus();
+  }
+  // Row expand
+  bindRowExpand();
+}
+
+function bindAdminEvents() {
+  // Search
+  var searchEl = document.getElementById('adminSearch');
+  if (searchEl) {
+    searchEl.addEventListener('input', debounce(function() {
+      state.searchQuery = searchEl.value.trim();
+      applyFilters();
+      renderAdminView();
+    }, 300));
+  }
+  // Row expand
+  bindRowExpand();
+}
+
+function bindRowExpand() {
+  document.querySelectorAll('.invoice-table tbody tr[data-inv-id]').forEach(function(row) {
+    row.addEventListener('click', function() {
+      var id = this.getAttribute('data-inv-id');
+      toggleExpand(id);
+    });
+  });
+}
+
+function toggleExpand(id) {
+  if (state.expandedId === id) {
+    // Collapse
+    state.expandedId = null;
+    var detailRow = document.querySelector('tr[data-detail-for="' + id + '"]');
+    if (detailRow) detailRow.classList.remove('visible');
+    var mainRow = document.querySelector('tr[data-inv-id="' + id + '"]');
+    if (mainRow) mainRow.classList.remove('expanded');
+  } else {
+    // Collapse previous
+    if (state.expandedId) {
+      var prevDetail = document.querySelector('tr[data-detail-for="' + state.expandedId + '"]');
+      if (prevDetail) prevDetail.classList.remove('visible');
+      var prevMain = document.querySelector('tr[data-inv-id="' + state.expandedId + '"]');
+      if (prevMain) prevMain.classList.remove('expanded');
+    }
+    // Expand new
+    state.expandedId = id;
+    var inv = state.invoices.find(function(i) { return i.id === id; });
+    var detailCell = document.getElementById('detail-' + id);
+    var detailRow = document.querySelector('tr[data-detail-for="' + id + '"]');
+    var mainRow = document.querySelector('tr[data-inv-id="' + id + '"]');
+
+    if (inv && inv.lineItems && inv.lineItems.length > 0) {
+      // Already have data
+      if (detailCell) detailCell.innerHTML = renderLineItems(inv);
+      if (detailRow) detailRow.classList.add('visible');
+      if (mainRow) mainRow.classList.add('expanded');
+    } else {
+      // Load detail
+      if (detailCell) detailCell.innerHTML = '<div style="padding:20px;text-align:center;"><div class="spinner"></div></div>';
+      if (detailRow) detailRow.classList.add('visible');
+      if (mainRow) mainRow.classList.add('expanded');
+      loadInvoiceDetail(id).then(function(detail) {
+        // Merge into state
+        var idx = state.invoices.findIndex(function(i) { return i.id === id; });
+        if (idx !== -1) {
+          Object.assign(state.invoices[idx], detail);
+        }
+        if (detailCell && state.expandedId === id) {
+          detailCell.innerHTML = renderLineItems(detail);
+        }
+      }).catch(function(err) {
+        if (detailCell) detailCell.innerHTML = '<div style="padding:16px;text-align:center;color:var(--error);font-size:12px;">Failed to load details: ' + escHtml(err.message) + '</div>';
+      });
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   ACTIONS
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Submit Invoice (Contractor) ── */
+window.submitInvoice = function(id) {
+  if (!confirm('Submit this invoice for approval?')) return;
+  apiPatch('/api/invoices/' + encodeURIComponent(id), { status: 'submitted' })
+    .then(function() {
+      showToast('Invoice submitted for approval', 'success');
+      return loadInvoices();
+    })
+    .then(function() { render(); })
+    .catch(function(err) { showToast('Failed to submit: ' + err.message, 'error'); });
+};
+
+/* ── Download PDF ── */
+window.downloadPdf = function(id) {
+  var token = getAuthToken();
+  var url = '/api/invoices/' + encodeURIComponent(id) + '/pdf';
+  fetch(url, { headers: { 'Authorization': 'Bearer ' + token } })
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.blob();
+    })
+    .then(function(blob) {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'invoice-' + id + '.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+      showToast('PDF downloaded', 'success');
+    })
+    .catch(function(err) { showToast('PDF download failed: ' + err.message, 'error'); });
+};
+
+/* ── Admin: Notes Modal ── */
+window.openNotesModal = function(action, invoiceId) {
+  state.notesAction = { type: action, invoiceId: invoiceId };
+  var modal = document.getElementById('notesModal');
+  var title = document.getElementById('notesModalTitle');
+  var sub = document.getElementById('notesModalSub');
+  var btn = document.getElementById('notesConfirmBtn');
+  document.getElementById('notesInput').value = '';
+
+  if (action === 'approve') {
+    title.textContent = 'Approve Invoice';
+    sub.textContent = 'Optionally add notes for this approval.';
+    btn.className = 'btn btn-success';
+    btn.textContent = 'Approve';
+  } else {
+    title.textContent = 'Reject Invoice';
+    sub.textContent = 'Please provide a reason for rejection.';
+    btn.className = 'btn btn-danger';
+    btn.textContent = 'Reject';
+  }
+  modal.classList.add('show');
+};
+
+window.closeNotesModal = function() {
+  document.getElementById('notesModal').classList.remove('show');
+  state.notesAction = null;
+};
+
+window.confirmNotesAction = function() {
+  if (!state.notesAction) return;
+  var act = state.notesAction;
+  var notes = document.getElementById('notesInput').value.trim();
+  var newStatus = act.type === 'approve' ? 'approved' : 'rejected';
+
+  closeNotesModal();
+  apiPatch('/api/invoices/' + encodeURIComponent(act.invoiceId), { status: newStatus, notes: notes })
+    .then(function() {
+      showToast('Invoice ' + newStatus, 'success');
+      return loadInvoices();
+    })
+    .then(function() { render(); })
+    .catch(function(err) { showToast('Action failed: ' + err.message, 'error'); });
+};
+
+/* ── Admin: Approval Selection ── */
+window.toggleAllApproval = function() {
+  var checked = document.getElementById('selectAllApproval').checked;
+  document.querySelectorAll('.approval-chk').forEach(function(cb) {
+    cb.checked = checked;
+    var id = cb.getAttribute('data-id');
+    if (checked) state.selectedIds.add(id); else state.selectedIds.delete(id);
+  });
+  updateApprovalSelectionUI();
+};
+
+window.updateApprovalSelection = function() {
+  state.selectedIds.clear();
+  document.querySelectorAll('.approval-chk:checked').forEach(function(cb) {
+    state.selectedIds.add(cb.getAttribute('data-id'));
+  });
+  updateApprovalSelectionUI();
+};
+
+function updateApprovalSelectionUI() {
+  var countEl = document.getElementById('approvalSelCount');
+  var btn = document.getElementById('bulkApproveBtn');
+  var allCb = document.getElementById('selectAllApproval');
+  var total = document.querySelectorAll('.approval-chk').length;
+  if (countEl) countEl.innerHTML = '<strong>' + state.selectedIds.size + '</strong> selected';
+  if (btn) btn.disabled = state.selectedIds.size === 0;
+  if (allCb) allCb.checked = state.selectedIds.size === total && total > 0;
+}
+
+/* ── Admin: Bulk Approve ── */
+window.bulkApprove = function() {
+  if (state.selectedIds.size === 0) return;
+  if (!confirm('Approve ' + state.selectedIds.size + ' invoice(s)?')) return;
+
+  // We need invoice numbers, not ids. Try to map from state.
+  var invoiceNumbers = [];
+  state.selectedIds.forEach(function(id) {
+    var inv = state.invoices.find(function(i) { return i.id === id; });
+    if (inv) invoiceNumbers.push(inv.invoiceNumber || id);
+  });
+
+  apiPost('/api/invoices/bulk-approve', { invoiceNumbers: invoiceNumbers })
+    .then(function() {
+      showToast(invoiceNumbers.length + ' invoice(s) approved', 'success');
+      state.selectedIds.clear();
+      return loadInvoices();
+    })
+    .then(function() { render(); })
+    .catch(function(err) { showToast('Bulk approve failed: ' + err.message, 'error'); });
+};
+
+/* ── Admin: Apply Filters ── */
+window.applyAdminFilters = function() {
+  var statusEl = document.getElementById('filterStatus');
+  var fromEl = document.getElementById('filterFrom');
+  var toEl = document.getElementById('filterTo');
+  state.filterStatus = statusEl ? statusEl.value : '';
+  state.filterFrom = fromEl ? fromEl.value : '';
+  state.filterTo = toEl ? toEl.value : '';
+  state.expandedId = null;
+  document.getElementById('mainContent').innerHTML = '<div class="loading-overlay"><div class="spinner"></div><p>Filtering invoices...</p></div>';
+  loadInvoices().then(function() { render(); }).catch(function(err) {
+    showToast('Failed to filter: ' + err.message, 'error');
+    render();
+  });
+};
+
+/* ── Admin: Export CSV ── */
+window.exportCsv = function() {
+  var data = state.filteredInvoices;
+  if (data.length === 0) { showToast('No data to export', 'info'); return; }
+  var headers = ['Invoice #','Contractor','Email','Date','Client','Hours','Total','Status'];
+  var rows = [headers.join(',')];
+  data.forEach(function(inv) {
+    rows.push([
+      csvEsc(inv.invoiceNumber),
+      csvEsc(inv.contractorName),
+      csvEsc(inv.contractorEmail),
+      csvEsc(inv.date),
+      csvEsc(inv.clientName),
+      inv.totalHours || '',
+      inv.total || '',
+      inv.status || ''
+    ].join(','));
+  });
+  var csv = rows.join('\n');
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'invoices-export-' + new Date().toISOString().slice(0, 10) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(a.href);
+  showToast('CSV exported', 'success');
+};
+
+/* ── Contractor: Generate Invoice Modal ── */
+var _generateContractorEmail = '';
+var _contractorsList = [];
+
+window.openGenerateModal = function() {
+  document.getElementById('generateModal').classList.add('show');
+  document.getElementById('shiftPickerLoading').style.display = 'none';
+  document.getElementById('shiftPickerEmpty').style.display = 'none';
+  document.getElementById('shiftPickerContent').style.display = 'none';
+  document.getElementById('generateConfirmBtn').disabled = true;
+  state.selectedShiftIds.clear();
+  _generateContractorEmail = '';
+
+  if (state.role === 'admin') {
+    // Admin: show contractor dropdown first
+    var selector = document.getElementById('contractorSelector');
+    selector.style.display = 'block';
+    var dd = document.getElementById('contractorDropdown');
+    dd.innerHTML = '<option value="">-- Loading contractors... --</option>';
+    apiGet('/api/invoices/contractors')
+      .then(function(contractors) {
+        _contractorsList = contractors || [];
+        var html = '<option value="">-- Choose a contractor --</option>';
+        _contractorsList.forEach(function(c) {
+          html += '<option value="' + escHtml(c.email) + '">' + escHtml(c.name) + ' (' + escHtml(c.email) + ')</option>';
+        });
+        dd.innerHTML = html;
+      })
+      .catch(function() {
+        dd.innerHTML = '<option value="">-- Failed to load contractors --</option>';
+      });
+  } else {
+    // Contractor: auto-fetch their shifts
+    document.getElementById('contractorSelector').style.display = 'none';
+    _generateContractorEmail = state.userEmail;
+    loadUninvoicedShifts(state.userEmail);
+  }
+};
+
+window.onContractorSelected = function() {
+  var email = document.getElementById('contractorDropdown').value;
+  if (!email) {
+    document.getElementById('shiftPickerContent').style.display = 'none';
+    document.getElementById('shiftPickerEmpty').style.display = 'none';
+    document.getElementById('shiftPickerLoading').style.display = 'none';
+    document.getElementById('generateConfirmBtn').disabled = true;
+    state.selectedShiftIds.clear();
+    return;
+  }
+  _generateContractorEmail = email;
+  loadUninvoicedShifts(email);
+};
+
+function loadUninvoicedShifts(email) {
+  document.getElementById('shiftPickerLoading').style.display = 'flex';
+  document.getElementById('shiftPickerEmpty').style.display = 'none';
+  document.getElementById('shiftPickerContent').style.display = 'none';
+  document.getElementById('generateConfirmBtn').disabled = true;
+  state.selectedShiftIds.clear();
+
+  apiGet('/api/invoices/uninvoiced-shifts?email=' + encodeURIComponent(email))
+    .then(function(shifts) {
+      state.uninvoicedShifts = Array.isArray(shifts) ? shifts : [];
+      renderShiftPicker(state.uninvoicedShifts);
+    })
+    .catch(function() {
+      state.uninvoicedShifts = [];
+      renderShiftPicker([]);
+    });
+}
+
+window.closeGenerateModal = function() {
+  document.getElementById('generateModal').classList.remove('show');
+};
+
+function renderShiftPicker(shifts) {
+  document.getElementById('shiftPickerLoading').style.display = 'none';
+  if (shifts.length === 0) {
+    document.getElementById('shiftPickerEmpty').style.display = 'block';
+    document.getElementById('shiftPickerContent').style.display = 'none';
+    return;
+  }
+  document.getElementById('shiftPickerContent').style.display = 'block';
+  var picker = document.getElementById('shiftPicker');
+  var html = '';
+  shifts.forEach(function(s) {
+    var id = s.id || s.shiftId;
+    var amt = s.estimatedAmount != null ? '$' + parseFloat(s.estimatedAmount).toFixed(2) : '--';
+    html += '<div class="shift-picker-item" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;background:var(--card);">';
+    html += '<input type="checkbox" class="shift-chk" data-shift-id="' + id + '" data-hours="' + (s.hours || 0) + '" data-amount="' + (s.estimatedAmount || 0) + '" onchange="updateShiftSelection()" style="width:16px;height:16px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;">';
+    html += '<div style="flex:1;min-width:0;">';
+    html += '<div style="font-weight:600;font-size:13px;color:var(--text);">' + escHtml(s.clientName || s.client || '--') + '</div>';
+    html += '<div style="font-size:12px;color:var(--muted);">' + fmtDate(s.date || s.shiftDate) + ' &middot; ' + escHtml(s.startTime || '') + ' - ' + escHtml(s.endTime || '') + '</div>';
+    html += '</div>';
+    html += '<div style="text-align:right;flex-shrink:0;">';
+    html += '<div style="font-size:13px;font-weight:600;color:var(--text);">' + (s.hours != null ? parseFloat(s.hours).toFixed(1) + 'h' : '--') + '</div>';
+    html += '<div style="font-size:12px;font-weight:600;color:var(--aqua);">' + amt + '</div>';
+    html += '</div>';
+    html += '</div>';
+  });
+  picker.innerHTML = html;
+  document.getElementById('selectAllShifts').checked = false;
+  updateShiftSelectionUI();
+}
+
+window.toggleAllShifts = function() {
+  var checked = document.getElementById('selectAllShifts').checked;
+  state.selectedShiftIds.clear();
+  document.querySelectorAll('.shift-chk').forEach(function(cb) {
+    cb.checked = checked;
+    if (checked) state.selectedShiftIds.add(cb.getAttribute('data-shift-id'));
+  });
+  updateShiftSelectionUI();
+};
+
+window.updateShiftSelection = function() {
+  state.selectedShiftIds.clear();
+  document.querySelectorAll('.shift-chk:checked').forEach(function(cb) {
+    state.selectedShiftIds.add(cb.getAttribute('data-shift-id'));
+  });
+  updateShiftSelectionUI();
+};
+
+function updateShiftSelectionUI() {
+  var btn = document.getElementById('generateConfirmBtn');
+  var countEl = document.getElementById('shiftSelCount');
+  var total = document.querySelectorAll('.shift-chk').length;
+  btn.disabled = state.selectedShiftIds.size === 0;
+  if (countEl) countEl.textContent = state.selectedShiftIds.size + ' of ' + total + ' selected';
+  var allCb = document.getElementById('selectAllShifts');
+  if (allCb) allCb.checked = state.selectedShiftIds.size === total && total > 0;
+
+  // Update totals summary
+  var totalHours = 0;
+  var totalAmount = 0;
+  document.querySelectorAll('.shift-chk:checked').forEach(function(cb) {
+    totalHours += parseFloat(cb.getAttribute('data-hours') || 0);
+    totalAmount += parseFloat(cb.getAttribute('data-amount') || 0);
+  });
+  var hoursEl = document.getElementById('shiftTotalHours');
+  var amountEl = document.getElementById('shiftTotalAmount');
+  if (hoursEl) hoursEl.textContent = totalHours.toFixed(1) + ' hours';
+  if (amountEl) amountEl.textContent = '$' + totalAmount.toFixed(2);
+}
+
+window.confirmGenerate = function() {
+  if (state.selectedShiftIds.size === 0) return;
+  var email = _generateContractorEmail || state.userEmail;
+  if (!email) { showToast('No contractor selected', 'error'); return; }
+  var btn = document.getElementById('generateConfirmBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> Generating...';
+
+  var shiftIds = Array.from(state.selectedShiftIds);
+  apiPost('/api/invoices/generate', { contractorEmail: email, shiftIds: shiftIds })
+    .then(function(result) {
+      closeGenerateModal();
+      showToast('Invoice generated: ' + (result.invoiceNumber || 'Success') + ' — $' + (result.total || 0).toFixed(2), 'success');
+      return loadInvoices();
+    })
+    .then(function() { render(); })
+    .catch(function(err) {
+      showToast('Failed to generate: ' + err.message, 'error');
+      btn.disabled = false;
+      btn.textContent = 'Generate Invoice';
+    });
+};
+
+/* ═══════════════════════════════════════════════════════
+   RENDER ORCHESTRATOR
+   ═══════════════════════════════════════════════════════ */
+function render() {
+  // Update role badge
+  var badge = document.getElementById('roleBadge');
+  if (state.role === 'admin') {
+    badge.textContent = 'Admin';
+    badge.className = 'role-badge admin';
+  } else {
+    badge.textContent = 'Contractor';
+    badge.className = 'role-badge contractor';
+  }
+
+  // Header actions
+  var headerActions = document.getElementById('headerActions');
+  if (state.role === 'admin') {
+    headerActions.innerHTML = '<button class="btn btn-outline btn-sm" onclick="switchView(\'contractor\')">Contractor View</button>';
+  } else {
+    headerActions.innerHTML = '';
+    // Check if user might also be admin to show toggle
+    try {
+      var user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (user.role === 'superadmin' || user.role === 'admin') {
+        headerActions.innerHTML = '<button class="btn btn-outline btn-sm" onclick="switchView(\'admin\')">Admin View</button>';
+      }
+    } catch(e) {}
+  }
+
+  if (state.role === 'admin') {
+    renderAdminView();
+  } else {
+    renderContractorView();
+  }
+}
+
+window.switchView = function(role) {
+  state.role = role;
+  state.expandedId = null;
+  state.selectedIds.clear();
+  state.searchQuery = '';
+  state.currentTab = 'all';
+  state.filterStatus = '';
+  state.filterFrom = '';
+  state.filterTo = '';
+  document.getElementById('mainContent').innerHTML = '<div class="loading-overlay"><div class="spinner"></div><p>Loading invoices...</p></div>';
+  loadInvoices().then(function() { render(); }).catch(function(err) {
+    showToast('Failed to load invoices: ' + err.message, 'error');
+    render();
+  });
+};
+
+/* ── Close modals on overlay click ── */
+document.getElementById('notesModal').addEventListener('click', function(e) {
+  if (e.target === this) closeNotesModal();
+});
+document.getElementById('generateModal').addEventListener('click', function(e) {
+  if (e.target === this) closeGenerateModal();
+});
+
+/* ── Escape key closes modals ── */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeNotesModal();
+    closeGenerateModal();
+  }
+});
+
+/* ═══════════════════════════════════════════════════════
+   UTILITY
+   ═══════════════════════════════════════════════════════ */
+function escHtml(s) {
+  if (s == null) return '';
+  var div = document.createElement('div');
+  div.textContent = String(s);
+  return div.innerHTML;
+}
+
+function csvEsc(v) {
+  if (v == null) return '';
+  var s = String(v);
+  if (s.indexOf(',') !== -1 || s.indexOf('"') !== -1 || s.indexOf('\n') !== -1) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+
+function debounce(fn, delay) {
+  var timer;
+  return function() {
+    var ctx = this, args = arguments;
+    clearTimeout(timer);
+    timer = setTimeout(function() { fn.apply(ctx, args); }, delay);
+  };
+}
+
+/* ═══════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════ */
+function init() {
+  detectRole();
+  loadInvoices()
+    .then(function() { render(); })
+    .catch(function(err) {
+      console.error('Failed to load invoices:', err);
+      // Still render with empty data so UI is usable
+      state.invoices = [];
+      state.filteredInvoices = [];
+      render();
+      showToast('Could not load invoices. Check connection.', 'error');
+    });
+}
+
+init();
+
+})();
+</script>
+</body>
+</html>

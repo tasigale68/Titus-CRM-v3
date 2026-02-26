@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roster of Care Calculator — Delta Community Support</title>
+<meta name="description" content="Free NDIS Roster of Care cost calculator. Estimate your SCHADS-compliant staffing costs instantly with DCS's rostering tool.">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   ROSTER CALCULATOR — DCS BRANDING
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --navy: #0B1D3A;
+  --surface: #0F2440;
+  --royal: #2454A0;
+  --teal: #00B4D8;
+  --green: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --white: #FFFFFF;
+  --ghost: rgba(255,255,255,.06);
+  --glass: rgba(255,255,255,.08);
+  --glass2: rgba(255,255,255,.12);
+  --glass3: rgba(255,255,255,.18);
+  --text: #F0F4F8;
+  --text2: #94A3B8;
+  --text3: #64748B;
+  --border: rgba(255,255,255,.1);
+  --border2: rgba(255,255,255,.06);
+  --r: 12px;
+  --rs: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,.3);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,.4);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--navy);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--glass2); border-radius: 3px; }
+
+/* ─── Typography ─── */
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* ─── Header ─── */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 16px 32px;
+  background: rgba(11,29,58,.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background .3s;
+}
+.logo-wrap { display: flex; align-items: center; gap: 12px; }
+.logo-mark {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--teal), var(--royal));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 14px; color: #fff;
+  box-shadow: 0 2px 12px rgba(0,180,216,.3);
+}
+.logo-text { font-size: 18px; font-weight: 700; color: var(--white); }
+.logo-sub { font-size: 11px; color: var(--text2); font-weight: 500; }
+.header-badge {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  padding: 6px 14px; border-radius: 20px;
+  font-size: 12px; color: var(--teal); font-weight: 600;
+}
+
+/* ─── Hero Section ─── */
+.hero {
+  position: relative;
+  padding: 140px 32px 80px;
+  text-align: center;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(36,84,160,.4) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(0,180,216,.15) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 80% 60%, rgba(16,185,129,.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-content { position: relative; max-width: 720px; margin: 0 auto; }
+.hero-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  padding: 8px 18px; border-radius: 30px;
+  font-size: 13px; color: var(--teal); font-weight: 600;
+  margin-bottom: 24px;
+  animation: fadeInUp .6s ease;
+}
+.hero-pill .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green);
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(1.3); }
+}
+.hero h1 {
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1.1;
+  color: var(--white);
+  margin-bottom: 16px;
+  animation: fadeInUp .6s ease .1s both;
+}
+.hero h1 span {
+  background: linear-gradient(135deg, var(--teal), var(--green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p {
+  font-size: 18px; color: var(--text2);
+  max-width: 540px; margin: 0 auto 32px;
+  line-height: 1.6;
+  animation: fadeInUp .6s ease .2s both;
+}
+.hero-stats {
+  display: flex; justify-content: center; gap: 40px;
+  animation: fadeInUp .6s ease .3s both;
+}
+.hero-stat { text-align: center; }
+.hero-stat .val {
+  font-size: 28px; font-weight: 800; color: var(--teal);
+  font-family: 'JetBrains Mono', monospace;
+}
+.hero-stat .lbl { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Step Progress ─── */
+.step-progress {
+  display: flex; justify-content: center; gap: 0;
+  max-width: 600px; margin: 0 auto 48px;
+  position: relative;
+}
+.step-indicator {
+  flex: 1; text-align: center; position: relative;
+  cursor: default;
+}
+.step-indicator .step-num {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--glass);
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: var(--text3);
+  margin: 0 auto 8px;
+  transition: all .4s ease;
+  position: relative; z-index: 2;
+}
+.step-indicator .step-label {
+  font-size: 12px; font-weight: 600; color: var(--text3);
+  transition: color .4s ease;
+}
+.step-indicator.active .step-num {
+  background: linear-gradient(135deg, var(--teal), var(--royal));
+  border-color: var(--teal);
+  color: #fff;
+  box-shadow: 0 0 24px rgba(0,180,216,.4);
+}
+.step-indicator.active .step-label { color: var(--teal); }
+.step-indicator.done .step-num {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+.step-indicator.done .step-label { color: var(--green); }
+.step-connector {
+  position: absolute; top: 20px;
+  left: calc(50% + 24px);
+  right: calc(-50% + 24px);
+  height: 2px;
+  background: var(--border);
+  z-index: 1;
+}
+.step-connector .fill {
+  height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--green), var(--teal));
+  transition: width .6s ease;
+}
+.step-indicator.done .step-connector .fill { width: 100%; }
+
+/* ─── Main Container ─── */
+.main-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* ─── Step Sections ─── */
+.step-section {
+  display: none;
+  animation: stepIn .5s ease;
+}
+.step-section.visible { display: block; }
+
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Cards ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.card-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 24px;
+}
+.card-icon {
+  width: 42px; height: 42px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.card-icon.teal { background: rgba(0,180,216,.15); color: var(--teal); }
+.card-icon.green { background: rgba(16,185,129,.15); color: var(--green); }
+.card-icon.royal { background: rgba(36,84,160,.25); color: #5B8DEF; }
+.card-icon.warning { background: rgba(245,158,11,.15); color: var(--warning); }
+.card-title { font-size: 18px; font-weight: 700; color: var(--white); }
+.card-subtitle { font-size: 13px; color: var(--text3); margin-top: 2px; }
+
+/* ─── Form Elements ─── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.form-grid .full { grid-column: 1 / -1; }
+
+.fg { margin-bottom: 0; }
+.fg label {
+  display: block;
+  font-size: 11px; font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin-bottom: 6px;
+}
+.fg input, .fg select {
+  width: 100%;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  padding: 11px 14px;
+  font-size: 14px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: all .2s;
+}
+.fg input::placeholder { color: var(--text3); }
+.fg select { cursor: pointer; }
+.fg select option { background: var(--surface); color: var(--text); }
+.fg input:focus, .fg select:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(0,180,216,.15);
+}
+.fg .error-text {
+  font-size: 11px; color: var(--error);
+  margin-top: 4px; display: none;
+}
+.fg.has-error input, .fg.has-error select {
+  border-color: var(--error);
+}
+.fg.has-error .error-text { display: block; }
+
+/* ─── Buttons ─── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--rs);
+  font-size: 14px; font-weight: 600;
+  border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all .25s ease;
+  position: relative; overflow: hidden;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--teal), #0090B0);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0,180,216,.3);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,180,216,.4);
+}
+.btn-primary:active { transform: translateY(0); }
+
+.btn-success {
+  background: linear-gradient(135deg, var(--green), #059669);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(16,185,129,.3);
+}
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(16,185,129,.4);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text2);
+}
+.btn-outline:hover {
+  background: var(--glass);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.btn-lg { padding: 16px 36px; font-size: 16px; border-radius: 12px; }
+
+.btn:disabled {
+  opacity: .5; cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn .spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  display: none;
+}
+.btn.loading .spinner { display: block; }
+.btn.loading .btn-text { opacity: 0; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── Roster Builder ─── */
+.roster-grid {
+  display: grid;
+  gap: 12px;
+}
+.day-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--glass);
+  border: 1px solid var(--border2);
+  border-radius: var(--rs);
+  transition: all .2s;
+}
+.day-row:hover {
+  background: var(--glass2);
+  border-color: var(--border);
+}
+.day-label {
+  font-weight: 700; font-size: 14px; color: var(--white);
+}
+.day-label .day-short { display: none; }
+.day-row input, .day-row select {
+  width: 100%;
+  background: rgba(0,0,0,.2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border .2s;
+}
+.day-row input:focus, .day-row select:focus {
+  border-color: var(--teal);
+}
+.day-row select option { background: var(--surface); }
+.day-row input[type="number"] {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+}
+
+/* ─── Staff Config Bar ─── */
+.config-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 20px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  margin-bottom: 24px;
+}
+
+/* ─── Live Cost Display ─── */
+.live-cost {
+  text-align: center;
+  padding: 32px;
+  background: linear-gradient(135deg, rgba(0,180,216,.08), rgba(16,185,129,.08));
+  border: 1px solid rgba(0,180,216,.2);
+  border-radius: 16px;
+  margin-top: 24px;
+}
+.live-cost .label {
+  font-size: 13px; font-weight: 600;
+  color: var(--teal);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.live-cost .amount {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--white);
+  transition: all .3s ease;
+}
+.live-cost .amount.updating {
+  transform: scale(1.05);
+  color: var(--teal);
+}
+.live-cost .per-week {
+  font-size: 14px; color: var(--text3);
+  margin-top: 4px;
+}
+
+/* ─── Results ─── */
+.results-hero {
+  text-align: center;
+  padding: 40px 32px;
+  background: linear-gradient(135deg, var(--surface), rgba(36,84,160,.2));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+.results-hero .big-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 56px; font-weight: 800;
+  background: linear-gradient(135deg, var(--teal), var(--green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.results-hero .subtitle {
+  font-size: 16px; color: var(--text2); margin-top: 4px;
+}
+
+.cost-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.cost-card {
+  background: var(--glass);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  padding: 20px;
+  text-align: center;
+  transition: all .3s;
+}
+.cost-card:hover {
+  border-color: var(--border);
+  transform: translateY(-2px);
+}
+.cost-card .cost-label {
+  font-size: 11px; font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin-bottom: 8px;
+}
+.cost-card .cost-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px; font-weight: 700;
+  color: var(--white);
+}
+.cost-card .cost-note {
+  font-size: 11px; color: var(--text3); margin-top: 4px;
+}
+.cost-card.highlight {
+  border-color: rgba(0,180,216,.3);
+  background: linear-gradient(135deg, rgba(0,180,216,.08), rgba(16,185,129,.06));
+}
+
+/* ─── Chart ─── */
+.chart-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.chart-title {
+  font-size: 15px; font-weight: 700; color: var(--white);
+  margin-bottom: 16px;
+}
+.chart-canvas-wrap {
+  position: relative;
+  height: 280px;
+}
+
+/* ─── Value Proposition ─── */
+.value-prop {
+  background: linear-gradient(135deg, rgba(16,185,129,.08), rgba(0,180,216,.08));
+  border: 1px solid rgba(16,185,129,.25);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+.value-prop h3 {
+  font-size: 20px; color: var(--green); margin-bottom: 16px;
+}
+.value-prop .comparison {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.comp-card {
+  background: rgba(0,0,0,.2);
+  border-radius: var(--r);
+  padding: 20px; text-align: center;
+}
+.comp-card .comp-title {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .6px; margin-bottom: 8px;
+}
+.comp-card.manual .comp-title { color: var(--warning); }
+.comp-card.titus .comp-title { color: var(--green); }
+.comp-card .comp-amount {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px; font-weight: 700;
+}
+.comp-card.manual .comp-amount { color: var(--warning); }
+.comp-card.titus .comp-amount { color: var(--green); }
+.comp-card .comp-detail { font-size: 12px; color: var(--text3); margin-top: 4px; }
+.vs-badge {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--glass2);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; color: var(--text3);
+}
+.savings-banner {
+  text-align: center;
+  padding: 16px;
+  background: rgba(16,185,129,.1);
+  border: 1px solid rgba(16,185,129,.3);
+  border-radius: var(--rs);
+}
+.savings-banner .save-amount {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px; font-weight: 800; color: var(--green);
+}
+.savings-banner .save-text {
+  font-size: 13px; color: var(--text2); margin-top: 2px;
+}
+
+/* ─── CTA Section ─── */
+.cta-section {
+  text-align: center;
+  padding: 48px 32px;
+  background: linear-gradient(135deg, var(--royal), rgba(0,180,216,.3));
+  border-radius: 16px;
+  margin-bottom: 24px;
+  position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute; top: -50%; left: -50%; right: -50%; bottom: -50%;
+  background: radial-gradient(circle at 30% 50%, rgba(0,180,216,.2), transparent 50%);
+  pointer-events: none;
+}
+.cta-section h2 {
+  font-size: 28px; color: var(--white); margin-bottom: 12px;
+  position: relative;
+}
+.cta-section p {
+  font-size: 16px; color: rgba(255,255,255,.7);
+  max-width: 480px; margin: 0 auto 28px;
+  position: relative;
+}
+.cta-buttons {
+  display: flex; justify-content: center; gap: 16px;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+/* ─── Footer ─── */
+.site-footer {
+  text-align: center;
+  padding: 40px 32px;
+  border-top: 1px solid var(--border2);
+}
+.site-footer p {
+  font-size: 13px; color: var(--text3);
+}
+.site-footer a {
+  color: var(--teal); text-decoration: none;
+}
+.site-footer a:hover { text-decoration: underline; }
+
+/* ─── Toast ─── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  padding: 14px 20px;
+  border-radius: var(--rs);
+  font-size: 13px; font-weight: 600;
+  color: #fff;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all .4s ease;
+  z-index: 200;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--error); }
+
+/* ─── Print Styles ─── */
+@media print {
+  .site-header, .hero, .step-progress, .cta-section,
+  .site-footer, .btn, .toast, .value-prop, #step1, #step2 { display: none !important; }
+  body { background: #fff; color: #111; }
+  .main-container { max-width: 100%; padding: 0; }
+  #step3 { display: block !important; }
+  .card, .results-hero, .chart-wrap, .cost-card {
+    background: #fff; border-color: #ddd; color: #111;
+    box-shadow: none; break-inside: avoid;
+  }
+  .results-hero .big-number { color: var(--teal); -webkit-text-fill-color: var(--teal); }
+  .cost-card .cost-value { color: #111; }
+  .cost-card .cost-label, .cost-card .cost-note { color: #666; }
+  .results-hero .subtitle { color: #666; }
+  .chart-title { color: #111; }
+  .print-header {
+    display: block !important;
+    text-align: center; padding: 20px 0;
+    border-bottom: 2px solid var(--teal);
+    margin-bottom: 24px;
+  }
+  .print-header h1 { font-size: 24px; color: var(--teal); }
+  .print-header p { font-size: 14px; color: #666; }
+}
+.print-header { display: none; }
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .site-header { padding: 12px 16px; }
+  .hero { padding: 100px 16px 48px; }
+  .hero h1 { font-size: 28px; }
+  .hero p { font-size: 15px; }
+  .hero-stats { gap: 24px; }
+  .hero-stat .val { font-size: 22px; }
+  .main-container { padding: 0 12px 60px; }
+  .card { padding: 20px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .day-row {
+    grid-template-columns: 80px 1fr 1fr;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  .day-row select:last-child {
+    grid-column: 2 / -1;
+  }
+  .day-label .day-full { display: none; }
+  .day-label .day-short { display: inline; }
+  .live-cost .amount { font-size: 36px; }
+  .cost-grid { grid-template-columns: 1fr; }
+  .results-hero .big-number { font-size: 40px; }
+  .value-prop .comparison {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .vs-badge { margin: 0 auto; }
+  .cta-buttons { flex-direction: column; align-items: center; }
+  .config-bar { grid-template-columns: 1fr; }
+  .step-indicator .step-label { font-size: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header class="site-header">
+  <div class="logo-wrap">
+    <div class="logo-mark">DCS</div>
+    <div>
+      <div class="logo-text">Delta Community Support</div>
+      <div class="logo-sub">NDIS Provider</div>
+    </div>
+  </div>
+  <div class="header-badge">Free Calculator</div>
+</header>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-pill">
+      <span class="dot"></span>
+      SCHADS Award Compliant
+    </div>
+    <h1>Roster of Care<br><span>Cost Calculator</span></h1>
+    <p>Know exactly what your NDIS roster costs before you commit. Built-in SCHADS Award rates, penalty calculations, and instant cost breakdowns.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="val">100%</div>
+        <div class="lbl">SCHADS Compliant</div>
+      </div>
+      <div class="hero-stat">
+        <div class="val">&lt;30s</div>
+        <div class="lbl">Instant Results</div>
+      </div>
+      <div class="hero-stat">
+        <div class="val">$0</div>
+        <div class="lbl">Completely Free</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ STEP PROGRESS ═══════════ -->
+<div class="main-container">
+  <div class="step-progress">
+    <div class="step-indicator active" id="step-ind-1">
+      <div class="step-num">1</div>
+      <div class="step-label">Your Details</div>
+      <div class="step-connector"><div class="fill"></div></div>
+    </div>
+    <div class="step-indicator" id="step-ind-2">
+      <div class="step-num">2</div>
+      <div class="step-label">Build Roster</div>
+      <div class="step-connector"><div class="fill"></div></div>
+    </div>
+    <div class="step-indicator" id="step-ind-3">
+      <div class="step-num">3</div>
+      <div class="step-label">Results</div>
+    </div>
+  </div>
+
+  <!-- ═══════════ PRINT HEADER ═══════════ -->
+  <div class="print-header">
+    <h1>Roster of Care Cost Report</h1>
+    <p>Generated by Delta Community Support | <span id="print-date"></span></p>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       STEP 1 — LEAD CAPTURE
+       ═══════════════════════════════════════ -->
+  <div class="step-section visible" id="step1">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon teal">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Tell us about your organisation</div>
+          <div class="card-subtitle">We'll tailor the results and send you a detailed report</div>
+        </div>
+      </div>
+
+      <form id="leadForm" autocomplete="on">
+        <div class="form-grid">
+          <div class="fg">
+            <label for="orgName">Organisation Name *</label>
+            <input type="text" id="orgName" placeholder="e.g. Bright Futures Support" required>
+            <div class="error-text">Please enter your organisation name</div>
+          </div>
+          <div class="fg">
+            <label for="contactName">Contact Name *</label>
+            <input type="text" id="contactName" placeholder="e.g. Sarah Johnson" required>
+            <div class="error-text">Please enter your name</div>
+          </div>
+          <div class="fg">
+            <label for="email">Email Address *</label>
+            <input type="email" id="email" placeholder="sarah@example.com" required>
+            <div class="error-text">Please enter a valid email address</div>
+          </div>
+          <div class="fg">
+            <label for="mobile">Mobile Number *</label>
+            <input type="tel" id="mobile" placeholder="0412 345 678" required>
+            <div class="error-text">Please enter a valid mobile number</div>
+          </div>
+          <div class="fg">
+            <label for="state">State / Territory *</label>
+            <select id="state" required>
+              <option value="">Select state...</option>
+              <option value="NSW">NSW</option>
+              <option value="VIC">VIC</option>
+              <option value="QLD">QLD</option>
+              <option value="SA">SA</option>
+              <option value="WA">WA</option>
+              <option value="TAS">TAS</option>
+              <option value="NT">NT</option>
+              <option value="ACT">ACT</option>
+            </select>
+            <div class="error-text">Please select your state</div>
+          </div>
+          <div class="fg">
+            <label for="participants">Number of Participants</label>
+            <input type="number" id="participants" min="1" max="9999" placeholder="e.g. 25" value="">
+          </div>
+          <div class="fg full">
+            <label for="numStaff">Number of Staff</label>
+            <input type="number" id="numStaff" min="1" max="9999" placeholder="e.g. 40" value="">
+          </div>
+        </div>
+
+        <div style="margin-top:28px; text-align:center;">
+          <button type="submit" class="btn btn-primary btn-lg" id="leadBtn">
+            <span class="btn-text">Calculate My Roster Cost</span>
+            <div class="spinner"></div>
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       STEP 2 — CALCULATOR
+       ═══════════════════════════════════════ -->
+  <div class="step-section" id="step2">
+
+    <!-- Staff Configuration -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon royal">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Staff Configuration</div>
+          <div class="card-subtitle">Set the employment type and SCHADS level for this roster</div>
+        </div>
+      </div>
+
+      <div class="config-bar">
+        <div class="fg" style="margin:0">
+          <label for="staffType">Employment Type</label>
+          <select id="staffType">
+            <option value="casual">Casual</option>
+            <option value="part-time">Part-Time</option>
+            <option value="full-time">Full-Time</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label for="schadsLevel">SCHADS Level</label>
+          <select id="schadsLevel">
+            <option value="1">Level 1 — $29.28/hr</option>
+            <option value="2" selected>Level 2 — $31.25/hr</option>
+            <option value="3">Level 3 — $32.92/hr</option>
+            <option value="4">Level 4 — $34.17/hr</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label>Include Public Holiday?</label>
+          <select id="inclPH">
+            <option value="no">No</option>
+            <option value="yes">Yes (1 day this week)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Roster Builder -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon green">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Weekly Roster Builder</div>
+          <div class="card-subtitle">Enter shift details for each day of the week</div>
+        </div>
+      </div>
+
+      <!-- Column Headers -->
+      <div style="display:grid; grid-template-columns:100px 1fr 1fr 1fr; gap:12px; padding:0 16px 8px; font-size:11px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.5px;">
+        <div>Day</div>
+        <div>Hours</div>
+        <div>Time of Day</div>
+        <div>Shift Type</div>
+      </div>
+
+      <div class="roster-grid" id="rosterGrid">
+        <!-- Rows built by JS -->
+      </div>
+
+      <!-- Live Cost -->
+      <div class="live-cost">
+        <div class="label">Estimated Weekly Cost</div>
+        <div class="amount" id="liveCost">$0.00</div>
+        <div class="per-week">based on current roster inputs</div>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+      <button class="btn btn-outline" onclick="goToStep(1)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 8H1M8 15l-7-7 7-7"/></svg>
+        Back
+      </button>
+      <button class="btn btn-success btn-lg" onclick="goToStep(3)" id="viewResultsBtn">
+        View Full Results
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       STEP 3 — RESULTS
+       ═══════════════════════════════════════ -->
+  <div class="step-section" id="step3">
+
+    <!-- Big Weekly Number -->
+    <div class="results-hero" id="resultsHero">
+      <div style="font-size:13px; font-weight:600; color:var(--teal); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Your Estimated Weekly Roster Cost</div>
+      <div class="big-number" id="resultWeekly">$0.00</div>
+      <div class="subtitle" id="resultOrgName">Organisation Roster Estimate</div>
+    </div>
+
+    <!-- Cost Cards -->
+    <div class="cost-grid">
+      <div class="cost-card">
+        <div class="cost-label">Weekly Cost</div>
+        <div class="cost-value" id="costWeekly">$0.00</div>
+        <div class="cost-note">7-day roster total</div>
+      </div>
+      <div class="cost-card">
+        <div class="cost-label">Monthly Estimate</div>
+        <div class="cost-value" id="costMonthly">$0.00</div>
+        <div class="cost-note">Weekly x 4.33</div>
+      </div>
+      <div class="cost-card highlight">
+        <div class="cost-label">Annual Projection</div>
+        <div class="cost-value" id="costAnnual">$0.00</div>
+        <div class="cost-note">Weekly x 52</div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-wrap">
+      <div class="chart-title">Daily Cost Breakdown</div>
+      <div class="chart-canvas-wrap">
+        <canvas id="costChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Breakdown Table -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon warning">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10M6 20V4M18 20v-6"/></svg>
+        </div>
+        <div>
+          <div class="card-title">Detailed Day-by-Day Breakdown</div>
+          <div class="card-subtitle">Hours, rates, penalties and totals for each day</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table id="breakdownTable" style="width:100%; border-collapse:collapse; font-size:13px;">
+          <thead>
+            <tr style="border-bottom:2px solid var(--border);">
+              <th style="text-align:left; padding:10px 12px; color:var(--text2); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.5px;">Day</th>
+              <th style="text-align:center; padding:10px 12px; color:var(--text2); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.5px;">Hours</th>
+              <th style="text-align:center; padding:10px 12px; color:var(--text2); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.5px;">Base Rate</th>
+              <th style="text-align:center; padding:10px 12px; color:var(--text2); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.5px;">Multiplier</th>
+              <th style="text-align:right; padding:10px 12px; color:var(--text2); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.5px;">Cost</th>
+            </tr>
+          </thead>
+          <tbody id="breakdownBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Value Proposition -->
+    <div class="value-prop">
+      <h3>How much is manual rostering really costing you?</h3>
+      <div class="comparison">
+        <div class="comp-card manual">
+          <div class="comp-title">Manual Rostering</div>
+          <div class="comp-amount" id="manualCostRange">$360-540</div>
+          <div class="comp-detail">8-12 hrs/week at $45/hr</div>
+        </div>
+        <div class="vs-badge">VS</div>
+        <div class="comp-card titus">
+          <div class="comp-title">Titus Automated</div>
+          <div class="comp-amount">$249</div>
+          <div class="comp-detail">Per week, fully automated</div>
+        </div>
+      </div>
+      <div class="savings-banner">
+        <div class="save-amount" id="savingsAmount">Save $111-291/week</div>
+        <div class="save-text" id="savingsText">That's up to $15,132 per year back in your pocket</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section">
+      <h2>Ready to automate your rostering?</h2>
+      <p>See how Titus can eliminate manual roster management and save your team hours every week.</p>
+      <div class="cta-buttons">
+        <a href="https://calendly.com" target="_blank" class="btn btn-success btn-lg" style="text-decoration:none;">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M11 14l2 2 4-4"/></svg>
+          Book a Free 15-Minute Demo
+        </a>
+        <button class="btn btn-outline btn-lg" onclick="downloadResults()">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Download Results
+        </button>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+      <button class="btn btn-outline" onclick="goToStep(2)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 8H1M8 15l-7-7 7-7"/></svg>
+        Back to Roster
+      </button>
+      <button class="btn btn-outline" onclick="goToStep(1)">Start Over</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="site-footer">
+  <p>Built by <a href="#">Delta Community Support</a> &mdash; Empowering NDIS providers with smarter tools.</p>
+  <p style="margin-top:8px;">SCHADS rates as at 1 July 2024. For indicative purposes only.</p>
+</footer>
+
+<!-- ═══════════ TOAST ═══════════ -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  /* ─────────────────────────────────────────────
+     SCHADS RATE ENGINE
+     ───────────────────────────────────────────── */
+  const SCHADS = {
+    baseRates: { 1: 29.28, 2: 31.25, 3: 32.92, 4: 34.17 },
+    sleepoverFlat: 62.47,
+    minimumShiftHours: 2,
+
+    /* Multipliers by day type */
+    multipliers: {
+      weekday:        { permanent: 1.00, casual: 1.25 },
+      saturday:       { permanent: 1.50, casual: 1.75 },
+      sunday:         { permanent: 2.00, casual: 2.25 },
+      publicHoliday:  { permanent: 2.50, casual: 2.75 },
+      evening:        1.15,   /* after 8pm loading */
+      overnight:      1.15,   /* 12am-6am loading */
+    },
+
+    overtime: { first2: 1.50, after2: 2.00 },
+
+    getBaseRate: function(level) {
+      return this.baseRates[level] || this.baseRates[2];
+    },
+
+    /**
+     * Calculate cost for a single day/shift
+     * @param {Object} params
+     * @param {number} params.hours       - shift hours
+     * @param {string} params.dayOfWeek   - 'mon','tue',...,'sun'
+     * @param {string} params.timeOfDay   - 'morning','afternoon','evening','overnight'
+     * @param {string} params.shiftType   - 'standard','sleepover','community'
+     * @param {string} params.staffType   - 'casual','part-time','full-time'
+     * @param {number} params.level       - SCHADS level 1-4
+     * @param {boolean} params.isPublicHoliday
+     * @returns {Object} { cost, hours, baseRate, multiplier, breakdown }
+     */
+    calculate: function(params) {
+      var hours = parseFloat(params.hours) || 0;
+      if (hours <= 0) return { cost: 0, hours: 0, baseRate: 0, multiplier: 0, breakdown: 'No hours' };
+
+      /* Enforce minimum shift */
+      if (hours < this.minimumShiftHours) hours = this.minimumShiftHours;
+
+      var base = this.getBaseRate(params.level);
+      var isCasual = params.staffType === 'casual';
+      var dayType = this._getDayType(params.dayOfWeek, params.isPublicHoliday);
+
+      /* Sleepover */
+      if (params.shiftType === 'sleepover') {
+        return {
+          cost: this.sleepoverFlat,
+          hours: hours,
+          baseRate: base,
+          multiplier: 0,
+          breakdown: 'Sleepover flat rate $' + this.sleepoverFlat.toFixed(2)
+        };
+      }
+
+      /* Day multiplier */
+      var dayMult;
+      if (dayType === 'publicHoliday') {
+        dayMult = isCasual ? this.multipliers.publicHoliday.casual : this.multipliers.publicHoliday.permanent;
+      } else if (dayType === 'saturday') {
+        dayMult = isCasual ? this.multipliers.saturday.casual : this.multipliers.saturday.permanent;
+      } else if (dayType === 'sunday') {
+        dayMult = isCasual ? this.multipliers.sunday.casual : this.multipliers.sunday.permanent;
+      } else {
+        dayMult = isCasual ? this.multipliers.weekday.casual : this.multipliers.weekday.permanent;
+      }
+
+      /* Time-of-day loading */
+      var timeMult = 1.0;
+      if (params.timeOfDay === 'evening') {
+        timeMult = this.multipliers.evening;
+      } else if (params.timeOfDay === 'overnight') {
+        timeMult = this.multipliers.overnight;
+      }
+
+      var effectiveMult = dayMult * timeMult;
+      var effectiveRate = base * effectiveMult;
+      var cost = effectiveRate * hours;
+
+      var parts = [];
+      parts.push(dayType.replace(/([A-Z])/g, ' $1').trim());
+      if (timeMult > 1) parts.push(params.timeOfDay + ' loading');
+      if (isCasual) parts.push('+25% casual');
+
+      return {
+        cost: Math.round(cost * 100) / 100,
+        hours: hours,
+        baseRate: base,
+        multiplier: Math.round(effectiveMult * 100) / 100,
+        effectiveRate: Math.round(effectiveRate * 100) / 100,
+        breakdown: parts.join(' + ')
+      };
+    },
+
+    _getDayType: function(day, isPH) {
+      if (isPH) return 'publicHoliday';
+      if (day === 'sat') return 'saturday';
+      if (day === 'sun') return 'sunday';
+      return 'weekday';
+    }
+  };
+
+
+  /* ─────────────────────────────────────────────
+     DOM REFERENCES
+     ───────────────────────────────────────────── */
+  var leadForm = document.getElementById('leadForm');
+  var leadBtn = document.getElementById('leadBtn');
+  var liveCostEl = document.getElementById('liveCost');
+  var toastEl = document.getElementById('toast');
+  var costChart = null;
+
+  var DAYS = [
+    { key: 'mon', full: 'Monday',    short: 'Mon' },
+    { key: 'tue', full: 'Tuesday',   short: 'Tue' },
+    { key: 'wed', full: 'Wednesday', short: 'Wed' },
+    { key: 'thu', full: 'Thursday',  short: 'Thu' },
+    { key: 'fri', full: 'Friday',    short: 'Fri' },
+    { key: 'sat', full: 'Saturday',  short: 'Sat' },
+    { key: 'sun', full: 'Sunday',    short: 'Sun' },
+  ];
+
+  var leadData = {};
+
+  /* ─────────────────────────────────────────────
+     BUILD ROSTER GRID
+     ───────────────────────────────────────────── */
+  function buildRosterGrid() {
+    var grid = document.getElementById('rosterGrid');
+    var html = '';
+    DAYS.forEach(function(d) {
+      html += '<div class="day-row" data-day="' + d.key + '">';
+      html += '  <div class="day-label"><span class="day-full">' + d.full + '</span><span class="day-short">' + d.short + '</span></div>';
+      html += '  <input type="number" class="roster-hours" data-day="' + d.key + '" min="0" max="24" step="0.5" value="' + (d.key === 'sat' || d.key === 'sun' ? '0' : '8') + '" placeholder="Hrs">';
+      html += '  <select class="roster-time" data-day="' + d.key + '">';
+      html += '    <option value="morning">Morning (6am-2pm)</option>';
+      html += '    <option value="afternoon">Afternoon (2pm-8pm)</option>';
+      html += '    <option value="evening">Evening (8pm-12am)</option>';
+      html += '    <option value="overnight">Overnight (12am-6am)</option>';
+      html += '  </select>';
+      html += '  <select class="roster-shift" data-day="' + d.key + '">';
+      html += '    <option value="standard">Standard</option>';
+      html += '    <option value="sleepover">Sleepover</option>';
+      html += '    <option value="community">Community Access</option>';
+      html += '  </select>';
+      html += '</div>';
+    });
+    grid.innerHTML = html;
+
+    /* Attach change listeners */
+    grid.querySelectorAll('input, select').forEach(function(el) {
+      el.addEventListener('input', recalculate);
+      el.addEventListener('change', recalculate);
+    });
+  }
+
+  /* ─────────────────────────────────────────────
+     RECALCULATE
+     ───────────────────────────────────────────── */
+  var calcResults = [];
+  var weeklyTotal = 0;
+
+  function recalculate() {
+    var staffType = document.getElementById('staffType').value;
+    var level = parseInt(document.getElementById('schadsLevel').value);
+    var inclPH = document.getElementById('inclPH').value;
+    /* If PH is included, apply it to Monday by default */
+    var phDay = inclPH === 'yes' ? 'mon' : null;
+
+    calcResults = [];
+    weeklyTotal = 0;
+
+    DAYS.forEach(function(d) {
+      var hours = parseFloat(document.querySelector('.roster-hours[data-day="' + d.key + '"]').value) || 0;
+      var time = document.querySelector('.roster-time[data-day="' + d.key + '"]').value;
+      var shift = document.querySelector('.roster-shift[data-day="' + d.key + '"]').value;
+
+      var result = SCHADS.calculate({
+        hours: hours,
+        dayOfWeek: d.key,
+        timeOfDay: time,
+        shiftType: shift,
+        staffType: staffType,
+        level: level,
+        isPublicHoliday: (d.key === phDay)
+      });
+
+      result.day = d.full;
+      result.dayKey = d.key;
+      calcResults.push(result);
+      weeklyTotal += result.cost;
+    });
+
+    /* Animate cost display */
+    animateCost(weeklyTotal);
+  }
+
+  var animFrame = null;
+  var displayedCost = 0;
+
+  function animateCost(target) {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    var start = displayedCost;
+    var diff = target - start;
+    var duration = 400;
+    var startTime = null;
+
+    liveCostEl.classList.add('updating');
+    setTimeout(function() { liveCostEl.classList.remove('updating'); }, 300);
+
+    function frame(ts) {
+      if (!startTime) startTime = ts;
+      var progress = Math.min((ts - startTime) / duration, 1);
+      /* Ease out cubic */
+      var eased = 1 - Math.pow(1 - progress, 3);
+      displayedCost = start + diff * eased;
+      liveCostEl.textContent = '$' + displayedCost.toFixed(2);
+      if (progress < 1) {
+        animFrame = requestAnimationFrame(frame);
+      } else {
+        displayedCost = target;
+        liveCostEl.textContent = '$' + target.toFixed(2);
+      }
+    }
+    animFrame = requestAnimationFrame(frame);
+  }
+
+  /* ─────────────────────────────────────────────
+     STEP NAVIGATION
+     ───────────────────────────────────────────── */
+  var currentStep = 1;
+
+  window.goToStep = function(step) {
+    /* Hide all */
+    document.querySelectorAll('.step-section').forEach(function(s) {
+      s.classList.remove('visible');
+    });
+
+    /* Update indicators */
+    for (var i = 1; i <= 3; i++) {
+      var ind = document.getElementById('step-ind-' + i);
+      ind.classList.remove('active', 'done');
+      if (i < step) ind.classList.add('done');
+      else if (i === step) ind.classList.add('active');
+    }
+
+    /* Show target */
+    document.getElementById('step' + step).classList.add('visible');
+    currentStep = step;
+
+    /* Scroll to top of steps */
+    window.scrollTo({ top: document.querySelector('.step-progress').offsetTop - 80, behavior: 'smooth' });
+
+    /* If going to step 3, render results */
+    if (step === 3) renderResults();
+  };
+
+  /* ─────────────────────────────────────────────
+     STEP 1 — LEAD FORM SUBMIT
+     ───────────────────────────────────────────── */
+  leadForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    /* Validate */
+    var valid = true;
+    var fields = ['orgName', 'contactName', 'email', 'mobile', 'state'];
+    fields.forEach(function(id) {
+      var el = document.getElementById(id);
+      var fg = el.closest('.fg');
+      if (!el.value.trim()) {
+        fg.classList.add('has-error');
+        valid = false;
+      } else {
+        fg.classList.remove('has-error');
+      }
+    });
+
+    /* Email validation */
+    var emailEl = document.getElementById('email');
+    if (emailEl.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value)) {
+      emailEl.closest('.fg').classList.add('has-error');
+      valid = false;
+    }
+
+    if (!valid) {
+      showToast('Please fill in all required fields', 'error');
+      return;
+    }
+
+    /* Collect data */
+    leadData = {
+      organisationName: document.getElementById('orgName').value.trim(),
+      contactName: document.getElementById('contactName').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      mobile: document.getElementById('mobile').value.trim(),
+      state: document.getElementById('state').value,
+      participants: parseInt(document.getElementById('participants').value) || null,
+      staff: parseInt(document.getElementById('numStaff').value) || null,
+      source: 'roster-calculator',
+      capturedAt: new Date().toISOString()
+    };
+
+    /* Submit lead */
+    leadBtn.classList.add('loading');
+    leadBtn.disabled = true;
+
+    fetch('/api/leads/roster-calculator', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(leadData)
+    })
+    .then(function(res) {
+      /* We proceed regardless — the calculator still works even if the API isn't available */
+      return res.ok ? res.json() : Promise.resolve({ ok: true });
+    })
+    .catch(function() {
+      /* Silently continue — lead capture is best-effort */
+      return { ok: true };
+    })
+    .finally(function() {
+      leadBtn.classList.remove('loading');
+      leadBtn.disabled = false;
+      showToast('Details saved! Let\'s build your roster.', 'success');
+      goToStep(2);
+      recalculate();
+    });
+  });
+
+  /* ─────────────────────────────────────────────
+     STEP 3 — RENDER RESULTS
+     ───────────────────────────────────────────── */
+  function renderResults() {
+    recalculate();
+
+    var weekly = weeklyTotal;
+    var monthly = weekly * 4.33;
+    var annual = weekly * 52;
+
+    document.getElementById('resultWeekly').textContent = formatCurrency(weekly);
+    document.getElementById('resultOrgName').textContent =
+      (leadData.organisationName || 'Your Organisation') + ' — Weekly Roster Estimate';
+
+    document.getElementById('costWeekly').textContent = formatCurrency(weekly);
+    document.getElementById('costMonthly').textContent = formatCurrency(monthly);
+    document.getElementById('costAnnual').textContent = formatCurrency(annual);
+
+    /* Print date */
+    document.getElementById('print-date').textContent = new Date().toLocaleDateString('en-AU', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    /* Savings */
+    var minManual = 360, maxManual = 540, titusCost = 249;
+    var minSave = minManual - titusCost;
+    var maxSave = maxManual - titusCost;
+    document.getElementById('savingsAmount').textContent =
+      'Save $' + minSave + '-' + maxSave + '/week';
+    document.getElementById('savingsText').textContent =
+      'That\'s up to $' + formatNumber(maxSave * 52) + ' per year back in your pocket';
+
+    /* Breakdown table */
+    renderBreakdownTable();
+
+    /* Chart */
+    renderChart();
+  }
+
+  function renderBreakdownTable() {
+    var body = document.getElementById('breakdownBody');
+    var html = '';
+    var totalHours = 0;
+
+    calcResults.forEach(function(r) {
+      totalHours += r.hours;
+      var rowBg = r.cost > 0 ? '' : ' style="opacity:.4"';
+      html += '<tr' + rowBg + ' style="border-bottom:1px solid var(--border2);">';
+      html += '<td style="padding:10px 12px; font-weight:600; color:var(--white);">' + r.day + '</td>';
+      html += '<td style="padding:10px 12px; text-align:center; font-family:JetBrains Mono,monospace; font-size:13px;">' + r.hours + 'h</td>';
+      html += '<td style="padding:10px 12px; text-align:center; font-family:JetBrains Mono,monospace; font-size:13px;">$' + r.baseRate.toFixed(2) + '</td>';
+      html += '<td style="padding:10px 12px; text-align:center;">';
+      if (r.multiplier > 0) {
+        var multColor = r.multiplier > 1.5 ? 'var(--warning)' : r.multiplier > 1 ? 'var(--teal)' : 'var(--text2)';
+        html += '<span style="font-family:JetBrains Mono,monospace; font-size:13px; color:' + multColor + ';">' + r.multiplier.toFixed(2) + 'x</span>';
+      } else {
+        html += '<span style="font-size:12px; color:var(--text3);">flat</span>';
+      }
+      html += '</td>';
+      html += '<td style="padding:10px 12px; text-align:right; font-family:JetBrains Mono,monospace; font-weight:600; color:var(--green);">' + formatCurrency(r.cost) + '</td>';
+      html += '</tr>';
+    });
+
+    /* Total row */
+    html += '<tr style="border-top:2px solid var(--teal);">';
+    html += '<td style="padding:12px; font-weight:800; color:var(--teal);">TOTAL</td>';
+    html += '<td style="padding:12px; text-align:center; font-family:JetBrains Mono,monospace; font-weight:700; color:var(--white);">' + totalHours + 'h</td>';
+    html += '<td colspan="2"></td>';
+    html += '<td style="padding:12px; text-align:right; font-family:JetBrains Mono,monospace; font-weight:800; font-size:16px; color:var(--teal);">' + formatCurrency(weeklyTotal) + '</td>';
+    html += '</tr>';
+
+    body.innerHTML = html;
+  }
+
+  function renderChart() {
+    var ctx = document.getElementById('costChart').getContext('2d');
+
+    if (costChart) costChart.destroy();
+
+    var labels = calcResults.map(function(r) { return r.day.substring(0, 3); });
+    var data = calcResults.map(function(r) { return r.cost; });
+
+    var gradient = ctx.createLinearGradient(0, 0, 0, 280);
+    gradient.addColorStop(0, 'rgba(0,180,216,.7)');
+    gradient.addColorStop(1, 'rgba(0,180,216,.1)');
+
+    costChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Daily Cost',
+          data: data,
+          backgroundColor: data.map(function(v, i) {
+            var day = calcResults[i].dayKey;
+            if (day === 'sat') return 'rgba(245,158,11,.6)';
+            if (day === 'sun') return 'rgba(239,68,68,.6)';
+            return 'rgba(0,180,216,.6)';
+          }),
+          borderColor: data.map(function(v, i) {
+            var day = calcResults[i].dayKey;
+            if (day === 'sat') return '#F59E0B';
+            if (day === 'sun') return '#EF4444';
+            return '#00B4D8';
+          }),
+          borderWidth: 2,
+          borderRadius: 8,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0F2440',
+            titleColor: '#F0F4F8',
+            bodyColor: '#94A3B8',
+            borderColor: 'rgba(255,255,255,.1)',
+            borderWidth: 1,
+            cornerRadius: 8,
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                return ' $' + context.parsed.y.toFixed(2);
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: '#64748B', font: { family: 'DM Sans', weight: '600', size: 12 } }
+          },
+          y: {
+            grid: { color: 'rgba(255,255,255,.06)' },
+            ticks: {
+              color: '#64748B',
+              font: { family: 'JetBrains Mono', size: 11 },
+              callback: function(value) { return '$' + value; }
+            }
+          }
+        },
+        animation: {
+          duration: 800,
+          easing: 'easeOutQuart'
+        }
+      }
+    });
+  }
+
+  /* ─────────────────────────────────────────────
+     UTILS
+     ───────────────────────────────────────────── */
+  function formatCurrency(n) {
+    return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function formatNumber(n) {
+    return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function showToast(msg, type) {
+    toastEl.textContent = msg;
+    toastEl.className = 'toast ' + (type || 'success');
+    setTimeout(function() { toastEl.classList.add('show'); }, 10);
+    setTimeout(function() { toastEl.classList.remove('show'); }, 3500);
+  }
+
+  window.downloadResults = function() {
+    window.print();
+  };
+
+  /* ─────────────────────────────────────────────
+     CONFIG LISTENERS
+     ───────────────────────────────────────────── */
+  document.getElementById('staffType').addEventListener('change', recalculate);
+  document.getElementById('schadsLevel').addEventListener('change', recalculate);
+  document.getElementById('inclPH').addEventListener('change', recalculate);
+
+  /* Clear field errors on input */
+  document.querySelectorAll('#leadForm input, #leadForm select').forEach(function(el) {
+    el.addEventListener('input', function() {
+      this.closest('.fg').classList.remove('has-error');
+    });
+  });
+
+  /* ─────────────────────────────────────────────
+     INIT
+     ───────────────────────────────────────────── */
+  buildRosterGrid();
+
+})();
+</script>
+
+</body>
+</html>

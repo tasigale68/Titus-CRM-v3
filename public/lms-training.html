@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Training - Delta Community Support</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --navy: #0B1D3A;
+  --surface: #0F2440;
+  --surface2: #162d50;
+  --royal: #2454A0;
+  --teal: #00B4D8;
+  --green: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --text: #E2E8F0;
+  --text-dim: #94A3B8;
+  --border: rgba(255,255,255,0.08);
+  --border-light: rgba(255,255,255,0.12);
+  --glass: rgba(15,36,64,0.85);
+  --radius: 10px;
+  --radius-lg: 14px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.5);
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--navy);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--royal); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--teal); }
+
+/* ─── HEADER ────────────────────────────────────────────────────── */
+.page-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: var(--transition);
+}
+
+.back-link:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+}
+
+.back-link svg { width: 16px; height: 16px; }
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-title h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--teal);
+}
+
+.header-title svg { width: 26px; height: 26px; color: var(--teal); }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dcs-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.dcs-logo {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, var(--royal), var(--teal));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 10px;
+  color: #fff;
+}
+
+.user-badge {
+  font-size: 12px;
+  color: var(--text-dim);
+  padding: 5px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+
+/* ─── MAIN CONTAINER ────────────────────────────────────────────── */
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 32px 60px;
+}
+
+/* ─── LOADING SPINNER ───────────────────────────────────────────── */
+.page-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.page-loader p {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+/* ─── SUMMARY CARDS ─────────────────────────────────────────────── */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 20px;
+  text-align: center;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.summary-card:hover {
+  border-color: var(--royal);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.summary-card .value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.summary-card .label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+}
+
+.summary-card.assigned .value { color: var(--teal); }
+.summary-card.assigned::before { background: var(--teal); }
+
+.summary-card.completed .value { color: var(--green); }
+.summary-card.completed::before { background: var(--green); }
+
+.summary-card.in-progress .value { color: #60A5FA; }
+.summary-card.in-progress::before { background: #60A5FA; }
+
+.summary-card.overdue .value { color: var(--error); }
+.summary-card.overdue::before { background: var(--error); }
+
+/* ─── SECTION HEADERS ───────────────────────────────────────────── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  margin-top: 36px;
+}
+
+.section-header:first-child { margin-top: 0; }
+
+.section-header h2 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-header h2 svg { width: 20px; height: 20px; color: var(--teal); }
+
+.section-header .count-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(0,180,216,0.1);
+  color: var(--teal);
+}
+
+/* ─── EXPIRING CERTIFICATIONS ALERT ─────────────────────────────── */
+.cert-alerts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.cert-alert-card {
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  transition: var(--transition);
+}
+
+.cert-alert-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.cert-alert-card.warning {
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.25);
+}
+
+.cert-alert-card.expired {
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.25);
+}
+
+.cert-alert-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cert-alert-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cert-alert-card.warning .cert-alert-icon {
+  background: rgba(245,158,11,0.15);
+  color: var(--warning);
+}
+
+.cert-alert-card.expired .cert-alert-icon {
+  background: rgba(239,68,68,0.15);
+  color: var(--error);
+}
+
+.cert-alert-icon svg { width: 20px; height: 20px; }
+
+.cert-alert-text h4 {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.cert-alert-card.warning .cert-alert-text h4 { color: var(--warning); }
+.cert-alert-card.expired .cert-alert-text h4 { color: var(--error); }
+
+.cert-alert-text p {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.btn-renew {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.cert-alert-card.warning .btn-renew {
+  background: var(--warning);
+  color: #000;
+}
+
+.cert-alert-card.warning .btn-renew:hover {
+  background: #d97706;
+}
+
+.cert-alert-card.expired .btn-renew {
+  background: var(--error);
+  color: #fff;
+}
+
+.cert-alert-card.expired .btn-renew:hover {
+  background: #dc2626;
+}
+
+/* ─── FILTER BAR ────────────────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 220px;
+  position: relative;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px 14px 10px 40px;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: var(--transition);
+}
+
+.search-box input:focus { border-color: var(--teal); }
+.search-box input::placeholder { color: rgba(148,163,184,0.5); }
+
+.search-box svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--text-dim);
+}
+
+.filter-select {
+  padding: 10px 32px 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394A3B8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: var(--transition);
+}
+
+.filter-select:focus { border-color: var(--teal); }
+
+/* ─── COURSE CARDS ──────────────────────────────────────────────── */
+.course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.course-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  transition: var(--transition);
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  border-left: 4px solid transparent;
+}
+
+.course-card:hover {
+  border-color: var(--royal);
+  box-shadow: var(--shadow);
+}
+
+.course-card.overdue {
+  border-left-color: var(--error);
+  background: rgba(239,68,68,0.03);
+}
+
+.course-card.expired-cert {
+  border-left-color: var(--warning);
+  background: rgba(245,158,11,0.03);
+}
+
+.course-card-body {
+  min-width: 0;
+}
+
+.course-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.course-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-right: 4px;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.badge-mandatory { background: rgba(239,68,68,0.15); color: var(--error); }
+.badge-recommended { background: rgba(245,158,11,0.15); color: var(--warning); }
+.badge-optional { background: rgba(0,180,216,0.15); color: var(--teal); }
+
+.badge-assigned { background: rgba(148,163,184,0.15); color: var(--text-dim); }
+.badge-in-progress { background: rgba(36,84,160,0.2); color: #60A5FA; }
+.badge-completed { background: rgba(16,185,129,0.15); color: var(--green); }
+.badge-overdue { background: rgba(239,68,68,0.2); color: var(--error); font-weight: 800; }
+.badge-expired { background: rgba(245,158,11,0.2); color: var(--warning); }
+.badge-not-enrolled { background: rgba(148,163,184,0.1); color: var(--text-dim); border: 1px dashed rgba(148,163,184,0.3); }
+
+.course-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.course-card-meta .due-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.course-card-meta .due-date.overdue-date {
+  color: var(--error);
+  font-weight: 600;
+}
+
+.course-card-meta .due-date svg { width: 13px; height: 13px; }
+
+/* Progress bar */
+.progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.progress-bar {
+  flex: 1;
+  max-width: 240px;
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+  background: linear-gradient(90deg, var(--royal), var(--teal));
+}
+
+.progress-bar-fill.complete {
+  background: var(--green);
+}
+
+.progress-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--teal);
+  min-width: 40px;
+}
+
+.progress-label.complete { color: var(--green); }
+
+/* Expired / Overdue banner within card */
+.card-alert-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.card-alert-banner.overdue-banner {
+  background: rgba(239,68,68,0.12);
+  color: var(--error);
+}
+
+.card-alert-banner.expired-banner {
+  background: rgba(245,158,11,0.12);
+  color: var(--warning);
+}
+
+.card-alert-banner svg { width: 13px; height: 13px; }
+
+/* Action buttons */
+.course-card-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.2px;
+  text-decoration: none;
+}
+
+.btn-start {
+  background: linear-gradient(135deg, var(--royal), var(--teal));
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(0,180,216,0.25);
+}
+
+.btn-start:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0,180,216,0.35);
+}
+
+.btn-continue {
+  background: linear-gradient(135deg, #2454A0, #3B82F6);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(59,130,246,0.25);
+}
+
+.btn-continue:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(59,130,246,0.35);
+}
+
+.btn-completed-static {
+  background: rgba(16,185,129,0.15);
+  color: var(--green);
+  cursor: default;
+  border: 1px solid rgba(16,185,129,0.2);
+}
+
+.btn-retake {
+  background: var(--warning);
+  color: #000;
+}
+
+.btn-retake:hover {
+  background: #d97706;
+}
+
+.btn-ghost {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  padding: 7px 14px;
+}
+
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--text);
+}
+
+/* ─── TRAINING HISTORY TABLE ────────────────────────────────────── */
+.data-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--surface);
+}
+
+.data-table thead th {
+  padding: 14px 18px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-dim);
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.data-table tbody tr {
+  transition: var(--transition);
+}
+
+.data-table tbody tr:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+.data-table tbody td {
+  padding: 14px 18px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cert-download-link {
+  color: var(--teal);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: var(--transition);
+}
+
+.cert-download-link:hover {
+  color: #3dd6f5;
+  text-decoration: underline;
+}
+
+.cert-download-link svg { width: 14px; height: 14px; }
+
+/* ─── GAP ANALYSIS ──────────────────────────────────────────────── */
+.gap-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.gap-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--error);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: var(--transition);
+}
+
+.gap-card:hover {
+  border-color: var(--royal);
+  box-shadow: var(--shadow);
+}
+
+.gap-card-info h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.gap-card-info .gap-meta {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* ─── EMPTY STATE ───────────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--text-dim);
+}
+
+.empty-state svg {
+  width: 56px;
+  height: 56px;
+  color: rgba(148,163,184,0.3);
+  margin-bottom: 14px;
+}
+
+.empty-state h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.empty-state p {
+  font-size: 13px;
+}
+
+/* ─── TOAST ─────────────────────────────────────────────────────── */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 280px;
+}
+
+.toast.success { border-left: 4px solid var(--green); }
+.toast.error { border-left: 4px solid var(--error); }
+.toast.info { border-left: 4px solid var(--teal); }
+
+@keyframes toastIn { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateX(60px); } }
+
+/* ─── RESPONSIVE ────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .summary-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .course-card {
+    grid-template-columns: 1fr;
+  }
+  .course-card-actions {
+    flex-direction: row;
+    align-items: center;
+  }
+  .gap-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-header {
+    padding: 0 16px;
+    height: 56px;
+  }
+
+  .header-title h1 { font-size: 16px; }
+
+  .dcs-brand span { display: none; }
+
+  .main-content {
+    padding: 20px 16px 40px;
+  }
+
+  .summary-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .summary-card {
+    padding: 16px 14px;
+  }
+
+  .summary-card .value {
+    font-size: 28px;
+  }
+
+  .cert-alerts {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+
+  .course-card {
+    padding: 16px 18px;
+  }
+
+  .section-header h2 { font-size: 15px; }
+
+  .data-table thead th,
+  .data-table tbody td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="page-header">
+  <div class="header-left">
+    <a href="/" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      Back
+    </a>
+    <div class="header-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+      </svg>
+      <h1>My Training</h1>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="user-badge" id="userDisplay"></span>
+    <div class="dcs-brand">
+      <div class="dcs-logo">DCS</div>
+      <span>Delta Community Support</span>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+  <!-- Page Loader -->
+  <div id="pageLoader" class="page-loader">
+    <div class="spinner"></div>
+    <p>Loading your training data...</p>
+  </div>
+
+  <!-- Dashboard content (hidden until loaded) -->
+  <div id="dashboardContent" style="display:none;">
+
+    <!-- SUMMARY CARDS ROW -->
+    <div class="summary-row">
+      <div class="summary-card assigned">
+        <div class="value" id="sumTotal">0</div>
+        <div class="label">Courses Assigned</div>
+      </div>
+      <div class="summary-card completed">
+        <div class="value" id="sumCompleted">0</div>
+        <div class="label">Completed</div>
+      </div>
+      <div class="summary-card in-progress">
+        <div class="value" id="sumInProgress">0</div>
+        <div class="label">In Progress</div>
+      </div>
+      <div class="summary-card overdue">
+        <div class="value" id="sumOverdue">0</div>
+        <div class="label">Overdue</div>
+      </div>
+    </div>
+
+    <!-- EXPIRING CERTIFICATIONS ALERT -->
+    <div id="certAlertsSection" style="display:none;">
+      <div class="section-header">
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          Expiring Certifications
+        </h2>
+      </div>
+      <div class="cert-alerts" id="certAlertsList"></div>
+    </div>
+
+    <!-- COURSE LIST -->
+    <div class="section-header">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+        My Courses
+        <span class="count-badge" id="courseCount">0</span>
+      </h2>
+    </div>
+
+    <div class="filter-bar">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="courseSearch" placeholder="Search courses..." oninput="filterAndRenderCourses()">
+      </div>
+      <select class="filter-select" id="filterCategory" onchange="filterAndRenderCourses()">
+        <option value="">All Categories</option>
+        <option value="Mandatory">Mandatory</option>
+        <option value="Recommended">Recommended</option>
+        <option value="Optional">Optional</option>
+      </select>
+      <select class="filter-select" id="filterStatus" onchange="filterAndRenderCourses()">
+        <option value="">All Status</option>
+        <option value="Assigned">Assigned</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+        <option value="Overdue">Overdue</option>
+        <option value="Expired">Expired</option>
+      </select>
+    </div>
+
+    <div id="courseList" class="course-list"></div>
+    <div id="courseListEmpty" class="empty-state" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <h3>No Courses Found</h3>
+      <p>Adjust your filters or check back later for new assignments.</p>
+    </div>
+
+    <!-- TRAINING HISTORY -->
+    <div id="historySection" style="display:none;">
+      <div class="section-header">
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Training History
+        </h2>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Course Name</th>
+              <th>Completed Date</th>
+              <th>Score</th>
+              <th>Certificate</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GAP ANALYSIS -->
+    <div id="gapSection" style="display:none;">
+      <div class="section-header">
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+          Missing Mandatory Courses
+          <span class="count-badge" id="gapCount" style="background:rgba(239,68,68,0.12); color:var(--error);">0</span>
+        </h2>
+      </div>
+      <div id="gapList" class="gap-list"></div>
+    </div>
+
+  </div><!-- end dashboardContent -->
+</div><!-- end main-content -->
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// Configuration & Auth
+// ══════════════════════════════════════════════════════════════════
+const API_BASE = window.location.origin + '/api';
+
+function getAuthHeaders() {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': token ? 'Bearer ' + token : ''
+  };
+}
+
+async function apiFetch(endpoint, options) {
+  options = options || {};
+  var url = API_BASE + endpoint;
+  var config = Object.assign({ headers: getAuthHeaders() }, options);
+  try {
+    var res = await fetch(url, config);
+    if (!res.ok) {
+      var err = {};
+      try { err = await res.json(); } catch(e) { err = { message: res.statusText }; }
+      throw new Error(err.message || 'HTTP ' + res.status);
+    }
+    if (res.status === 204) return null;
+    var contentType = res.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      return await res.json();
+    }
+    return await res.blob();
+  } catch (error) {
+    console.error('API Error [' + endpoint + ']:', error);
+    throw error;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Toast Notifications
+// ══════════════════════════════════════════════════════════════════
+function showToast(message, type) {
+  type = type || 'info';
+  var container = document.getElementById('toastContainer');
+  var toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  var icons = {
+    success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
+    error: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00B4D8" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+  };
+  toast.innerHTML = (icons[type] || icons.info) + '<span>' + esc(message) + '</span>';
+  container.appendChild(toast);
+  setTimeout(function() { if (toast.parentNode) toast.remove(); }, 3000);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Utility Functions
+// ══════════════════════════════════════════════════════════════════
+function esc(str) {
+  if (str == null) return '';
+  var div = document.createElement('div');
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+
+function formatDate(d) {
+  if (!d) return '--';
+  try {
+    var date = new Date(d);
+    if (isNaN(date.getTime())) return d;
+    return date.toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' });
+  } catch(e) { return d; }
+}
+
+function daysBetween(date1, date2) {
+  var d1 = new Date(date1);
+  var d2 = new Date(date2);
+  var diffMs = d2.getTime() - d1.getTime();
+  return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+}
+
+function isOverdue(dueDate) {
+  if (!dueDate) return false;
+  return new Date(dueDate) < new Date();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// State
+// ══════════════════════════════════════════════════════════════════
+var enrollments = [];
+var allActiveCourses = [];
+
+// ══════════════════════════════════════════════════════════════════
+// Data Loading
+// ══════════════════════════════════════════════════════════════════
+async function loadDashboard() {
+  var loader = document.getElementById('pageLoader');
+  var content = document.getElementById('dashboardContent');
+
+  try {
+    // Fetch enrollments and active courses in parallel
+    var results = await Promise.allSettled([
+      apiFetch('/enrollments'),
+      apiFetch('/courses?status=Active')
+    ]);
+
+    // Parse enrollments
+    if (results[0].status === 'fulfilled' && results[0].value) {
+      var data = results[0].value;
+      enrollments = Array.isArray(data) ? data : (data.enrollments || data.data || []);
+    } else {
+      enrollments = [];
+      if (results[0].status === 'rejected') {
+        console.warn('Failed to load enrollments:', results[0].reason);
+      }
+    }
+
+    // Parse courses
+    if (results[1].status === 'fulfilled' && results[1].value) {
+      var cData = results[1].value;
+      allActiveCourses = Array.isArray(cData) ? cData : (cData.courses || cData.data || []);
+    } else {
+      allActiveCourses = [];
+      if (results[1].status === 'rejected') {
+        console.warn('Failed to load courses:', results[1].reason);
+      }
+    }
+
+    // Render everything
+    renderSummaryCards();
+    renderCertAlerts();
+    filterAndRenderCourses();
+    renderHistory();
+    renderGapAnalysis();
+
+    loader.style.display = 'none';
+    content.style.display = 'block';
+
+  } catch (err) {
+    loader.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><h3>Failed to Load Training Data</h3><p>' + esc(err.message) + '</p></div>';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Summary Cards
+// ══════════════════════════════════════════════════════════════════
+function renderSummaryCards() {
+  var total = enrollments.length;
+  var completed = 0;
+  var inProgress = 0;
+  var overdue = 0;
+
+  enrollments.forEach(function(e) {
+    var status = (e.status || '').toLowerCase();
+    if (status === 'completed') completed++;
+    else if (status === 'in progress') inProgress++;
+    else if (status === 'overdue') overdue++;
+    else if (status === 'assigned' && isOverdue(e.due_date || e.dueDate)) overdue++;
+  });
+
+  document.getElementById('sumTotal').textContent = total;
+  document.getElementById('sumCompleted').textContent = completed;
+  document.getElementById('sumInProgress').textContent = inProgress;
+  document.getElementById('sumOverdue').textContent = overdue;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Expiring Certifications Alert
+// ══════════════════════════════════════════════════════════════════
+function renderCertAlerts() {
+  var section = document.getElementById('certAlertsSection');
+  var list = document.getElementById('certAlertsList');
+  var now = new Date();
+  var alerts = [];
+
+  enrollments.forEach(function(e) {
+    var expiryDate = e.certificate_expiry_date || e.certificateExpiryDate || e.cert_expiry || e.certExpiry || null;
+    if (!expiryDate) return;
+
+    var expiry = new Date(expiryDate);
+    if (isNaN(expiry.getTime())) return;
+
+    var daysUntil = daysBetween(now, expiry);
+    var courseName = e.course_name || e.courseName || 'Unknown Course';
+    var courseId = e.course_id || e.courseId;
+    var enrollmentId = e.id;
+
+    if (daysUntil <= 60) {
+      alerts.push({
+        courseName: courseName,
+        courseId: courseId,
+        enrollmentId: enrollmentId,
+        daysUntil: daysUntil,
+        expiryDate: expiryDate,
+        isExpired: daysUntil <= 0
+      });
+    }
+  });
+
+  if (alerts.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  // Sort: expired first, then by soonest expiry
+  alerts.sort(function(a, b) {
+    if (a.isExpired && !b.isExpired) return -1;
+    if (!a.isExpired && b.isExpired) return 1;
+    return a.daysUntil - b.daysUntil;
+  });
+
+  section.style.display = 'block';
+  list.innerHTML = alerts.map(function(a) {
+    var cardClass = a.isExpired ? 'expired' : 'warning';
+    var timeText = a.isExpired
+      ? 'Expired ' + Math.abs(a.daysUntil) + ' day' + (Math.abs(a.daysUntil) !== 1 ? 's' : '') + ' ago'
+      : 'Expires in ' + a.daysUntil + ' day' + (a.daysUntil !== 1 ? 's' : '');
+    var iconSvg = a.isExpired
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+    var link = 'lms-course.html?enrollmentId=' + a.enrollmentId + '&courseId=' + a.courseId;
+
+    return '<div class="cert-alert-card ' + cardClass + '">' +
+      '<div class="cert-alert-info">' +
+        '<div class="cert-alert-icon">' + iconSvg + '</div>' +
+        '<div class="cert-alert-text">' +
+          '<h4>' + esc(a.courseName) + ' ' + timeText + '</h4>' +
+          '<p>Expiry: ' + formatDate(a.expiryDate) + '</p>' +
+        '</div>' +
+      '</div>' +
+      '<a href="' + esc(link) + '" class="btn-renew">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>' +
+        'Renew' +
+      '</a>' +
+    '</div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Course List (Main Content)
+// ══════════════════════════════════════════════════════════════════
+function filterAndRenderCourses() {
+  var searchVal = (document.getElementById('courseSearch').value || '').toLowerCase();
+  var catFilter = document.getElementById('filterCategory').value;
+  var statusFilter = document.getElementById('filterStatus').value;
+
+  var filtered = enrollments.filter(function(e) {
+    var name = (e.course_name || e.courseName || '').toLowerCase();
+    var code = (e.course_code || e.courseCode || '').toLowerCase();
+    if (searchVal && name.indexOf(searchVal) === -1 && code.indexOf(searchVal) === -1) return false;
+
+    var category = e.course_category || e.courseCategory || e.category || '';
+    if (catFilter && category !== catFilter) return false;
+
+    var status = e.status || '';
+    if (statusFilter && status !== statusFilter) return false;
+
+    return true;
+  });
+
+  document.getElementById('courseCount').textContent = filtered.length;
+
+  var listEl = document.getElementById('courseList');
+  var emptyEl = document.getElementById('courseListEmpty');
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '';
+    emptyEl.style.display = 'block';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+
+  // Sort: Overdue first, then In Progress, then Assigned, then Expired, then Completed
+  var statusOrder = { 'Overdue': 0, 'In Progress': 1, 'Assigned': 2, 'Expired': 3, 'Completed': 4 };
+  filtered.sort(function(a, b) {
+    var aStatus = a.status || 'Assigned';
+    var bStatus = b.status || 'Assigned';
+    // Check if assigned but actually overdue
+    if (aStatus === 'Assigned' && isOverdue(a.due_date || a.dueDate)) aStatus = 'Overdue';
+    if (bStatus === 'Assigned' && isOverdue(b.due_date || b.dueDate)) bStatus = 'Overdue';
+    var aOrder = statusOrder[aStatus] !== undefined ? statusOrder[aStatus] : 5;
+    var bOrder = statusOrder[bStatus] !== undefined ? statusOrder[bStatus] : 5;
+    return aOrder - bOrder;
+  });
+
+  listEl.innerHTML = filtered.map(function(e) {
+    var courseName = e.course_name || e.courseName || 'Untitled Course';
+    var category = e.course_category || e.courseCategory || e.category || 'Optional';
+    var status = e.status || 'Assigned';
+    var progress = e.progress || 0;
+    var dueDate = e.due_date || e.dueDate;
+    var courseId = e.course_id || e.courseId;
+    var enrollmentId = e.id;
+    var certExpiry = e.certificate_expiry_date || e.certificateExpiryDate || e.cert_expiry || e.certExpiry || null;
+
+    // Determine effective status
+    var effectiveStatus = status;
+    if ((status === 'Assigned' || status === 'In Progress') && isOverdue(dueDate)) {
+      effectiveStatus = 'Overdue';
+    }
+
+    // Check expired cert
+    var certExpired = false;
+    if (certExpiry) {
+      var expiryD = new Date(certExpiry);
+      if (!isNaN(expiryD.getTime()) && expiryD < new Date()) {
+        certExpired = true;
+        if (status === 'Completed') effectiveStatus = 'Expired';
+      }
+    }
+
+    // Category badge class
+    var catClass = 'badge-optional';
+    if (category === 'Mandatory') catClass = 'badge-mandatory';
+    else if (category === 'Recommended') catClass = 'badge-recommended';
+
+    // Status badge class
+    var statusClassMap = {
+      'Assigned': 'badge-assigned',
+      'In Progress': 'badge-in-progress',
+      'Completed': 'badge-completed',
+      'Overdue': 'badge-overdue',
+      'Expired': 'badge-expired'
+    };
+    var statusBadgeClass = statusClassMap[effectiveStatus] || 'badge-assigned';
+
+    // Card extra classes
+    var cardClasses = 'course-card';
+    if (effectiveStatus === 'Overdue') cardClasses += ' overdue';
+    if (certExpired && status === 'Completed') cardClasses += ' expired-cert';
+
+    // Due date display
+    var dueDateHtml = '';
+    if (dueDate) {
+      var isOverdueDate = isOverdue(dueDate) && effectiveStatus !== 'Completed';
+      dueDateHtml = '<span class="due-date' + (isOverdueDate ? ' overdue-date' : '') + '">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' +
+        'Due: ' + formatDate(dueDate) +
+      '</span>';
+    }
+
+    // Progress bar (only for in-progress or assigned with partial progress)
+    var progressHtml = '';
+    if (effectiveStatus === 'In Progress' || (effectiveStatus !== 'Completed' && progress > 0 && progress < 100)) {
+      var fillClass = progress >= 100 ? 'complete' : '';
+      var labelClass = progress >= 100 ? 'complete' : '';
+      progressHtml = '<div class="progress-wrap">' +
+        '<div class="progress-bar"><div class="progress-bar-fill ' + fillClass + '" style="width:' + progress + '%;"></div></div>' +
+        '<span class="progress-label ' + labelClass + '">' + progress + '%</span>' +
+      '</div>';
+    }
+
+    // Alert banners
+    var alertHtml = '';
+    if (effectiveStatus === 'Overdue') {
+      alertHtml = '<div class="card-alert-banner overdue-banner">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' +
+        'OVERDUE' +
+      '</div>';
+    } else if (certExpired) {
+      alertHtml = '<div class="card-alert-banner expired-banner">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>' +
+        'EXPIRED — Renewal Required' +
+      '</div>';
+    }
+
+    // Action button
+    var actionHtml = '';
+    var link = 'lms-course.html?enrollmentId=' + enrollmentId + '&courseId=' + courseId;
+    if (effectiveStatus === 'Assigned') {
+      actionHtml = '<a href="' + esc(link) + '" class="btn btn-start">' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>' +
+        'Start</a>';
+    } else if (effectiveStatus === 'In Progress' || effectiveStatus === 'Overdue') {
+      actionHtml = '<a href="' + esc(link) + '" class="btn btn-continue">' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>' +
+        'Continue</a>';
+    } else if (effectiveStatus === 'Completed' && !certExpired) {
+      actionHtml = '<span class="btn btn-completed-static">' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>' +
+        'Completed</span>';
+    } else if (effectiveStatus === 'Expired' || certExpired) {
+      actionHtml = '<a href="' + esc(link) + '" class="btn btn-retake">' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>' +
+        'Retake</a>';
+    }
+
+    return '<div class="' + cardClasses + '">' +
+      '<div class="course-card-body">' +
+        '<div class="course-card-top">' +
+          '<span class="course-name">' + esc(courseName) + '</span>' +
+          '<span class="badge ' + catClass + '">' + esc(category) + '</span>' +
+          '<span class="badge ' + statusBadgeClass + '">' + esc(effectiveStatus) + '</span>' +
+        '</div>' +
+        '<div class="course-card-meta">' +
+          dueDateHtml +
+          (e.score != null && effectiveStatus === 'Completed' ? '<span style="font-family:\'JetBrains Mono\',monospace;">Score: ' + e.score + '%</span>' : '') +
+        '</div>' +
+        progressHtml +
+        alertHtml +
+      '</div>' +
+      '<div class="course-card-actions">' +
+        actionHtml +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Training History
+// ══════════════════════════════════════════════════════════════════
+function renderHistory() {
+  var completed = enrollments.filter(function(e) {
+    return (e.status || '').toLowerCase() === 'completed';
+  });
+
+  var section = document.getElementById('historySection');
+  if (completed.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = 'block';
+
+  // Sort by completion date descending
+  completed.sort(function(a, b) {
+    var aDate = new Date(a.completed_date || a.completedDate || a.completion_date || a.completionDate || 0);
+    var bDate = new Date(b.completed_date || b.completedDate || b.completion_date || b.completionDate || 0);
+    return bDate - aDate;
+  });
+
+  var body = document.getElementById('historyBody');
+  body.innerHTML = completed.map(function(e) {
+    var name = e.course_name || e.courseName || 'Unknown';
+    var completedDate = e.completed_date || e.completedDate || e.completion_date || e.completionDate || '';
+    var score = e.score;
+    var enrollmentId = e.id;
+
+    var scoreHtml = score != null
+      ? '<span style="font-family:\'JetBrains Mono\',monospace; font-weight:600; color:' + (score >= 80 ? 'var(--green)' : score >= 50 ? 'var(--warning)' : 'var(--error)') + ';">' + score + '%</span>'
+      : '<span style="color:var(--text-dim);">--</span>';
+
+    var certHtml = '<a href="#" class="cert-download-link" onclick="downloadCertificate(' + enrollmentId + ', event)">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+      'Download Certificate</a>';
+
+    return '<tr>' +
+      '<td style="font-weight:600;">' + esc(name) + '</td>' +
+      '<td style="font-family:\'JetBrains Mono\',monospace; font-size:12px; color:var(--text-dim);">' + formatDate(completedDate) + '</td>' +
+      '<td>' + scoreHtml + '</td>' +
+      '<td>' + certHtml + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Certificate Download
+// ══════════════════════════════════════════════════════════════════
+async function downloadCertificate(enrollmentId, event) {
+  if (event) event.preventDefault();
+
+  try {
+    showToast('Downloading certificate...', 'info');
+
+    var token = localStorage.getItem('token');
+    var res = await fetch(API_BASE + '/enrollments/' + enrollmentId + '/certificate', {
+      headers: {
+        'Authorization': token ? 'Bearer ' + token : ''
+      }
+    });
+
+    if (!res.ok) {
+      var errData = {};
+      try { errData = await res.json(); } catch(e) { errData = { message: res.statusText }; }
+      throw new Error(errData.message || 'HTTP ' + res.status);
+    }
+
+    var blob = await res.blob();
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+
+    // Try to get filename from Content-Disposition header
+    var disposition = res.headers.get('Content-Disposition') || '';
+    var filenameMatch = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+    var filename = filenameMatch ? filenameMatch[1].replace(/['"]/g, '') : 'certificate-' + enrollmentId + '.pdf';
+
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast('Certificate downloaded successfully', 'success');
+  } catch (err) {
+    showToast('Failed to download certificate: ' + err.message, 'error');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Gap Analysis
+// ══════════════════════════════════════════════════════════════════
+function renderGapAnalysis() {
+  var mandatoryCourses = allActiveCourses.filter(function(c) {
+    return (c.category || '').toLowerCase() === 'mandatory';
+  });
+
+  if (mandatoryCourses.length === 0) {
+    document.getElementById('gapSection').style.display = 'none';
+    return;
+  }
+
+  // Build set of enrolled course IDs
+  var enrolledCourseIds = {};
+  enrollments.forEach(function(e) {
+    var cid = e.course_id || e.courseId;
+    if (cid) enrolledCourseIds[cid] = true;
+  });
+
+  var missingCourses = mandatoryCourses.filter(function(c) {
+    return !enrolledCourseIds[c.id];
+  });
+
+  var section = document.getElementById('gapSection');
+  if (missingCourses.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = 'block';
+  document.getElementById('gapCount').textContent = missingCourses.length;
+
+  var listEl = document.getElementById('gapList');
+  listEl.innerHTML = missingCourses.map(function(c) {
+    var duration = c.duration ? c.duration + ' min' : '';
+    var code = c.code || '';
+    var metaParts = [];
+    if (code) metaParts.push(code);
+    if (duration) metaParts.push(duration);
+    if (c.expiry_months) metaParts.push('Renew every ' + c.expiry_months + ' months');
+
+    return '<div class="gap-card">' +
+      '<div class="gap-card-info">' +
+        '<h4>' + esc(c.name) + '</h4>' +
+        '<p class="gap-meta">' + esc(metaParts.join('  |  ')) + '</p>' +
+      '</div>' +
+      '<span class="badge badge-not-enrolled">Not Enrolled</span>' +
+    '</div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Initialization
+// ══════════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  // Check auth
+  var token = localStorage.getItem('token');
+  if (!token) {
+    console.warn('No auth token found in localStorage. API calls may fail.');
+  }
+
+  // Display user info
+  try {
+    var user = JSON.parse(localStorage.getItem('user') || '{}');
+    var display = document.getElementById('userDisplay');
+    if (user.name || user.email) {
+      display.textContent = user.name || user.email;
+    } else {
+      display.style.display = 'none';
+    }
+  } catch(e) {
+    document.getElementById('userDisplay').style.display = 'none';
+  }
+
+  // Load dashboard
+  loadDashboard();
+});
+</script>
+</body>
+</html>
