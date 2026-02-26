@@ -10,7 +10,10 @@ function hashPassword(pw) {
 function authenticate(req, res, next) {
   var token = req.headers.authorization
     ? req.headers.authorization.replace('Bearer ', '')
-    : null;
+    : req.headers['x-auth-token']
+      || (req.cookies && req.cookies.authToken)
+      || req.query._token
+      || null;
   if (!token) return res.status(401).json({ error: 'Not authenticated' });
 
   var session = db
