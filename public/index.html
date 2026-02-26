@@ -6245,27 +6245,83 @@ if(reportView==="files"){renderCompanyFiles();return}
 if(reportView==="ndisReports"){renderNdisReportsList();return}
 if(reportView==="customReport"){renderCustomReport();return}
 if(reportView==="customReport"){renderCustomReport();return}
-var html='<div class="rp-hdr"><div class="rp-hdr-info"><div class="rp-hdr-avatar" style="background:linear-gradient(135deg,var(--teal),var(--royal))">📊</div><div><div class="rp-hdr-name">Reports</div><div class="rp-hdr-sub">Generate internal reports</div></div></div></div>';
-html+='<div style="padding:24px;max-width:800px">';
-html+='<div onclick="window._reportsSubView=\'opsReport\';renderReportsMenu()" style="padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:16px" onmouseover="this.style.borderColor=\'var(--teal)\';this.style.boxShadow=\'0 4px 12px rgba(10,147,150,.1)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.boxShadow=\'none\'">';
-html+='<div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,rgba(10,147,150,.1),rgba(30,75,160,.1));display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">📋</div>';
-html+='<div><div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px">Operations Report</div><div style="font-size:12px;color:var(--muted);line-height:1.5">Generate a comprehensive internal ops report. Scans Progress Notes, Incident Reports, Contact History, Sleep Disturbances, Risks & Concerns, Expiry Dates, Schedule of Support, PBSP and Handover data.</div></div>';
-html+='<div style="font-size:20px;color:var(--muted);flex-shrink:0">→</div></div>';
-// Stakeholder Report card
-html+='<div onclick="window._reportsSubView=\'stakeholderReport\';renderReportsMenu()" style="padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:16px;margin-top:12px" onmouseover="this.style.borderColor=\'var(--royal)\';this.style.boxShadow=\'0 4px 12px rgba(30,75,160,.1)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.boxShadow=\'none\'">';
-html+='<div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,rgba(30,75,160,.1),rgba(124,58,237,.1));display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">📑</div>';
-html+='<div><div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px">NDIS Stakeholder Report</div><div style="font-size:12px;color:var(--muted);line-height:1.5">Weekly update for stakeholders — families, support coordinators & NDIS planners. Goal progress, service delivery evidence, photos and incident summaries per client.</div></div>';
-html+='<div style="font-size:20px;color:var(--muted);flex-shrink:0">→</div></div>';
-html+='<div onclick="window._reportsSubView=\'auditLog\';renderReportsMenu()" style="padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:16px;margin-top:12px" onmouseover="this.style.borderColor=\'#6366f1\';this.style.boxShadow=\'0 4px 12px rgba(99,102,241,.1)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.boxShadow=\'none\'">';
-html+='<div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(124,58,237,.1));display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🔍</div>';
-html+='<div><div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px">Audit Log</div><div style="font-size:12px;color:var(--muted);line-height:1.5">Track every change made in Titus — who edited what, when, and what the values were. Filter by user, date range, entity type or search keyword.</div></div>';
-html+='<div style="font-size:20px;color:var(--muted);flex-shrink:0">→</div></div>';
-// NDIS Reports Archive card — hidden from menu (page still accessible via direct URL)
-html+='<div onclick="window._reportsSubView=\'customReport\';renderReportsMenu()" style="padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:16px;margin-top:12px" onmouseover="this.style.borderColor=\'#0d9488\';this.style.boxShadow=\'0 4px 12px rgba(13,148,136,.1)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.boxShadow=\'none\'">';
-html+='<div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,rgba(13,148,136,.1),rgba(16,185,129,.1));display:flex;align-items:center;justify-content:font-size:24px;flex-shrink:0;align-items:center;justify-content:center">📊</div>';
-html+='<div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,rgba(13,148,136,.12),rgba(16,185,129,.1));display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">📊</div>';
-html+='<div><div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px">Customised Client Report</div><div style="font-size:12px;color:var(--muted);line-height:1.5">Choose a date range, select clients, and pick any combination of data tables — Clients, Progress Notes, Incidents, Budgets, Sleep Charts, Bowel Charts, Fluid Intake, Behaviours and more.</div></div>';
-html+='<div style="font-size:20px;color:var(--muted);flex-shrink:0">→</div></div>';
+var html='<div style="padding:24px;overflow-y:auto;height:100%">';
+html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px"><div><div style="font-size:20px;font-weight:700;color:var(--text)">Internal Reports</div><div style="font-size:12px;color:var(--muted)">Generate reports from Airtable data sources</div></div></div>';
+// Reports table
+html+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+html+='<thead><tr style="border-bottom:2px solid var(--border)">';
+["Report","Description","Airtable Sources","Output",""].forEach(function(col){
+html+='<th style="padding:10px 8px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">'+col+'</th>'});
+html+='</tr></thead><tbody>';
+// Operations Report row
+html+='<tr style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
+html+='<td style="padding:10px 8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">📋</span><span style="font-weight:700;color:var(--text)">Operations Report</span></div></td>';
+html+='<td style="padding:10px 8px;color:var(--muted);max-width:280px">Comprehensive internal ops report with KPIs, charts, and alerts</td>';
+html+='<td style="padding:10px 8px"><div style="display:flex;flex-wrap:wrap;gap:4px">';
+["Progress Notes","IR Reports 2025","Schedule of Support","PBSP","Handover","All Contacts","Client Core Budgets"].forEach(function(t){
+html+='<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.15)">'+t+'</span>'});
+html+='</div></td>';
+html+='<td style="padding:10px 8px"><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:rgba(99,102,241,.08);color:#6366F1;border:1px solid rgba(99,102,241,.15)">Dashboard + Charts</span></td>';
+html+='<td style="padding:10px 8px"><button onclick="window._reportsSubView=\'opsReport\';renderReportsMenu()" class="btn btn-teal btn-sm" style="font-size:10px;white-space:nowrap">Generate →</button></td>';
+html+='</tr>';
+// NDIS Stakeholder Report row
+html+='<tr style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
+html+='<td style="padding:10px 8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">📑</span><span style="font-weight:700;color:var(--text)">NDIS Stakeholder Report</span></div></td>';
+html+='<td style="padding:10px 8px;color:var(--muted);max-width:280px">Weekly update for families, SCs & NDIS planners — goal progress, service evidence, incident summaries</td>';
+html+='<td style="padding:10px 8px"><div style="display:flex;flex-wrap:wrap;gap:4px">';
+["Progress Notes","IR Reports 2025","Clients","Client Core Budgets","Weekly Stakeholder Reports"].forEach(function(t){
+html+='<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(30,75,160,.08);color:var(--royal);border:1px solid rgba(30,75,160,.15)">'+t+'</span>'});
+html+='</div></td>';
+html+='<td style="padding:10px 8px"><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:rgba(124,58,237,.08);color:#7C3AED;border:1px solid rgba(124,58,237,.15)">PDF per Client</span></td>';
+html+='<td style="padding:10px 8px"><button onclick="window._reportsSubView=\'stakeholderReport\';renderReportsMenu()" class="btn btn-sm" style="font-size:10px;white-space:nowrap;background:var(--royal);color:#fff;border:none">Generate →</button></td>';
+html+='</tr>';
+// Audit Log row
+html+='<tr style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
+html+='<td style="padding:10px 8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">🔍</span><span style="font-weight:700;color:var(--text)">Audit Log</span></div></td>';
+html+='<td style="padding:10px 8px;color:var(--muted);max-width:280px">Track every change — who edited what, when, and what values changed</td>';
+html+='<td style="padding:10px 8px"><div style="display:flex;flex-wrap:wrap;gap:4px">';
+html+='<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(99,102,241,.08);color:#6366F1;border:1px solid rgba(99,102,241,.15)">SQLite audit_log</span>';
+html+='</div></td>';
+html+='<td style="padding:10px 8px"><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:rgba(245,158,11,.08);color:#F59E0B;border:1px solid rgba(245,158,11,.15)">Searchable Table</span></td>';
+html+='<td style="padding:10px 8px"><button onclick="window._reportsSubView=\'auditLog\';renderReportsMenu()" class="btn btn-sm" style="font-size:10px;white-space:nowrap;background:#6366F1;color:#fff;border:none">View →</button></td>';
+html+='</tr>';
+// Custom Report row
+html+='<tr style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
+html+='<td style="padding:10px 8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">📊</span><span style="font-weight:700;color:var(--text)">Customised Client Report</span></div></td>';
+html+='<td style="padding:10px 8px;color:var(--muted);max-width:280px">Choose date range, clients, and any combination of 22 data tables</td>';
+html+='<td style="padding:10px 8px"><div style="display:flex;flex-wrap:wrap;gap:4px">';
+["Clients","Progress Notes","IR Reports 2025","Sleep Chart","Bowel Chart","Fluid Intake","Risk Register","+ 15 more"].forEach(function(t){
+var isMore=t.indexOf("+")===0;
+html+='<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:'+(isMore?'rgba(139,92,246,.08)':'rgba(13,148,136,.08)')+';color:'+(isMore?'#8B5CF6':'#0D9488')+';border:1px solid '+(isMore?'rgba(139,92,246,.15)':'rgba(13,148,136,.15)')+'">'+t+'</span>'});
+html+='</div></td>';
+html+='<td style="padding:10px 8px"><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:rgba(16,185,129,.08);color:#10B981;border:1px solid rgba(16,185,129,.15)">AI Analysis + Export</span></td>';
+html+='<td style="padding:10px 8px"><button onclick="window._reportsSubView=\'customReport\';renderReportsMenu()" class="btn btn-sm" style="font-size:10px;white-space:nowrap;background:#0D9488;color:#fff;border:none">Generate →</button></td>';
+html+='</tr>';
+// NDIS Reports Archive row
+html+='<tr style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
+html+='<td style="padding:10px 8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">📁</span><span style="font-weight:700;color:var(--text)">NDIS Reports Archive</span></div></td>';
+html+='<td style="padding:10px 8px;color:var(--muted);max-width:280px">Previously generated stakeholder reports — view and download PDFs</td>';
+html+='<td style="padding:10px 8px"><div style="display:flex;flex-wrap:wrap;gap:4px">';
+html+='<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(30,75,160,.08);color:var(--royal);border:1px solid rgba(30,75,160,.15)">Weekly Stakeholder Reports</span>';
+html+='</div></td>';
+html+='<td style="padding:10px 8px"><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:rgba(139,92,246,.08);color:#8B5CF6;border:1px solid rgba(139,92,246,.15)">PDF Archive</span></td>';
+html+='<td style="padding:10px 8px"><button onclick="window._reportsSubView=\'ndisReports\';renderReportsMenu()" class="btn btn-sm" style="font-size:10px;white-space:nowrap;background:#8B5CF6;color:#fff;border:none">View →</button></td>';
+html+='</tr>';
+html+='</tbody></table></div>';
+// Quick links to related views
+html+='<div style="margin-top:20px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r)">';
+html+='<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Related Data Views</div>';
+html+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
+var relatedViews=[
+{label:"📝 Progress Notes",view:"progressNotes"},{label:"🚨 Incident Register",view:"incidentRegister"},
+{label:"📈 Continuous Improvement",view:"continuousImprovement"},{label:"📋 Handover",view:"handover"},
+{label:"🌙 Sleep Report",view:"sleepReport"},{label:"🧾 Receipts",view:"receipts"},
+{label:"💰 Payroll",view:"payroll"},{label:"🚗 KM Report",view:"kmReport"},
+{label:"🔄 Reconciliation",view:"reconciliation"}
+];
+relatedViews.forEach(function(rv){
+html+='<button onclick="currentView=\''+rv.view+'\';render()" style="padding:6px 12px;font-size:11px;font-weight:600;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit;transition:all .1s" onmouseover="this.style.borderColor=\'var(--teal)\'" onmouseout="this.style.borderColor=\'var(--border)\'">'+rv.label+'</button>'});
+html+='</div></div>';
 html+='</div>';rp.innerHTML=html}
 
 function renderCustomReport(){

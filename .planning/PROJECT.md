@@ -13,7 +13,7 @@ Modernize the Titus CRM interface to provide office users with dashboard-first v
 | 2 | Leads Pipeline | done | Dashboard view with graphs, list date fields, SC email filter, Kanban dates |
 | 3 | Recruit Pipeline | done | Overview/Kanban stage updates, filters, list dates, LMS/Airtable fixes |
 | 4 | Rosters Enhancement | done | Draggable FABs, employee/contractor filter, sleepover calc, award rules, data connections |
-| 5 | Reports Table View | pending | Internal reports table view, Airtable source linking, progress notes connection |
+| 5 | Reports Table View | done | Internal reports table view, Airtable source linking, progress notes connection |
 
 ### Already Completed
 - Navigation: Messenger link, rename User Management to Admin
