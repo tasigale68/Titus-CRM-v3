@@ -337,6 +337,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .fab-sms svg{width:20px;height:20px}
 .fab-ai-roster{position:fixed;bottom:90px;right:90px;width:48px;height:48px;border-radius:50%;background:#7C3AED;color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(124,58,237,.4);display:none;align-items:center;justify-content:center;z-index:1000;transition:all .15s;font-size:20px}
 .fab-ai-roster:hover{transform:scale(1.1);box-shadow:0 6px 24px rgba(124,58,237,.5)}
+.fab-dragging{opacity:.85;cursor:grabbing!important;transition:none!important;transform:none!important}
 /* AI Roster sliding panel */
 .ai-roster-panel{position:fixed;top:15vh;right:-500px;width:480px;height:70vh;background:var(--surface);border:1px solid var(--border);border-radius:var(--r) 0 0 var(--r);box-shadow:-4px 0 24px rgba(0,0,0,.15);z-index:200;transition:right .3s ease;overflow-y:auto;padding:24px}
 .ai-roster-panel.open{right:0}
@@ -1172,7 +1173,7 @@ var initials=(currentUser.name||currentUser.email).substring(0,2).toUpperCase();
 // Office users default to Contacts Overview instead of My Details
 var _officeRoles=["superadmin","director","admin","team_leader","roster_officer","manager","ceo","office_staff"];
 if(currentUser&&_officeRoles.indexOf(currentUser.role)>=0&&canView("contacts_overview")){currentView="contactsOverview";contactsSubView="overview"}
-renderImpersonationBanner();updateTzBar();initDialerPad();loadData();loadMyAvailability();setTimeout(function(){initTwilioDevice();renderSoftphoneIndicator();},2000);
+renderImpersonationBanner();updateTzBar();initDialerPad();initDraggableFabs();loadData();loadMyAvailability();setTimeout(function(){initTwilioDevice();renderSoftphoneIndicator();},2000);
 // Refresh permissions from server — localStorage may be stale after admin edits
 apiCall("GET","/api/auth/me").then(function(d){
 if(!d||!d.user)return;
@@ -6141,6 +6142,46 @@ if(data.email){var _dupEmail=contacts.find(function(c){return c.email&&c.email.t
 if(id==="new"||id===""){apiCall("POST","/api/contacts",data).then(function(r){if(r.error){alert("Error: "+r.error);return}apiCall("GET","/api/contacts").then(function(d){contacts=d||[];selectedConv=null;render()})})}else{apiCall("PUT","/api/contacts/"+id,data).then(function(r){if(r&&r.error){alert("Save failed: "+r.error);return}apiCall("GET","/api/contacts").then(function(d){contacts=d||[];var saved=contacts.find(function(c){return(c.id||c.airtable_id)==id});if(saved&&contactStatusFilter&&(saved.statusOfContact||"Active Contact")!==contactStatusFilter){selectedConv=null}else{selectedConv=saved||null}render()})}).catch(function(e){alert("Save failed: "+(e.message||"Unknown error"))})}}
 function deleteContact(id){if(!confirm("Delete this contact?"))return;var _c=contacts.find(function(c){return(c.id||c.airtable_id)==id});var _n=_c?encodeURIComponent(_c.name||""):"";apiCall("DELETE","/api/contacts/"+id+(_n?"?name="+_n:"")).then(function(){apiCall("GET","/api/contacts").then(function(d){contacts=d||[];selectedConv=null;render()})})}
 function syncDialerSoftphoneStatus(){var dot=document.getElementById("dialerSoftphoneDot");var label=document.getElementById("dialerSoftphoneLabel");if(!dot||!label)return;if(typeof twilioDevice!=="undefined"&&twilioDevice&&twilioDevice.state==="registered"){dot.style.background="#10b981";label.textContent="Softphone Ready"}else if(typeof twilioDevice!=="undefined"&&twilioDevice){dot.style.background="#f59e0b";label.textContent="Connecting..."}else{dot.style.background="#94a3b8";label.textContent="Softphone Offline"}}
+function initDraggableFabs(){
+var fabIds=["fabDial","fabAi","fabSms","fabAiRoster"];
+fabIds.forEach(function(id){
+var el=document.getElementById(id);if(!el)return;
+var startX,startY,origX,origY,dragging=false,moved=false;
+function onDown(e){
+var t=e.touches?e.touches[0]:e;
+startX=t.clientX;startY=t.clientY;
+var r=el.getBoundingClientRect();origX=r.left;origY=r.top;
+dragging=true;moved=false;
+}
+function onMove(e){
+if(!dragging)return;
+var t=e.touches?e.touches[0]:e;
+var dx=t.clientX-startX,dy=t.clientY-startY;
+if(!moved&&Math.abs(dx)<5&&Math.abs(dy)<5)return;
+moved=true;e.preventDefault();
+el.classList.add("fab-dragging");
+el.style.position="fixed";
+el.style.left=Math.max(0,Math.min(window.innerWidth-el.offsetWidth,origX+dx))+"px";
+el.style.top=Math.max(0,Math.min(window.innerHeight-el.offsetHeight,origY+dy))+"px";
+el.style.right="auto";el.style.bottom="auto";
+}
+function onUp(){
+dragging=false;el.classList.remove("fab-dragging");
+if(moved){
+// Store position
+try{var pos=JSON.parse(localStorage.getItem("titus_fab_pos")||"{}");pos[id]={left:el.style.left,top:el.style.top};localStorage.setItem("titus_fab_pos",JSON.stringify(pos))}catch(x){}
+}
+}
+el.addEventListener("mousedown",onDown);
+document.addEventListener("mousemove",onMove);
+document.addEventListener("mouseup",onUp);
+el.addEventListener("touchstart",onDown,{passive:false});
+document.addEventListener("touchmove",onMove,{passive:false});
+document.addEventListener("touchend",onUp);
+el.addEventListener("click",function(e){if(moved){e.stopImmediatePropagation();e.preventDefault();moved=false}},true);
+// Restore saved position
+try{var pos=JSON.parse(localStorage.getItem("titus_fab_pos")||"{}");if(pos[id]){el.style.position="fixed";el.style.left=pos[id].left;el.style.top=pos[id].top;el.style.right="auto";el.style.bottom="auto"}}catch(x){}
+})}
 function initDialerPad(){var pad=document.getElementById("dialPad");if(!pad)return;var keys=[["1",""],["2","ABC"],["3","DEF"],["4","GHI"],["5","JKL"],["6","MNO"],["7","PQRS"],["8","TUV"],["9","WXYZ"],["*",""],["0","+"],["#",""]];var html="";keys.forEach(function(k){html+='<button class="dial-key" onclick="dialPress(\''+k[0]+'\')"><span>'+k[0]+'</span><span class="sub">'+k[1]+'</span></button>'});pad.innerHTML=html;syncDialerSoftphoneStatus()}
 function openDialer(){document.getElementById("dialerOverlay").classList.add("show");initDialerPad();if(!dialerNumber){var ds=document.getElementById("dialSearch");if(ds)ds.value=""}updateDialDisplay();var st=document.getElementById("dialStatus");if(st)st.textContent="";document.addEventListener("keydown",dialerKeyHandler)}
 function openDialerWithNumber(phone,name){dialerNumber=phone||"";dialerContactName=name||"";openDialer();var ds=document.getElementById("dialSearch");if(ds&&phone)ds.value=(name?name+" — ":"")+phone;updateDialDisplay()}
@@ -10777,9 +10818,18 @@ var ds=parseSchedDate(s.startShift),de=parseSchedDate(s.endShift);
 if(!ds||!de)return{total:0,active:0,sleepover:0};
 var activeH=(de-ds)/(3600000);if(activeH<=0||activeH>24)return{total:0,active:0,sleepover:0};
 activeH=Math.round(activeH*10)/10;
-// Sleepover = additional 1hr allowance if flagged (not hourly)
+// Sleepover: if shift spans 10pm-6am, count as 1 sleepover allowance
 var hasSleepover=s.sleepover||(s.allFields&&s.allFields.Sleepover)||false;
-var sleepH=hasSleepover?1:0;
+var sleepH=0;
+if(hasSleepover){sleepH=1}
+else{
+// Auto-detect sleepover: shift must span across 10pm-6am window
+var startH=ds.getHours()+(ds.getMinutes()/60);
+var endDate=new Date(de);var nextDay6am=new Date(ds);nextDay6am.setDate(nextDay6am.getDate()+1);nextDay6am.setHours(6,0,0,0);
+var same10pm=new Date(ds);same10pm.setHours(22,0,0,0);
+// If shift starts at or before 10pm and ends at or after 6am next day = 1 sleepover
+if(ds<=same10pm&&de>=nextDay6am){sleepH=1}
+}
 return{total:Math.round((activeH+sleepH)*10)/10,active:activeH,sleepover:sleepH}}
 
 // ─── Wrapper functions for toolbar buttons ───
@@ -10791,6 +10841,8 @@ function schedSetView(v){schedView=v;schedRefresh()}
 function schedNavWeek(dir){var step=schedView==="fortnight"?14:7;schedWeekStart=new Date(schedWeekStart);schedWeekStart.setDate(schedWeekStart.getDate()+(dir*step));schedRefresh()}
 function schedNavToday(){schedWeekStart=getMonday(new Date());schedRefresh()}
 function schedRefresh(){renderSchedulerContent(document.getElementById("rightPanel"))}
+var schedSearchQ="";
+function schedFilterSearch(){schedSearchQ=(document.getElementById("schedSearch")||{}).value||"";schedRefresh()}
 function schedOpenContact(airtableId){if(!airtableId)return;var found=contacts.find(function(c){return(c.id||c.airtable_id)===airtableId});if(found){selectedConv=found;currentView="contacts";render()}}
 
 // ═══ SCHADS AWARD COMPLIANCE ENGINE ═══
@@ -11027,6 +11079,9 @@ if(schedClientFilter==="cas")return sc!==""&&sc!=="SIL";
 return true;
 });
 }
+// Search filter
+if(schedSearchQ){var _sq=schedSearchQ.toLowerCase();
+personNames=personNames.filter(function(name){return name.toLowerCase().indexOf(_sq)>=0})}
 
 var dayColW=schedView==="fortnight"?"minmax(80px,1fr)":"minmax(110px,1fr)";
 
@@ -11097,6 +11152,9 @@ h+='<div style="display:flex;align-items:center;gap:0">';
 h+='<button onclick="schedNavWeek(-1)" style="padding:5px 8px;border:1px solid var(--border);border-radius:var(--rs) 0 0 var(--rs);background:var(--surface2);cursor:pointer;font-size:14px;font-family:inherit;color:var(--muted);line-height:1">‹</button>';
 h+='<button onclick="schedNavToday()" style="padding:5px 10px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);border-left:none;border-right:none;background:var(--surface2);cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;color:var(--text);white-space:nowrap">'+mStr+'</button>';
 h+='<button onclick="schedNavWeek(1)" style="padding:5px 8px;border:1px solid var(--border);border-radius:0 var(--rs) var(--rs) 0;background:var(--surface2);cursor:pointer;font-size:14px;font-family:inherit;color:var(--muted);line-height:1">›</button></div>';
+
+// Search bar
+h+='<input id="schedSearch" value="'+schedSearchQ.replace(/"/g,'&quot;')+'" oninput="schedFilterSearch()" placeholder="Search '+(schedGroupBy==="staff"?"staff":"clients")+'..." style="padding:5px 10px;font-size:11px;font-family:inherit;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface2);outline:none;min-width:140px;color:var(--text)">';
 
 h+='</div></div></div>';
 
