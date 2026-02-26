@@ -39,10 +39,10 @@ CREATE TABLE IF NOT EXISTS contacts (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_contacts_email ON contacts(email);
-CREATE INDEX idx_contacts_type ON contacts(type_of_contact);
-CREATE INDEX idx_contacts_name ON contacts(full_name);
-CREATE INDEX idx_contacts_airtable ON contacts(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email);
+CREATE INDEX IF NOT EXISTS idx_contacts_type ON contacts(type_of_contact);
+CREATE INDEX IF NOT EXISTS idx_contacts_name ON contacts(full_name);
+CREATE INDEX IF NOT EXISTS idx_contacts_airtable ON contacts(airtable_id);
 
 -- ─── CLIENTS ─────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS clients (
@@ -133,10 +133,10 @@ CREATE TABLE IF NOT EXISTS clients (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_clients_name ON clients(client_name);
-CREATE INDEX idx_clients_ndis ON clients(ndis_number);
-CREATE INDEX idx_clients_account ON clients(account_type);
-CREATE INDEX idx_clients_airtable ON clients(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_clients_name ON clients(client_name);
+CREATE INDEX IF NOT EXISTS idx_clients_ndis ON clients(ndis_number);
+CREATE INDEX IF NOT EXISTS idx_clients_account ON clients(account_type);
+CREATE INDEX IF NOT EXISTS idx_clients_airtable ON clients(airtable_id);
 
 -- ─── LEADS ───────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS leads (
@@ -179,9 +179,9 @@ CREATE TABLE IF NOT EXISTS leads (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_leads_stage ON leads(stage);
-CREATE INDEX idx_leads_date ON leads(date);
-CREATE INDEX idx_leads_airtable ON leads(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_leads_stage ON leads(stage);
+CREATE INDEX IF NOT EXISTS idx_leads_date ON leads(date);
+CREATE INDEX IF NOT EXISTS idx_leads_airtable ON leads(airtable_id);
 
 -- ─── ROSTERS ─────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS rosters (
@@ -212,11 +212,11 @@ CREATE TABLE IF NOT EXISTS rosters (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_rosters_client ON rosters(client_name);
-CREATE INDEX idx_rosters_staff ON rosters(staff_email);
-CREATE INDEX idx_rosters_start ON rosters(start_shift);
-CREATE INDEX idx_rosters_status ON rosters(shift_status);
-CREATE INDEX idx_rosters_airtable ON rosters(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_rosters_client ON rosters(client_name);
+CREATE INDEX IF NOT EXISTS idx_rosters_staff ON rosters(staff_email);
+CREATE INDEX IF NOT EXISTS idx_rosters_start ON rosters(start_shift);
+CREATE INDEX IF NOT EXISTS idx_rosters_status ON rosters(shift_status);
+CREATE INDEX IF NOT EXISTS idx_rosters_airtable ON rosters(airtable_id);
 
 -- ─── PROGRESS NOTES ──────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS progress_notes (
@@ -237,8 +237,8 @@ CREATE TABLE IF NOT EXISTS progress_notes (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_progress_notes_client ON progress_notes(client_name);
-CREATE INDEX idx_progress_notes_airtable ON progress_notes(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_progress_notes_client ON progress_notes(client_name);
+CREATE INDEX IF NOT EXISTS idx_progress_notes_airtable ON progress_notes(airtable_id);
 
 -- ─── INCIDENT REPORTS ────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS ir_reports (
@@ -259,9 +259,9 @@ CREATE TABLE IF NOT EXISTS ir_reports (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_ir_reports_status ON ir_reports(status);
-CREATE INDEX idx_ir_reports_severity ON ir_reports(severity);
-CREATE INDEX idx_ir_reports_airtable ON ir_reports(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_ir_reports_status ON ir_reports(status);
+CREATE INDEX IF NOT EXISTS idx_ir_reports_severity ON ir_reports(severity);
+CREATE INDEX IF NOT EXISTS idx_ir_reports_airtable ON ir_reports(airtable_id);
 
 -- ─── CLIENT CORE BUDGETS ─────────────────────────────────────
 CREATE TABLE IF NOT EXISTS client_core_budgets (
@@ -304,8 +304,8 @@ CREATE TABLE IF NOT EXISTS client_core_budgets (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_budgets_client ON client_core_budgets(client_name);
-CREATE INDEX idx_budgets_airtable ON client_core_budgets(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_budgets_client ON client_core_budgets(client_name);
+CREATE INDEX IF NOT EXISTS idx_budgets_airtable ON client_core_budgets(airtable_id);
 
 -- ─── SIL PROPERTIES ──────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS sil_properties (
@@ -398,8 +398,8 @@ CREATE TABLE IF NOT EXISTS sil_properties (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_sil_properties_status ON sil_properties(status);
-CREATE INDEX idx_sil_properties_airtable ON sil_properties(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_sil_properties_status ON sil_properties(status);
+CREATE INDEX IF NOT EXISTS idx_sil_properties_airtable ON sil_properties(airtable_id);
 
 -- ─── CLIENT CALENDAR ─────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS client_calendar (
@@ -425,9 +425,9 @@ CREATE TABLE IF NOT EXISTS client_calendar (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_calendar_client ON client_calendar(client_name);
-CREATE INDEX idx_calendar_start ON client_calendar(start_datetime);
-CREATE INDEX idx_calendar_airtable ON client_calendar(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_calendar_client ON client_calendar(client_name);
+CREATE INDEX IF NOT EXISTS idx_calendar_start ON client_calendar(start_datetime);
+CREATE INDEX IF NOT EXISTS idx_calendar_airtable ON client_calendar(airtable_id);
 
 -- ─── SUPPORT PLANS ───────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS support_plans (
@@ -445,8 +445,8 @@ CREATE TABLE IF NOT EXISTS support_plans (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_support_plans_client ON support_plans(client_name);
-CREATE INDEX idx_support_plans_airtable ON support_plans(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_support_plans_client ON support_plans(client_name);
+CREATE INDEX IF NOT EXISTS idx_support_plans_airtable ON support_plans(airtable_id);
 
 -- ─── TASKS ───────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS tasks (
@@ -486,10 +486,10 @@ CREATE TABLE IF NOT EXISTS tasks (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_tasks_status ON tasks(status);
-CREATE INDEX idx_tasks_client ON tasks(client_name);
-CREATE INDEX idx_tasks_due ON tasks(due_date);
-CREATE INDEX idx_tasks_airtable ON tasks(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
+CREATE INDEX IF NOT EXISTS idx_tasks_client ON tasks(client_name);
+CREATE INDEX IF NOT EXISTS idx_tasks_due ON tasks(due_date);
+CREATE INDEX IF NOT EXISTS idx_tasks_airtable ON tasks(airtable_id);
 
 -- ─── LMS: COURSES ────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS courses (
@@ -507,7 +507,7 @@ CREATE TABLE IF NOT EXISTS courses (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_courses_airtable ON courses(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_courses_airtable ON courses(airtable_id);
 
 -- ─── LMS: COURSE ENROLLMENTS ─────────────────────────────────
 CREATE TABLE IF NOT EXISTS course_enrollments (
@@ -525,8 +525,8 @@ CREATE TABLE IF NOT EXISTS course_enrollments (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_enrollments_course ON course_enrollments(course_id);
-CREATE INDEX idx_enrollments_airtable ON course_enrollments(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_enrollments_course ON course_enrollments(course_id);
+CREATE INDEX IF NOT EXISTS idx_enrollments_airtable ON course_enrollments(airtable_id);
 
 -- ─── LMS: COURSE MODULES ────────────────────────────────────
 CREATE TABLE IF NOT EXISTS course_modules (
@@ -543,8 +543,8 @@ CREATE TABLE IF NOT EXISTS course_modules (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_modules_course ON course_modules(course_id);
-CREATE INDEX idx_modules_airtable ON course_modules(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_modules_course ON course_modules(course_id);
+CREATE INDEX IF NOT EXISTS idx_modules_airtable ON course_modules(airtable_id);
 
 -- ─── LMS: COURSE LESSONS ────────────────────────────────────
 CREATE TABLE IF NOT EXISTS course_lessons (
@@ -563,8 +563,8 @@ CREATE TABLE IF NOT EXISTS course_lessons (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_lessons_module ON course_lessons(module_id);
-CREATE INDEX idx_lessons_airtable ON course_lessons(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_lessons_module ON course_lessons(module_id);
+CREATE INDEX IF NOT EXISTS idx_lessons_airtable ON course_lessons(airtable_id);
 
 -- ─── LMS: COURSE QUIZZES ────────────────────────────────────
 CREATE TABLE IF NOT EXISTS course_quizzes (
@@ -578,8 +578,8 @@ CREATE TABLE IF NOT EXISTS course_quizzes (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_quizzes_course ON course_quizzes(course_id);
-CREATE INDEX idx_quizzes_airtable ON course_quizzes(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_quizzes_course ON course_quizzes(course_id);
+CREATE INDEX IF NOT EXISTS idx_quizzes_airtable ON course_quizzes(airtable_id);
 
 -- ─── LMS: QUIZ QUESTIONS ────────────────────────────────────
 CREATE TABLE IF NOT EXISTS course_quiz_questions (
@@ -595,8 +595,8 @@ CREATE TABLE IF NOT EXISTS course_quiz_questions (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_quiz_q_quiz ON course_quiz_questions(quiz_id);
-CREATE INDEX idx_quiz_q_airtable ON course_quiz_questions(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_quiz_q_quiz ON course_quiz_questions(quiz_id);
+CREATE INDEX IF NOT EXISTS idx_quiz_q_airtable ON course_quiz_questions(airtable_id);
 
 -- ─── RECEIPTS ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS receipts (
@@ -622,8 +622,8 @@ CREATE TABLE IF NOT EXISTS receipts (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_receipts_date ON receipts(purchase_date);
-CREATE INDEX idx_receipts_airtable ON receipts(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_receipts_date ON receipts(purchase_date);
+CREATE INDEX IF NOT EXISTS idx_receipts_airtable ON receipts(airtable_id);
 
 -- ─── CONTACT HISTORY ─────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS employee_contact_history (
@@ -641,8 +641,8 @@ CREATE TABLE IF NOT EXISTS employee_contact_history (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_emp_history_email ON employee_contact_history(email);
-CREATE INDEX idx_emp_history_airtable ON employee_contact_history(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_emp_history_email ON employee_contact_history(email);
+CREATE INDEX IF NOT EXISTS idx_emp_history_airtable ON employee_contact_history(airtable_id);
 
 CREATE TABLE IF NOT EXISTS client_contact_history (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -659,8 +659,8 @@ CREATE TABLE IF NOT EXISTS client_contact_history (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_client_history_name ON client_contact_history(client_name);
-CREATE INDEX idx_client_history_airtable ON client_contact_history(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_client_history_name ON client_contact_history(client_name);
+CREATE INDEX IF NOT EXISTS idx_client_history_airtable ON client_contact_history(airtable_id);
 
 -- ─── KNOWLEDGE BASE ──────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS knowledge_base (
@@ -679,7 +679,7 @@ CREATE TABLE IF NOT EXISTS knowledge_base (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_kb_airtable ON knowledge_base(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_kb_airtable ON knowledge_base(airtable_id);
 
 -- ─── PAY RATES ───────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS sw_contractor_rates (
@@ -714,8 +714,8 @@ CREATE TABLE IF NOT EXISTS staff_availability (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_availability_email ON staff_availability(staff_email);
-CREATE INDEX idx_availability_airtable ON staff_availability(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_availability_email ON staff_availability(staff_email);
+CREATE INDEX IF NOT EXISTS idx_availability_airtable ON staff_availability(airtable_id);
 
 -- ─── ROSTER OF CARE ──────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS roc_participants (
@@ -726,7 +726,7 @@ CREATE TABLE IF NOT EXISTS roc_participants (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_roc_part_airtable ON roc_participants(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_roc_part_airtable ON roc_participants(airtable_id);
 
 CREATE TABLE IF NOT EXISTS roc_shifts (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -736,7 +736,7 @@ CREATE TABLE IF NOT EXISTS roc_shifts (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_roc_shifts_airtable ON roc_shifts(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_roc_shifts_airtable ON roc_shifts(airtable_id);
 
 -- ─── CLIENT DAILY CHARTS ─────────────────────────────────────
 CREATE TABLE IF NOT EXISTS client_sleep_chart (
@@ -749,7 +749,7 @@ CREATE TABLE IF NOT EXISTS client_sleep_chart (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_sleep_chart_airtable ON client_sleep_chart(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_sleep_chart_airtable ON client_sleep_chart(airtable_id);
 
 CREATE TABLE IF NOT EXISTS bowel_chart (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -761,7 +761,7 @@ CREATE TABLE IF NOT EXISTS bowel_chart (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_bowel_chart_airtable ON bowel_chart(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_bowel_chart_airtable ON bowel_chart(airtable_id);
 
 CREATE TABLE IF NOT EXISTS fluid_intake_diary (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -773,7 +773,7 @@ CREATE TABLE IF NOT EXISTS fluid_intake_diary (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_fluid_intake_airtable ON fluid_intake_diary(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_fluid_intake_airtable ON fluid_intake_diary(airtable_id);
 
 CREATE TABLE IF NOT EXISTS client_consumables (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -785,7 +785,7 @@ CREATE TABLE IF NOT EXISTS client_consumables (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_consumables_airtable ON client_consumables(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_consumables_airtable ON client_consumables(airtable_id);
 
 CREATE TABLE IF NOT EXISTS client_behaviours (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -797,7 +797,7 @@ CREATE TABLE IF NOT EXISTS client_behaviours (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_behaviours_airtable ON client_behaviours(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_behaviours_airtable ON client_behaviours(airtable_id);
 
 -- ─── DOCUMENTS ───────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS document_signing_requests (
@@ -808,7 +808,7 @@ CREATE TABLE IF NOT EXISTS document_signing_requests (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_doc_signing_airtable ON document_signing_requests(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_doc_signing_airtable ON document_signing_requests(airtable_id);
 
 CREATE TABLE IF NOT EXISTS employment_documents (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -818,7 +818,7 @@ CREATE TABLE IF NOT EXISTS employment_documents (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_emp_docs_airtable ON employment_documents(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_emp_docs_airtable ON employment_documents(airtable_id);
 
 CREATE TABLE IF NOT EXISTS client_docs (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -838,8 +838,8 @@ CREATE TABLE IF NOT EXISTS client_docs (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_client_docs_client ON client_docs(client_name);
-CREATE INDEX idx_client_docs_airtable ON client_docs(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_client_docs_client ON client_docs(client_name);
+CREATE INDEX IF NOT EXISTS idx_client_docs_airtable ON client_docs(airtable_id);
 
 CREATE TABLE IF NOT EXISTS company_files (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -849,7 +849,7 @@ CREATE TABLE IF NOT EXISTS company_files (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_company_files_airtable ON company_files(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_company_files_airtable ON company_files(airtable_id);
 
 -- ─── NDIS PRICE GUIDE ────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS ndis_price_guide (
@@ -868,8 +868,8 @@ CREATE TABLE IF NOT EXISTS ndis_price_guide (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_ndis_item_number ON ndis_price_guide(support_item_number);
-CREATE INDEX idx_ndis_airtable ON ndis_price_guide(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_ndis_item_number ON ndis_price_guide(support_item_number);
+CREATE INDEX IF NOT EXISTS idx_ndis_airtable ON ndis_price_guide(airtable_id);
 
 -- ─── CHAT / MESSAGING ────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS chat_conversations (
@@ -915,8 +915,8 @@ CREATE TABLE IF NOT EXISTS client_media (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_client_media_client ON client_media(client_name);
-CREATE INDEX idx_client_media_airtable ON client_media(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_client_media_client ON client_media(client_name);
+CREATE INDEX IF NOT EXISTS idx_client_media_airtable ON client_media(airtable_id);
 
 -- ─── WEEKLY STAKEHOLDER REPORTS ──────────────────────────────
 CREATE TABLE IF NOT EXISTS weekly_stakeholder_reports (
@@ -927,7 +927,7 @@ CREATE TABLE IF NOT EXISTS weekly_stakeholder_reports (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_weekly_reports_airtable ON weekly_stakeholder_reports(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_weekly_reports_airtable ON weekly_stakeholder_reports(airtable_id);
 
 -- ─── RECRUITMENT (Candidate Interactions) ────────────────────
 CREATE TABLE IF NOT EXISTS candidate_interactions (
@@ -938,7 +938,7 @@ CREATE TABLE IF NOT EXISTS candidate_interactions (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_candidate_interactions_airtable ON candidate_interactions(airtable_id);
+CREATE INDEX IF NOT EXISTS idx_candidate_interactions_airtable ON candidate_interactions(airtable_id);
 
 -- ─── SYNC METADATA ───────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS sync_metadata (
@@ -951,7 +951,7 @@ CREATE TABLE IF NOT EXISTS sync_metadata (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE UNIQUE INDEX idx_sync_meta_table ON sync_metadata(table_name);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_sync_meta_table ON sync_metadata(table_name);
 
 -- ─── AIRTABLE ID MAPPING (for resolving linked records) ─────
 CREATE TABLE IF NOT EXISTS airtable_id_map (
@@ -961,7 +961,7 @@ CREATE TABLE IF NOT EXISTS airtable_id_map (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_id_map_table ON airtable_id_map(supabase_table);
+CREATE INDEX IF NOT EXISTS idx_id_map_table ON airtable_id_map(supabase_table);
 
 -- ─── AUTO-UPDATE updated_at TRIGGER ──────────────────────────
 CREATE OR REPLACE FUNCTION update_updated_at_column()
