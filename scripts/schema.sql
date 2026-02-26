@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS contacts (
   emergency_contact TEXT,
   emergency_phone TEXT,
   ndis_number TEXT,
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -127,6 +128,7 @@ CREATE TABLE IF NOT EXISTS clients (
   living_arrangements_decisions TEXT,
   legal_decisions TEXT,
   -- Metadata
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -172,6 +174,7 @@ CREATE TABLE IF NOT EXISTS leads (
   number_of_participants INTEGER,
   number_of_staff INTEGER,
   -- Metadata
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -204,6 +207,7 @@ CREATE TABLE IF NOT EXISTS rosters (
   charge_per_hour NUMERIC(8,2) DEFAULT 0,
   support_category_pace TEXT,
   broken_shift TEXT,
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -228,6 +232,7 @@ CREATE TABLE IF NOT EXISTS progress_notes (
   transport TEXT,
   kms TEXT,
   roster_id UUID REFERENCES rosters(id),
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -249,6 +254,7 @@ CREATE TABLE IF NOT EXISTS ir_reports (
   client_id UUID REFERENCES clients(id),
   incident_summary TEXT,
   is_reportable TEXT,
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -293,6 +299,7 @@ CREATE TABLE IF NOT EXISTS client_core_budgets (
   plan_manager TEXT,
   ndis_number TEXT,
   notes TEXT,
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -386,6 +393,7 @@ CREATE TABLE IF NOT EXISTS sil_properties (
   house_leader TEXT,
   -- Linked clients (array of client IDs)
   linked_clients JSONB DEFAULT '[]',
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -412,6 +420,7 @@ CREATE TABLE IF NOT EXISTS client_calendar (
   status TEXT,
   sil_or_cas TEXT,
   files JSONB DEFAULT '[]',
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -431,6 +440,7 @@ CREATE TABLE IF NOT EXISTS support_plans (
   strategy TEXT,
   notes TEXT,
   status TEXT,
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -471,6 +481,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   is_recurring TEXT,
   recurring_frequency TEXT,
   next_due_date DATE,
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -491,6 +502,7 @@ CREATE TABLE IF NOT EXISTS courses (
   status TEXT DEFAULT 'Active',
   duration_minutes TEXT,
   module_count INTEGER DEFAULT 0,
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -508,6 +520,7 @@ CREATE TABLE IF NOT EXISTS course_enrollments (
   enrolled_datetime TIMESTAMPTZ,
   progress NUMERIC(5,2) DEFAULT 0,
   course_expiry_date DATE,
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -525,6 +538,7 @@ CREATE TABLE IF NOT EXISTS course_modules (
   description TEXT,
   status TEXT,
   attachments JSONB DEFAULT '[]',
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -544,6 +558,7 @@ CREATE TABLE IF NOT EXISTS course_lessons (
   video_url TEXT,
   status TEXT,
   attachments JSONB DEFAULT '[]',
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -558,6 +573,7 @@ CREATE TABLE IF NOT EXISTS course_quizzes (
   course_id UUID REFERENCES courses(id),
   name TEXT,
   pass_percentage NUMERIC(5,2) DEFAULT 100,
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -574,6 +590,7 @@ CREATE TABLE IF NOT EXISTS course_quiz_questions (
   options TEXT,
   correct_answer INTEGER,
   sort_order NUMERIC(6,1) DEFAULT 0,
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -600,6 +617,7 @@ CREATE TABLE IF NOT EXISTS receipts (
   receipt_url TEXT,
   ai_summary TEXT,
   reimbursement TEXT DEFAULT 'NO',
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -619,6 +637,7 @@ CREATE TABLE IF NOT EXISTS employee_contact_history (
   summary TEXT,
   date TIMESTAMPTZ DEFAULT NOW(),
   created_by TEXT,
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -636,6 +655,7 @@ CREATE TABLE IF NOT EXISTS client_contact_history (
   summary TEXT,
   date TIMESTAMPTZ DEFAULT NOW(),
   created_by TEXT,
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -654,6 +674,7 @@ CREATE TABLE IF NOT EXISTS knowledge_base (
   summary TEXT,
   keywords TEXT,
   tags TEXT,
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -812,6 +833,7 @@ CREATE TABLE IF NOT EXISTS client_docs (
   attachment_summary TEXT,
   status TEXT DEFAULT 'Active',
   files JSONB DEFAULT '[]',
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -841,6 +863,7 @@ CREATE TABLE IF NOT EXISTS ndis_price_guide (
   charge_per_hour NUMERIC(8,2) DEFAULT 0,
   remote_rate NUMERIC(8,2) DEFAULT 0,
   very_remote_rate NUMERIC(8,2) DEFAULT 0,
+  data JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
