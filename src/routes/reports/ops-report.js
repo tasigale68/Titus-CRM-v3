@@ -1,5 +1,5 @@
 // ─── OPS REPORT — Full data-driven multi-section report ──
-var airtable = require('../../services/airtable');
+var airtable = require('../../services/database');
 var env = require('../../config/env');
 var { TitusDate, findDate, findField, arrayVal } = require('./helpers');
 

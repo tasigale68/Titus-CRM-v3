@@ -1,7 +1,7 @@
 var express = require('express');
 var { authenticate, requireRole } = require('../../middleware/auth');
 var { db } = require('../../db/sqlite');
-var airtable = require('../../services/airtable');
+var airtable = require('../../services/database');
 var env = require('../../config/env');
 
 var router = express.Router();

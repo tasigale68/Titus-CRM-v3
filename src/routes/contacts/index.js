@@ -3,7 +3,7 @@ const { authenticate } = require('../../middleware/auth');
 const { db } = require('../../db/sqlite');
 const { getUserPermissions } = require('../../services/permissions');
 const { logAudit } = require('../../services/audit');
-const airtable = require('../../services/airtable');
+const airtable = require('../../services/database');
 const env = require('../../config/env');
 
 const router = express.Router();

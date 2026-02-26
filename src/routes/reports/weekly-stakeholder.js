@@ -2,7 +2,7 @@
 var crypto = require('crypto');
 var fs = require('fs');
 var path = require('path');
-var airtable = require('../../services/airtable');
+var airtable = require('../../services/database');
 var env = require('../../config/env');
 var { db } = require('../../db/sqlite');
 var { logAudit } = require('../../services/audit');

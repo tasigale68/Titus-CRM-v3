@@ -39,6 +39,15 @@ module.exports = {
     emailAddress: process.env.MS_EMAIL_ADDRESS,
   },
 
+  // Supabase (database migration target)
+  supabase: {
+    url: process.env.SUPABASE_URL,
+    serviceKey: process.env.SUPABASE_SERVICE_KEY,
+  },
+
+  // Database toggle: 'airtable' (default) or 'supabase'
+  database: process.env.DATABASE || 'airtable',
+
   // Railway deployment
   railway: {
     volumeMountPath: process.env.RAILWAY_VOLUME_MOUNT_PATH,

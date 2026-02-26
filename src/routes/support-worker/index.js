@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const { db } = require('../../db/sqlite');
 const { hashPassword } = require('../../middleware/auth');
 const { logAudit } = require('../../services/audit');
-const airtable = require('../../services/airtable');
+const airtable = require('../../services/database');
 const { msGraphFetch } = require('../../services/email');
 const env = require('../../config/env');
 

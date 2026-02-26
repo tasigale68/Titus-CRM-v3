@@ -1,6 +1,6 @@
 var express = require('express');
 var { authenticate } = require('../../middleware/auth');
-var airtable = require('../../services/airtable');
+var airtable = require('../../services/database');
 var env = require('../../config/env');
 var { uploadGeneral } = require('../../config/upload');
 var fs = require('fs');

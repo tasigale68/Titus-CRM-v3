@@ -3,7 +3,7 @@ var path = require('path');
 var fs = require('fs');
 var crypto = require('crypto');
 var { authenticate } = require('../../middleware/auth');
-var airtable = require('../../services/airtable');
+var airtable = require('../../services/database');
 var env = require('../../config/env');
 var { uploadsDir } = require('../../config/upload');
 

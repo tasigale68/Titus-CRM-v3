@@ -29,7 +29,9 @@ src/
 │   ├── auth.js            # Session auth, role guards
 │   └── error-handler.js   # Global error handler
 ├── services/
-│   └── airtable.js        # Airtable CRUD with rate limiting
+│   ├── airtable.js        # Airtable CRUD with rate limiting
+│   ├── supabase.js        # Supabase service layer (mirrors airtable.js)
+│   └── database.js        # Toggle: reads DATABASE env var, exports airtable or supabase
 └── routes/
     ├── auth/              # Login, logout, session management
     ├── contacts/          # CRM contacts (Airtable)
@@ -52,8 +54,9 @@ src/
 
 ### Data layer
 
-- **Airtable** — primary CRM database (temporary). Base ID: `appg3Cz7mEsGA6IOI`. Stores contacts, clients, rosters, budgets, progress notes, incidents, courses, etc. **Supabase migration planned in 4-6 weeks.**
-- **SQLite** (`better-sqlite3`, WAL mode) — legacy local data: users, sessions, calls, SMS, tasks, audit logs. DB path uses `RAILWAY_VOLUME_MOUNT_PATH` in production.
+- **Airtable** — CRM database (legacy). Base ID: `appg3Cz7mEsGA6IOI`. Stores contacts, clients, rosters, budgets, progress notes, incidents, courses, etc.
+- **Supabase** — migration target. Set `DATABASE=supabase` to switch. Schema in `scripts/schema.sql`. All routes import from `src/services/database.js` which toggles based on `DATABASE` env var.
+- **SQLite** (`better-sqlite3`, WAL mode) — local data: users, sessions, calls, SMS, audit logs. DB path uses `RAILWAY_VOLUME_MOUNT_PATH` in production.
 
 ### External integrations
 
@@ -83,6 +86,16 @@ Production on **Railway** (auto-deploy on push to main). Uses Railway persistent
 ## Environment Variables
 
 See `.env.example` for the full list.
+
+## Database Migration (Airtable → Supabase)
+
+Toggle via `DATABASE` env var: `airtable` (default) or `supabase`. All route modules import from `src/services/database.js`. Migration scripts in `scripts/`. See `MIGRATION_REPORT.md` for full details.
+
+```bash
+npm run migrate:supabase    # One-time data migration
+npm run sync:start          # 5-minute sync bridge
+npm run worker              # Background sync process
+```
 
 ## Migration from Titus Voice
 

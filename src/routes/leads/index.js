@@ -1,7 +1,7 @@
 var express = require('express');
 var { authenticate } = require('../../middleware/auth');
 var { logAudit } = require('../../services/audit');
-var airtable = require('../../services/airtable');
+var airtable = require('../../services/database');
 var { msGraphFetch } = require('../../services/email');
 var env = require('../../config/env');
 

@@ -1,7 +1,7 @@
 const express = require('express');
 const { authenticate } = require('../../middleware/auth');
 const { logAudit } = require('../../services/audit');
-const airtable = require('../../services/airtable');
+const airtable = require('../../services/database');
 const env = require('../../config/env');
 const rocRates = require('../../services/roc-rates');
 

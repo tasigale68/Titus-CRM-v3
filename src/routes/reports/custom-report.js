@@ -1,7 +1,7 @@
 // ─── Custom Client Reports & AI Analysis ─────────────────
 var fs = require('fs');
 var path = require('path');
-var airtable = require('../../services/airtable');
+var airtable = require('../../services/database');
 var env = require('../../config/env');
 var { db } = require('../../db/sqlite');
 var { uploadsDir } = require('../../config/upload');

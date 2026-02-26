@@ -4,7 +4,10 @@
   "description": "Titus CRM — AI-powered operations platform for Delta Community Support (NDIS/aged care)",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node --watch src/server.js"
+    "dev": "node --watch src/server.js",
+    "worker": "node worker.js",
+    "migrate:supabase": "node scripts/migrate-airtable-to-supabase.js",
+    "sync:start": "node scripts/sync-airtable-to-supabase.js"
   },
   "dependencies": {
     "better-sqlite3": "^11.0.0",
