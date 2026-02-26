@@ -32,6 +32,18 @@ const deniseRoutes = require('./routes/denise-agent');
 const chatRoutes = require('./routes/chat');
 const messengerRoutes = require('./routes/messenger');
 
+// SaaS Route modules
+const tenantRoutes = require('./routes/tenants');
+const pricingRoutes = require('./routes/pricing');
+const adminTenantsRoutes = require('./routes/admin/tenants');
+const signingRoutes = require('./routes/signing');
+const portalRoutes = require('./routes/portal');
+const payrollRoutes = require('./routes/payroll');
+const budgetsRoutes = require('./routes/budgets');
+const weeklyReportRoutes = require('./routes/reports/weekly');
+const chatbotRoutes = require('./routes/chatbot');
+const voiceSmsRoutes = require('./routes/voice-sms');
+
 // Initialize
 const app = express();
 const server = http.createServer(app);
@@ -92,11 +104,42 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/messenger', messengerRoutes);
 
 // ═══════════════════════════════════════════════════════
+//  SaaS Multi-Tenant Routes
+// ═══════════════════════════════════════════════════════
+
+app.use('/api/tenant', tenantRoutes);
+app.use('/api/pricing', pricingRoutes);
+app.use('/api/admin/tenants', adminTenantsRoutes);
+app.use('/api/signing', signingRoutes);
+app.use('/api/sign', signingRoutes);         // Public signing routes
+app.use('/api/portal', portalRoutes);
+app.use('/api/payroll', payrollRoutes);
+app.use('/api/budgets', budgetsRoutes);
+app.use('/api/reports/weekly', weeklyReportRoutes);
+app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/voice-sms', voiceSmsRoutes);
+
+// ═══════════════════════════════════════════════════════
+//  Tenant Branded Login Routing
+// ═══════════════════════════════════════════════════════
+
+// Serve tenant-login.html for /{slug} routes (must be after static + API)
+app.get('/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'signup.html'));
+});
+app.get('/pricing', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'pricing.html'));
+});
+app.get('/admin/tenants', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'admin', 'tenants.html'));
+});
+
+// ═══════════════════════════════════════════════════════
 //  Health check
 // ═══════════════════════════════════════════════════════
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', version: '2.0.0', timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', version: '3.0.0', timestamp: new Date().toISOString() });
 });
 
 // ═══════════════════════════════════════════════════════
@@ -144,7 +187,7 @@ app.use(errorHandler);
 // ═══════════════════════════════════════════════════════
 
 server.listen(env.port, () => {
-  console.log(`Titus CRM v2.0.0 running on port ${env.port}`);
+  console.log(`Titus CRM v3.0.0 SaaS running on port ${env.port}`);
   console.log(`Environment: ${env.nodeEnv}`);
 });
 

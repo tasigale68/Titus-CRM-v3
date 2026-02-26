@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pricing | Titus CRM - AI-Powered NDIS Software</title>
+<meta name="description" content="Simple, transparent pricing for NDIS providers. Pay only for what you need. Core rostering, compliance, and support worker app included in every plan.">
+<link rel="icon" href="/images/titus-logo.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══ RESET & VARIABLES ═══ */
+:root {
+  --teal: #0d9488;
+  --teal-hover: #0f766e;
+  --teal-light: rgba(13,148,136,.08);
+  --teal-border: rgba(13,148,136,.2);
+  --navy: #0f172a;
+  --navy-soft: #1e293b;
+  --bg: #F5F6FA;
+  --surface: #FFFFFF;
+  --border: #E8EBF0;
+  --border2: #D5DAE3;
+  --text: #111827;
+  --text2: #374151;
+  --muted: #6B7280;
+  --dim: #9CA3AF;
+  --green: #10B981;
+  --green-bg: rgba(16,185,129,.08);
+  --green-border: rgba(16,185,129,.2);
+  --red: #EF4444;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --r: 12px;
+  --r-lg: 16px;
+  --shadow: 0 1px 3px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,.06), 0 16px 48px rgba(0,0,0,.08);
+  --transition: .2s cubic-bezier(.4,0,.2,1);
+  --max-w: 1200px;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; -webkit-font-smoothing:antialiased; }
+body { font-family:var(--sans); color:var(--text); line-height:1.6; background:var(--bg); overflow-x:hidden; }
+a { color:var(--teal); text-decoration:none; transition:color var(--transition); }
+a:hover { color:var(--teal-hover); }
+
+/* ═══ NAVIGATION ═══ */
+.nav {
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  padding:0 24px; height:64px; display:flex; align-items:center;
+  background:rgba(15,23,42,.95); backdrop-filter:blur(20px) saturate(1.4);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.nav-inner { max-width:var(--max-w); margin:0 auto; width:100%; display:flex; align-items:center; justify-content:space-between; }
+.nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.nav-brand img { height:34px; }
+.nav-brand-text { font-size:15px; font-weight:700; color:#fff; letter-spacing:-.2px; }
+.nav-links { display:flex; gap:4px; align-items:center; }
+.nav-links a {
+  font-size:13.5px; font-weight:500; padding:8px 14px; border-radius:8px;
+  color:rgba(255,255,255,.7); transition:all var(--transition); text-decoration:none; cursor:pointer;
+}
+.nav-links a:hover { color:#fff; background:rgba(255,255,255,.08); }
+.nav-links a.active { color:#fff; background:rgba(13,148,136,.2); }
+.nav-cta {
+  background:var(--teal) !important; color:#fff !important; font-weight:600 !important;
+  padding:9px 20px !important; border-radius:9px !important; cursor:pointer;
+}
+.nav-cta:hover { background:var(--teal-hover) !important; }
+.nav-toggle { display:none; background:none; border:none; cursor:pointer; padding:4px; color:#fff; }
+
+/* ═══ HERO ═══ */
+.hero {
+  background:linear-gradient(135deg,#0a0a1a 0%,var(--navy) 50%,#1a1a2e 100%);
+  padding:140px 24px 80px; text-align:center; position:relative; overflow:hidden;
+}
+.hero::before {
+  content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 30% 70%, rgba(13,148,136,.08), transparent),
+    radial-gradient(ellipse 50% 40% at 70% 30%, rgba(13,148,136,.06), transparent);
+  pointer-events:none;
+}
+.hero::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--teal-border),transparent);
+}
+.hero-content { position:relative; z-index:1; max-width:720px; margin:0 auto; }
+.hero-badge {
+  display:inline-flex; align-items:center; gap:6px; background:rgba(13,148,136,.12);
+  border:1px solid rgba(13,148,136,.25); border-radius:20px; padding:6px 16px;
+  font-size:12px; font-weight:600; color:var(--teal); margin-bottom:24px;
+  letter-spacing:.3px;
+}
+.hero h1 {
+  font-size:48px; font-weight:800; letter-spacing:-1.5px; line-height:1.1;
+  color:#fff; margin-bottom:16px;
+}
+.hero h1 span { color:var(--teal); }
+.hero p {
+  font-size:17px; color:rgba(255,255,255,.6); line-height:1.7; max-width:560px; margin:0 auto;
+}
+
+/* ═══ CONTAINER ═══ */
+.container { max-width:var(--max-w); margin:0 auto; padding:0 24px; }
+
+/* ═══ SECTION ═══ */
+.section { padding:80px 24px; }
+.section--white { background:var(--surface); }
+.section--light { background:var(--bg); }
+.section-header { text-align:center; max-width:600px; margin:0 auto 48px; }
+.section-label {
+  display:inline-block; font-size:11px; font-weight:700; letter-spacing:1.5px;
+  text-transform:uppercase; color:var(--teal); margin-bottom:10px;
+}
+.section-header h2 { font-size:32px; font-weight:800; letter-spacing:-.5px; line-height:1.2; margin-bottom:10px; color:var(--text); }
+.section-header p { font-size:15px; color:var(--muted); line-height:1.7; }
+
+/* ═══ CORE FEATURES GRID ═══ */
+.core-grid {
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:16px;
+}
+.core-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--r);
+  padding:24px; transition:all var(--transition); position:relative;
+}
+.core-card:hover { border-color:var(--teal-border); box-shadow:var(--shadow); }
+.core-icon {
+  width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+  background:var(--teal-light); margin-bottom:14px;
+}
+.core-icon svg { width:22px; height:22px; color:var(--teal); }
+.core-card h3 { font-size:14px; font-weight:700; color:var(--text); margin-bottom:4px; }
+.core-card p { font-size:12.5px; color:var(--muted); line-height:1.5; }
+.core-badge {
+  position:absolute; top:12px; right:12px;
+  background:var(--green-bg); border:1px solid var(--green-border);
+  color:var(--green); font-size:10px; font-weight:700; padding:3px 8px;
+  border-radius:4px; letter-spacing:.5px; text-transform:uppercase;
+}
+
+/* ═══ ADD-ON GRID ═══ */
+.addon-grid {
+  display:grid; grid-template-columns:repeat(2, 1fr); gap:16px;
+}
+.addon-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--r);
+  padding:20px 24px; display:flex; align-items:center; gap:16px;
+  transition:all var(--transition); cursor:pointer;
+}
+.addon-card:hover { border-color:var(--teal-border); box-shadow:var(--shadow); }
+.addon-card.selected { border-color:var(--teal); background:rgba(13,148,136,.03); }
+.addon-icon {
+  width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  background:var(--teal-light); flex-shrink:0;
+}
+.addon-icon svg { width:24px; height:24px; color:var(--teal); }
+.addon-info { flex:1; min-width:0; }
+.addon-info h3 { font-size:14px; font-weight:700; color:var(--text); margin-bottom:2px; }
+.addon-info p { font-size:12.5px; color:var(--muted); line-height:1.4; }
+.addon-price {
+  font-family:var(--mono); font-size:16px; font-weight:700; color:var(--text);
+  white-space:nowrap; margin-right:12px;
+}
+.addon-price span { font-size:11px; font-weight:500; color:var(--dim); }
+
+/* Toggle switch */
+.toggle { position:relative; width:48px; height:28px; flex-shrink:0; }
+.toggle input { opacity:0; width:0; height:0; }
+.toggle-track {
+  position:absolute; inset:0; background:var(--border2); border-radius:14px;
+  cursor:pointer; transition:all var(--transition);
+}
+.toggle-track::after {
+  content:''; position:absolute; top:3px; left:3px; width:22px; height:22px;
+  background:var(--surface); border-radius:50%; transition:all var(--transition);
+  box-shadow:0 1px 3px rgba(0,0,0,.15);
+}
+.toggle input:checked + .toggle-track { background:var(--teal); }
+.toggle input:checked + .toggle-track::after { transform:translateX(20px); }
+.toggle input:focus-visible + .toggle-track { box-shadow:0 0 0 3px rgba(13,148,136,.35); }
+
+/* ═══ LAYOUT: MAIN + SIDEBAR ═══ */
+.pricing-layout {
+  display:grid; grid-template-columns:1fr 360px; gap:32px; align-items:start;
+}
+.pricing-main { min-width:0; }
+
+/* ═══ STICKY CALCULATOR ═══ */
+.calc-sidebar {
+  position:sticky; top:88px;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg);
+  padding:28px; box-shadow:var(--shadow-lg);
+}
+.calc-sidebar h3 { font-size:16px; font-weight:700; color:var(--text); margin-bottom:20px; display:flex; align-items:center; gap:8px; }
+.calc-sidebar h3 svg { width:20px; height:20px; color:var(--teal); }
+
+.staff-selector { margin-bottom:20px; }
+.staff-selector label { display:block; font-size:11px; font-weight:600; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+.staff-selector select {
+  width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px;
+  padding:10px 12px; font-size:13px; color:var(--text); font-family:var(--sans);
+  cursor:pointer; outline:none; transition:border var(--transition);
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 12px center;
+}
+.staff-selector select:focus { border-color:var(--teal); box-shadow:0 0 0 3px rgba(13,148,136,.1); }
+
+.calc-divider { height:1px; background:var(--border); margin:16px 0; }
+
+.calc-base { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.calc-base-label { font-size:13px; color:var(--muted); }
+.calc-base-price { font-family:var(--mono); font-size:14px; font-weight:600; color:var(--text); }
+
+.calc-modules { margin-bottom:4px; }
+.calc-module-item {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:6px 0; font-size:12.5px;
+}
+.calc-module-item .name { color:var(--text2); }
+.calc-module-item .price { font-family:var(--mono); font-weight:600; color:var(--text); }
+
+.calc-discount {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:8px 12px; background:var(--green-bg); border:1px solid var(--green-border);
+  border-radius:8px; margin:12px 0;
+}
+.calc-discount .label { font-size:12px; font-weight:600; color:var(--green); }
+.calc-discount .amount { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--green); }
+
+.calc-total {
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding:16px 0 0; border-top:2px solid var(--text);
+}
+.calc-total-label { font-size:14px; font-weight:700; color:var(--text); }
+.calc-total-price { font-family:var(--mono); font-size:28px; font-weight:800; color:var(--text); }
+.calc-total-freq { font-size:12px; font-weight:500; color:var(--dim); }
+
+.calc-flat-rate {
+  text-align:center; padding:12px; background:rgba(13,148,136,.06);
+  border:1px solid var(--teal-border); border-radius:8px; margin-top:12px;
+}
+.calc-flat-rate p { font-size:12px; color:var(--teal); font-weight:600; }
+
+.calc-cta {
+  display:block; width:100%; padding:14px; margin-top:16px;
+  background:var(--teal); color:#fff; border:none; border-radius:10px;
+  font-size:15px; font-weight:700; font-family:var(--sans); cursor:pointer;
+  transition:all var(--transition); text-align:center; text-decoration:none;
+}
+.calc-cta:hover { background:var(--teal-hover); box-shadow:0 4px 16px rgba(13,148,136,.3); transform:translateY(-1px); color:#fff; }
+.calc-cta:active { transform:translateY(0); }
+.calc-cta:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(13,148,136,.35); }
+
+.calc-note { text-align:center; font-size:11px; color:var(--dim); margin-top:10px; }
+
+/* ═══ MOBILE BOTTOM BAR ═══ */
+.mobile-bar {
+  display:none; position:fixed; bottom:0; left:0; right:0; z-index:999;
+  background:var(--surface); border-top:1px solid var(--border);
+  padding:12px 20px; box-shadow:0 -4px 24px rgba(0,0,0,.1);
+}
+.mobile-bar-inner { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.mobile-bar-price { font-family:var(--mono); }
+.mobile-bar-price .amount { font-size:22px; font-weight:800; color:var(--text); }
+.mobile-bar-price .freq { font-size:11px; color:var(--dim); }
+.mobile-bar-price .modules { font-size:11px; color:var(--muted); }
+.mobile-bar-cta {
+  padding:12px 24px; background:var(--teal); color:#fff; border:none; border-radius:10px;
+  font-size:14px; font-weight:700; font-family:var(--sans); cursor:pointer;
+  transition:all var(--transition); white-space:nowrap; text-decoration:none;
+}
+.mobile-bar-cta:hover { background:var(--teal-hover); color:#fff; }
+
+/* ═══ FAQ ═══ */
+.faq-list { max-width:720px; margin:0 auto; }
+.faq-item {
+  border:1px solid var(--border); border-radius:var(--r); margin-bottom:10px;
+  background:var(--surface); overflow:hidden; transition:all var(--transition);
+}
+.faq-item:hover { border-color:var(--teal-border); }
+.faq-q {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:18px 20px; cursor:pointer; font-size:14px; font-weight:600;
+  color:var(--text); background:none; border:none; width:100%;
+  font-family:var(--sans); text-align:left; transition:all var(--transition);
+}
+.faq-q:hover { color:var(--teal); }
+.faq-q:focus-visible { outline:none; box-shadow:inset 0 0 0 2px rgba(13,148,136,.35); }
+.faq-q svg { width:20px; height:20px; color:var(--dim); flex-shrink:0; transition:transform var(--transition); }
+.faq-item.open .faq-q svg { transform:rotate(180deg); }
+.faq-a { padding:0 20px; max-height:0; overflow:hidden; transition:all .3s ease; }
+.faq-item.open .faq-a { max-height:300px; padding:0 20px 18px; }
+.faq-a p { font-size:13.5px; color:var(--muted); line-height:1.7; }
+
+/* ═══ FOOTER ═══ */
+.footer {
+  text-align:center; padding:32px 24px; font-size:12px; color:var(--dim);
+  border-top:1px solid var(--border); background:var(--surface);
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width:1024px) {
+  .pricing-layout { grid-template-columns:1fr; }
+  .calc-sidebar { display:none; }
+  .mobile-bar { display:block; }
+  .hero h1 { font-size:36px; }
+}
+@media (max-width:768px) {
+  .core-grid { grid-template-columns:repeat(2, 1fr); gap:12px; }
+  .addon-grid { grid-template-columns:1fr; }
+  .hero h1 { font-size:30px; }
+  .hero p { font-size:15px; }
+  .section { padding:60px 24px; }
+  .nav-links { display:none; }
+  .nav-toggle { display:block; }
+}
+@media (max-width:480px) {
+  .core-grid { grid-template-columns:1fr; }
+  .hero { padding:120px 20px 60px; }
+  .hero h1 { font-size:26px; }
+  .addon-card { flex-wrap:wrap; gap:12px; }
+  .addon-price { order:3; }
+}
+
+/* ═══ ANIMATIONS ═══ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration:0.01ms !important; animation-duration:0.01ms !important; }
+}
+.fade-in { opacity:0; transform:translateY(20px); transition:opacity .5s ease, transform .5s ease; }
+.fade-in.visible { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ═══ NAVIGATION ═══ -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="/website.html" class="nav-brand">
+      <img src="/images/titus-logo.png" alt="Titus CRM logo">
+      <span class="nav-brand-text">Titus CRM</span>
+    </a>
+    <div class="nav-links">
+      <a href="/website.html">Home</a>
+      <a href="/pricing.html" class="active">Pricing</a>
+      <a href="/signup.html" class="nav-cta">Start Free Trial</a>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle menu" onclick="document.querySelector('.nav-links').classList.toggle('show')">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      14-day free trial included
+    </div>
+    <h1>Simple, <span>Transparent</span> Pricing</h1>
+    <p>Pay only for what you need. Every plan includes full rostering, compliance, and your support worker app.</p>
+  </div>
+</section>
+
+<!-- ═══ CORE FEATURES ═══ -->
+<section class="section section--white" id="core">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Included in every plan</div>
+      <h2>Core Platform Features</h2>
+      <p>Everything you need to run your NDIS business, included at no extra cost with your base plan.</p>
+    </div>
+    <div class="core-grid" id="coreGrid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ADD-ON MODULES + CALCULATOR ═══ -->
+<section class="section section--light" id="addons">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Build your own plan</div>
+      <h2>Add-on Modules</h2>
+      <p>Select only the modules your organisation needs. Bundle 3+ for automatic discounts.</p>
+    </div>
+    <div class="pricing-layout">
+      <div class="pricing-main">
+        <div class="addon-grid" id="addonGrid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      <div class="calc-sidebar" id="calcSidebar">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg>
+          Price Calculator
+        </h3>
+
+        <div class="staff-selector">
+          <label for="staffCount">Staff count</label>
+          <select id="staffCount">
+            <option value="1-10">1 - 10 staff</option>
+            <option value="11-30">11 - 30 staff</option>
+            <option value="31-50">31 - 50 staff</option>
+            <option value="50+">50+ staff</option>
+          </select>
+        </div>
+
+        <div class="calc-base">
+          <span class="calc-base-label">Base platform fee</span>
+          <span class="calc-base-price" id="basePriceDisplay">$69/wk</span>
+        </div>
+
+        <div class="calc-divider"></div>
+
+        <div class="calc-modules" id="calcModules">
+          <p style="font-size:12px;color:var(--dim);text-align:center;padding:8px 0;">No add-ons selected</p>
+        </div>
+
+        <div class="calc-discount" id="calcDiscount" style="display:none;">
+          <span class="label" id="discountLabel">Bundle discount (10%)</span>
+          <span class="amount" id="discountAmount">-$0</span>
+        </div>
+
+        <div class="calc-total">
+          <span class="calc-total-label">Total</span>
+          <div>
+            <span class="calc-total-price" id="totalPrice">$69</span>
+            <span class="calc-total-freq">/week</span>
+          </div>
+        </div>
+
+        <div class="calc-flat-rate" id="flatRateNote" style="display:none;">
+          <p>All 10 modules selected -- flat rate applied</p>
+        </div>
+
+        <a href="/signup.html" class="calc-cta" id="ctaButton">Start Free Trial</a>
+        <p class="calc-note">No credit card required. Cancel anytime.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="section section--white" id="faq">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Questions</div>
+      <h2>Frequently Asked Questions</h2>
+    </div>
+    <div class="faq-list" id="faqList">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  &copy; 2026 Titus CRM &middot; Built in Brisbane, Australia
+</footer>
+
+<!-- ═══ MOBILE BOTTOM BAR ═══ -->
+<div class="mobile-bar" id="mobileBar">
+  <div class="mobile-bar-inner">
+    <div class="mobile-bar-price">
+      <div class="amount" id="mobileTotal">$69</div>
+      <div class="freq">/week</div>
+      <div class="modules" id="mobileModuleCount">0 add-ons selected</div>
+    </div>
+    <a href="/signup.html" class="mobile-bar-cta" id="mobileCta">Start Free Trial</a>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ═══ DATA ═══ */
+  const CORE_FEATURES = [
+    { id:'qms', name:'QMS', desc:'Quality management system and documentation', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>' },
+    { id:'contacts', name:'Contacts & Tasks', desc:'CRM contacts, organisation tasks and project tracking', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>' },
+    { id:'sa-signing', name:'Service Agreement Signing', desc:'Digital service agreement creation and e-signing', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15l3 3 3-3"/></svg>' },
+    { id:'sos-signing', name:'SOS Signing', desc:'Schedule of Support document signing workflow', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' },
+    { id:'roc', name:'Roster of Care', desc:'Client-centred care rosters and support allocation', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg>' },
+    { id:'rosters', name:'Rosters & Scheduling', desc:'SCHADS-compliant shift management and auto-scheduling', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' },
+    { id:'budgets', name:'Client Budget Tracking', desc:'NDIS plan budget monitoring and utilisation reports', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>' },
+    { id:'compliance', name:'Compliance Warnings', desc:'Automated compliance alerts, incident tracking and audit logs', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>' },
+    { id:'payroll', name:'Payroll Reporting + CSV', desc:'SCHADS payroll calculation with CSV export for your payroll provider', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>' },
+    { id:'ai-reports', name:'Weekly AI Progress Reports', desc:'AI-generated weekly progress notes for every client', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>' },
+    { id:'chatbot', name:'AI Staff Chatbot', desc:'Built-in AI assistant for staff questions and policy lookup', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/></svg>' },
+    { id:'sw-app', name:'Support Worker App', desc:'Mobile PWA for timesheets, shift acceptance and progress notes', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>' },
+  ];
+
+  const ADDON_MODULES = [
+    { id:'recruiter', name:'Recruiter ATS', price:59, desc:'Applicant tracking, CV scanning, referee calls', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6"/><path d="M23 11h-6"/></svg>' },
+    { id:'leads', name:'Leads & CRM', price:49, desc:'Lead pipeline, referral tracking and conversion', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>' },
+    { id:'voice', name:'Voice Phone & SMS', price:99, desc:'Business phone system, hunt groups, SMS messaging', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>' },
+    { id:'ai-voice', name:'24/7 AI Voice Agent', price:99, desc:'AI receptionist Denise for after-hours calls', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>' },
+    { id:'clients', name:'Client Management', price:69, desc:'Client profiles, NDIS plans, goals and case notes', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4-4v2"/><circle cx="12" cy="7" r="4"/></svg>' },
+    { id:'billing', name:'Billing & Invoicing', price:79, desc:'NDIS claim generation, invoicing and payment tracking', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>' },
+    { id:'lms', name:'LMS', price:49, desc:'Learning management, course tracking and compliance training', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>' },
+    { id:'ai-writing', name:'AI Report Writing', price:59, desc:'AI-powered stakeholder reports and documentation', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' },
+    { id:'contracts', name:'Employment Contract Signing', price:39, desc:'Digital employment contracts and onboarding documents', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>' },
+    { id:'portal', name:'Stakeholder Portal', price:49, desc:'External portal for families, plan managers and coordinators', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>' },
+  ];
+
+  const BASE_FEES = { '1-10':69, '11-30':129, '31-50':199, '50+':299 };
+
+  const FAQS = [
+    { q:'Is there a lock-in contract?', a:'No. Titus CRM is pay-as-you-go with no lock-in contracts. You can cancel or change your plan at any time. All plans are billed weekly to match how NDIS funding works.' },
+    { q:'What happens after the 14-day free trial?', a:'After your trial you\'ll be asked to select a payment method. If you choose not to continue, your account is paused (not deleted) so you can come back anytime.' },
+    { q:'Can I add or remove modules later?', a:'Absolutely. You can add or remove any add-on module at any time from your account settings. Changes take effect on your next billing cycle.' },
+    { q:'How does the bundle discount work?', a:'Select 3-4 modules for 10% off, 5-6 modules for 15% off, or 7+ modules for 25% off the add-on total. If you select all 10 modules, a flat rate of $599/week applies regardless of staff count add-on pricing.' },
+    { q:'What payment methods do you accept?', a:'We accept all major credit and debit cards (Visa, Mastercard, Amex) via Stripe. Direct debit is available for organisations on the 31-50 or 50+ staff tiers.' },
+    { q:'Is onboarding included?', a:'Yes. Every plan includes a guided onboarding session, data migration assistance, and a dedicated success contact for your first 30 days.' },
+    { q:'Where is my data stored?', a:'All data is stored on Australian servers in the Sydney region, meeting Australian data sovereignty requirements for NDIS participant information.' },
+    { q:'Do support workers need their own licence?', a:'No. The Support Worker App is included in the core platform. Support workers log in via OTP on their mobile device at no additional per-user cost.' },
+  ];
+
+  /* ═══ RENDER CORE FEATURES ═══ */
+  const coreGrid = document.getElementById('coreGrid');
+  CORE_FEATURES.forEach(f => {
+    const card = document.createElement('div');
+    card.className = 'core-card fade-in';
+    card.innerHTML = `
+      <span class="core-badge">Included</span>
+      <div class="core-icon">${f.icon}</div>
+      <h3>${f.name}</h3>
+      <p>${f.desc}</p>
+    `;
+    coreGrid.appendChild(card);
+  });
+
+  /* ═══ RENDER ADD-ON MODULES ═══ */
+  const addonGrid = document.getElementById('addonGrid');
+  const selected = new Set();
+
+  // Check URL params for pre-selected modules
+  const params = new URLSearchParams(window.location.search);
+  const preSelected = (params.get('modules') || '').split(',').filter(Boolean);
+
+  ADDON_MODULES.forEach(m => {
+    const isPreSelected = preSelected.includes(m.id);
+    if (isPreSelected) selected.add(m.id);
+
+    const card = document.createElement('div');
+    card.className = 'addon-card fade-in' + (isPreSelected ? ' selected' : '');
+    card.setAttribute('data-module', m.id);
+    card.innerHTML = `
+      <div class="addon-icon">${m.icon}</div>
+      <div class="addon-info">
+        <h3>${m.name}</h3>
+        <p>${m.desc}</p>
+      </div>
+      <span class="addon-price">$${m.price}<span>/wk</span></span>
+      <label class="toggle" aria-label="Toggle ${m.name}">
+        <input type="checkbox" ${isPreSelected ? 'checked' : ''} data-id="${m.id}" data-price="${m.price}" data-name="${m.name}">
+        <span class="toggle-track"></span>
+      </label>
+    `;
+
+    // Click anywhere on card toggles
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('.toggle')) return;
+      const cb = card.querySelector('input[type="checkbox"]');
+      cb.checked = !cb.checked;
+      cb.dispatchEvent(new Event('change'));
+    });
+
+    const cb = card.querySelector('input[type="checkbox"]');
+    cb.addEventListener('change', function() {
+      if (this.checked) {
+        selected.add(m.id);
+        card.classList.add('selected');
+      } else {
+        selected.delete(m.id);
+        card.classList.remove('selected');
+      }
+      recalculate();
+    });
+
+    addonGrid.appendChild(card);
+  });
+
+  /* ═══ STAFF COUNT ═══ */
+  const staffSelect = document.getElementById('staffCount');
+  // Pre-select from URL
+  const urlStaff = params.get('staff');
+  if (urlStaff && BASE_FEES[urlStaff]) staffSelect.value = urlStaff;
+
+  staffSelect.addEventListener('change', recalculate);
+
+  /* ═══ PRICE CALCULATION ═══ */
+  function recalculate() {
+    const tier = staffSelect.value;
+    const baseFee = BASE_FEES[tier];
+    const selectedModules = ADDON_MODULES.filter(m => selected.has(m.id));
+    const moduleCount = selectedModules.length;
+    const moduleTotal = selectedModules.reduce((sum, m) => sum + m.price, 0);
+
+    // Discount
+    let discountPct = 0;
+    let isFlat = false;
+    if (moduleCount === ADDON_MODULES.length) {
+      isFlat = true;
+    } else if (moduleCount >= 7) {
+      discountPct = 25;
+    } else if (moduleCount >= 5) {
+      discountPct = 15;
+    } else if (moduleCount >= 3) {
+      discountPct = 10;
+    }
+
+    const discountAmount = isFlat ? 0 : Math.round(moduleTotal * discountPct / 100);
+    const total = isFlat ? 599 : baseFee + moduleTotal - discountAmount;
+
+    // Update base price display
+    document.getElementById('basePriceDisplay').textContent = '$' + baseFee + '/wk';
+
+    // Update modules list
+    const calcModules = document.getElementById('calcModules');
+    if (selectedModules.length === 0) {
+      calcModules.innerHTML = '<p style="font-size:12px;color:var(--dim);text-align:center;padding:8px 0;">No add-ons selected</p>';
+    } else {
+      calcModules.innerHTML = selectedModules.map(m =>
+        `<div class="calc-module-item"><span class="name">${m.name}</span><span class="price">$${m.price}</span></div>`
+      ).join('');
+    }
+
+    // Update discount
+    const discountEl = document.getElementById('calcDiscount');
+    if (discountPct > 0 && !isFlat) {
+      discountEl.style.display = 'flex';
+      document.getElementById('discountLabel').textContent = 'Bundle discount (' + discountPct + '%)';
+      document.getElementById('discountAmount').textContent = '-$' + discountAmount;
+    } else {
+      discountEl.style.display = 'none';
+    }
+
+    // Update flat rate note
+    document.getElementById('flatRateNote').style.display = isFlat ? 'block' : 'none';
+
+    // Update total
+    document.getElementById('totalPrice').textContent = '$' + total;
+
+    // Update mobile bar
+    document.getElementById('mobileTotal').textContent = '$' + total;
+    document.getElementById('mobileModuleCount').textContent = moduleCount + ' add-on' + (moduleCount !== 1 ? 's' : '') + ' selected';
+
+    // Update CTA link with params
+    const moduleIds = selectedModules.map(m => m.id).join(',');
+    const ctaUrl = '/signup.html?staff=' + encodeURIComponent(tier) + (moduleIds ? '&modules=' + encodeURIComponent(moduleIds) : '');
+    document.getElementById('ctaButton').href = ctaUrl;
+    document.getElementById('mobileCta').href = ctaUrl;
+  }
+
+  recalculate();
+
+  /* ═══ RENDER FAQ ═══ */
+  const faqList = document.getElementById('faqList');
+  FAQS.forEach(f => {
+    const item = document.createElement('div');
+    item.className = 'faq-item';
+    item.innerHTML = `
+      <button class="faq-q" aria-expanded="false">
+        <span>${f.q}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="faq-a"><p>${f.a}</p></div>
+    `;
+    item.querySelector('.faq-q').addEventListener('click', function() {
+      const isOpen = item.classList.contains('open');
+      // Close all
+      faqList.querySelectorAll('.faq-item').forEach(i => { i.classList.remove('open'); i.querySelector('.faq-q').setAttribute('aria-expanded', 'false'); });
+      if (!isOpen) {
+        item.classList.add('open');
+        this.setAttribute('aria-expanded', 'true');
+      }
+    });
+    faqList.appendChild(item);
+  });
+
+  /* ═══ FADE IN ═══ */
+  function handleFadeIn() {
+    document.querySelectorAll('.fade-in').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight - 40) el.classList.add('visible');
+    });
+  }
+  window.addEventListener('scroll', handleFadeIn, { passive:true });
+  window.addEventListener('load', handleFadeIn);
+  handleFadeIn();
+
+})();
+</script>
+</body>
+</html>

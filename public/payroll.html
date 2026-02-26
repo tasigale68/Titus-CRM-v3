@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payroll Reporting — Titus CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   PAYROLL REPORTING — TITUS CRM
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --teal: #0d9488;
+  --teal-light: rgba(13,148,136,.08);
+  --teal-border: rgba(13,148,136,.2);
+  --teal-dark: #0f766e;
+  --navy: #0f172a;
+  --navy-light: #1e293b;
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface2: #f8fafc;
+  --border: #e2e8f0;
+  --border2: #cbd5e1;
+  --text: #0f172a;
+  --text2: #334155;
+  --muted: #64748b;
+  --dim: #94a3b8;
+  --green: #10b981;
+  --green-bg: rgba(16,185,129,.08);
+  --green-border: rgba(16,185,129,.2);
+  --amber: #f59e0b;
+  --amber-bg: rgba(245,158,11,.08);
+  --amber-border: rgba(245,158,11,.2);
+  --red: #ef4444;
+  --red-bg: rgba(239,68,68,.08);
+  --red-border: rgba(239,68,68,.2);
+  --blue: #3b82f6;
+  --blue-bg: rgba(59,130,246,.08);
+  --blue-border: rgba(59,130,246,.2);
+  --r: 12px;
+  --rs: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.12);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--dim); }
+
+/* ─── Typography ─── */
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* ─── Header ─── */
+.page-header {
+  background: var(--navy);
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.1);
+  color: var(--teal);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 200ms;
+}
+.back-btn:hover {
+  background: rgba(255,255,255,.15);
+  color: #5eead4;
+}
+
+.header-title h1 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.3px;
+}
+.header-title .breadcrumb {
+  font-size: 12px;
+  color: rgba(255,255,255,.5);
+  margin-top: 2px;
+}
+.header-title .breadcrumb a {
+  color: rgba(255,255,255,.5);
+  text-decoration: none;
+  transition: color 200ms;
+}
+.header-title .breadcrumb a:hover { color: #5eead4; }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(13,148,136,.15);
+  color: #5eead4;
+  letter-spacing: .02em;
+}
+
+/* ─── Container ─── */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 32px;
+}
+
+/* ─── Actions Bar ─── */
+.actions-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.form-group label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+input[type="date"],
+select {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  background: var(--surface2);
+  color: var(--text);
+  outline: none;
+  transition: border 200ms;
+  cursor: pointer;
+}
+input[type="date"]:focus,
+select:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(13,148,136,.1);
+}
+
+.actions-spacer { flex: 1; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: var(--rs);
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 200ms;
+  white-space: nowrap;
+}
+.btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+.btn:active { transform: scale(.97); }
+
+.btn-primary {
+  background: var(--teal);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--teal-dark);
+  box-shadow: 0 4px 12px rgba(13,148,136,.3);
+}
+
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text2);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+.btn-success {
+  background: var(--green);
+  color: #fff;
+}
+.btn-success:hover {
+  background: #059669;
+}
+
+.btn-sm {
+  padding: 6px 10px;
+  font-size: 11px;
+}
+
+/* ─── Stats Cards ─── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: all 200ms;
+}
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.stat-card .stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+.stat-card .stat-icon svg { width: 20px; height: 20px; }
+.stat-card .stat-icon.teal { background: var(--teal-light); color: var(--teal); }
+.stat-card .stat-icon.green { background: var(--green-bg); color: var(--green); }
+.stat-card .stat-icon.amber { background: var(--amber-bg); color: var(--amber); }
+.stat-card .stat-icon.blue { background: var(--blue-bg); color: var(--blue); }
+
+.stat-card .stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.5px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.stat-card .stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ─── Panel ─── */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.panel-header h2 svg { width: 18px; height: 18px; color: var(--teal); }
+
+.panel-body { padding: 0; }
+
+/* ─── Table ─── */
+.table-wrap { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+thead th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 200ms;
+}
+tbody tr:hover { background: var(--surface2); }
+tbody tr:last-child { border-bottom: none; }
+
+tbody td {
+  padding: 12px 14px;
+  color: var(--text2);
+  vertical-align: middle;
+}
+
+.td-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.td-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+/* ─── Badges ─── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-draft { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+.badge-review { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.badge-approved { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.badge-exported { background: rgba(139,92,246,.08); color: #8b5cf6; border: 1px solid rgba(139,92,246,.2); }
+.badge-warning { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.badge-violation { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+.badge-info { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+
+/* ─── Accordion Rows ─── */
+.run-row {
+  cursor: pointer;
+}
+.run-row td:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.run-row .expand-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dim);
+  transition: transform 200ms;
+  flex-shrink: 0;
+}
+.run-row.expanded .expand-icon { transform: rotate(90deg); }
+
+.run-detail {
+  display: none;
+}
+.run-detail.show {
+  display: table-row;
+}
+.run-detail td {
+  padding: 0;
+  background: var(--surface2);
+}
+.run-detail-inner {
+  padding: 16px 20px;
+}
+
+.run-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  overflow: hidden;
+}
+.detail-table thead th {
+  background: var(--surface);
+  padding: 8px 10px;
+  font-size: 10px;
+}
+.detail-table tbody td {
+  padding: 8px 10px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.detail-table tbody tr:last-child td { border-bottom: none; }
+.detail-table tbody tr:hover { background: rgba(13,148,136,.03); }
+
+/* ─── Collapsible SCHADS Panel ─── */
+.collapsible-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  border-bottom: 1px solid var(--border);
+  transition: background 200ms;
+}
+.collapsible-toggle:hover { background: var(--surface2); }
+.collapsible-toggle h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.collapsible-toggle h2 svg { width: 18px; height: 18px; color: var(--teal); }
+.collapsible-toggle .toggle-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--dim);
+  transition: transform 200ms;
+}
+.collapsible-toggle.open .toggle-icon { transform: rotate(180deg); }
+
+.collapsible-body {
+  display: none;
+  padding: 20px;
+}
+.collapsible-body.show { display: block; }
+
+.rates-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.rates-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.rates-table thead th {
+  background: var(--surface2);
+  padding: 8px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.rates-table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+}
+.rates-table tbody tr:last-child td { border-bottom: none; }
+.rates-table tbody tr:hover { background: var(--surface2); }
+
+.penalty-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.penalty-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  gap: 4px;
+}
+.penalty-chip .label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.penalty-chip .value {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--teal);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── Loading / Empty States ─── */
+.loading-state,
+.empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+}
+.loading-state svg,
+.empty-state svg {
+  width: 48px;
+  height: 48px;
+  color: var(--dim);
+  margin-bottom: 12px;
+}
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text2);
+  margin-bottom: 4px;
+}
+.empty-state p {
+  font-size: 13px;
+}
+
+/* ─── Toast ─── */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  padding: 12px 16px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 300px;
+  animation: slideIn 300ms ease;
+}
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--red); }
+.toast.info { border-left: 3px solid var(--blue); }
+.toast svg { width: 18px; height: 18px; flex-shrink: 0; }
+.toast.success svg { color: var(--green); }
+.toast.error svg { color: var(--red); }
+.toast.info svg { color: var(--blue); }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 1024px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .rates-grid { grid-template-columns: 1fr; }
+  .container { padding: 16px; }
+}
+
+@media (max-width: 768px) {
+  .page-header { padding: 14px 16px; }
+  .header-title h1 { font-size: 16px; }
+  .actions-bar { flex-direction: column; align-items: stretch; }
+  .actions-spacer { display: none; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: 1fr; }
+  .header-right { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ Header ═══ -->
+<header class="page-header">
+  <div class="header-left">
+    <a href="/" class="back-btn" title="Back to Titus CRM">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="15 18 9 12 15 6"/></svg>
+    </a>
+    <div class="header-title">
+      <h1>Payroll Reporting</h1>
+      <div class="breadcrumb"><a href="/">Titus CRM</a> / Payroll</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="header-badge">SCHADS Compliant</span>
+  </div>
+</header>
+
+<!-- ═══ Main Content ═══ -->
+<div class="container">
+
+  <!-- Actions Bar -->
+  <div class="actions-bar">
+    <div class="form-group">
+      <label>Period Start</label>
+      <input type="date" id="periodStart">
+    </div>
+    <div class="form-group">
+      <label>Period End</label>
+      <input type="date" id="periodEnd">
+    </div>
+    <div class="form-group">
+      <label>Period Type</label>
+      <select id="periodType">
+        <option value="weekly">Weekly</option>
+        <option value="fortnightly" selected>Fortnightly</option>
+        <option value="monthly">Monthly</option>
+      </select>
+    </div>
+    <div class="actions-spacer"></div>
+    <button class="btn btn-primary" id="btnGenerate" onclick="generatePayroll()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+      Generate Payroll
+    </button>
+    <button class="btn btn-secondary" id="btnExportAll" onclick="exportLatestCSV()" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export CSV
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon teal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      </div>
+      <div class="stat-value" id="statGross">$0.00</div>
+      <div class="stat-label">Total Gross Pay</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      </div>
+      <div class="stat-value" id="statSuper">$0.00</div>
+      <div class="stat-label">Total Superannuation</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon amber">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="stat-value" id="statCost">$0.00</div>
+      <div class="stat-label">Total Employment Cost</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <div class="stat-value" id="statWorkers">0</div>
+      <div class="stat-label">Workers This Period</div>
+    </div>
+  </div>
+
+  <!-- Payroll Runs -->
+  <div class="panel">
+    <div class="panel-header">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Payroll Runs
+      </h2>
+      <span class="badge badge-info" id="runCount">0 runs</span>
+    </div>
+    <div class="panel-body">
+      <div class="table-wrap">
+        <table id="runsTable">
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Workers</th>
+              <th>Total Gross</th>
+              <th>Total Super</th>
+              <th>Total Cost</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="runsBody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+      <div class="loading-state" id="runsLoading">
+        <div class="loading-spinner"></div>
+        <p>Loading payroll runs...</p>
+      </div>
+      <div class="empty-state" id="runsEmpty" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+        <h3>No Payroll Runs</h3>
+        <p>Select a date range and generate your first payroll run.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCHADS Rates Reference -->
+  <div class="panel">
+    <button class="collapsible-toggle" id="ratesToggle" onclick="toggleRatesPanel()">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        SCHADS Award Rates Reference
+      </h2>
+      <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="collapsible-body" id="ratesPanel">
+      <div class="rates-grid">
+        <div>
+          <h3 style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text);">Classification Rates</h3>
+          <table class="rates-table" id="ratesTable">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Pay Point</th>
+                <th>Hourly Rate</th>
+                <th>Annual Salary</th>
+              </tr>
+            </thead>
+            <tbody id="ratesBody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h3 style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text);">Penalty Multipliers</h3>
+          <div class="penalty-chips">
+            <div class="penalty-chip">
+              <span class="label">Saturday</span>
+              <span class="value">125%</span>
+            </div>
+            <div class="penalty-chip">
+              <span class="label">Sunday</span>
+              <span class="value">150%</span>
+            </div>
+            <div class="penalty-chip">
+              <span class="label">Public Holiday</span>
+              <span class="value">250%</span>
+            </div>
+            <div class="penalty-chip">
+              <span class="label">OT 1.5x</span>
+              <span class="value">150%</span>
+            </div>
+            <div class="penalty-chip">
+              <span class="label">OT 2.0x</span>
+              <span class="value">200%</span>
+            </div>
+            <div class="penalty-chip">
+              <span class="label">Sleepover</span>
+              <span class="value">Flat</span>
+            </div>
+          </div>
+          <div style="margin-top:16px;">
+            <button class="btn btn-secondary btn-sm" onclick="editRates()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit Rates
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   PAYROLL REPORTING — JavaScript
+   ═══════════════════════════════════════════════════════════════ */
+
+const API_BASE = '';
+const token = localStorage.getItem('titus_token');
+const headers = {
+  'Authorization': 'Bearer ' + token,
+  'Content-Type': 'application/json'
+};
+
+let payrollRuns = [];
+let schadsRates = [];
+let expandedRunId = null;
+
+// ─── Init ───
+document.addEventListener('DOMContentLoaded', () => {
+  setDefaultDates();
+  loadPayrollRuns();
+  loadRates();
+});
+
+function setDefaultDates() {
+  const now = new Date();
+  const end = new Date(now);
+  const start = new Date(now);
+  start.setDate(start.getDate() - 13); // fortnightly default
+  document.getElementById('periodStart').value = formatDate(start);
+  document.getElementById('periodEnd').value = formatDate(end);
+}
+
+function formatDate(d) {
+  return d.toISOString().split('T')[0];
+}
+
+function formatCurrency(n) {
+  return '$' + (n || 0).toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// ─── API Helpers ───
+async function apiGet(url) {
+  const res = await fetch(API_BASE + url, { headers });
+  if (!res.ok) throw new Error(`GET ${url} failed: ${res.status}`);
+  return res.json();
+}
+
+async function apiPost(url, body) {
+  const res = await fetch(API_BASE + url, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error(`POST ${url} failed: ${res.status}`);
+  return res.json();
+}
+
+async function apiPut(url, body) {
+  const res = await fetch(API_BASE + url, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error(`PUT ${url} failed: ${res.status}`);
+  return res.json();
+}
+
+// ─── Load Payroll Runs ───
+async function loadPayrollRuns() {
+  const loading = document.getElementById('runsLoading');
+  const empty = document.getElementById('runsEmpty');
+  const table = document.getElementById('runsTable');
+
+  loading.style.display = 'block';
+  empty.style.display = 'none';
+  table.style.display = 'none';
+
+  try {
+    const data = await apiGet('/api/payroll/runs');
+    payrollRuns = Array.isArray(data) ? data : (data.runs || []);
+    renderRuns();
+    updateStats();
+  } catch (err) {
+    console.error('Failed to load payroll runs:', err);
+    loading.style.display = 'none';
+    empty.style.display = 'block';
+    empty.querySelector('h3').textContent = 'Could not load payroll data';
+    empty.querySelector('p').textContent = err.message;
+  }
+}
+
+function renderRuns() {
+  const loading = document.getElementById('runsLoading');
+  const empty = document.getElementById('runsEmpty');
+  const table = document.getElementById('runsTable');
+  const body = document.getElementById('runsBody');
+
+  loading.style.display = 'none';
+  body.innerHTML = '';
+
+  if (payrollRuns.length === 0) {
+    empty.style.display = 'block';
+    table.style.display = 'none';
+    document.getElementById('runCount').textContent = '0 runs';
+    return;
+  }
+
+  table.style.display = 'table';
+  empty.style.display = 'none';
+  document.getElementById('runCount').textContent = payrollRuns.length + ' run' + (payrollRuns.length !== 1 ? 's' : '');
+  document.getElementById('btnExportAll').disabled = false;
+
+  payrollRuns.forEach(run => {
+    const statusClass = 'badge-' + (run.status || 'draft');
+    const tr = document.createElement('tr');
+    tr.className = 'run-row' + (expandedRunId === run.id ? ' expanded' : '');
+    tr.onclick = () => toggleRunDetail(run.id);
+    tr.innerHTML = `
+      <td>
+        <span class="expand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+        <span class="td-name">${formatPeriod(run.period_start, run.period_end)}</span>
+      </td>
+      <td>${capitalize(run.period_type || 'fortnightly')}</td>
+      <td><span class="badge ${statusClass}">${capitalize(run.status || 'draft')}</span></td>
+      <td class="td-mono">${run.worker_count || 0}</td>
+      <td class="td-mono">${formatCurrency(run.total_gross)}</td>
+      <td class="td-mono">${formatCurrency(run.total_super)}</td>
+      <td class="td-mono" style="font-weight:600;">${formatCurrency(run.total_cost)}</td>
+      <td>
+        <div style="display:flex;gap:6px;">
+          ${run.status !== 'approved' && run.status !== 'exported' ? `<button class="btn btn-sm btn-success" onclick="event.stopPropagation();updateRunStatus('${run.id}','approved')" title="Approve">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>` : ''}
+          <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();exportRunCSV('${run.id}')" title="Export CSV">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+        </div>
+      </td>
+    `;
+    body.appendChild(tr);
+
+    // Detail row
+    const detailTr = document.createElement('tr');
+    detailTr.className = 'run-detail' + (expandedRunId === run.id ? ' show' : '');
+    detailTr.id = 'detail-' + run.id;
+    detailTr.innerHTML = `<td colspan="8"><div class="run-detail-inner" id="detail-inner-${run.id}"><div class="loading-state"><div class="loading-spinner"></div><p>Loading payroll lines...</p></div></div></td>`;
+    body.appendChild(detailTr);
+  });
+}
+
+function formatPeriod(start, end) {
+  if (!start || !end) return 'N/A';
+  const opts = { day: 'numeric', month: 'short', year: 'numeric' };
+  return new Date(start).toLocaleDateString('en-AU', opts) + ' - ' + new Date(end).toLocaleDateString('en-AU', opts);
+}
+
+function capitalize(s) {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+}
+
+// ─── Toggle Run Detail ───
+async function toggleRunDetail(runId) {
+  const detailRow = document.getElementById('detail-' + runId);
+  const runRow = detailRow.previousElementSibling;
+
+  if (expandedRunId === runId) {
+    expandedRunId = null;
+    runRow.classList.remove('expanded');
+    detailRow.classList.remove('show');
+    return;
+  }
+
+  // Collapse previous
+  if (expandedRunId) {
+    const prev = document.getElementById('detail-' + expandedRunId);
+    if (prev) {
+      prev.classList.remove('show');
+      prev.previousElementSibling.classList.remove('expanded');
+    }
+  }
+
+  expandedRunId = runId;
+  runRow.classList.add('expanded');
+  detailRow.classList.add('show');
+
+  const inner = document.getElementById('detail-inner-' + runId);
+  inner.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>Loading payroll lines...</p></div>';
+
+  try {
+    const data = await apiGet('/api/payroll/runs/' + runId);
+    const lines = Array.isArray(data.lines) ? data.lines : (data.payroll_lines || []);
+    renderRunDetail(runId, data, lines);
+  } catch (err) {
+    inner.innerHTML = `<div class="empty-state"><h3>Could not load run details</h3><p>${err.message}</p></div>`;
+  }
+}
+
+function renderRunDetail(runId, run, lines) {
+  const inner = document.getElementById('detail-inner-' + runId);
+
+  const statusOptions = ['draft', 'review', 'approved', 'exported'];
+  const currentStatus = run.status || 'draft';
+
+  let html = `
+    <div class="run-detail-actions">
+      <div class="form-group" style="flex-direction:row;align-items:center;gap:8px;">
+        <label style="margin:0;">Status:</label>
+        <select onchange="updateRunStatus('${runId}', this.value)" style="font-size:12px;padding:5px 8px;">
+          ${statusOptions.map(s => `<option value="${s}" ${s === currentStatus ? 'selected' : ''}>${capitalize(s)}</option>`).join('')}
+        </select>
+      </div>
+      <button class="btn btn-sm btn-secondary" onclick="exportRunCSV('${runId}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export This Run
+      </button>
+    </div>
+  `;
+
+  if (lines.length === 0) {
+    html += '<div class="empty-state"><p>No payroll lines in this run.</p></div>';
+  } else {
+    html += `
+      <div class="table-wrap">
+        <table class="detail-table">
+          <thead>
+            <tr>
+              <th>Worker</th>
+              <th>Classification</th>
+              <th>Ordinary Hrs</th>
+              <th>OT 1.5x</th>
+              <th>OT 2.0x</th>
+              <th>Sat</th>
+              <th>Sun</th>
+              <th>PH</th>
+              <th>Sleepovers</th>
+              <th>Gross</th>
+              <th>Super</th>
+              <th>Total</th>
+              <th>Flags</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${lines.map(line => `
+              <tr>
+                <td class="td-name">${line.worker_name || 'Unknown'}</td>
+                <td>${line.classification || '-'}</td>
+                <td class="td-mono">${(line.ordinary_hours || 0).toFixed(1)}</td>
+                <td class="td-mono">${(line.ot_15x || 0).toFixed(1)}</td>
+                <td class="td-mono">${(line.ot_20x || 0).toFixed(1)}</td>
+                <td class="td-mono">${(line.saturday_hours || 0).toFixed(1)}</td>
+                <td class="td-mono">${(line.sunday_hours || 0).toFixed(1)}</td>
+                <td class="td-mono">${(line.public_holiday_hours || 0).toFixed(1)}</td>
+                <td class="td-mono">${line.sleepovers || 0}</td>
+                <td class="td-mono">${formatCurrency(line.gross)}</td>
+                <td class="td-mono">${formatCurrency(line.super_amount)}</td>
+                <td class="td-mono" style="font-weight:600;">${formatCurrency(line.total)}</td>
+                <td>${renderFlags(line.flags)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  inner.innerHTML = html;
+}
+
+function renderFlags(flags) {
+  if (!flags || !Array.isArray(flags) || flags.length === 0) return '<span style="color:var(--dim);font-size:11px;">None</span>';
+  return flags.map(f => {
+    const cls = f.severity === 'violation' ? 'badge-violation' : 'badge-warning';
+    return `<span class="badge ${cls}" style="margin:1px;">${f.message || f.type || f}</span>`;
+  }).join(' ');
+}
+
+// ─── Stats ───
+function updateStats() {
+  let totalGross = 0, totalSuper = 0, totalCost = 0, workerSet = new Set();
+  payrollRuns.forEach(r => {
+    totalGross += r.total_gross || 0;
+    totalSuper += r.total_super || 0;
+    totalCost += r.total_cost || 0;
+    if (r.worker_count) workerSet.add(r.worker_count);
+  });
+
+  const latestRun = payrollRuns[0];
+  document.getElementById('statGross').textContent = formatCurrency(latestRun ? latestRun.total_gross : totalGross);
+  document.getElementById('statSuper').textContent = formatCurrency(latestRun ? latestRun.total_super : totalSuper);
+  document.getElementById('statCost').textContent = formatCurrency(latestRun ? latestRun.total_cost : totalCost);
+  document.getElementById('statWorkers').textContent = latestRun ? (latestRun.worker_count || 0) : 0;
+}
+
+// ─── Generate Payroll ───
+async function generatePayroll() {
+  const btn = document.getElementById('btnGenerate');
+  const start = document.getElementById('periodStart').value;
+  const end = document.getElementById('periodEnd').value;
+  const type = document.getElementById('periodType').value;
+
+  if (!start || !end) {
+    showToast('Please select both start and end dates.', 'error');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="loading-spinner" style="width:16px;height:16px;margin:0;border-width:2px;"></div> Generating...';
+
+  try {
+    await apiPost('/api/payroll/generate', {
+      period_start: start,
+      period_end: end,
+      period_type: type
+    });
+    showToast('Payroll run generated successfully.', 'success');
+    await loadPayrollRuns();
+  } catch (err) {
+    showToast('Failed to generate payroll: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg> Generate Payroll`;
+  }
+}
+
+// ─── Export CSV ───
+async function exportRunCSV(runId) {
+  try {
+    const res = await fetch(API_BASE + '/api/payroll/runs/' + runId + '/export', { headers });
+    if (!res.ok) throw new Error('Export failed: ' + res.status);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'payroll-' + runId + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('CSV exported successfully.', 'success');
+  } catch (err) {
+    showToast('Export failed: ' + err.message, 'error');
+  }
+}
+
+function exportLatestCSV() {
+  if (payrollRuns.length > 0) {
+    exportRunCSV(payrollRuns[0].id);
+  }
+}
+
+// ─── Update Run Status ───
+async function updateRunStatus(runId, status) {
+  try {
+    await apiPut('/api/payroll/runs/' + runId, { status });
+    const run = payrollRuns.find(r => r.id === runId);
+    if (run) run.status = status;
+    renderRuns();
+    showToast('Status updated to ' + capitalize(status) + '.', 'success');
+  } catch (err) {
+    showToast('Failed to update status: ' + err.message, 'error');
+  }
+}
+
+// ─── Load SCHADS Rates ───
+async function loadRates() {
+  try {
+    const data = await apiGet('/api/payroll/rates');
+    schadsRates = Array.isArray(data) ? data : (data.rates || []);
+    renderRates();
+  } catch (err) {
+    console.error('Failed to load rates:', err);
+    renderDefaultRates();
+  }
+}
+
+function renderRates() {
+  const body = document.getElementById('ratesBody');
+  if (schadsRates.length === 0) {
+    renderDefaultRates();
+    return;
+  }
+  body.innerHTML = schadsRates.map(r => `
+    <tr>
+      <td class="td-name">${r.level || '-'}</td>
+      <td>${r.pay_point || '-'}</td>
+      <td class="td-mono">${formatCurrency(r.hourly_rate)}</td>
+      <td class="td-mono">${formatCurrency(r.annual_salary)}</td>
+    </tr>
+  `).join('');
+}
+
+function renderDefaultRates() {
+  const defaults = [
+    { level: 'Level 1', pay_point: '1', hourly: 28.26, annual: 54722 },
+    { level: 'Level 1', pay_point: '2', hourly: 29.18, annual: 56503 },
+    { level: 'Level 2', pay_point: '1', hourly: 29.62, annual: 57355 },
+    { level: 'Level 2', pay_point: '2', hourly: 30.10, annual: 58284 },
+    { level: 'Level 2', pay_point: '3', hourly: 30.57, annual: 59189 },
+    { level: 'Level 3', pay_point: '1', hourly: 30.90, annual: 59827 },
+    { level: 'Level 3', pay_point: '2', hourly: 31.38, annual: 60756 },
+    { level: 'Level 3', pay_point: '3', hourly: 31.89, annual: 61742 },
+    { level: 'Level 4', pay_point: '1', hourly: 32.58, annual: 63077 },
+    { level: 'Level 4', pay_point: '2', hourly: 33.19, annual: 64258 },
+    { level: 'Level 4', pay_point: '3', hourly: 33.80, annual: 65439 },
+  ];
+  const body = document.getElementById('ratesBody');
+  body.innerHTML = defaults.map(r => `
+    <tr>
+      <td class="td-name">${r.level}</td>
+      <td>${r.pay_point}</td>
+      <td class="td-mono">${formatCurrency(r.hourly)}</td>
+      <td class="td-mono">${formatCurrency(r.annual)}</td>
+    </tr>
+  `).join('');
+}
+
+// ─── Toggle Rates Panel ───
+function toggleRatesPanel() {
+  const toggle = document.getElementById('ratesToggle');
+  const panel = document.getElementById('ratesPanel');
+  toggle.classList.toggle('open');
+  panel.classList.toggle('show');
+}
+
+// ─── Edit Rates (Placeholder) ───
+function editRates() {
+  showToast('Rate editing coming soon. Contact admin to update SCHADS rates.', 'info');
+}
+
+// ─── Toast Notifications ───
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const icons = {
+    success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+    error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+  };
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  toast.innerHTML = (icons[type] || icons.info) + '<span>' + message + '</span>';
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(20px)';
+    toast.style.transition = 'all 300ms';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+</script>
+</body>
+</html>

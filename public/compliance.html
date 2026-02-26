@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roster Compliance — SCHADS Award — Titus CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   ROSTER COMPLIANCE — SCHADS AWARD — TITUS CRM
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --teal: #0d9488;
+  --teal-light: rgba(13,148,136,.08);
+  --teal-border: rgba(13,148,136,.2);
+  --teal-dark: #0f766e;
+  --navy: #0f172a;
+  --navy-light: #1e293b;
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface2: #f8fafc;
+  --border: #e2e8f0;
+  --border2: #cbd5e1;
+  --text: #0f172a;
+  --text2: #334155;
+  --muted: #64748b;
+  --dim: #94a3b8;
+  --green: #10b981;
+  --green-bg: rgba(16,185,129,.08);
+  --green-border: rgba(16,185,129,.2);
+  --amber: #f59e0b;
+  --amber-bg: rgba(245,158,11,.08);
+  --amber-border: rgba(245,158,11,.2);
+  --red: #ef4444;
+  --red-bg: rgba(239,68,68,.08);
+  --red-border: rgba(239,68,68,.2);
+  --blue: #3b82f6;
+  --blue-bg: rgba(59,130,246,.08);
+  --blue-border: rgba(59,130,246,.2);
+  --purple: #8b5cf6;
+  --purple-bg: rgba(139,92,246,.08);
+  --purple-border: rgba(139,92,246,.2);
+  --r: 12px;
+  --rs: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.12);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--dim); }
+
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* ─── Header ─── */
+.page-header {
+  background: var(--navy);
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.1);
+  color: var(--teal);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 200ms;
+}
+.back-btn:hover {
+  background: rgba(255,255,255,.15);
+  color: #5eead4;
+}
+
+.header-title h1 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.3px;
+}
+.header-title .breadcrumb {
+  font-size: 12px;
+  color: rgba(255,255,255,.5);
+  margin-top: 2px;
+}
+.header-title .breadcrumb a {
+  color: rgba(255,255,255,.5);
+  text-decoration: none;
+  transition: color 200ms;
+}
+.header-title .breadcrumb a:hover { color: #5eead4; }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(13,148,136,.15);
+  color: #5eead4;
+  letter-spacing: .02em;
+}
+
+/* ─── Container ─── */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 32px;
+}
+
+/* ─── Filter Bar ─── */
+.filter-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.form-group.grow { flex: 1; min-width: 180px; }
+.form-group label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="search"],
+select {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  background: var(--surface2);
+  color: var(--text);
+  outline: none;
+  transition: border 200ms;
+}
+input:focus, select:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(13,148,136,.1);
+}
+input::placeholder { color: var(--dim); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: var(--rs);
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 200ms;
+  white-space: nowrap;
+}
+.btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+.btn:active { transform: scale(.97); }
+
+.btn-primary { background: var(--teal); color: #fff; }
+.btn-primary:hover { background: var(--teal-dark); box-shadow: 0 4px 12px rgba(13,148,136,.3); }
+
+.btn-secondary { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--border); color: var(--text); }
+
+.btn-sm { padding: 6px 10px; font-size: 11px; }
+
+.btn-danger { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+.btn-danger:hover { background: var(--red); color: #fff; }
+
+.btn-success { background: var(--green); color: #fff; }
+.btn-success:hover { background: #059669; }
+
+/* ─── View Toggle ─── */
+.view-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  padding: 3px;
+}
+.view-toggle button {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  transition: all 200ms;
+}
+.view-toggle button:hover { color: var(--text); }
+.view-toggle button.active {
+  background: var(--surface);
+  color: var(--teal);
+  box-shadow: var(--shadow);
+}
+
+/* ─── Stats Cards ─── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: all 200ms;
+}
+.stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+.stat-card .stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+.stat-card .stat-icon svg { width: 20px; height: 20px; }
+.stat-card .stat-icon.amber { background: var(--amber-bg); color: var(--amber); }
+.stat-card .stat-icon.red { background: var(--red-bg); color: var(--red); }
+.stat-card .stat-icon.blue { background: var(--blue-bg); color: var(--blue); }
+.stat-card .stat-icon.green { background: var(--green-bg); color: var(--green); }
+
+.stat-card .stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.5px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.stat-card .stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ─── Panel ─── */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.panel-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.panel-header h2 svg { width: 18px; height: 18px; color: var(--teal); }
+
+.panel-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-body { padding: 0; }
+
+/* ─── Table ─── */
+.table-wrap { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+thead th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 200ms;
+}
+tbody tr:hover { background: var(--surface2); }
+tbody tr:last-child { border-bottom: none; }
+
+tbody td {
+  padding: 12px 14px;
+  color: var(--text2);
+  vertical-align: middle;
+}
+
+.td-name { font-weight: 600; color: var(--text); }
+.td-mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* ─── Badges ─── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-red { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+.badge-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.badge-info { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+.badge-green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.badge-resolved { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.badge-open { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+
+.warning-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  background: var(--surface2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+/* ─── Worker Cards View ─── */
+.workers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+
+.worker-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  transition: all 200ms;
+  cursor: pointer;
+}
+.worker-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+  border-color: var(--teal-border);
+}
+
+.worker-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.traffic-light {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.traffic-light svg { width: 18px; height: 18px; }
+.traffic-light.green { background: var(--green-bg); color: var(--green); border: 2px solid var(--green-border); }
+.traffic-light.amber { background: var(--amber-bg); color: var(--amber); border: 2px solid var(--amber-border); }
+.traffic-light.red { background: var(--red-bg); color: var(--red); border: 2px solid var(--red-border); }
+
+.worker-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.worker-card-meta {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.worker-card-warnings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.week-day {
+  text-align: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--dim);
+  text-transform: uppercase;
+  padding-bottom: 4px;
+}
+.week-cell {
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+}
+.week-cell.clear { background: var(--green-bg); color: var(--green); }
+.week-cell.warn { background: var(--amber-bg); color: var(--amber); }
+.week-cell.violation { background: var(--red-bg); color: var(--red); }
+.week-cell.empty { background: var(--surface2); color: var(--dim); }
+
+/* ─── Modal ─── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,.6);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  width: 480px;
+  max-width: 100%;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn 200ms ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(12px) scale(.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+}
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--surface2);
+  border-radius: var(--rs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 200ms;
+}
+.modal-close:hover { background: var(--border); color: var(--text); }
+
+.modal-body { padding: 20px; }
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+}
+
+textarea {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  background: var(--surface2);
+  color: var(--text);
+  outline: none;
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  transition: border 200ms;
+}
+textarea:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(13,148,136,.1);
+}
+textarea::placeholder { color: var(--dim); }
+
+/* ─── Publish Banner ─── */
+.publish-banner {
+  background: var(--red-bg);
+  border: 1px solid var(--red-border);
+  border-radius: var(--rs);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--red);
+}
+.publish-banner.show { display: flex; }
+.publish-banner svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* ─── Loading / Empty States ─── */
+.loading-state,
+.empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+}
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state svg { width: 48px; height: 48px; color: var(--dim); margin-bottom: 12px; }
+.empty-state h3 { font-size: 15px; font-weight: 700; color: var(--text2); margin-bottom: 4px; }
+.empty-state p { font-size: 13px; }
+
+/* ─── Toast ─── */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  padding: 12px 16px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 300px;
+  animation: slideIn 300ms ease;
+}
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--red); }
+.toast.info { border-left: 3px solid var(--blue); }
+.toast svg { width: 18px; height: 18px; flex-shrink: 0; }
+.toast.success svg { color: var(--green); }
+.toast.error svg { color: var(--red); }
+.toast.info svg { color: var(--blue); }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 1024px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .container { padding: 16px; }
+  .workers-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .page-header { padding: 14px 16px; }
+  .header-title h1 { font-size: 16px; }
+  .filter-bar { flex-direction: column; align-items: stretch; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: 1fr; }
+  .header-right { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ Header ═══ -->
+<header class="page-header">
+  <div class="header-left">
+    <a href="/" class="back-btn" title="Back to Titus CRM">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="15 18 9 12 15 6"/></svg>
+    </a>
+    <div class="header-title">
+      <h1>Roster Compliance -- SCHADS Award</h1>
+      <div class="breadcrumb"><a href="/">Titus CRM</a> / Scheduling / Compliance</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="header-badge">SCHADS Award Monitor</span>
+  </div>
+</header>
+
+<!-- ═══ Main Content ═══ -->
+<div class="container">
+
+  <!-- Publish Banner -->
+  <div class="publish-banner" id="publishBanner">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span id="publishBannerText">Cannot publish roster: <strong id="redCount">0</strong> unresolved RED warnings must be addressed first.</span>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <div class="form-group grow">
+      <label>Search Worker</label>
+      <input type="search" id="filterSearch" placeholder="Search by name..." oninput="applyFilters()">
+    </div>
+    <div class="form-group">
+      <label>Date From</label>
+      <input type="date" id="filterDateFrom" onchange="applyFilters()">
+    </div>
+    <div class="form-group">
+      <label>Date To</label>
+      <input type="date" id="filterDateTo" onchange="applyFilters()">
+    </div>
+    <div class="form-group">
+      <label>Warning Type</label>
+      <select id="filterType" onchange="applyFilters()">
+        <option value="">All Types</option>
+        <option value="min_break">Minimum Break</option>
+        <option value="daily_hours">Daily Hours</option>
+        <option value="weekly_hours">Weekly Hours</option>
+        <option value="below_guaranteed">Below Guaranteed</option>
+        <option value="casual_conversion">Casual Conversion</option>
+        <option value="overtime">Overtime</option>
+        <option value="saturday_penalty">Saturday Penalty</option>
+        <option value="sunday_penalty">Sunday Penalty</option>
+        <option value="public_holiday">Public Holiday</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Severity</label>
+      <select id="filterSeverity" onchange="applyFilters()">
+        <option value="">All</option>
+        <option value="red">RED - Critical</option>
+        <option value="amber">AMBER - Warning</option>
+        <option value="info">INFO</option>
+      </select>
+    </div>
+    <div class="view-toggle">
+      <button class="active" id="btnTableView" onclick="setView('table')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </button>
+      <button id="btnCardView" onclick="setView('cards')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon amber">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <div class="stat-value" id="statTotal">0</div>
+      <div class="stat-label">Total Warnings</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon red">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      </div>
+      <div class="stat-value" id="statRed">0</div>
+      <div class="stat-label">RED - Critical</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <div class="stat-value" id="statAmber">0</div>
+      <div class="stat-label">AMBER - Warning</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <div class="stat-value" id="statResolved">0</div>
+      <div class="stat-label">Resolved This Week</div>
+    </div>
+  </div>
+
+  <!-- Table View -->
+  <div id="tableView">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Compliance Warnings
+        </h2>
+        <div class="panel-header-actions">
+          <span class="badge badge-info" id="warningCount">0 warnings</span>
+          <button class="btn btn-sm btn-secondary" onclick="exportPDF()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            PDF
+          </button>
+          <button class="btn btn-sm btn-secondary" onclick="exportCSV()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            CSV
+          </button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-wrap">
+          <table id="complianceTable">
+            <thead>
+              <tr>
+                <th>Worker</th>
+                <th>Date</th>
+                <th>Warning Type</th>
+                <th>Severity</th>
+                <th>Details</th>
+                <th>Rule Reference</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="complianceBody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+        <div class="loading-state" id="complianceLoading">
+          <div class="loading-spinner"></div>
+          <p>Loading compliance data...</p>
+        </div>
+        <div class="empty-state" id="complianceEmpty" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <h3>All Clear</h3>
+          <p>No compliance warnings for the selected filters.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards View -->
+  <div id="cardsView" style="display:none;">
+    <div class="panel">
+      <div class="panel-header">
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Worker Compliance Overview
+        </h2>
+      </div>
+      <div class="workers-grid" id="workersGrid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Resolve Modal -->
+<div class="modal-overlay" id="resolveModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Resolve Warning</h3>
+      <button class="modal-close" onclick="closeResolveModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="resolveWarningInfo" style="margin-bottom:16px;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);font-size:13px;"></div>
+      <div class="form-group">
+        <label>Resolution Notes</label>
+        <textarea id="resolveNotes" placeholder="Describe how this warning was resolved..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeResolveModal()">Cancel</button>
+      <button class="btn btn-success" id="btnResolve" onclick="submitResolve()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+        Mark Resolved
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   ROSTER COMPLIANCE — JavaScript
+   ═══════════════════════════════════════════════════════════════ */
+
+const API_BASE = '';
+const token = localStorage.getItem('titus_token');
+const headers = {
+  'Authorization': 'Bearer ' + token,
+  'Content-Type': 'application/json'
+};
+
+let allWarnings = [];
+let filteredWarnings = [];
+let allRosters = [];
+let currentView = 'table';
+let resolveTarget = null;
+
+const WARNING_LABELS = {
+  min_break: 'Minimum Break',
+  daily_hours: 'Daily Hours',
+  weekly_hours: 'Weekly Hours',
+  below_guaranteed: 'Below Guaranteed',
+  casual_conversion: 'Casual Conversion',
+  overtime: 'Overtime',
+  saturday_penalty: 'Saturday Penalty',
+  sunday_penalty: 'Sunday Penalty',
+  public_holiday: 'Public Holiday'
+};
+
+const RULE_REFS = {
+  min_break: 'SCHADS 25.5 - 10hr break between shifts',
+  daily_hours: 'SCHADS 25.1 - Max 10hrs per day (12hr by agreement)',
+  weekly_hours: 'SCHADS 25.2 - Max 38hrs per week (avg)',
+  below_guaranteed: 'SCHADS 10.3 - Below minimum guaranteed hours',
+  casual_conversion: 'SCHADS 15.6 - Casual conversion eligibility',
+  overtime: 'SCHADS 28.1 - Overtime provisions',
+  saturday_penalty: 'SCHADS 26.1 - Saturday penalty rates',
+  sunday_penalty: 'SCHADS 26.2 - Sunday penalty rates',
+  public_holiday: 'SCHADS 32 - Public holiday provisions'
+};
+
+// ─── Init ───
+document.addEventListener('DOMContentLoaded', () => {
+  setDefaultDates();
+  loadComplianceData();
+});
+
+function setDefaultDates() {
+  const now = new Date();
+  const weekAgo = new Date(now);
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  document.getElementById('filterDateFrom').value = formatDate(weekAgo);
+  document.getElementById('filterDateTo').value = formatDate(now);
+}
+
+function formatDate(d) { return d.toISOString().split('T')[0]; }
+
+// ─── API ───
+async function apiGet(url) {
+  const res = await fetch(API_BASE + url, { headers });
+  if (!res.ok) throw new Error(`GET ${url}: ${res.status}`);
+  return res.json();
+}
+
+async function apiPut(url, body) {
+  const res = await fetch(API_BASE + url, {
+    method: 'PUT', headers,
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error(`PUT ${url}: ${res.status}`);
+  return res.json();
+}
+
+// ─── Load Data ───
+async function loadComplianceData() {
+  const loading = document.getElementById('complianceLoading');
+  loading.style.display = 'block';
+  document.getElementById('complianceTable').style.display = 'none';
+
+  try {
+    const data = await apiGet('/api/scheduling/rosters?include_warnings=true');
+    allRosters = Array.isArray(data) ? data : (data.rosters || data.data || []);
+    extractWarnings();
+    applyFilters();
+    updateStats();
+  } catch (err) {
+    console.error('Failed to load compliance data:', err);
+    loading.style.display = 'none';
+    document.getElementById('complianceEmpty').style.display = 'block';
+    document.getElementById('complianceEmpty').querySelector('h3').textContent = 'Could not load compliance data';
+    document.getElementById('complianceEmpty').querySelector('p').textContent = err.message;
+  }
+}
+
+function extractWarnings() {
+  allWarnings = [];
+  allRosters.forEach(roster => {
+    let warnings = roster.compliance_warnings;
+    if (typeof warnings === 'string') {
+      try { warnings = JSON.parse(warnings); } catch (e) { warnings = []; }
+    }
+    if (!Array.isArray(warnings)) return;
+
+    warnings.forEach((w, idx) => {
+      allWarnings.push({
+        id: roster.id + '-' + idx,
+        roster_id: roster.id,
+        worker_name: w.worker_name || roster.worker_name || roster.support_worker || 'Unknown',
+        date: w.date || roster.date || roster.shift_date || '',
+        type: w.type || w.warning_type || 'unknown',
+        severity: (w.severity || 'amber').toLowerCase(),
+        details: w.details || w.message || w.description || '',
+        rule_ref: w.rule_reference || RULE_REFS[w.type] || '',
+        status: w.resolved ? 'resolved' : (w.status || 'open'),
+        resolution_notes: w.resolution_notes || '',
+        warning_index: idx
+      });
+    });
+  });
+}
+
+// ─── Filters ───
+function applyFilters() {
+  const search = document.getElementById('filterSearch').value.toLowerCase();
+  const dateFrom = document.getElementById('filterDateFrom').value;
+  const dateTo = document.getElementById('filterDateTo').value;
+  const typeFilter = document.getElementById('filterType').value;
+  const severityFilter = document.getElementById('filterSeverity').value;
+
+  filteredWarnings = allWarnings.filter(w => {
+    if (search && !w.worker_name.toLowerCase().includes(search)) return false;
+    if (dateFrom && w.date && w.date < dateFrom) return false;
+    if (dateTo && w.date && w.date > dateTo) return false;
+    if (typeFilter && w.type !== typeFilter) return false;
+    if (severityFilter && w.severity !== severityFilter) return false;
+    return true;
+  });
+
+  renderTableView();
+  renderCardsView();
+  updateWarningCount();
+  checkPublishBlock();
+}
+
+function updateWarningCount() {
+  const open = filteredWarnings.filter(w => w.status !== 'resolved').length;
+  document.getElementById('warningCount').textContent = open + ' warning' + (open !== 1 ? 's' : '');
+}
+
+function checkPublishBlock() {
+  const unresolvedRed = allWarnings.filter(w => w.severity === 'red' && w.status !== 'resolved').length;
+  const banner = document.getElementById('publishBanner');
+  if (unresolvedRed > 0) {
+    banner.classList.add('show');
+    document.getElementById('redCount').textContent = unresolvedRed;
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+// ─── Stats ───
+function updateStats() {
+  const total = allWarnings.filter(w => w.status !== 'resolved').length;
+  const red = allWarnings.filter(w => w.severity === 'red' && w.status !== 'resolved').length;
+  const amber = allWarnings.filter(w => w.severity === 'amber' && w.status !== 'resolved').length;
+
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  const resolved = allWarnings.filter(w => w.status === 'resolved').length;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statRed').textContent = red;
+  document.getElementById('statAmber').textContent = amber;
+  document.getElementById('statResolved').textContent = resolved;
+}
+
+// ─── Table View ───
+function renderTableView() {
+  const loading = document.getElementById('complianceLoading');
+  const empty = document.getElementById('complianceEmpty');
+  const table = document.getElementById('complianceTable');
+  const body = document.getElementById('complianceBody');
+
+  loading.style.display = 'none';
+  body.innerHTML = '';
+
+  if (filteredWarnings.length === 0) {
+    empty.style.display = 'block';
+    table.style.display = 'none';
+    return;
+  }
+
+  table.style.display = 'table';
+  empty.style.display = 'none';
+
+  filteredWarnings.forEach(w => {
+    const severityBadge = w.severity === 'red' ? 'badge-red'
+      : w.severity === 'amber' ? 'badge-amber'
+      : 'badge-info';
+
+    const statusBadge = w.status === 'resolved' ? 'badge-resolved' : 'badge-open';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="td-name">${escapeHtml(w.worker_name)}</td>
+      <td class="td-mono">${w.date || '-'}</td>
+      <td><span class="warning-type-badge">${WARNING_LABELS[w.type] || w.type}</span></td>
+      <td><span class="badge ${severityBadge}">${w.severity.toUpperCase()}</span></td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHtml(w.details)}">${escapeHtml(w.details)}</td>
+      <td style="font-size:11px;color:var(--muted);">${escapeHtml(w.rule_ref)}</td>
+      <td><span class="badge ${statusBadge}">${capitalize(w.status)}</span></td>
+      <td>
+        ${w.status !== 'resolved' ? `<button class="btn btn-sm btn-success" onclick="openResolveModal('${w.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+          Resolve
+        </button>` : '<span style="font-size:11px;color:var(--green);font-weight:600;">Resolved</span>'}
+      </td>
+    `;
+    body.appendChild(tr);
+  });
+}
+
+// ─── Cards View ───
+function renderCardsView() {
+  const grid = document.getElementById('workersGrid');
+  grid.innerHTML = '';
+
+  const workerMap = {};
+  filteredWarnings.forEach(w => {
+    if (!workerMap[w.worker_name]) {
+      workerMap[w.worker_name] = { name: w.worker_name, warnings: [] };
+    }
+    workerMap[w.worker_name].warnings.push(w);
+  });
+
+  const workers = Object.values(workerMap).sort((a, b) => {
+    const aRed = a.warnings.filter(w => w.severity === 'red' && w.status !== 'resolved').length;
+    const bRed = b.warnings.filter(w => w.severity === 'red' && w.status !== 'resolved').length;
+    return bRed - aRed;
+  });
+
+  if (workers.length === 0) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><h3>No workers found</h3><p>Adjust filters to see worker compliance data.</p></div>';
+    return;
+  }
+
+  workers.forEach(worker => {
+    const open = worker.warnings.filter(w => w.status !== 'resolved');
+    const hasRed = open.some(w => w.severity === 'red');
+    const hasAmber = open.some(w => w.severity === 'amber');
+    const light = open.length === 0 ? 'green' : hasRed ? 'red' : hasAmber ? 'amber' : 'green';
+
+    const lightIcons = {
+      green: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+      amber: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+      red: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+    };
+
+    const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    let weekHtml = '<div class="week-grid">';
+    days.forEach(d => { weekHtml += `<div class="week-day">${d}</div>`; });
+    for (let i = 0; i < 7; i++) {
+      const dayWarnings = open.filter(w => {
+        if (!w.date) return false;
+        return new Date(w.date).getDay() === ((i + 1) % 7);
+      });
+      const cls = dayWarnings.length === 0 ? 'empty'
+        : dayWarnings.some(w => w.severity === 'red') ? 'violation'
+        : dayWarnings.some(w => w.severity === 'amber') ? 'warn' : 'clear';
+      weekHtml += `<div class="week-cell ${cls}">${dayWarnings.length || ''}</div>`;
+    }
+    weekHtml += '</div>';
+
+    const card = document.createElement('div');
+    card.className = 'worker-card';
+    card.innerHTML = `
+      <div class="worker-card-header">
+        <div class="traffic-light ${light}">${lightIcons[light]}</div>
+        <div>
+          <div class="worker-card-name">${escapeHtml(worker.name)}</div>
+          <div class="worker-card-meta">${open.length} open warning${open.length !== 1 ? 's' : ''} / ${worker.warnings.length} total</div>
+        </div>
+      </div>
+      <div class="worker-card-warnings">
+        ${open.slice(0, 5).map(w => {
+          const cls = w.severity === 'red' ? 'badge-red' : w.severity === 'amber' ? 'badge-amber' : 'badge-info';
+          return `<span class="badge ${cls}">${WARNING_LABELS[w.type] || w.type}</span>`;
+        }).join('')}
+        ${open.length > 5 ? `<span class="badge badge-info">+${open.length - 5} more</span>` : ''}
+      </div>
+      ${weekHtml}
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ─── View Toggle ───
+function setView(view) {
+  currentView = view;
+  document.getElementById('tableView').style.display = view === 'table' ? 'block' : 'none';
+  document.getElementById('cardsView').style.display = view === 'cards' ? 'block' : 'none';
+  document.getElementById('btnTableView').classList.toggle('active', view === 'table');
+  document.getElementById('btnCardView').classList.toggle('active', view === 'cards');
+}
+
+// ─── Resolve Modal ───
+function openResolveModal(warningId) {
+  resolveTarget = allWarnings.find(w => w.id === warningId);
+  if (!resolveTarget) return;
+
+  const info = document.getElementById('resolveWarningInfo');
+  info.innerHTML = `
+    <strong>${escapeHtml(resolveTarget.worker_name)}</strong> - ${resolveTarget.date || 'N/A'}<br>
+    <span class="badge badge-${resolveTarget.severity}" style="margin-top:6px;">${resolveTarget.severity.toUpperCase()}</span>
+    <span class="warning-type-badge" style="margin-left:4px;">${WARNING_LABELS[resolveTarget.type] || resolveTarget.type}</span><br>
+    <span style="color:var(--muted);font-size:12px;margin-top:6px;display:inline-block;">${escapeHtml(resolveTarget.details)}</span>
+  `;
+  document.getElementById('resolveNotes').value = '';
+  document.getElementById('resolveModal').classList.add('show');
+}
+
+function closeResolveModal() {
+  document.getElementById('resolveModal').classList.remove('show');
+  resolveTarget = null;
+}
+
+async function submitResolve() {
+  if (!resolveTarget) return;
+  const notes = document.getElementById('resolveNotes').value.trim();
+  if (!notes) {
+    showToast('Please enter resolution notes.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btnResolve');
+  btn.disabled = true;
+
+  try {
+    const roster = allRosters.find(r => r.id === resolveTarget.roster_id);
+    if (!roster) throw new Error('Roster not found');
+
+    let warnings = roster.compliance_warnings;
+    if (typeof warnings === 'string') {
+      try { warnings = JSON.parse(warnings); } catch (e) { warnings = []; }
+    }
+    if (!Array.isArray(warnings)) warnings = [];
+
+    const idx = resolveTarget.warning_index;
+    if (warnings[idx]) {
+      warnings[idx].resolved = true;
+      warnings[idx].status = 'resolved';
+      warnings[idx].resolution_notes = notes;
+      warnings[idx].resolved_at = new Date().toISOString();
+    }
+
+    await apiPut('/api/scheduling/rosters/' + resolveTarget.roster_id, {
+      compliance_warnings: warnings
+    });
+
+    resolveTarget.status = 'resolved';
+    resolveTarget.resolution_notes = notes;
+
+    applyFilters();
+    updateStats();
+    closeResolveModal();
+    showToast('Warning resolved successfully.', 'success');
+  } catch (err) {
+    showToast('Failed to resolve: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ─── Export ───
+function exportCSV() {
+  const rows = [['Worker', 'Date', 'Warning Type', 'Severity', 'Details', 'Rule Reference', 'Status']];
+  filteredWarnings.forEach(w => {
+    rows.push([
+      w.worker_name, w.date, WARNING_LABELS[w.type] || w.type,
+      w.severity.toUpperCase(), w.details, w.rule_ref, w.status
+    ]);
+  });
+  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
+  downloadFile(csv, 'compliance-warnings.csv', 'text/csv');
+  showToast('CSV exported.', 'success');
+}
+
+function exportPDF() {
+  showToast('PDF export coming soon.', 'info');
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ─── Utilities ───
+function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ─── Toast ───
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const icons = {
+    success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+    error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+  };
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  toast.innerHTML = (icons[type] || icons.info) + '<span>' + message + '</span>';
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(20px)';
+    toast.style.transition = 'all 300ms';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+</script>
+</body>
+</html>

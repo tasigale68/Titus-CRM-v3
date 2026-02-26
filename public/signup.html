@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Start Free Trial | Titus CRM</title>
+<meta name="description" content="Sign up for Titus CRM in minutes. 14-day free trial, no credit card required. AI-powered NDIS software for Australian providers.">
+<link rel="icon" href="/images/titus-logo.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══ RESET & VARIABLES ═══ */
+:root {
+  --teal: #0d9488;
+  --teal-hover: #0f766e;
+  --teal-light: rgba(13,148,136,.08);
+  --teal-border: rgba(13,148,136,.2);
+  --navy: #0f172a;
+  --navy-soft: #1e293b;
+  --bg: #F5F6FA;
+  --surface: #FFFFFF;
+  --border: #E8EBF0;
+  --border2: #D5DAE3;
+  --text: #111827;
+  --text2: #374151;
+  --muted: #6B7280;
+  --dim: #9CA3AF;
+  --green: #10B981;
+  --green-bg: rgba(16,185,129,.08);
+  --green-border: rgba(16,185,129,.2);
+  --red: #EF4444;
+  --red-bg: rgba(239,68,68,.06);
+  --red-border: rgba(239,68,68,.2);
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --r: 12px;
+  --r-lg: 16px;
+  --shadow: 0 1px 3px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,.06), 0 16px 48px rgba(0,0,0,.08);
+  --transition: .2s cubic-bezier(.4,0,.2,1);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; -webkit-font-smoothing:antialiased; }
+body {
+  font-family:var(--sans); color:var(--text); line-height:1.6;
+  background:linear-gradient(135deg,#0a0a1a 0%,var(--navy) 50%,#1a1a2e 100%);
+  min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:24px; position:relative; overflow-x:hidden;
+}
+body::before {
+  content:''; position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 30% 70%, rgba(13,148,136,.06), transparent),
+    radial-gradient(ellipse 50% 40% at 70% 30%, rgba(13,148,136,.04), transparent);
+  pointer-events:none;
+}
+body::after {
+  content:''; position:fixed; inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events:none;
+}
+
+/* ═══ HEADER ═══ */
+.signup-header {
+  text-align:center; margin-bottom:32px; position:relative; z-index:1;
+}
+.signup-header a { text-decoration:none; display:inline-flex; align-items:center; gap:10px; }
+.signup-header img { height:40px; }
+.signup-header .brand-text { font-size:18px; font-weight:700; color:#fff; letter-spacing:-.2px; }
+
+/* ═══ WIZARD CARD ═══ */
+.wizard {
+  background:var(--surface); border-radius:var(--r-lg); padding:0;
+  width:580px; max-width:100%; box-shadow:var(--shadow-lg);
+  position:relative; z-index:1; overflow:hidden;
+  border-top:3px solid var(--teal);
+}
+
+/* ═══ STEP INDICATOR ═══ */
+.step-indicator {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:24px 24px 0; margin-bottom:4px;
+}
+.step-dot {
+  width:10px; height:10px; border-radius:50%; background:var(--border2);
+  transition:all .3s ease; flex-shrink:0;
+}
+.step-dot.active { background:var(--teal); width:12px; height:12px; }
+.step-dot.done { background:var(--green); }
+.step-line { width:40px; height:2px; background:var(--border); border-radius:1px; flex-shrink:0; transition:background .3s ease; }
+.step-line.done { background:var(--green); }
+
+.step-labels {
+  display:flex; justify-content:space-between; padding:8px 32px 0;
+  font-size:10px; font-weight:600; color:var(--dim); text-transform:uppercase; letter-spacing:.5px;
+}
+.step-labels span { text-align:center; flex:1; }
+.step-labels span.active { color:var(--teal); }
+.step-labels span.done { color:var(--green); }
+
+/* ═══ STEP CONTENT ═══ */
+.step-content { padding:28px 32px 32px; }
+.step { display:none; animation:fadeStep .3s ease; }
+.step.active { display:block; }
+@keyframes fadeStep { from { opacity:0; transform:translateX(12px); } to { opacity:1; transform:translateX(0); } }
+
+.step h2 { font-size:22px; font-weight:800; color:var(--text); margin-bottom:4px; letter-spacing:-.3px; }
+.step .step-desc { font-size:13px; color:var(--muted); margin-bottom:24px; line-height:1.5; }
+
+/* ═══ FORM FIELDS ═══ */
+.fg { margin-bottom:16px; }
+.fg label { display:block; font-size:11px; font-weight:600; color:var(--muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:.5px; }
+.fg input, .fg select {
+  width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px;
+  padding:11px 14px; font-size:13.5px; color:var(--text); font-family:var(--sans);
+  outline:none; transition:border var(--transition), box-shadow var(--transition);
+}
+.fg input:focus, .fg select:focus { border-color:var(--teal); box-shadow:0 0 0 3px rgba(13,148,136,.1); }
+.fg input::placeholder { color:var(--dim); }
+.fg .error-msg { font-size:11px; color:var(--red); margin-top:4px; display:none; }
+.fg.has-error input, .fg.has-error select { border-color:var(--red); }
+.fg.has-error .error-msg { display:block; }
+.fg-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+/* ═══ CORE CHECKLIST (Step 2) ═══ */
+.included-list { margin-bottom:20px; }
+.included-list h4 { font-size:12px; font-weight:700; color:var(--green); margin-bottom:8px; text-transform:uppercase; letter-spacing:.5px; }
+.included-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:6px;
+}
+.included-item {
+  display:flex; align-items:center; gap:6px; font-size:12px; color:var(--dim);
+  padding:6px 10px; background:var(--bg); border-radius:6px;
+}
+.included-item svg { width:14px; height:14px; color:var(--green); flex-shrink:0; }
+
+/* ═══ ADDON TOGGLES (Step 2) ═══ */
+.addon-list { margin-top:20px; }
+.addon-list h4 { font-size:12px; font-weight:700; color:var(--teal); margin-bottom:10px; text-transform:uppercase; letter-spacing:.5px; }
+.addon-toggle-card {
+  display:flex; align-items:center; gap:12px; padding:12px 14px;
+  border:1px solid var(--border); border-radius:10px; margin-bottom:8px;
+  transition:all var(--transition); cursor:pointer;
+}
+.addon-toggle-card:hover { border-color:var(--teal-border); }
+.addon-toggle-card.selected { border-color:var(--teal); background:rgba(13,148,136,.03); }
+.addon-toggle-card .info { flex:1; min-width:0; }
+.addon-toggle-card .info h5 { font-size:13px; font-weight:600; color:var(--text); }
+.addon-toggle-card .info p { font-size:11px; color:var(--muted); }
+.addon-toggle-card .price { font-family:var(--mono); font-size:13px; font-weight:600; color:var(--text); white-space:nowrap; }
+.addon-toggle-card .price span { font-size:10px; color:var(--dim); }
+
+.toggle { position:relative; width:42px; height:24px; flex-shrink:0; }
+.toggle input { opacity:0; width:0; height:0; }
+.toggle-track {
+  position:absolute; inset:0; background:var(--border2); border-radius:12px;
+  cursor:pointer; transition:all var(--transition);
+}
+.toggle-track::after {
+  content:''; position:absolute; top:2px; left:2px; width:20px; height:20px;
+  background:var(--surface); border-radius:50%; transition:all var(--transition);
+  box-shadow:0 1px 3px rgba(0,0,0,.15);
+}
+.toggle input:checked + .toggle-track { background:var(--teal); }
+.toggle input:checked + .toggle-track::after { transform:translateX(18px); }
+.toggle input:focus-visible + .toggle-track { box-shadow:0 0 0 3px rgba(13,148,136,.35); }
+
+.step2-price {
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding:14px 16px; background:var(--bg); border-radius:10px; margin-top:16px;
+}
+.step2-price .label { font-size:12px; font-weight:600; color:var(--muted); }
+.step2-price .total { font-family:var(--mono); font-size:20px; font-weight:800; color:var(--text); }
+.step2-price .freq { font-size:11px; color:var(--dim); }
+
+/* ═══ REVIEW (Step 3) ═══ */
+.review-section { margin-bottom:16px; }
+.review-section h4 { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
+.review-row {
+  display:flex; justify-content:space-between; padding:6px 0;
+  font-size:13px; border-bottom:1px solid var(--border);
+}
+.review-row:last-child { border-bottom:none; }
+.review-row .label { color:var(--text2); }
+.review-row .value { font-weight:600; color:var(--text); }
+.review-row .value.mono { font-family:var(--mono); }
+
+.review-total {
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding:14px 16px; background:var(--navy); border-radius:10px; margin-top:16px;
+}
+.review-total .label { font-size:13px; font-weight:600; color:rgba(255,255,255,.7); }
+.review-total .price { font-family:var(--mono); font-size:24px; font-weight:800; color:#fff; }
+.review-total .freq { font-size:12px; color:rgba(255,255,255,.5); }
+
+.review-trial {
+  text-align:center; padding:12px; background:var(--green-bg); border:1px solid var(--green-border);
+  border-radius:8px; margin-top:12px; font-size:12px; font-weight:600; color:var(--green);
+}
+
+/* ═══ SUCCESS (Step 4) ═══ */
+.success-content { text-align:center; padding:16px 0; }
+.success-check {
+  width:72px; height:72px; border-radius:50%; background:var(--green-bg);
+  display:flex; align-items:center; justify-content:center; margin:0 auto 20px;
+  animation:popIn .5s cubic-bezier(.175,.885,.32,1.275);
+}
+.success-check svg { width:36px; height:36px; color:var(--green); }
+@keyframes popIn { from { transform:scale(0); } to { transform:scale(1); } }
+
+.success-content h2 { font-size:24px; font-weight:800; color:var(--text); margin-bottom:8px; }
+.success-content .success-msg { font-size:14px; color:var(--muted); margin-bottom:24px; }
+
+.success-url-box {
+  background:var(--bg); border:1px solid var(--border); border-radius:10px;
+  padding:16px; margin-bottom:16px;
+}
+.success-url-box label { display:block; font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+.success-url-box .url { font-family:var(--mono); font-size:15px; font-weight:600; color:var(--teal); word-break:break-all; }
+
+.success-email-note {
+  font-size:12px; color:var(--muted); margin-bottom:24px; padding:10px; background:var(--teal-light); border-radius:8px;
+}
+.success-email-note strong { color:var(--text); }
+
+/* Confetti */
+.confetti-container { position:fixed; inset:0; pointer-events:none; z-index:9999; overflow:hidden; }
+.confetti {
+  position:absolute; width:8px; height:8px; top:-10px;
+  animation:confettiFall 3s ease-in forwards;
+}
+@keyframes confettiFall {
+  0% { transform:translateY(0) rotate(0deg); opacity:1; }
+  100% { transform:translateY(100vh) rotate(720deg); opacity:0; }
+}
+
+/* ═══ BUTTONS ═══ */
+.btn-row { display:flex; gap:10px; margin-top:24px; }
+.btn-back {
+  flex:0 0 auto; padding:12px 20px; background:var(--bg); color:var(--muted);
+  border:1px solid var(--border); border-radius:10px; font-size:13px; font-weight:600;
+  font-family:var(--sans); cursor:pointer; transition:all var(--transition);
+}
+.btn-back:hover { background:var(--border); color:var(--text); }
+.btn-back:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(13,148,136,.2); }
+.btn-next {
+  flex:1; padding:12px; background:var(--teal); color:#fff; border:none;
+  border-radius:10px; font-size:14px; font-weight:700; font-family:var(--sans);
+  cursor:pointer; transition:all var(--transition);
+}
+.btn-next:hover { background:var(--teal-hover); box-shadow:0 4px 16px rgba(13,148,136,.3); }
+.btn-next:active { transform:translateY(0); }
+.btn-next:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(13,148,136,.35); }
+.btn-next:disabled { opacity:.5; cursor:not-allowed; }
+
+.btn-success {
+  display:block; width:100%; padding:14px; background:var(--teal); color:#fff;
+  border:none; border-radius:10px; font-size:15px; font-weight:700;
+  font-family:var(--sans); cursor:pointer; transition:all var(--transition);
+  text-align:center; text-decoration:none;
+}
+.btn-success:hover { background:var(--teal-hover); color:#fff; }
+.btn-success:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(13,148,136,.35); }
+
+/* ═══ GENERAL ERROR ═══ */
+.form-error {
+  background:var(--red-bg); border:1px solid var(--red-border); color:var(--red);
+  font-size:12px; padding:10px 14px; border-radius:8px; margin-bottom:16px; display:none;
+}
+
+/* ═══ FOOTER ═══ */
+.signup-footer {
+  text-align:center; font-size:11px; color:rgba(255,255,255,.3);
+  margin-top:24px; position:relative; z-index:1; font-weight:500; letter-spacing:.2px;
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width:640px) {
+  .wizard { border-radius:12px; }
+  .step-content { padding:24px 20px 28px; }
+  .fg-row { grid-template-columns:1fr; }
+  .included-grid { grid-template-columns:1fr; }
+  .step-labels { padding:8px 16px 0; font-size:9px; }
+  .step h2 { font-size:20px; }
+}
+
+/* ═══ ANIMATIONS ═══ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration:0.01ms !important; animation-duration:0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="signup-header">
+  <a href="/website.html">
+    <img src="/images/titus-logo.png" alt="Titus CRM logo">
+    <span class="brand-text">Titus CRM</span>
+  </a>
+</div>
+
+<!-- ═══ WIZARD ═══ -->
+<div class="wizard">
+  <!-- Step Indicator -->
+  <div class="step-indicator" id="stepIndicator">
+    <span class="step-dot active" data-step="1"></span>
+    <span class="step-line" data-line="1"></span>
+    <span class="step-dot" data-step="2"></span>
+    <span class="step-line" data-line="2"></span>
+    <span class="step-dot" data-step="3"></span>
+    <span class="step-line" data-line="3"></span>
+    <span class="step-dot" data-step="4"></span>
+  </div>
+  <div class="step-labels" id="stepLabels">
+    <span class="active">Details</span>
+    <span>Add-ons</span>
+    <span>Review</span>
+    <span>Done</span>
+  </div>
+
+  <!-- ═══ STEP 1: Organisation Details ═══ -->
+  <div class="step-content">
+    <div class="step active" id="step1">
+      <h2>Organisation Details</h2>
+      <p class="step-desc">Tell us about your organisation. This takes less than a minute.</p>
+
+      <div class="form-error" id="step1Error"></div>
+
+      <div class="fg">
+        <label for="orgName">Organisation name *</label>
+        <input type="text" id="orgName" placeholder="e.g. Delta Community Support" required autocomplete="organization">
+        <div class="error-msg">Organisation name is required</div>
+      </div>
+
+      <div class="fg-row">
+        <div class="fg">
+          <label for="yourName">Your name</label>
+          <input type="text" id="yourName" placeholder="e.g. Jane Smith" autocomplete="name">
+        </div>
+        <div class="fg">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" placeholder="e.g. 0412 345 678" autocomplete="tel">
+        </div>
+      </div>
+
+      <div class="fg">
+        <label for="email">Email address *</label>
+        <input type="email" id="email" placeholder="you@yourorg.com.au" required autocomplete="email">
+        <div class="error-msg">A valid email address is required</div>
+      </div>
+
+      <div class="fg">
+        <label for="staffCountSignup">Staff count</label>
+        <select id="staffCountSignup">
+          <option value="1-10">1 - 10 staff</option>
+          <option value="11-30">11 - 30 staff</option>
+          <option value="31-50">31 - 50 staff</option>
+          <option value="50+">50+ staff</option>
+        </select>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-next" onclick="goToStep(2)">Continue</button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 2: Choose Add-ons ═══ -->
+    <div class="step" id="step2">
+      <h2>Choose Your Add-ons</h2>
+      <p class="step-desc">Core features are always included. Toggle on the extras you need.</p>
+
+      <div class="included-list">
+        <h4>
+          <svg style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;color:var(--green);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Included Free
+        </h4>
+        <div class="included-grid" id="includedGrid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div class="addon-list">
+        <h4>Add-on Modules</h4>
+        <div id="addonListCards">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div class="step2-price">
+        <span class="label">Estimated total</span>
+        <div>
+          <span class="total" id="step2Total">$69</span>
+          <span class="freq">/week</span>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="goToStep(1)">Back</button>
+        <button class="btn-next" onclick="goToStep(3)">Continue to Review</button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 3: Review ═══ -->
+    <div class="step" id="step3">
+      <h2>Review Your Plan</h2>
+      <p class="step-desc">Everything looks good? Hit confirm to create your account.</p>
+
+      <div class="form-error" id="step3Error"></div>
+
+      <div class="review-section">
+        <h4>Organisation</h4>
+        <div class="review-row"><span class="label">Organisation</span><span class="value" id="reviewOrg"></span></div>
+        <div class="review-row"><span class="label">Email</span><span class="value" id="reviewEmail"></span></div>
+        <div class="review-row"><span class="label">Staff tier</span><span class="value" id="reviewStaff"></span></div>
+        <div class="review-row"><span class="label">Base fee</span><span class="value mono" id="reviewBase"></span></div>
+      </div>
+
+      <div class="review-section" id="reviewModulesSection">
+        <h4>Selected Modules</h4>
+        <div id="reviewModules"></div>
+      </div>
+
+      <div class="review-total">
+        <span class="label">Weekly total</span>
+        <div>
+          <span class="price" id="reviewTotal"></span>
+          <span class="freq">/wk</span>
+        </div>
+      </div>
+
+      <div class="review-trial">14-day free trial -- no credit card required</div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="goToStep(2)">Back</button>
+        <button class="btn-next" id="confirmBtn" onclick="submitSignup()">Confirm & Create Account</button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 4: Success ═══ -->
+    <div class="step" id="step4">
+      <div class="success-content">
+        <div class="success-check">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2>Your account is ready!</h2>
+        <p class="success-msg">Welcome aboard. Here are your next steps.</p>
+
+        <div class="success-url-box">
+          <label>Your login URL</label>
+          <div class="url" id="successUrl">tituscrm.com.au/your-org</div>
+        </div>
+
+        <div class="success-email-note">
+          We've sent login details to <strong id="successEmail">you@email.com</strong>
+        </div>
+
+        <a href="/" class="btn-success" id="getStartedBtn">Get Started</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="signup-footer">
+  &copy; 2026 Titus CRM &middot; Built in Brisbane, Australia
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ═══ DATA ═══ */
+  const CORE_NAMES = [
+    'QMS', 'Contacts & Tasks', 'Service Agreement Signing', 'SOS Signing',
+    'Roster of Care', 'Rosters & Scheduling', 'Client Budget Tracking',
+    'Compliance Warnings', 'Payroll Reporting', 'AI Progress Reports',
+    'AI Staff Chatbot', 'Support Worker App'
+  ];
+
+  const ADDON_MODULES = [
+    { id:'recruiter', name:'Recruiter ATS', price:59, desc:'Applicant tracking & CV scanning' },
+    { id:'leads', name:'Leads & CRM', price:49, desc:'Lead pipeline & referral tracking' },
+    { id:'voice', name:'Voice Phone & SMS', price:99, desc:'Business phone & SMS messaging' },
+    { id:'ai-voice', name:'24/7 AI Voice Agent', price:99, desc:'AI receptionist for after-hours' },
+    { id:'clients', name:'Client Management', price:69, desc:'Client profiles & NDIS plans' },
+    { id:'billing', name:'Billing & Invoicing', price:79, desc:'NDIS claims & invoicing' },
+    { id:'lms', name:'LMS', price:49, desc:'Training & compliance courses' },
+    { id:'ai-writing', name:'AI Report Writing', price:59, desc:'AI stakeholder reports' },
+    { id:'contracts', name:'Contract Signing', price:39, desc:'Employment contracts & onboarding' },
+    { id:'portal', name:'Stakeholder Portal', price:49, desc:'External portal for families' },
+  ];
+
+  const BASE_FEES = { '1-10':69, '11-30':129, '31-50':199, '50+':299 };
+
+  let currentStep = 1;
+  const selectedAddons = new Set();
+
+  /* ═══ URL PARAMS ═══ */
+  const params = new URLSearchParams(window.location.search);
+  const preModules = (params.get('modules') || '').split(',').filter(Boolean);
+  const preStaff = params.get('staff');
+  preModules.forEach(id => selectedAddons.add(id));
+  if (preStaff) document.getElementById('staffCountSignup').value = preStaff;
+
+  /* ═══ RENDER INCLUDED ═══ */
+  const includedGrid = document.getElementById('includedGrid');
+  CORE_NAMES.forEach(name => {
+    const div = document.createElement('div');
+    div.className = 'included-item';
+    div.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>${name}</span>`;
+    includedGrid.appendChild(div);
+  });
+
+  /* ═══ RENDER ADDON TOGGLES ═══ */
+  const addonListCards = document.getElementById('addonListCards');
+  ADDON_MODULES.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'addon-toggle-card' + (selectedAddons.has(m.id) ? ' selected' : '');
+    card.innerHTML = `
+      <div class="info">
+        <h5>${m.name}</h5>
+        <p>${m.desc}</p>
+      </div>
+      <span class="price">$${m.price}<span>/wk</span></span>
+      <label class="toggle" aria-label="Toggle ${m.name}">
+        <input type="checkbox" data-id="${m.id}" data-price="${m.price}" ${selectedAddons.has(m.id) ? 'checked' : ''}>
+        <span class="toggle-track"></span>
+      </label>
+    `;
+
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('.toggle')) return;
+      const cb = card.querySelector('input[type="checkbox"]');
+      cb.checked = !cb.checked;
+      cb.dispatchEvent(new Event('change'));
+    });
+
+    const cb = card.querySelector('input[type="checkbox"]');
+    cb.addEventListener('change', function() {
+      if (this.checked) {
+        selectedAddons.add(m.id);
+        card.classList.add('selected');
+      } else {
+        selectedAddons.delete(m.id);
+        card.classList.remove('selected');
+      }
+      updateStep2Price();
+    });
+
+    addonListCards.appendChild(card);
+  });
+
+  /* ═══ STEP 2 PRICE ═══ */
+  function calcTotal() {
+    const tier = document.getElementById('staffCountSignup').value;
+    const baseFee = BASE_FEES[tier];
+    const selectedMods = ADDON_MODULES.filter(m => selectedAddons.has(m.id));
+    const count = selectedMods.length;
+    const modTotal = selectedMods.reduce((s, m) => s + m.price, 0);
+
+    let discPct = 0;
+    let isFlat = false;
+    if (count === ADDON_MODULES.length) { isFlat = true; }
+    else if (count >= 7) discPct = 25;
+    else if (count >= 5) discPct = 15;
+    else if (count >= 3) discPct = 10;
+
+    const disc = isFlat ? 0 : Math.round(modTotal * discPct / 100);
+    const total = isFlat ? 599 : baseFee + modTotal - disc;
+    return { baseFee, selectedMods, count, modTotal, discPct, disc, total, isFlat, tier };
+  }
+
+  function updateStep2Price() {
+    const c = calcTotal();
+    document.getElementById('step2Total').textContent = '$' + c.total;
+  }
+  updateStep2Price();
+
+  document.getElementById('staffCountSignup').addEventListener('change', updateStep2Price);
+
+  /* ═══ SLUG GENERATION ═══ */
+  function makeSlug(name) {
+    return name.toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .substring(0, 40);
+  }
+
+  /* ═══ VALIDATION ═══ */
+  function validateStep1() {
+    let valid = true;
+    const orgName = document.getElementById('orgName');
+    const email = document.getElementById('email');
+
+    // Reset
+    orgName.parentElement.classList.remove('has-error');
+    email.parentElement.classList.remove('has-error');
+
+    if (!orgName.value.trim()) {
+      orgName.parentElement.classList.add('has-error');
+      valid = false;
+    }
+    if (!email.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+      email.parentElement.classList.add('has-error');
+      valid = false;
+    }
+    return valid;
+  }
+
+  /* ═══ STEP NAVIGATION ═══ */
+  window.goToStep = function(step) {
+    // Validate before advancing
+    if (step > currentStep) {
+      if (currentStep === 1 && !validateStep1()) return;
+    }
+
+    // Populate review step
+    if (step === 3) {
+      const c = calcTotal();
+      document.getElementById('reviewOrg').textContent = document.getElementById('orgName').value.trim();
+      document.getElementById('reviewEmail').textContent = document.getElementById('email').value.trim();
+      document.getElementById('reviewStaff').textContent = c.tier + ' staff';
+      document.getElementById('reviewBase').textContent = '$' + c.baseFee + '/wk';
+
+      const modSection = document.getElementById('reviewModulesSection');
+      const modContainer = document.getElementById('reviewModules');
+      if (c.selectedMods.length > 0) {
+        modSection.style.display = 'block';
+        modContainer.innerHTML = c.selectedMods.map(m =>
+          `<div class="review-row"><span class="label">${m.name}</span><span class="value mono">$${m.price}/wk</span></div>`
+        ).join('');
+        if (c.discPct > 0 && !c.isFlat) {
+          modContainer.innerHTML += `<div class="review-row"><span class="label" style="color:var(--green);">Bundle discount (${c.discPct}%)</span><span class="value mono" style="color:var(--green);">-$${c.disc}</span></div>`;
+        }
+        if (c.isFlat) {
+          modContainer.innerHTML += `<div class="review-row"><span class="label" style="color:var(--teal);">All modules flat rate</span><span class="value mono" style="color:var(--teal);">$599/wk</span></div>`;
+        }
+      } else {
+        modSection.style.display = 'none';
+      }
+
+      document.getElementById('reviewTotal').textContent = '$' + c.total;
+    }
+
+    currentStep = step;
+
+    // Update steps
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + step).classList.add('active');
+
+    // Update indicator
+    document.querySelectorAll('.step-dot').forEach(dot => {
+      const s = parseInt(dot.dataset.step);
+      dot.classList.remove('active', 'done');
+      if (s === step) dot.classList.add('active');
+      else if (s < step) dot.classList.add('done');
+    });
+    document.querySelectorAll('.step-line').forEach(line => {
+      const l = parseInt(line.dataset.line);
+      line.classList.toggle('done', l < step);
+    });
+    document.querySelectorAll('#stepLabels span').forEach((label, i) => {
+      label.classList.remove('active', 'done');
+      if (i + 1 === step) label.classList.add('active');
+      else if (i + 1 < step) label.classList.add('done');
+    });
+  };
+
+  /* ═══ SUBMIT ═══ */
+  window.submitSignup = async function() {
+    const btn = document.getElementById('confirmBtn');
+    const errEl = document.getElementById('step3Error');
+    errEl.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Creating account...';
+
+    const orgName = document.getElementById('orgName').value.trim();
+    const slug = makeSlug(orgName);
+    const emailVal = document.getElementById('email').value.trim();
+    const c = calcTotal();
+
+    const payload = {
+      org_name: orgName,
+      slug: slug,
+      contact_name: document.getElementById('yourName').value.trim(),
+      email: emailVal,
+      phone: document.getElementById('phone').value.trim(),
+      staff_tier: c.tier,
+      modules: c.selectedMods.map(m => m.id),
+      weekly_total: c.total
+    };
+
+    try {
+      const res = await fetch('/api/tenant/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Something went wrong. Please try again.');
+      }
+
+      // Success
+      document.getElementById('successUrl').textContent = 'tituscrm.com.au/' + slug;
+      document.getElementById('successEmail').textContent = emailVal;
+      document.getElementById('getStartedBtn').href = '/' + slug;
+
+      goToStep(4);
+      spawnConfetti();
+
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Confirm & Create Account';
+    }
+  };
+
+  /* ═══ CONFETTI ═══ */
+  function spawnConfetti() {
+    const container = document.createElement('div');
+    container.className = 'confetti-container';
+    document.body.appendChild(container);
+
+    const colors = ['#0d9488', '#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6'];
+    for (let i = 0; i < 60; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti';
+      piece.style.left = Math.random() * 100 + '%';
+      piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDelay = Math.random() * 2 + 's';
+      piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+      piece.style.width = (4 + Math.random() * 8) + 'px';
+      piece.style.height = (4 + Math.random() * 8) + 'px';
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      container.appendChild(piece);
+    }
+
+    setTimeout(() => container.remove(), 5000);
+  }
+
+})();
+</script>
+</body>
+</html>

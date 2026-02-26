@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login | Titus CRM</title>
+<link rel="icon" href="/images/titus-logo.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══ RESET & VARIABLES ═══ */
+:root {
+  --teal: #0d9488;
+  --teal-hover: #0f766e;
+  --teal-light: rgba(13,148,136,.08);
+  --teal-border: rgba(13,148,136,.2);
+  --navy: #0f172a;
+  --navy-soft: #1e293b;
+  --bg: #F5F6FA;
+  --surface: #FFFFFF;
+  --surface2: #F8F9FC;
+  --border: #E8EBF0;
+  --border2: #D5DAE3;
+  --text: #111827;
+  --text2: #374151;
+  --muted: #6B7280;
+  --dim: #9CA3AF;
+  --green: #10B981;
+  --red: #EF4444;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --r: 10px;
+  --rs: 6px;
+  --transition: .2s cubic-bezier(.4,0,.2,1);
+  --tenant-color: var(--teal);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { -webkit-font-smoothing:antialiased; }
+body {
+  font-family:var(--sans); color:var(--text); line-height:1.6;
+  background:linear-gradient(135deg,#0a0a1a 0%,var(--navy) 50%,#1a1a2e 100%);
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  padding:24px; position:relative; overflow:hidden;
+}
+body::before {
+  content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 30% 70%, rgba(13,148,136,.08), transparent),
+    radial-gradient(ellipse 50% 40% at 70% 30%, rgba(13,148,136,.06), transparent);
+  pointer-events:none;
+}
+body::after {
+  content:''; position:absolute; inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events:none;
+}
+
+/* ═══ LOGIN CARD ═══ */
+.login-card {
+  background:var(--surface); border-radius:16px; padding:44px;
+  width:420px; max-width:100%; text-align:center;
+  box-shadow:0 24px 64px rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.15);
+  position:relative; z-index:1;
+  border-top:3px solid var(--tenant-color);
+}
+
+/* ═══ TENANT BRANDING ═══ */
+.tenant-logo {
+  width:64px; height:64px; border-radius:16px; margin:0 auto 16px;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg, var(--tenant-color), color-mix(in srgb, var(--tenant-color) 70%, #000));
+  color:#fff; font-size:28px; font-weight:800; font-family:var(--sans);
+  overflow:hidden;
+}
+.tenant-logo img { width:100%; height:100%; object-fit:cover; border-radius:16px; }
+
+.tenant-name { font-size:24px; font-weight:800; color:var(--text); margin-bottom:4px; letter-spacing:-.3px; }
+
+.powered-by {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:11px; color:var(--dim); margin-bottom:20px;
+  background:var(--bg); padding:4px 12px; border-radius:20px;
+}
+.powered-by img { height:14px; }
+.powered-by span { font-weight:600; }
+
+/* ═══ TRUST BADGES ═══ */
+.trust-badges {
+  display:flex; align-items:center; justify-content:center; gap:16px;
+  margin-bottom:24px; flex-wrap:wrap;
+}
+.trust-badge {
+  display:flex; align-items:center; gap:5px;
+  font-size:11px; font-weight:600; color:var(--muted); letter-spacing:.2px;
+}
+.trust-badge svg { width:14px; height:14px; color:var(--teal); flex-shrink:0; }
+
+/* ═══ FORM ═══ */
+.login-error {
+  background:rgba(239,68,68,.06); border:1px solid rgba(239,68,68,.2);
+  color:var(--red); font-size:12px; padding:10px 14px; border-radius:var(--rs);
+  margin-bottom:16px; display:none; text-align:left;
+}
+.fg { margin-bottom:16px; text-align:left; }
+.fg label {
+  display:block; font-size:11px; font-weight:600; color:var(--muted);
+  margin-bottom:5px; text-transform:uppercase; letter-spacing:.5px;
+}
+.fg input {
+  width:100%; background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--rs); padding:11px 14px; font-size:13.5px; color:var(--text);
+  font-family:var(--sans); outline:none; transition:border var(--transition), box-shadow var(--transition);
+}
+.fg input:focus { border-color:var(--tenant-color); box-shadow:0 0 0 3px rgba(13,148,136,.1); }
+.fg input::placeholder { color:var(--dim); }
+
+.password-field { position:relative; }
+.password-toggle {
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  background:none; border:none; cursor:pointer; padding:4px; color:var(--dim);
+  transition:color var(--transition);
+}
+.password-toggle:hover { color:var(--text); }
+.password-toggle:focus-visible { outline:none; color:var(--teal); }
+.password-toggle svg { width:18px; height:18px; display:block; }
+
+/* ═══ BUTTONS ═══ */
+.btn-signin {
+  display:block; width:100%; padding:12px; border:none; border-radius:8px;
+  font-size:14px; font-weight:700; color:#fff; font-family:var(--sans);
+  cursor:pointer; transition:all var(--transition); margin-top:4px;
+  background:var(--tenant-color);
+}
+.btn-signin:hover { filter:brightness(.9); box-shadow:0 4px 12px rgba(13,148,136,.3); transform:translateY(-1px); }
+.btn-signin:active { transform:translateY(0); }
+.btn-signin:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(13,148,136,.35); }
+.btn-signin:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+
+.forgot-link {
+  display:inline-block; margin-top:16px; font-size:12px; font-weight:500;
+  color:var(--muted); text-decoration:none; cursor:pointer;
+  transition:color var(--transition);
+}
+.forgot-link:hover { color:var(--teal); }
+
+/* ═══ NOT FOUND STATE ═══ */
+.not-found { text-align:center; padding:20px 0; }
+.not-found-icon {
+  width:64px; height:64px; border-radius:50%; background:rgba(239,68,68,.08);
+  display:flex; align-items:center; justify-content:center; margin:0 auto 16px;
+}
+.not-found-icon svg { width:28px; height:28px; color:var(--red); }
+.not-found h2 { font-size:20px; font-weight:800; color:var(--text); margin-bottom:8px; }
+.not-found p { font-size:13px; color:var(--muted); margin-bottom:20px; line-height:1.6; }
+.not-found a {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:10px 20px; background:var(--teal); color:#fff; border-radius:8px;
+  font-size:13px; font-weight:600; text-decoration:none;
+  transition:all var(--transition); cursor:pointer;
+}
+.not-found a:hover { background:var(--teal-hover); color:#fff; }
+
+/* ═══ LOADING STATE ═══ */
+.loading-state { text-align:center; padding:40px 0; }
+.spinner {
+  width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--teal);
+  border-radius:50%; animation:spin .8s linear infinite; margin:0 auto 16px;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.loading-state p { font-size:13px; color:var(--muted); }
+
+/* ═══ FOOTER ═══ */
+.login-footer {
+  position:fixed; bottom:24px; left:0; right:0; text-align:center;
+  font-size:11px; color:rgba(255,255,255,.3); font-weight:500; z-index:1; letter-spacing:.2px;
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width:480px) {
+  .login-card { padding:32px 24px; border-radius:12px; }
+  .trust-badges { gap:8px; }
+  .trust-badge { font-size:10px; }
+  .tenant-name { font-size:20px; }
+}
+
+/* ═══ ANIMATIONS ═══ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration:0.01ms !important; animation-duration:0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="login-card" id="loginCard">
+  <!-- Loading state (shown initially) -->
+  <div id="loadingState" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading organisation...</p>
+  </div>
+
+  <!-- Login form (shown after config loaded) -->
+  <div id="loginForm" style="display:none;">
+    <!-- Tenant Logo -->
+    <div class="tenant-logo" id="tenantLogo">
+      <span id="tenantLettermark">T</span>
+    </div>
+
+    <!-- Tenant Name -->
+    <h1 class="tenant-name" id="tenantName">Organisation</h1>
+
+    <!-- Powered By -->
+    <div class="powered-by">
+      <img src="/images/titus-logo.png" alt="Titus CRM">
+      <span>Powered by Titus CRM</span>
+    </div>
+
+    <!-- Trust Badges -->
+    <div class="trust-badges">
+      <div class="trust-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Australian Hosted
+      </div>
+      <div class="trust-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        NDIS Compliant
+      </div>
+      <div class="trust-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        AI-Powered
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div class="login-error" id="loginError"></div>
+
+    <!-- Email -->
+    <div class="fg">
+      <label for="email">Email address</label>
+      <input type="email" id="email" placeholder="you@yourorg.com.au" autocomplete="email" required>
+    </div>
+
+    <!-- Password -->
+    <div class="fg">
+      <label for="password">Password</label>
+      <div class="password-field">
+        <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required>
+        <button type="button" class="password-toggle" id="togglePassword" aria-label="Toggle password visibility">
+          <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sign In -->
+    <button class="btn-signin" id="signinBtn" onclick="handleLogin()">Sign In</button>
+
+    <!-- Forgot Password -->
+    <a class="forgot-link" href="javascript:void(0)" onclick="handleForgot()">Forgot your password?</a>
+  </div>
+
+  <!-- Not Found state -->
+  <div id="notFoundState" style="display:none;">
+    <div class="not-found">
+      <div class="not-found-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      </div>
+      <h2>Organisation Not Found</h2>
+      <p>We couldn't find an organisation at this address. Please check the URL or contact your administrator.</p>
+      <a href="https://tituscrm.com.au">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+        Go to tituscrm.com.au
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="login-footer">
+  &copy; 2026 Titus CRM &middot; Built in Brisbane, Australia
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  let tenantSlug = '';
+  let tenantConfig = null;
+
+  /* ═══ EXTRACT SLUG FROM URL ═══ */
+  function getSlug() {
+    const path = window.location.pathname;
+    const parts = path.split('/').filter(Boolean);
+    // If served at /tenant-login.html?slug=xxx
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('slug')) return params.get('slug');
+    // If served at /some-org (catch-all route)
+    if (parts.length === 1 && !parts[0].includes('.')) return parts[0];
+    // Fallback: second segment e.g. /app/some-org
+    if (parts.length >= 2) return parts[1];
+    return '';
+  }
+
+  /* ═══ LOAD TENANT CONFIG ═══ */
+  async function loadTenantConfig() {
+    tenantSlug = getSlug();
+
+    if (!tenantSlug) {
+      showNotFound();
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/tenant/' + encodeURIComponent(tenantSlug) + '/config');
+
+      if (res.status === 404 || !res.ok) {
+        showNotFound();
+        return;
+      }
+
+      tenantConfig = await res.json();
+      applyBranding(tenantConfig);
+      showLoginForm();
+
+    } catch (err) {
+      // Network error or server not responding — show form with defaults
+      console.warn('Could not load tenant config:', err.message);
+      // Show login form with default branding using slug
+      tenantConfig = { name: formatSlug(tenantSlug), slug: tenantSlug };
+      applyBranding(tenantConfig);
+      showLoginForm();
+    }
+  }
+
+  /* ═══ FORMAT SLUG AS NAME ═══ */
+  function formatSlug(slug) {
+    return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  }
+
+  /* ═══ APPLY BRANDING ═══ */
+  function applyBranding(config) {
+    const name = config.name || config.org_name || formatSlug(tenantSlug);
+    document.getElementById('tenantName').textContent = name;
+    document.title = name + ' | Titus CRM';
+
+    // Logo
+    const logoContainer = document.getElementById('tenantLogo');
+    const lettermark = document.getElementById('tenantLettermark');
+    if (config.logo_url) {
+      const img = document.createElement('img');
+      img.src = config.logo_url;
+      img.alt = name + ' logo';
+      img.onerror = function() { this.remove(); lettermark.style.display = 'flex'; };
+      lettermark.style.display = 'none';
+      logoContainer.appendChild(img);
+    } else {
+      lettermark.textContent = name.charAt(0).toUpperCase();
+    }
+
+    // Tenant color
+    if (config.primary_colour || config.primary_color) {
+      const color = config.primary_colour || config.primary_color;
+      document.documentElement.style.setProperty('--tenant-color', color);
+    }
+  }
+
+  /* ═══ STATE TRANSITIONS ═══ */
+  function showLoginForm() {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('notFoundState').style.display = 'none';
+    // Focus email field
+    setTimeout(function() { document.getElementById('email').focus(); }, 100);
+  }
+
+  function showNotFound() {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('notFoundState').style.display = 'block';
+    document.title = 'Not Found | Titus CRM';
+  }
+
+  /* ═══ LOGIN HANDLER ═══ */
+  window.handleLogin = async function() {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const errorEl = document.getElementById('loginError');
+    const btn = document.getElementById('signinBtn');
+
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    // Basic validation
+    errorEl.style.display = 'none';
+    if (!email || !password) {
+      errorEl.textContent = 'Please enter your email and password.';
+      errorEl.style.display = 'block';
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errorEl.textContent = 'Please enter a valid email address.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          tenant_slug: tenantSlug
+        })
+      });
+
+      const data = await res.json().catch(function() { return {}; });
+
+      if (!res.ok) {
+        throw new Error(data.error || data.message || 'Invalid email or password.');
+      }
+
+      // Store token
+      if (data.token) {
+        document.cookie = 'authToken=' + data.token + ';path=/;max-age=' + (86400 * 30) + ';SameSite=Lax';
+        localStorage.setItem('authToken', data.token);
+      }
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+
+      // Redirect to main app
+      window.location.href = data.redirect || '/';
+
+    } catch (err) {
+      errorEl.textContent = err.message;
+      errorEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+      passwordInput.value = '';
+      passwordInput.focus();
+    }
+  };
+
+  /* ═══ FORGOT PASSWORD ═══ */
+  window.handleForgot = function() {
+    const email = document.getElementById('email').value.trim();
+    const errorEl = document.getElementById('loginError');
+
+    if (!email) {
+      errorEl.textContent = 'Enter your email above, then click Forgot Password.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    // Fire and forget
+    fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, tenant_slug: tenantSlug })
+    }).catch(function() {});
+
+    errorEl.style.display = 'none';
+
+    // Show success message regardless (security: don't reveal if email exists)
+    const el = document.getElementById('loginError');
+    el.style.background = 'rgba(16,185,129,.06)';
+    el.style.borderColor = 'rgba(16,185,129,.2)';
+    el.style.color = '#10B981';
+    el.textContent = 'If an account exists for ' + email + ', a password reset link has been sent.';
+    el.style.display = 'block';
+  };
+
+  /* ═══ PASSWORD TOGGLE ═══ */
+  document.getElementById('togglePassword').addEventListener('click', function() {
+    const input = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      input.type = 'password';
+      icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  });
+
+  /* ═══ ENTER KEY LOGIN ═══ */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.getElementById('loginForm').style.display !== 'none') {
+      handleLogin();
+    }
+  });
+
+  /* ═══ INIT ═══ */
+  loadTenantConfig();
+
+})();
+</script>
+</body>
+</html>

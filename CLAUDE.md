@@ -4,7 +4,7 @@ This file provides guidance to Claude Code when working with this repository.
 
 ## Project Overview
 
-Titus CRM is an AI-powered operations platform for **Delta Community Support (DCS)**, an NDIS disability services provider in Brisbane, AU. This is a modular rewrite of the original Titus Voice monolith (17,000+ line single-file Express app).
+Titus CRM is a **multi-tenant SaaS platform** for NDIS, aged care, and community service providers in Australia. Built for Delta Community Support (DCS) as the first tenant, now available to any NDIS provider.
 
 ## Commands
 
@@ -12,110 +12,169 @@ Titus CRM is an AI-powered operations platform for **Delta Community Support (DC
 - **Dev mode:** `npm run dev` (auto-restart with `--watch`)
 - **Install deps:** `npm install` (requires Python 3, make, g++ for better-sqlite3)
 - **Docker build:** `docker build -t titus-crm .`
+- **Run Supabase schema:** `psql $DATABASE_URL < scripts/saas-schema.sql`
 
 ## Architecture
 
-### Modular Express backend
+### Multi-Tenant SaaS
+
+- Each organisation gets a slug: `tituscrm.com.au/{org-slug}`
+- Tenant config stored in Supabase `tenants` table
+- ALL data queries scoped by `tenant_id`
+- Row Level Security (RLS) enforced at database level
+- Module gating: CORE features free, add-ons per tenant
+
+### Modular Express Backend
 
 ```
 src/
-├── server.js              # Entry point — mounts all route modules
+├── server.js              # Entry point — mounts all routes (legacy + SaaS)
 ├── config/
 │   ├── env.js             # Environment variables (centralized)
 │   └── upload.js          # Multer file upload configs
 ├── db/
-│   └── sqlite.js          # SQLite connection + migrations (legacy)
+│   └── sqlite.js          # SQLite connection + migrations (legacy local data)
 ├── middleware/
 │   ├── auth.js            # Session auth, role guards
+│   ├── tenant.js          # Multi-tenant resolution + scoping
+│   ├── modules.js         # Module gating (CORE vs add-on)
+│   ├── portalAuth.js      # Stakeholder portal auth
 │   └── error-handler.js   # Global error handler
 ├── services/
-│   ├── airtable.js        # Airtable CRUD with rate limiting
-│   ├── supabase.js        # Supabase service layer (mirrors airtable.js)
-│   └── database.js        # Toggle: reads DATABASE env var, exports airtable or supabase
+│   ├── supabaseClient.js  # Direct Supabase client (new SaaS code)
+│   ├── supabase.js        # Airtable-compatible Supabase wrapper (legacy)
+│   ├── database.js        # Toggle layer (airtable/supabase)
+│   ├── schadsRates.js     # SCHADS Award 2024 rates + compliance engine
+│   ├── reportWriter.js    # Claude AI NDIS report generation
+│   └── airtable.js        # Airtable CRUD (legacy)
 └── routes/
+    ├── tenants.js         # Tenant management + signup
+    ├── pricing/           # Pricing calculator API
+    ├── admin/tenants.js   # Superadmin tenant management
+    ├── signing/           # Digital document signing (CORE + add-on)
+    ├── portal/            # Stakeholder portal
+    ├── payroll/           # Payroll reporting + CSV export (CORE)
+    ├── budgets/           # Client NDIS budget tracking (CORE)
+    ├── reports/weekly.js  # Weekly AI progress reports (CORE)
+    ├── chatbot.js         # AI staff & policy chatbot (CORE)
+    ├── voice-sms.js       # Voice & SMS CRM API (add-on)
+    ├── messenger/         # Team messenger (CORE)
     ├── auth/              # Login, logout, session management
-    ├── contacts/          # CRM contacts (Airtable)
-    ├── voice/             # Twilio calls, SMS, ElevenLabs webhooks
-    ├── scheduling/        # Rosters, shifts, roster of care
-    ├── clients/           # Client profiles, budgets, progress notes
-    ├── recruitment/       # HR pipeline, CV scan, referee calls
-    ├── reports/           # Ops reports, stakeholder reports (Claude AI)
-    ├── email/             # Microsoft Graph email integration
-    ├── lms/               # Learning management system
-    ├── documents/         # Signing, scanning, agreements
-    ├── tasks/             # Tasks and projects (SQLite)
-    ├── compliance/        # Audit log, incidents, tickets
-    ├── receipts/          # Receipt upload and OCR
+    ├── contacts/          # CRM contacts
+    ├── voice/             # Twilio webhooks
+    ├── scheduling/        # Rosters, shifts
+    ├── clients/           # Client profiles
+    ├── recruitment/       # HR pipeline
+    ├── reports/           # Ops reports
+    ├── email/             # Microsoft Graph email
+    ├── lms/               # Learning management
+    ├── documents/         # Document management
+    ├── tasks/             # Tasks and projects
+    ├── compliance/        # Audit log, incidents
+    ├── receipts/          # Receipt OCR
     ├── leads/             # Lead management
     ├── accommodation/     # SIL properties
-    ├── budget/            # NDIS budget tracking
-    └── support-worker/    # Support worker PWA (OTP auth)
+    ├── budget/            # Legacy budget routes
+    └── support-worker/    # Support worker auth
 ```
 
-### Data layer
+### Frontend Pages
 
-- **Airtable** — CRM database (legacy). Base ID: `appg3Cz7mEsGA6IOI`. Stores contacts, clients, rosters, budgets, progress notes, incidents, courses, etc.
-- **Supabase** — migration target. Set `DATABASE=supabase` to switch. Schema in `scripts/schema.sql`. All routes import from `src/services/database.js` which toggles based on `DATABASE` env var.
-- **SQLite** (`better-sqlite3`, WAL mode) — local data: users, sessions, calls, SMS, audit logs. DB path uses `RAILWAY_VOLUME_MOUNT_PATH` in production.
+```
+public/
+├── index.html             # Main CRM dashboard (monolith)
+├── pricing.html           # Interactive pricing page
+├── signup.html            # 4-step tenant signup wizard
+├── tenant-login.html      # Branded tenant login
+├── payroll.html           # Payroll reporting dashboard
+├── compliance.html        # SCHADS compliance dashboard
+├── budget-dashboard.html  # Client NDIS budget tracking
+├── sign/index.html        # Public document signing page
+├── portal/index.html      # Stakeholder portal SPA
+├── admin/tenants.html     # Superadmin tenant manager
+├── mobile/                # Support Worker PWA
+│   ├── index.html         # PWA shell
+│   ├── manifest.json      # PWA manifest
+│   ├── sw.js              # Service worker
+│   ├── css/app.css        # Mobile styles
+│   └── js/                # app.js, api.js, router.js
+├── js/chatbot-widget.js   # AI chatbot floating widget
+├── website.html           # Marketing website
+└── support-worker.html    # Legacy SW page
+```
 
-### External integrations
+### CORE Features (free with every plan)
 
-- **Twilio** — calls (hunt group routing), SMS, WebRTC browser dialer, recording
-- **ElevenLabs** — AI voice agent ("Denise") fallback, post-call transcripts
-- **Anthropic Claude API** — ops reports, CV scanning, receipt OCR, AI chat, compliance scanning
-- **Microsoft Graph** — email sync and sending (OAuth client credentials)
-- **Airtable REST API** — all CRM data with pagination and rate limiting
+- Quality Management System (QMS)
+- Contacts & Tasks
+- Service Agreement + Schedule of Support Digital Signing
+- Roster of Care Creator/Calculator
+- Rosters & Scheduling (full SCHADS-compliant)
+- Client Budget Tracking (integrated in Scheduler)
+- Roster Compliance Warnings (SCHADS Award)
+- Payroll Reporting + CSV Export
+- Weekly AI NDIS Progress Reports
+- AI Staff & Policy Chatbot
+- Support Worker Mobile PWA
+- Team Messenger
+
+### Add-On Modules
+
+| Module | Key | Price |
+|--------|-----|-------|
+| Recruiter ATS | `recruiter` | $59/wk |
+| Leads & CRM | `leads` | $49/wk |
+| Voice Phone & SMS | `voice_sms` | $99/wk |
+| 24/7 AI Voice Agent | `ai_voice` | $99/wk |
+| Client Management (Advanced) | `client_management` | $69/wk |
+| Billing & Invoicing | `billing` | $79/wk |
+| LMS | `lms` | $49/wk |
+| AI Report Writing (Advanced) | `ai_reports` | $59/wk |
+| Employment Contract Signing | `employment_signing` | $39/wk |
+| Stakeholder Portal | `stakeholder_portal` | $49/wk |
+
+Bundle discounts: 3-4 modules 10% off, 5-6 15% off, 7+ 25% off, all modules $599/wk flat.
+
+### Data Layer
+
+- **Supabase (PostgreSQL)** — primary database for all SaaS features. Schema: `scripts/saas-schema.sql`. RLS enabled on all tables. Direct client: `src/services/supabaseClient.js`.
+- **Supabase Storage** — file storage: titus-reports, titus-documents, titus-knowledge, titus-chat, titus-logos buckets.
+- **SQLite** (`better-sqlite3`, WAL mode) — legacy local data: users, sessions, calls, SMS, audit logs.
+- **Legacy toggle** — `src/services/database.js` switches between airtable/supabase for legacy routes.
+
+### External Integrations
+
+- **Anthropic Claude API** — AI reports, chatbot, CV scanning, receipt OCR
+- **Twilio** — calls, SMS, WebRTC, recording (voice_sms add-on)
+- **ElevenLabs** — AI voice agent ("Denise") (ai_voice add-on)
+- **Microsoft Graph** — email sync and sending
 
 ### Authentication
 
-Session-based auth using SQLite. SHA-256 password hashing. Token from `x-auth-token` header or `authToken` cookie. Roles: superadmin, director, admin, team_leader, roster_officer, manager, ceo, office_staff, support_worker. Support worker PWA uses separate OTP-based auth.
+- **Admin**: SQLite session-based, SHA-256, token from `Authorization: Bearer` or `x-auth-token`
+- **Support Worker**: OTP-based via `x-sw-token` header
+- **Stakeholder Portal**: Separate sessions via `x-portal-token` header
+- **Public Signing**: Token-based, no login required
 
-### Key domain concepts
+### Key Domain Concepts
 
 - **NDIS** — National Disability Insurance Scheme (Australian)
 - **SIL** — Supported Independent Living (24/7 residential)
-- **CAS** — Community Access Support
+- **SCHADS** — Social, Community, Home Care and Disability Services Industry Award
 - **SOS** — Schedule of Support (funding document)
-- **Hunt groups** — Sequential call routing to available staff before AI fallback
 - **RoC** — Roster of Care
 
 ### Deployment
 
-Production on **Railway** (auto-deploy on push to main). Uses Railway persistent volume for SQLite.
+Production on **Railway** (auto-deploy on push to main). Uses Railway persistent volume for SQLite. Supabase hosted separately.
 
 ## Environment Variables
 
-See `.env.example` for the full list.
+Key variables: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `ANTHROPIC_API_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `MS_TENANT_ID`, `MS_CLIENT_ID`, `MS_CLIENT_SECRET`. See `.env.example` for full list.
 
-## Database Migration (Airtable → Supabase)
+## Delta Community Support Config
 
-Toggle via `DATABASE` env var: `airtable` (default) or `supabase`. All route modules import from `src/services/database.js`. Migration scripts in `scripts/`. See `MIGRATION_REPORT.md` for full details.
-
-```bash
-npm run migrate:supabase    # One-time data migration
-npm run sync:start          # 5-minute sync bridge
-npm run worker              # Background sync process
-```
-
-## Migration from Titus Voice
-
-This project replaces `~/Titus-Voice-version-2-/`. Route stubs marked with `// TODO: migrate` are ready for logic to be ported from the original `server/index.js`. Each route module is self-contained — migrate one domain at a time.
-
-## Active Skills
-
-Claude Code skills are installed in `.claude/skills/` and auto-activate based on context. Available skills:
-
-| Skill | Description | Use When |
-|-------|-------------|----------|
-| **ui-ux-pro-max** | Design intelligence with BM25 search across styles, palettes, fonts, UX guidelines | UI/UX redesigns, design system generation, accessibility audits |
-| **awesome-claude-code** | Curated Claude Code ecosystem knowledge + repo security evaluation | Evaluating new skills/plugins, finding community tools |
-| **n8n-mcp** | MCP server bridging n8n workflow automation with AI assistants | Building automation workflows, n8n integration |
-| **remotion** | Programmatic video creation with React (9 sub-skills) | Video generation, motion graphics, automated media |
-| **cookbook-audit** | Anthropic cookbook notebook review rubric and scoring | Reviewing Jupyter notebooks against style guide |
-| **financial-models** | DCF analysis, Monte Carlo simulation, sensitivity testing, scenario planning | Investment analysis, valuations, risk assessment |
-| **financial-statements** | Financial ratio calculator (profitability, liquidity, leverage, valuation) | Analyzing company financials, ratio analysis |
-| **brand-guidelines** | Corporate branding standards for documents (colors, fonts, layouts) | Generating branded reports, presentations, PDFs |
-
-### Workflow System
-
-**Get Shit Done (GSD)** is installed globally at `~/.claude/get-shit-done/`. Use `/gsd:help` for available commands including project planning, phase execution, codebase mapping, and debugging workflows.
+- Slug: `delta-community`
+- All modules enabled, $599/wk flat
+- 80+ staff, $99/wk base tier
+- gus@deltacommunity.com.au = superadmin

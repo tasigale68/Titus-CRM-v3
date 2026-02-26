@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign Document - Titus CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='20' width='100' height='100' fill='%230d9488'/><path d='M30 65 L45 35 L50 50 L55 30 L70 65' stroke='white' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<style>
+:root {
+  --teal: #0d9488;
+  --teal-light: #14b8a6;
+  --teal-dark: #0f766e;
+  --navy: #0f172a;
+  --navy-light: #1e293b;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #0f172a;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --green: #059669;
+  --green-bg: #d1fae5;
+  --red: #dc2626;
+  --red-bg: #fee2e2;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+  --shadow-lg: 0 4px 24px rgba(0,0,0,.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  background: var(--navy);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-logo {
+  width: 36px;
+  height: 36px;
+  background: var(--teal);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.header-logo svg { width: 20px; height: 20px; }
+.header-text h1 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+.header-text p {
+  font-size: 11px;
+  color: rgba(255,255,255,.5);
+  margin-top: 1px;
+}
+
+/* Container */
+.container {
+  flex: 1;
+  max-width: 700px;
+  width: 100%;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+/* Card */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.card + .card { margin-top: 16px; }
+
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-header-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.card-header-icon svg { width: 18px; height: 18px; }
+.card-header h2 {
+  font-size: 14px;
+  font-weight: 700;
+  flex: 1;
+}
+.card-body { padding: 20px; }
+
+/* Info grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.info-item {}
+.info-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  margin-bottom: 3px;
+}
+.info-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.badge-pending { background: #fef3c7; color: #d97706; }
+.badge-signed { background: var(--green-bg); color: var(--green); }
+
+/* Document preview */
+.doc-preview {
+  background: var(--border-light);
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+}
+
+/* Checkbox row */
+.checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px;
+  background: var(--border-light);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-top: 16px;
+  cursor: pointer;
+  transition: border-color 200ms;
+}
+.checkbox-row:hover { border-color: var(--teal); }
+.checkbox-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  accent-color: var(--teal);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.checkbox-row label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+/* Form elements */
+.form-group { margin-top: 16px; }
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy-light);
+  margin-bottom: 6px;
+}
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text);
+  background: #fff;
+  transition: border-color 200ms;
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+
+/* Signature area */
+.sig-mode-toggle {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.sig-toggle-btn {
+  padding: 7px 16px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 200ms;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sig-toggle-btn svg { width: 14px; height: 14px; }
+.sig-toggle-btn.active {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+}
+.sig-toggle-btn:hover:not(.active) {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.canvas-wrap {
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  position: relative;
+  touch-action: none;
+  overflow: hidden;
+}
+.canvas-wrap.active { border-color: var(--teal); }
+canvas {
+  display: block;
+  width: 100%;
+  height: 150px;
+  cursor: crosshair;
+}
+.canvas-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  color: #cbd5e1;
+  transition: opacity 200ms;
+}
+.canvas-placeholder svg { width: 28px; height: 28px; margin-bottom: 4px; }
+.canvas-placeholder p { font-size: 11px; font-weight: 600; }
+
+.sig-text-input {
+  width: 100%;
+  padding: 20px 14px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Dancing Script', cursive;
+  font-size: 28px;
+  color: var(--navy);
+  text-align: center;
+  background: #fff;
+  transition: border-color 200ms;
+}
+.sig-text-input:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+.sig-text-preview {
+  text-align: center;
+  padding: 16px;
+  font-family: 'Dancing Script', cursive;
+  font-size: 32px;
+  color: var(--navy);
+  border-bottom: 2px solid var(--border);
+  margin-top: 8px;
+}
+
+/* Buttons */
+.btn-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 200ms;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn svg { width: 16px; height: 16px; }
+.btn-outline {
+  background: #fff;
+  color: var(--text-secondary);
+  border: 2px solid var(--border);
+}
+.btn-outline:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+.btn-primary {
+  background: var(--teal);
+  color: #fff;
+  flex: 1;
+  justify-content: center;
+}
+.btn-primary:hover {
+  background: var(--teal-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(13,148,136,.3);
+}
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--teal);
+  padding: 8px 12px;
+}
+.btn-ghost:hover { background: rgba(13,148,136,.06); }
+
+/* Loading */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 16px;
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Error state */
+.error-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+.error-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--red-bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+.error-icon svg { width: 28px; height: 28px; color: var(--red); }
+.error-state h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.error-state p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Success state */
+.success-state {
+  text-align: center;
+  padding: 48px 20px;
+}
+.success-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--green-bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  animation: scaleIn 0.3s ease-out;
+}
+@keyframes scaleIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.success-icon svg { width: 32px; height: 32px; color: var(--green); }
+.success-state h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--green);
+  margin-bottom: 6px;
+}
+.success-state p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+.success-details {
+  background: var(--border-light);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: left;
+  max-width: 360px;
+  margin: 0 auto 20px;
+}
+.success-details .detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+}
+.success-details .detail-row:not(:last-child) {
+  border-bottom: 1px solid var(--border);
+}
+.success-details .detail-label { color: var(--text-secondary); }
+.success-details .detail-value { font-weight: 600; color: var(--text); }
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* Status alert */
+.status-alert {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 12px;
+}
+.status-alert.error {
+  background: var(--red-bg);
+  color: var(--red);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .container { padding: 0 12px; margin: 20px auto; }
+  .card-body { padding: 16px; }
+  .info-grid { grid-template-columns: 1fr; gap: 12px; }
+  .sig-mode-toggle { flex-wrap: wrap; }
+  canvas { height: 120px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+      <path d="m15 5 4 4"/>
+    </svg>
+  </div>
+  <div class="header-text">
+    <h1>Titus CRM &mdash; Document Signing</h1>
+    <p>Secure document signing portal</p>
+  </div>
+</div>
+
+<div class="container" id="mainContent">
+  <div class="loading-state" id="loadingState">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading document...</div>
+  </div>
+</div>
+
+<div class="footer">
+  Titus CRM &middot; Secure Document Signing<br>
+  Your signature and IP address are recorded for verification purposes.
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // --- State ---
+  var state = {
+    token: null,
+    doc: null,
+    sigMode: 'draw',
+    isDrawing: false,
+    hasDrawn: false,
+    agreedChecked: false,
+    fullName: '',
+    typedSig: '',
+    submitting: false
+  };
+
+  // --- Token extraction ---
+  // Support /sign/{token} and /sign/index.html?token={token}
+  var params = new URLSearchParams(window.location.search);
+  state.token = params.get('token');
+
+  if (!state.token) {
+    var pathParts = window.location.pathname.split('/').filter(Boolean);
+    var signIdx = pathParts.indexOf('sign');
+    if (signIdx !== -1 && pathParts[signIdx + 1] && pathParts[signIdx + 1] !== 'index.html') {
+      state.token = pathParts[signIdx + 1];
+    }
+  }
+
+  var main = document.getElementById('mainContent');
+
+  // --- Utility ---
+  function el(tag, attrs, children) {
+    var e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function(k) {
+      if (k === 'className') e.className = attrs[k];
+      else if (k === 'innerHTML') e.innerHTML = attrs[k];
+      else if (k.indexOf('on') === 0) e.addEventListener(k.slice(2).toLowerCase(), attrs[k]);
+      else e.setAttribute(k, attrs[k]);
+    });
+    if (children) {
+      if (typeof children === 'string') e.textContent = children;
+      else if (Array.isArray(children)) children.forEach(function(c) { if (c) e.appendChild(c); });
+      else e.appendChild(children);
+    }
+    return e;
+  }
+
+  // --- Error screen ---
+  function showError(title, message) {
+    main.innerHTML = '<div class="error-state">' +
+      '<div class="error-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>' +
+      '<h2>' + title + '</h2>' +
+      '<p>' + message + '</p>' +
+    '</div>';
+  }
+
+  // --- Already signed screen ---
+  function showAlreadySigned(doc) {
+    main.innerHTML = '<div class="card"><div class="success-state">' +
+      '<div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+      '<h2>Document Already Signed</h2>' +
+      '<p>This document was signed' + (doc.signed_at ? ' on ' + new Date(doc.signed_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' }) : '') + '.</p>' +
+      (doc.signed_by ? '<div class="success-details"><div class="detail-row"><span class="detail-label">Signed by</span><span class="detail-value">' + escapeHtml(doc.signed_by) + '</span></div></div>' : '') +
+    '</div></div>';
+  }
+
+  function escapeHtml(str) {
+    var d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  // --- Success screen ---
+  function showSuccess(result) {
+    main.innerHTML = '';
+    var card = el('div', { className: 'card' });
+    card.innerHTML = '<div class="success-state">' +
+      '<div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+      '<h2>Document Signed Successfully</h2>' +
+      '<p>Your signature has been recorded and the requesting party has been notified.</p>' +
+      '<div class="success-details">' +
+        '<div class="detail-row"><span class="detail-label">Document</span><span class="detail-value">' + escapeHtml(state.doc.title || 'Document') + '</span></div>' +
+        '<div class="detail-row"><span class="detail-label">Signed by</span><span class="detail-value">' + escapeHtml(state.fullName) + '</span></div>' +
+        '<div class="detail-row"><span class="detail-label">Date</span><span class="detail-value">' + new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + '</span></div>' +
+      '</div>' +
+      (result && result.download_url ? '<a href="' + result.download_url + '" class="btn btn-outline" style="margin:0 auto;display:inline-flex;text-decoration:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download Signed Copy</a>' : '') +
+    '</div>';
+    main.appendChild(card);
+  }
+
+  // --- Render signing form ---
+  function renderSigningForm(doc) {
+    state.doc = doc;
+    main.innerHTML = '';
+
+    // Document info card
+    var infoCard = el('div', { className: 'card' });
+    var infoHeader = '<div class="card-header">' +
+      '<div class="card-header-icon" style="background:#f0fdfa;color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>' +
+      '<h2>' + escapeHtml(doc.title || 'Document') + '</h2>' +
+      '<span class="badge badge-pending">Awaiting Signature</span>' +
+    '</div>';
+
+    var infoBody = '<div class="card-body"><div class="info-grid">' +
+      (doc.organisation ? '<div class="info-item"><div class="info-label">Requested By</div><div class="info-value">' + escapeHtml(doc.organisation) + '</div></div>' : '') +
+      (doc.document_type ? '<div class="info-item"><div class="info-label">Document Type</div><div class="info-value">' + escapeHtml(doc.document_type) + '</div></div>' : '') +
+      (doc.created_at ? '<div class="info-item"><div class="info-label">Date Sent</div><div class="info-value">' + new Date(doc.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' }) + '</div></div>' : '') +
+      (doc.expires_at ? '<div class="info-item"><div class="info-label">Expires</div><div class="info-value">' + new Date(doc.expires_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' }) + '</div></div>' : '') +
+    '</div></div>';
+
+    infoCard.innerHTML = infoHeader + infoBody;
+    main.appendChild(infoCard);
+
+    // Document preview card
+    if (doc.content || doc.preview_text) {
+      var previewCard = el('div', { className: 'card' });
+      previewCard.innerHTML = '<div class="card-header">' +
+        '<div class="card-header-icon" style="background:#f1f5f9;color:var(--text-secondary)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>' +
+        '<h2>Document Preview</h2>' +
+      '</div>' +
+      '<div class="card-body"><div class="doc-preview">' + escapeHtml(doc.content || doc.preview_text) + '</div></div>';
+      main.appendChild(previewCard);
+    }
+
+    // Signature card
+    var sigCard = el('div', { className: 'card' });
+    sigCard.id = 'signatureCard';
+    var sigHTML = '<div class="card-header">' +
+      '<div class="card-header-icon" style="background:#f0fdfa;color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></div>' +
+      '<h2>Your Signature</h2>' +
+    '</div>' +
+    '<div class="card-body">' +
+      '<div class="checkbox-row" id="agreeRow">' +
+        '<input type="checkbox" id="agreeCheckbox">' +
+        '<label for="agreeCheckbox">I have read and agree to this document. I understand that my electronic signature is legally binding.</label>' +
+      '</div>' +
+      '<div class="form-group">' +
+        '<label class="form-label" for="fullNameInput">Full Legal Name</label>' +
+        '<input class="form-input" type="text" id="fullNameInput" placeholder="Enter your full name" autocomplete="name">' +
+      '</div>' +
+      '<div class="form-group">' +
+        '<label class="form-label">Signature</label>' +
+        '<div class="sig-mode-toggle">' +
+          '<button class="sig-toggle-btn active" id="btnModeDraw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg> Draw</button>' +
+          '<button class="sig-toggle-btn" id="btnModeType"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg> Type Instead</button>' +
+        '</div>' +
+        '<div id="drawArea">' +
+          '<div class="canvas-wrap" id="canvasWrap">' +
+            '<canvas id="sigCanvas"></canvas>' +
+            '<div class="canvas-placeholder" id="canvasPlaceholder">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>' +
+              '<p>Draw your signature here</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div id="typeArea" style="display:none">' +
+          '<input class="sig-text-input" type="text" id="sigTextInput" placeholder="Type your signature">' +
+        '</div>' +
+      '</div>' +
+      '<div class="btn-row">' +
+        '<button class="btn btn-outline" id="btnClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Clear</button>' +
+        '<button class="btn btn-primary" id="btnSign" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Sign Document</button>' +
+      '</div>' +
+      '<div id="statusMsg"></div>' +
+    '</div>';
+
+    sigCard.innerHTML = sigHTML;
+    main.appendChild(sigCard);
+
+    initSignatureHandlers();
+  }
+
+  // --- Signature interactions ---
+  function initSignatureHandlers() {
+    var canvas = document.getElementById('sigCanvas');
+    var ctx = canvas.getContext('2d');
+    var wrap = document.getElementById('canvasWrap');
+    var placeholder = document.getElementById('canvasPlaceholder');
+    var agreeCheckbox = document.getElementById('agreeCheckbox');
+    var nameInput = document.getElementById('fullNameInput');
+    var sigTextInput = document.getElementById('sigTextInput');
+    var btnSign = document.getElementById('btnSign');
+    var btnClear = document.getElementById('btnClear');
+    var btnModeDraw = document.getElementById('btnModeDraw');
+    var btnModeType = document.getElementById('btnModeType');
+    var drawArea = document.getElementById('drawArea');
+    var typeArea = document.getElementById('typeArea');
+    var statusMsg = document.getElementById('statusMsg');
+
+    // High DPI canvas
+    function resizeCanvas() {
+      var rect = canvas.getBoundingClientRect();
+      var dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+    }
+    resizeCanvas();
+    window.addEventListener('resize', function() {
+      if (state.sigMode === 'draw') {
+        state.hasDrawn = false;
+        resizeCanvas();
+        placeholder.style.opacity = '1';
+        updateSubmitState();
+      }
+    });
+
+    // Drawing
+    function getPos(e) {
+      var rect = canvas.getBoundingClientRect();
+      var touch = e.touches ? e.touches[0] : e;
+      return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('touchend', endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+
+    function startDraw(e) {
+      e.preventDefault();
+      state.isDrawing = true;
+      var pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      wrap.classList.add('active');
+      if (!state.hasDrawn) {
+        state.hasDrawn = true;
+        placeholder.style.opacity = '0';
+      }
+    }
+
+    function draw(e) {
+      if (!state.isDrawing) return;
+      e.preventDefault();
+      var pos = getPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+
+    function endDraw(e) {
+      if (state.isDrawing) {
+        state.isDrawing = false;
+        wrap.classList.remove('active');
+        updateSubmitState();
+      }
+    }
+
+    // Mode switching
+    btnModeDraw.addEventListener('click', function() {
+      state.sigMode = 'draw';
+      btnModeDraw.classList.add('active');
+      btnModeType.classList.remove('active');
+      drawArea.style.display = '';
+      typeArea.style.display = 'none';
+      updateSubmitState();
+    });
+
+    btnModeType.addEventListener('click', function() {
+      state.sigMode = 'type';
+      btnModeType.classList.add('active');
+      btnModeDraw.classList.remove('active');
+      drawArea.style.display = 'none';
+      typeArea.style.display = '';
+      updateSubmitState();
+    });
+
+    // Clear
+    btnClear.addEventListener('click', function() {
+      if (state.sigMode === 'draw') {
+        var dpr = window.devicePixelRatio || 1;
+        ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+        state.hasDrawn = false;
+        placeholder.style.opacity = '1';
+      } else {
+        sigTextInput.value = '';
+        state.typedSig = '';
+      }
+      updateSubmitState();
+    });
+
+    // Input handlers
+    agreeCheckbox.addEventListener('change', function() {
+      state.agreedChecked = agreeCheckbox.checked;
+      updateSubmitState();
+    });
+
+    nameInput.addEventListener('input', function() {
+      state.fullName = nameInput.value.trim();
+      updateSubmitState();
+    });
+
+    sigTextInput.addEventListener('input', function() {
+      state.typedSig = sigTextInput.value.trim();
+      updateSubmitState();
+    });
+
+    // Submit state
+    function updateSubmitState() {
+      var hasSig = state.sigMode === 'draw' ? state.hasDrawn : state.typedSig.length > 0;
+      var valid = state.agreedChecked && state.fullName.length >= 2 && hasSig && !state.submitting;
+      btnSign.disabled = !valid;
+    }
+
+    // Submit
+    btnSign.addEventListener('click', function() {
+      if (btnSign.disabled || state.submitting) return;
+      state.submitting = true;
+      btnSign.disabled = true;
+      btnSign.innerHTML = '<div class="spinner" style="width:16px;height:16px;border-width:2px;margin:0"></div> Signing...';
+
+      var sigData;
+      if (state.sigMode === 'draw') {
+        sigData = canvas.toDataURL('image/png');
+      } else {
+        // Create a canvas from typed text for consistency
+        var tmpCanvas = document.createElement('canvas');
+        tmpCanvas.width = 400;
+        tmpCanvas.height = 100;
+        var tmpCtx = tmpCanvas.getContext('2d');
+        tmpCtx.fillStyle = '#ffffff';
+        tmpCtx.fillRect(0, 0, 400, 100);
+        tmpCtx.fillStyle = '#0f172a';
+        tmpCtx.font = '36px "Dancing Script", cursive';
+        tmpCtx.textAlign = 'center';
+        tmpCtx.textBaseline = 'middle';
+        tmpCtx.fillText(state.typedSig, 200, 50);
+        sigData = tmpCanvas.toDataURL('image/png');
+      }
+
+      fetch('/api/sign/' + encodeURIComponent(state.token), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          full_name: state.fullName,
+          signature_data: sigData,
+          signature_type: state.sigMode
+        })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.error) {
+          statusMsg.innerHTML = '<div class="status-alert error">' + escapeHtml(data.error) + '</div>';
+          state.submitting = false;
+          btnSign.disabled = false;
+          btnSign.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Sign Document';
+          return;
+        }
+        showSuccess(data);
+      })
+      .catch(function(err) {
+        statusMsg.innerHTML = '<div class="status-alert error">Failed to submit signature. Please check your connection and try again.</div>';
+        state.submitting = false;
+        btnSign.disabled = false;
+        btnSign.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Sign Document';
+      });
+    });
+  }
+
+  // --- Init ---
+  if (!state.token) {
+    showError('Invalid Signing Link', 'This signing link is invalid or malformed. Please check the link you received and try again.');
+    return;
+  }
+
+  fetch('/api/sign/' + encodeURIComponent(state.token))
+    .then(function(r) {
+      if (r.status === 404) throw { type: 'invalid' };
+      if (r.status === 410) throw { type: 'expired' };
+      return r.json();
+    })
+    .then(function(data) {
+      if (data.error) {
+        if (data.already_signed || data.status === 'signed') {
+          showAlreadySigned(data);
+        } else {
+          showError('Unable to Load Document', data.error);
+        }
+        return;
+      }
+      if (data.status === 'signed') {
+        showAlreadySigned(data);
+        return;
+      }
+      renderSigningForm(data);
+    })
+    .catch(function(err) {
+      if (err && err.type === 'invalid') {
+        showError('Invalid Signing Link', 'This signing link is invalid or has expired. Please contact the sender for a new link.');
+      } else if (err && err.type === 'expired') {
+        showError('Link Expired', 'This signing link has expired. Please contact the sender for a new link.');
+      } else {
+        showError('Connection Error', 'Unable to load the document. Please check your internet connection and try again.');
+      }
+    });
+
+})();
+</script>
+</body>
+</html>
