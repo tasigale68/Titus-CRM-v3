@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Titus CRM — Delta Community Support</title>
+<title>Titus CRM | Login</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -16,11 +16,18 @@
 :root{--bg:#F5F6FA;--surface:#FFFFFF;--surface2:#F8F9FC;--border:#E8EBF0;--border2:#D5DAE3;--royal:#1E4BA0;--teal:#0A9396;--tealLight:rgba(10,147,150,.08);--tealBorder:rgba(10,147,150,.2);--green:#10B981;--greenBg:rgba(16,185,129,.08);--greenBorder:rgba(16,185,129,.2);--orange:#F59E0B;--red:#EF4444;--text:#111827;--text2:#374151;--muted:#6B7280;--dim:#9CA3AF;--light:#D1D5DB;--r:10px;--rs:6px;--sb-bg:#0f172a;--sb-hover:rgba(255,255,255,.08);--sb-active:rgba(14,165,233,.15);--sb-accent:#38bdf8;--sb-accent2:#0ea5e9;--sb-text:rgba(255,255,255,.7);--sb-text-active:#f0f9ff;--sb-divider:rgba(255,255,255,.08);--focus-ring:0 0 0 3px rgba(14,165,233,.35)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
-.login-wrap{display:flex;align-items:center;justify-content:center;height:100vh;background:var(--bg)}
-.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:44px;width:400px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.04)}
-.logo-mark{width:48px;height:48px;background:linear-gradient(135deg,#0ea5e9,#38bdf8);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;margin:0 auto 16px;letter-spacing:-.5px}
-.login-card h1{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px}
-.login-card .sub{font-size:13px;color:var(--dim);margin-bottom:28px}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0a0a1a 0%,#0f172a 50%,#1a1a2e 100%);position:relative;overflow:hidden;padding:24px}
+.login-wrap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 30% 70%,rgba(10,147,150,.08),transparent),radial-gradient(ellipse 50% 40% at 70% 30%,rgba(13,148,136,.06),transparent);pointer-events:none}
+.login-wrap::after{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
+.login-card{background:var(--surface);border:1px solid rgba(255,255,255,.1);border-top:3px solid #0d9488;border-radius:16px;padding:44px;width:420px;max-width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.25),0 8px 24px rgba(0,0,0,.15);position:relative;z-index:1}
+.login-logo{width:56px;height:56px;margin:0 auto 16px;border-radius:14px}
+.login-card h1{font-size:24px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-.3px}
+.login-card .sub{font-size:13px;color:var(--dim);margin-bottom:8px;line-height:1.5}
+.login-trust{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.login-trust-item{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.2px}
+.login-trust-item svg{width:14px;height:14px;color:#0d9488;flex-shrink:0}
+.login-footer{position:absolute;bottom:24px;left:0;right:0;text-align:center;font-size:11px;color:rgba(255,255,255,.3);font-weight:500;z-index:1;letter-spacing:.2px}
+@media(max-width:480px){.login-card{padding:32px 24px;width:100%;border-radius:12px}.login-trust{gap:8px}.login-trust-item{font-size:10px}}
 .login-err{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);color:var(--red);font-size:12px;padding:8px 12px;border-radius:var(--rs);margin-bottom:14px;display:none}
 .fg{margin-bottom:16px;text-align:left}
 .fg label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
@@ -28,8 +35,9 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(10,147,150,.1)}
 .fg input::placeholder,.fg textarea::placeholder{color:var(--dim)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:8px 14px;border-radius:var(--rs);font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .15s}
-.btn-p{background:var(--teal);color:#fff;width:100%;padding:11px;font-size:13px}
-.btn-p:hover{background:#088587}
+.btn-p{background:#0d9488;color:#fff;width:100%;padding:12px;font-size:14px;font-weight:700;border-radius:8px;cursor:pointer;transition:all .2s}
+.btn-p:hover{background:#0f766e;box-shadow:0 4px 12px rgba(13,148,136,.3);transform:translateY(-1px)}
+.btn-p:active{transform:translateY(0)}
 .btn-s{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
 .btn-s:hover{background:var(--border);color:var(--text)}
 .btn-d{background:rgba(239,68,68,.06);color:var(--red);border:1px solid rgba(239,68,68,.2);font-size:11px;padding:5px 10px}
@@ -479,15 +487,21 @@ button:not(.sb-item):not(.sb-sub-item):not(.sb-collapse-btn){cursor:pointer}
 <body>
 <div id="loginScreen" class="login-wrap">
 <div class="login-card">
-<div class="logo-mark">DCS</div>
+<svg class="login-logo" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="logoGrad" x1="0" y1="0" x2="56" y2="56"><stop offset="0%" stop-color="#0d9488"/><stop offset="100%" stop-color="#0f766e"/></linearGradient></defs><rect width="56" height="56" rx="14" fill="url(#logoGrad)"/><text x="28" y="38" text-anchor="middle" fill="#fff" font-family="Plus Jakarta Sans,system-ui,sans-serif" font-weight="800" font-size="28" letter-spacing="-1">T</text></svg>
 <h1>Titus CRM</h1>
-<p class="sub">Delta Community Support Phone System</p>
-<div id="loginError" class="login-err"></div>
-<div class="fg"><label>Email</label><input type="email" id="loginEmail" placeholder="you@deltacommunity.com.au"></div>
-<div class="fg"><label>Password</label><input type="password" id="loginPassword" placeholder="Enter password"></div>
-<button class="btn btn-p" id="loginBtn">Sign In</button>
-<div style="margin-top:14px;text-align:center"><a href="javascript:void(0)" id="forgotPwLink" style="font-size:12px;color:var(--teal);text-decoration:none;font-weight:600">Forgot Password?</a></div>
+<p class="sub">AI-Powered All-in-One Platform for NDIS Providers</p>
+<div class="login-trust">
+<span class="login-trust-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M4.5 8.5l2 2 5-5"/></svg> Australian Hosted</span>
+<span class="login-trust-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg> NDIS Compliant</span>
+<span class="login-trust-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l1.5 3h3l-2.5 2 1 3L8 8.5 5 10l1-3-2.5-2h3z"/></svg> AI-Powered</span>
 </div>
+<div id="loginError" class="login-err"></div>
+<div class="fg"><label>Email</label><input type="email" id="loginEmail" placeholder="you@company.com.au" autocomplete="email"></div>
+<div class="fg"><label>Password</label><input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password"></div>
+<button class="btn btn-p" id="loginBtn">Sign In</button>
+<div style="margin-top:14px;text-align:center"><a href="javascript:void(0)" id="forgotPwLink" style="font-size:12px;color:#0d9488;text-decoration:none;font-weight:600">Forgot Password?</a></div>
+</div>
+<div class="login-footer">&copy; 2026 Titus CRM &middot; Built in Brisbane, Australia</div>
 </div>
 <!-- FORGOT PASSWORD MODAL -->
 <div id="forgotPwOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
@@ -802,7 +816,7 @@ function fmtDateInTZ(iso){if(!iso)return"";var tz=AU_TIMEZONES[getAppTimezone()]
 function updateTzBar(){var bar=document.getElementById("tzBar");if(!bar)return;var tz=getAppTimezone();try{var tzStr=AU_TIMEZONES[tz]||"Australia/Brisbane";var now=TitusDate.formatDateTimeInTZ(new Date(),tzStr);bar.innerHTML='<span style="opacity:.7">🕒</span> <span class="tz-time">'+now+'</span> <span style="color:rgba(255,255,255,.5)">'+tz+'</span>';bar.style.display="flex"}catch(e){bar.style.display="none"}}
 setInterval(updateTzBar,1000);
 function apiCall(method,url,body){var headers={"Content-Type":"application/json"};if(token)headers["Authorization"]="Bearer "+token;var opts={method:method,headers:headers};if(body)opts.body=JSON.stringify(body);return fetch(url,opts).then(function(r){if(r.status===401){localStorage.removeItem("titus_token");localStorage.removeItem("titus_user");location.reload()}return r.json()})}
-function showLogin(){document.getElementById("loginScreen").style.display="flex";document.getElementById("dashboard").style.display="none";document.getElementById("fabDial").style.display="none";document.getElementById("fabSms").style.display="none";var aiBtn=document.getElementById("fabAi");if(aiBtn)aiBtn.style.display="none";var aiPanel=document.getElementById("aiChatbotPanel");if(aiPanel)aiPanel.classList.remove("open")}
+function showLogin(){document.title="Titus CRM | Login";document.getElementById("loginScreen").style.display="flex";document.getElementById("dashboard").style.display="none";document.getElementById("fabDial").style.display="none";document.getElementById("fabSms").style.display="none";var aiBtn=document.getElementById("fabAi");if(aiBtn)aiBtn.style.display="none";var aiPanel=document.getElementById("aiChatbotPanel");if(aiPanel)aiPanel.classList.remove("open")}
 // ── Permission helpers ──
 var PERM_KEYS=[
 // Dashboard
@@ -1155,7 +1169,7 @@ if(currentUser.role==="superadmin"){["navReceipts"].forEach(function(id){var el=
 if(currentUser.role!=="superadmin"){var _cwF=document.getElementById("navCallWorkflow");if(_cwF)_cwF.style.display="none"}
 }
 
-function showDashboard(){document.getElementById("loginScreen").style.display="none";document.getElementById("dashboard").style.display="grid";document.getElementById("fabDial").style.display="flex";document.getElementById("fabSms").style.display="none";
+function showDashboard(){document.title="Titus CRM — Dashboard";document.getElementById("loginScreen").style.display="none";document.getElementById("dashboard").style.display="grid";document.getElementById("fabDial").style.display="flex";document.getElementById("fabSms").style.display="none";
 // Show Denise AI Agent FAB for all authenticated users
 var aiBtn=document.getElementById("fabAi");if(aiBtn){if(currentUser){aiBtn.style.display="flex"}else{aiBtn.style.display="none"}}
 var initials=(currentUser.name||currentUser.email).substring(0,2).toUpperCase();document.getElementById("userAvatar").textContent=initials;document.getElementById("userName").textContent=currentUser.name||currentUser.email;if(currentUser.role==="superadmin"||canView("admin"))document.getElementById("navAdmin").style.display="flex";if(currentUser.role==="superadmin"){var cwNav=document.getElementById("navCallWorkflow");if(cwNav)cwNav.style.display="flex";}applySidebarPermissions();
