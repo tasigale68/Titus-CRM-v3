@@ -391,9 +391,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <button class="sb-sub-item" data-view="tasks" onclick="setInboxView('tasks')"><span class="sb-item-label">📋 Tasks</span></button>
 <button class="sb-sub-item" id="navCallWorkflow" data-view="callWorkflow" onclick="setInboxView('callWorkflow')" style="display:none"><span class="sb-item-label">🔀 Call Workflow</span></button>
 </div>
+<button class="sb-item" data-view="messenger" onclick="window.open('/messenger/','_blank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="sb-item-label">Messenger</span></button>
 <button class="sb-item" data-view="contacts" onclick="toggleContactsMenu(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="sb-item-label">Contacts</span><span class="sb-arrow sb-item-label">▾</span></button>
 <div class="sb-sub" id="contactsSub">
 <button class="sb-sub-item" data-view="contacts" data-subview="overview" onclick="setContactsView('overview')"><span class="sb-item-label">📊 Overview</span></button>
+<button class="sb-sub-item" data-view="contacts" data-subview="clients" onclick="setContactsView('clients')"><span class="sb-item-label">🧑‍🦽 Clients</span></button>
+<button class="sb-sub-item" data-view="contacts" data-subview="staff" onclick="setContactsView('staff')"><span class="sb-item-label">👷 Staff</span></button>
 <button class="sb-sub-item" data-view="contacts" data-subview="all" onclick="setContactsView('all')"><span class="sb-item-label">👥 All Contacts</span></button>
 <button class="sb-sub-item" data-view="sendClientAgreement" onclick="setContactsView('sendClientAgreement')"><span class="sb-item-label">📄 Send Client Agreement</span></button>
 <button class="sb-sub-item" data-view="sendEmploymentContract" onclick="setContactsView('sendEmploymentContract')"><span class="sb-item-label">📝 Send Employment Contract</span></button>
@@ -428,7 +431,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <button class="sb-sub-item" data-view="reports" data-subview="ndisReports" onclick="setReportsMenuView('ndisReports')"><span class="sb-item-label">📑 NDIS Reports</span></button>
 </div>
 
-<button class="sb-item" data-view="admin" id="navAdmin" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="sb-item-label">User Management</span></button>
+<button class="sb-item" data-view="admin" id="navAdmin" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="sb-item-label">Admin</span></button>
 </div>
 <div class="sb-footer"><div class="sb-user"><div class="sb-avatar" id="userAvatar"></div><div class="sb-user-info"><div class="sb-user-name" id="userName"></div><div class="sb-user-status">Online</div></div><button class="sb-signout" id="logoutBtn">Sign Out</button></div></div>
 </div>
@@ -551,7 +554,7 @@ var PERM_KEYS=[
 {key:"registers",label:"Registers",group:"Reports",icon:"📋"},
 {key:"files",label:"Files",group:"Reports",icon:"📁"},
 {key:"auditLog",label:"Audit Log",group:"Reports",icon:"🔍"},
-{key:"admin",label:"User Management",group:"System",icon:"⚙️"}
+{key:"admin",label:"Admin",group:"System",icon:"⚙️"}
 ];
 function getPermKey(view,sub){
 // Map currentView + subView to permission key
