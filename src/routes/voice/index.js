@@ -985,7 +985,7 @@ router.get('/dialer/token', authenticate, function(req, res) {
 // ─── CALLS LIST ───
 // GET /api/voice/calls
 router.get('/calls', authenticate, function(req, res) {
-  res.json(db.prepare("SELECT * FROM calls ORDER BY created_at DESC LIMIT 100").all());
+  res.json(db.prepare("SELECT * FROM calls ORDER BY created_at DESC LIMIT 500").all());
 });
 
 // ─── OUTBOUND CALL ───
@@ -1043,7 +1043,7 @@ router.get('/contacts/conversations', authenticate, function(req, res) {
 // ─── SMS LIST ───
 // GET /api/voice/sms
 router.get('/sms', authenticate, function(req, res) {
-  res.json(db.prepare("SELECT * FROM sms_messages ORDER BY created_at DESC LIMIT 200").all());
+  res.json(db.prepare("SELECT * FROM sms_messages ORDER BY created_at DESC LIMIT 500").all());
 });
 
 // ─── SMS SEND ───

@@ -28,6 +28,7 @@ const accommodationRoutes = require('./routes/accommodation');
 const budgetRoutes = require('./routes/budget');
 const supportWorkerRoutes = require('./routes/support-worker');
 const adminRoutes = require('./routes/admin');
+const deniseRoutes = require('./routes/denise-agent');
 
 // Initialize
 const app = express();
@@ -83,6 +84,7 @@ app.use('/api/accommodation', accommodationRoutes);
 app.use('/api/budget', budgetRoutes);
 app.use('/api/support-worker', supportWorkerRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/denise-agent', deniseRoutes);
 
 // ═══════════════════════════════════════════════════════
 //  Health check
