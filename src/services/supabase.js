@@ -4,8 +4,8 @@
 // ═══════════════════════════════════════════════════════════════
 var env = require('../config/env');
 
-var SUPABASE_URL = process.env.SUPABASE_URL;
-var SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+var SUPABASE_URL = (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, '');
+var SUPABASE_SERVICE_KEY = (process.env.SUPABASE_SERVICE_KEY || '').trim();
 
 // ─── Supabase table name mapping (Airtable name → Supabase table) ───
 var TABLE_MAP = {

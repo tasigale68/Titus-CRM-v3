@@ -19,9 +19,9 @@ router.post('/migrate-to-supabase', function (req, res) {
   if (token !== MIGRATION_TOKEN) return res.status(403).json({ error: 'Invalid migration token' });
   if (_migrationRunning) return res.json({ error: 'Migration already in progress' });
 
-  var SUPABASE_URL = process.env.SUPABASE_URL;
-  var SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
-  var AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
+  var SUPABASE_URL = (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, '');
+  var SUPABASE_SERVICE_KEY = (process.env.SUPABASE_SERVICE_KEY || '').trim();
+  var AIRTABLE_API_KEY = (process.env.AIRTABLE_API_KEY || '').trim();
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) return res.json({ error: 'SUPABASE_URL or SUPABASE_SERVICE_KEY not set in environment' });
   if (!AIRTABLE_API_KEY) return res.json({ error: 'AIRTABLE_API_KEY not set in environment' });

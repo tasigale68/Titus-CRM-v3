@@ -6,9 +6,9 @@
 // ═══════════════════════════════════════════════════════════════
 require('dotenv').config();
 
-var SUPABASE_URL = process.env.SUPABASE_URL;
-var SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
-var AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
+var SUPABASE_URL = (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, '');
+var SUPABASE_SERVICE_KEY = (process.env.SUPABASE_SERVICE_KEY || '').trim();
+var AIRTABLE_API_KEY = (process.env.AIRTABLE_API_KEY || '').trim();
 var AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || 'appg3Cz7mEsGA6IOI';
 var SYNC_INTERVAL_MS = parseInt(process.env.SYNC_INTERVAL_MS) || 5 * 60 * 1000; // 5 minutes
 
