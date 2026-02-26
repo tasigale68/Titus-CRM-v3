@@ -67,6 +67,7 @@ app.set('io', io);
 app.use('/api/auth', authRoutes);
 app.use('/api/contacts', contactsRoutes);
 app.use('/api/voice', voiceRoutes);
+app.use('/api', voiceRoutes); // Legacy: frontend calls /api/calls, /api/sms, /api/availability etc.
 app.use('/api/scheduling', schedulingRoutes);
 app.use('/api/clients', clientsRoutes);
 app.use('/api/recruitment', recruitmentRoutes);
