@@ -132,6 +132,8 @@ router.get('/', function(req, res) {
         stage: av(f["Stage"] || f["Lead Stage"] || f["Status"] || "Enquiry"),
         date: f["Date"] || f["Created"] || f["Date Created"] || f["Enquiry Date"] || "",
         notes: f["Notes"] || f["Comments"] || "",
+        createdAt: r.createdTime || "",
+        lastModified: f["Last Modified"] || f["Last Modified Time"] || f["Modified"] || "",
         // New fields
         suburb: av(f["Suburb"] || f["City"] || f["Location"] || f["Area"] || ""),
         disabilityType: av(f["Type of Disability"] || f["Disability Type"] || f["Disability"] || f["Primary Disability"] || ""),

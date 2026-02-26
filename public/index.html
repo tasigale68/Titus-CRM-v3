@@ -8983,7 +8983,7 @@ var sub=document.getElementById("leadsSub");
 sub.classList.toggle("open");
 if(sub.classList.contains("open")){currentView="leads";selectedConv=null;if(!leadsSubView)leadsSubView="list";render()}}
 function setLeadsView(sv){
-leadsSubView=sv;currentView="leads";selectedConv=null;
+leadsSubView=sv;currentView=(sv==="overview")?"leadsOverview":"leads";selectedConv=null;
 document.querySelectorAll("#leadsSub .sb-sub-item").forEach(function(b){b.classList.remove("on")});
 var active=document.querySelector('#leadsSub [data-subview="'+sv+'"]');if(active)active.classList.add("on");
 render()}
@@ -17811,7 +17811,113 @@ var leadsLoaded=false;
 var leadsStages=["Enquiry","Follow Up","Meet & Greet","Agreements","WON","LOST"];
 var leadsColors={"Enquiry":"#3B82F6","Follow Up":"#8B5CF6","Meet & Greet":"#F59E0B","Agreements":"#0A9396","WON":"#10B981","LOST":"#EF4444"};
 
-function renderLeadsOverview(){var rp=document.getElementById("rightPanel");rp.innerHTML='<div style="padding:20px"><h2 style="font-size:18px;font-weight:700;margin-bottom:16px">Leads Overview</h2><div style="padding:40px;text-align:center;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">📊</div><div style="font-size:14px;font-weight:600">Leads overview dashboard coming soon</div><div style="font-size:12px;margin-top:4px">Use the Leads view to manage your pipeline</div></div></div>'}
+var leadsOverviewDays=30;
+function renderLeadsOverview(){
+var rp=document.getElementById("rightPanel");
+// Ensure leads are loaded
+if(!leadsLoaded){leadsLoaded=true;
+rp.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)"><div style="text-align:center"><div class="spin" style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 12px"></div><div style="font-size:13px;font-weight:600">Loading leads...</div></div></div>';
+apiCall("GET","/api/leads").then(function(d){leadsData=d||[];renderLeadsOverview()}).catch(function(){leadsData=[];renderLeadsOverview()});return}
+
+var now=new Date();var cutoff=new Date(now.getTime()-leadsOverviewDays*24*60*60*1000);
+var filtered=leadsData;
+// Stage counts
+var stageCounts={};leadsStages.forEach(function(s){stageCounts[s]=0});
+filtered.forEach(function(r){var st=r.stage||"Enquiry";if(stageCounts[st]!==undefined)stageCounts[st]++;else stageCounts[st]=1});
+var activeLeads=filtered.filter(function(r){return r.stage!=="WON"&&r.stage!=="LOST"}).length;
+var wonLeads=stageCounts["WON"]||0;var lostLeads=stageCounts["LOST"]||0;
+// Recent leads (within cutoff)
+var recentLeads=filtered.filter(function(r){var d=r.date?new Date(r.date):r.createdAt?new Date(r.createdAt):null;return d&&!isNaN(d)&&d>=cutoff});
+// Source breakdown
+var sourceMap={};filtered.forEach(function(r){var s=r.source||"Unknown";sourceMap[s]=(sourceMap[s]||0)+1});
+var sourceEntries=Object.keys(sourceMap).map(function(k){return{name:k,count:sourceMap[k]}}).sort(function(a,b){return b.count-a.count});
+// Win rate
+var closedLeads=wonLeads+lostLeads;var winRate=closedLeads>0?Math.round(wonLeads/closedLeads*100):0;
+// Avg days in pipeline for active leads
+var totalDays=0;var countDays=0;
+filtered.forEach(function(r){if(r.stage==="WON"||r.stage==="LOST")return;var d=r.date?new Date(r.date):null;if(d&&!isNaN(d)){totalDays+=Math.floor((now-d)/(1000*60*60*24));countDays++}});
+var avgDays=countDays>0?Math.round(totalDays/countDays):0;
+
+var h='<div style="padding:24px;overflow-y:auto;height:100%">';
+h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px"><div><div style="font-size:20px;font-weight:700;color:var(--text)">Leads Overview</div><div style="font-size:12px;color:var(--muted)">'+filtered.length+' total leads &middot; '+recentLeads.length+' new in last '+leadsOverviewDays+' days</div></div>';
+h+='<div style="display:flex;gap:6px">';
+[7,14,30,90].forEach(function(d){h+='<button onclick="leadsOverviewDays='+d+';renderLeadsOverview()" style="padding:5px 12px;font-size:11px;font-weight:600;border-radius:var(--rs);cursor:pointer;font-family:inherit;border:1px solid '+(leadsOverviewDays===d?'var(--teal)':'var(--border)')+';background:'+(leadsOverviewDays===d?'rgba(10,147,150,.08)':'var(--surface2)')+';color:'+(leadsOverviewDays===d?'var(--teal)':'var(--muted)')+'">'+d+'d</button>'});
+h+='</div></div>';
+
+// Summary cards
+h+='<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px">';
+var cards=[
+{label:"Active Pipeline",val:activeLeads,col:"#3B82F6",icon:"📊"},
+{label:"Won",val:wonLeads,col:"#10B981",icon:"🏆"},
+{label:"Lost",val:lostLeads,col:"#EF4444",icon:"❌"},
+{label:"Win Rate",val:winRate+"%",col:"#8B5CF6",icon:"📈"},
+{label:"Avg Days",val:avgDays,col:"#F59E0B",icon:"⏱️"}
+];
+cards.forEach(function(c){
+h+='<div style="padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);text-align:center;border-top:3px solid '+c.col+'">';
+h+='<div style="font-size:28px;font-weight:800;color:'+c.col+'">'+c.val+'</div>';
+h+='<div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-top:4px">'+c.icon+' '+c.label+'</div></div>'});
+h+='</div>';
+
+// Charts row
+h+='<div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px">';
+
+// Pipeline by stage bar chart
+h+='<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px">';
+h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Pipeline by Stage</div>';
+var maxStage=Math.max.apply(null,leadsStages.map(function(s){return stageCounts[s]||0}))||1;
+leadsStages.forEach(function(s){
+var cnt=stageCounts[s]||0;var pct=Math.round(cnt/maxStage*100);var col=leadsColors[s];
+h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
+h+='<div style="width:90px;font-size:11px;font-weight:600;color:var(--text);text-align:right;flex-shrink:0">'+s+'</div>';
+h+='<div style="flex:1;height:24px;background:var(--surface2);border-radius:4px;overflow:hidden;position:relative">';
+h+='<div style="height:100%;width:'+pct+'%;background:'+col+';border-radius:4px;transition:width .3s"></div></div>';
+h+='<div style="width:30px;font-size:12px;font-weight:700;color:'+col+';text-align:right">'+cnt+'</div>';
+h+='</div>'});
+h+='</div>';
+
+// Source breakdown
+h+='<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px">';
+h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Lead Sources</div>';
+var srcColors=["#3B82F6","#8B5CF6","#F59E0B","#10B981","#EF4444","#EC4899","#6366F1","#14B8A6"];
+if(sourceEntries.length===0)h+='<div style="text-align:center;color:var(--muted);font-size:12px;padding:20px">No source data</div>';
+sourceEntries.slice(0,8).forEach(function(s,i){
+var sc=srcColors[i%srcColors.length];var pct=filtered.length>0?Math.round(s.count/filtered.length*100):0;
+h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
+h+='<div style="width:8px;height:8px;border-radius:50%;background:'+sc+';flex-shrink:0"></div>';
+h+='<div style="flex:1;font-size:11px;color:var(--text)">'+s.name+'</div>';
+h+='<div style="font-size:11px;font-weight:700;color:'+sc+'">'+s.count+' <span style="font-weight:400;color:var(--muted)">('+pct+'%)</span></div>';
+h+='</div>'});
+h+='</div>';
+h+='</div>';
+
+// Recent leads table
+h+='<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px">';
+h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="font-size:13px;font-weight:700;color:var(--text)">Recent Leads</div>';
+h+='<button class="btn btn-teal btn-sm" onclick="setLeadsView(\'list\')" style="font-size:10px">View All →</button></div>';
+h+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+h+='<thead><tr style="border-bottom:2px solid var(--border)">';
+["Client","Date","Suburb","SC Name","SC Email","Stage","Days"].forEach(function(col){
+h+='<th style="padding:6px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">'+col+'</th>'});
+h+='</tr></thead><tbody>';
+var recentSorted=filtered.slice().sort(function(a,b){var da=a.date||a.createdAt||"";var db=b.date||b.createdAt||"";return db.localeCompare(da)}).slice(0,15);
+recentSorted.forEach(function(r){
+var col=leadsColors[r.stage||"Enquiry"]||"var(--muted)";
+var dateStr=r.date?TitusDate.format(r.date):"";
+var _d=r.date?new Date(r.date):null;var _days=_d&&!isNaN(_d)?Math.floor((now-_d)/(1000*60*60*24)):null;
+var _dc=_days!==null&&_days>60?"var(--error)":_days!==null&&_days>45?"var(--warning)":"var(--muted)";
+h+='<tr style="border-bottom:1px solid var(--border)">';
+h+='<td style="padding:6px;font-weight:700;color:var(--text)">'+(r.name||"—")+'</td>';
+h+='<td style="padding:6px;font-size:11px;color:var(--text)">'+dateStr+'</td>';
+h+='<td style="padding:6px;font-size:11px;color:var(--text)">'+(r.suburb||"—")+'</td>';
+h+='<td style="padding:6px;font-size:11px;color:var(--text)">'+(r.scName||"—")+'</td>';
+h+='<td style="padding:6px;font-size:10px;color:var(--muted);font-family:JetBrains Mono,monospace">'+(r.scEmail?'<a href="mailto:'+r.scEmail+'" style="color:var(--teal);text-decoration:none">'+r.scEmail+'</a>':"—")+'</td>';
+h+='<td style="padding:6px"><span style="padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;border:1px solid '+col+'30;background:'+col+'10;color:'+col+'">'+( r.stage||"Enquiry")+'</span></td>';
+h+='<td style="padding:6px;font-size:10px;color:'+_dc+'">'+(_days!==null?_days+'d':"—")+'</td>';
+h+='</tr>'});
+if(recentSorted.length===0)h+='<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted)">No leads yet</td></tr>';
+h+='</tbody></table></div></div>';
+h+='</div>';rp.innerHTML=h}
 function renderLeads(){
 var rp=document.getElementById("rightPanel");
 // Highlight submenu
@@ -17828,19 +17934,34 @@ var daysDiff=Math.floor((now-ld)/(1000*60*60*24));
 if(daysDiff>60){r.stage="LOST";r._autoLost=true;
 if(r.airtableId)apiCall("PATCH","/api/leads/"+r.airtableId,{stage:"LOST"}).catch(function(){})}
 });
-if(leadsSubView==="list")renderLeadsList(rp);else renderLeadsKanban(rp)}).catch(function(){leadsData=[];renderLeadsList(rp)});return}
-if(leadsSubView==="list")renderLeadsList(rp);else renderLeadsKanban(rp)}
+if(leadsSubView==="overview")renderLeadsOverview();else if(leadsSubView==="list")renderLeadsList(rp);else renderLeadsKanban(rp)}).catch(function(){leadsData=[];renderLeadsList(rp)});return}
+if(leadsSubView==="overview")renderLeadsOverview();else if(leadsSubView==="list")renderLeadsList(rp);else renderLeadsKanban(rp)}
 
+var leadsScFilter="";
 function renderLeadsList(rp){
 var h='<div style="padding:24px;overflow-y:auto;height:100%">';
 h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div><div style="font-size:18px;font-weight:700;color:var(--text)">Leads</div><div style="font-size:11px;color:var(--muted)">'+leadsData.length+' leads</div></div>';
 h+='<div style="display:flex;gap:6px"><button class="btn btn-teal btn-sm" onclick="setLeadsView(\'kanban\')">📌 Kanban</button></div></div>';
-// Search
-h+='<input id="leadsSearch" oninput="filterLeadsList()" placeholder="Search leads by name, suburb, disability, SC..." style="width:100%;max-width:500px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none;margin-bottom:12px">';
+// Search + SC email filter row
+h+='<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">';
+h+='<input id="leadsSearch" oninput="filterLeadsList()" placeholder="Search leads by name, suburb, disability, SC..." style="flex:1;min-width:250px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none">';
+// SC Email filter dropdown
+var scEmails={};leadsData.forEach(function(r){if(r.scEmail){var e=r.scEmail.toLowerCase();scEmails[e]=(scEmails[e]||0)+1}});
+var scEmailKeys=Object.keys(scEmails).sort();
+h+='<select id="leadsScFilter" onchange="leadsScFilter=this.value;filterLeadsList()" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none;min-width:180px;color:var(--text)">';
+h+='<option value="">All Support Coordinators</option>';
+scEmailKeys.forEach(function(e){
+var label=e;
+var matchLead=leadsData.find(function(r){return r.scEmail&&r.scEmail.toLowerCase()===e});
+if(matchLead&&matchLead.scName)label=matchLead.scName+" ("+e+")";
+h+='<option value="'+e+'"'+(leadsScFilter===e?' selected':'')+'>'+label+' ('+scEmails[e]+')</option>'});
+h+='</select>';
+if(leadsScFilter)h+='<button onclick="leadsScFilter=\'\';filterLeadsList();document.getElementById(\'leadsScFilter\').value=\'\'" style="padding:6px 10px;font-size:11px;font-weight:600;color:var(--error);background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">✕ Clear SC</button>';
+h+='</div>';
 // Table
 h+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
 h+='<thead><tr style="border-bottom:2px solid var(--border)">';
-["#","Client Name","Suburb","Disability","SC Name","SC Email","SC Mobile","Stage","Date"].forEach(function(col){
+["#","Client Name","Date Received","Days","Suburb","Disability","SC Name","SC Email","SC Mobile","Stage","Created"].forEach(function(col){
 h+='<th style="padding:8px 6px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">'+col+'</th>'});
 h+='</tr></thead><tbody id="leadsTbody">';
 leadsData.forEach(function(r,idx){
@@ -17849,9 +17970,12 @@ var dateStr=r.date||"";if(dateStr){dateStr=TitusDate.format(dateStr)}
 var _lNow=new Date();var _lDt=r.date?new Date(r.date):null;
 var _lDays=_lDt&&!isNaN(_lDt)?Math.floor((_lNow-_lDt)/(1000*60*60*24)):null;
 var _lDateCol=_lDays!==null&&_lDays>60?"var(--error)":_lDays!==null&&_lDays>45?"var(--warning)":"var(--muted)";
-h+='<tr data-lidx="'+idx+'" style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
+var createdStr=r.createdAt?TitusDate.format(r.createdAt):"";
+h+='<tr data-lidx="'+idx+'" data-sc-email="'+(r.scEmail||"").toLowerCase()+'" style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
 h+='<td style="padding:8px 6px;font-size:10px;color:var(--dim)">'+(r.refNum||"")+'</td>';
 h+='<td style="padding:8px 6px;font-weight:700;color:var(--text)">'+(r.name||"—")+(r._autoLost?' <span style="font-size:8px;color:var(--error);font-weight:600">⏰ Auto-closed</span>':"")+'</td>';
+h+='<td style="padding:8px 6px;font-size:10px;white-space:nowrap;color:'+_lDateCol+'">'+dateStr+'</td>';
+h+='<td style="padding:8px 6px;font-size:10px;white-space:nowrap;color:'+_lDateCol+'">'+(_lDays!==null?_lDays+'d':"—")+'</td>';
 h+='<td style="padding:8px 6px;font-size:11px;color:var(--text)">'+(r.suburb||"—")+'</td>';
 h+='<td style="padding:8px 6px;font-size:11px;color:var(--text)">'+(r.disabilityType||"—")+'</td>';
 h+='<td style="padding:8px 6px;font-size:11px;color:var(--text)">'+(r.scName||"—")+'</td>';
@@ -17860,7 +17984,7 @@ h+='<td style="padding:8px 6px;font-size:11px">'+(r.scMobile||"—")+'</td>';
 h+='<td style="padding:8px 6px"><select onchange="updateLeadStage('+idx+',this.value)" '+(canEdit("leads_list")?"":"disabled")+' style="padding:3px 6px;border-radius:6px;font-size:10px;font-weight:600;border:1px solid '+col+'30;background:'+col+'10;color:'+col+';font-family:inherit;cursor:'+(canEdit("leads_list")?"pointer":"default")+'">';
 leadsStages.forEach(function(st){h+='<option value="'+st+'"'+((r.stage||"Enquiry")===st?" selected":"")+'>'+st+'</option>'});
 h+='</select></td>';
-h+='<td style="padding:8px 6px;font-size:10px;white-space:nowrap;color:'+_lDateCol+'">'+dateStr+(_lDays!==null?' <span style="font-size:9px">('+_lDays+'d)</span>':"")+'</td>';
+h+='<td style="padding:8px 6px;font-size:10px;white-space:nowrap;color:var(--muted)">'+createdStr+'</td>';
 h+='</tr>'});
 if(leadsData.length===0)h+='</tbody></table></div><div style="padding:30px;text-align:center;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">✅</div><div style="font-size:13px;font-weight:600">No leads found</div><div style="font-size:11px;margin-top:4px">Leads will load from the Leads table in Airtable</div></div>';
 else h+='</tbody></table></div>';
@@ -17868,10 +17992,12 @@ h+='</div>';rp.innerHTML=h}
 
 function filterLeadsList(){
 var q=(document.getElementById("leadsSearch")||{}).value||"";q=q.toLowerCase();
+var scF=leadsScFilter||"";
 document.querySelectorAll("#leadsTbody tr").forEach(function(row){
 var idx=parseInt(row.getAttribute("data-lidx"));var r=leadsData[idx];if(!r){row.style.display="none";return}
-var match=!q||(r.name||"").toLowerCase().indexOf(q)>=0||(r.suburb||"").toLowerCase().indexOf(q)>=0||(r.disabilityType||"").toLowerCase().indexOf(q)>=0||(r.scName||"").toLowerCase().indexOf(q)>=0||(r.scEmail||"").toLowerCase().indexOf(q)>=0||(r.source||"").toLowerCase().indexOf(q)>=0;
-row.style.display=match?"":"none"})}
+var matchText=!q||(r.name||"").toLowerCase().indexOf(q)>=0||(r.suburb||"").toLowerCase().indexOf(q)>=0||(r.disabilityType||"").toLowerCase().indexOf(q)>=0||(r.scName||"").toLowerCase().indexOf(q)>=0||(r.scEmail||"").toLowerCase().indexOf(q)>=0||(r.source||"").toLowerCase().indexOf(q)>=0;
+var matchSc=!scF||(r.scEmail||"").toLowerCase()===scF;
+row.style.display=(matchText&&matchSc)?"":"none"})}
 
 function updateLeadStage(idx,newStage){
 var r=leadsData[idx];if(!r)return;r.stage=newStage;
@@ -17899,7 +18025,10 @@ h+='<div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3
 if(r.refNum)h+='<div style="font-size:9px;color:var(--dim);margin-bottom:4px">'+r.refNum+'</div>';
 if(r.disabilityType)h+='<div style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:6px;background:rgba(139,92,246,.08);color:#8B5CF6;display:inline-block;margin-bottom:4px">📋 '+r.disabilityType+'</div>';
 if(_ldDateStr)h+='<div style="font-size:9px;color:'+_ldDateColor+';margin-bottom:2px">📅 Received: '+_ldDateStr+'</div>';
+var _ldCreatedStr=r.createdAt?TitusDate.format(r.createdAt):"";
+if(_ldCreatedStr&&_ldCreatedStr!==_ldDateStr)h+='<div style="font-size:9px;color:var(--muted);margin-bottom:2px">📝 Created: '+_ldCreatedStr+'</div>';
 if(r.scName)h+='<div style="font-size:9px;color:var(--muted);margin-bottom:2px">👥 SC: '+r.scName+'</div>';
+if(r.scEmail)h+='<div style="font-size:9px;color:var(--muted);margin-bottom:2px">📧 <a href="mailto:'+r.scEmail+'" style="color:var(--teal);text-decoration:none;font-size:9px">'+r.scEmail+'</a></div>';
 if(_ldDays!==null)h+='<div style="font-size:9px;color:'+_ldDateColor+';margin-bottom:2px">⏱️ '+_ldDays+' day'+(_ldDays!==1?"s":"")+ ' ago</div>';
 if(r._autoLost)h+='<div style="font-size:8px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(239,68,68,.08);color:var(--error);margin-bottom:3px">⏰ Auto-closed: Inactive 60+ days</div>';
 if(r.suburb)h+='<div style="font-size:9px;color:var(--muted);margin-bottom:2px">📍 '+r.suburb+'</div>';
