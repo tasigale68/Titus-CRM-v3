@@ -44,10 +44,17 @@ function getWeeklyReports(req, res) {
   });
 }
 
-// ═══ POST save weekly report PDF to Airtable ═══
+// ═══ POST generate or save weekly report ═══
 function postWeeklyReport(req, res) {
-  if (!env.airtable.apiKey || !env.airtable.baseId) return res.json({ error: "Airtable not configured" });
   var b = req.body || {};
+
+  // ─── Generate mode: {from, to, clients:[name]} → return report data ───
+  if (b.from && b.to && b.clients) {
+    return generateStakeholderData(req, res, b);
+  }
+
+  // ─── Save mode: {clientName, pdfBase64} → save to Airtable ───
+  if (!env.airtable.apiKey || !env.airtable.baseId) return res.json({ error: "Airtable not configured" });
   var clientName = b.clientName || "";
   var pdfBase64 = b.pdfBase64 || "";
   var filename = b.filename || ("NDIS_Report_" + Date.now() + ".pdf");
@@ -313,6 +320,241 @@ function portalData(req, res) {
       console.error("Stakeholder portal data error:", err);
       res.status(500).json({ error: "Error loading portal data" });
     });
+}
+
+// ═══ GENERATE stakeholder report data for one or more clients ═══
+function generateStakeholderData(req, res, b) {
+  var from = b.from;
+  var to = b.to;
+  var clientNames = (b.clients || []).map(function(c) { return typeof c === 'string' ? c : (c.name || c.id || ''); }).filter(function(n) { return n; });
+  if (clientNames.length === 0) return res.json({ error: 'No clients specified' });
+
+  function arrayVal(v) { return Array.isArray(v) ? v[0] || '' : v || ''; }
+  function inRange(dateStr) {
+    if (!dateStr) return true;
+    var d = dateStr.split('T')[0];
+    return d >= from && d <= to;
+  }
+
+  // Fetch all needed data in parallel
+  var companyP = apiCall('GET', '/api/company-details', req).catch(function() { return {}; });
+  var progressP = airtable.fetchAllFromTable('Progress Notes').catch(function() { return []; });
+  var incidentsP = airtable.fetchAllFromTable('IR Reports 2025').catch(function() { return []; });
+  var clientsP = airtable.fetchAllFromTable('Clients').catch(function() { return []; });
+  var contactsP = airtable.fetchAllFromTable('All Contacts').catch(function() { return []; });
+  var mediaP = airtable.fetchAllFromTable('Client Media').catch(function() { return []; });
+
+  Promise.all([companyP, progressP, incidentsP, clientsP, contactsP, mediaP]).then(function(results) {
+    var company = results[0] || {};
+    var allNotes = results[1] || [];
+    var allIncidents = results[2] || [];
+    var allClients = results[3] || [];
+    var allContacts = results[4] || [];
+    var allMedia = results[5] || [];
+
+    var participants = clientNames.map(function(clientName) {
+      var lcName = clientName.toLowerCase();
+
+      // Find client info
+      var clientRec = allClients.find(function(c) {
+        var f = c.fields || {};
+        var n = arrayVal(f['Client Name'] || f['Full Name'] || f['Name'] || '');
+        return n.toLowerCase() === lcName;
+      });
+      var contactRec = allContacts.find(function(c) {
+        var f = c.fields || {};
+        var n = arrayVal(f['Full Name'] || f['Client Name'] || f['Name'] || '');
+        return n.toLowerCase() === lcName;
+      });
+      var cf = (clientRec && clientRec.fields) || {};
+      var ctf = (contactRec && contactRec.fields) || {};
+      var info = {
+        ndisNumber: arrayVal(cf['NDIS Number'] || ctf['NDIS Number'] || ctf['NDIS Ref Number'] || ''),
+        serviceType: arrayVal(cf['SIL or CAS?'] || cf['Service Type'] || ''),
+        suburb: arrayVal(cf['Suburb'] || ctf['Suburb'] || ''),
+        supportCoordinator: arrayVal(cf['Support Coordinator'] || ctf['Support Coordinator'] || ''),
+        planExpiry: arrayVal(cf['Plan End'] || cf['Plan End Date'] || ''),
+        age: arrayVal(cf['Age'] || ctf['Age'] || '')
+      };
+
+      // Filter progress notes for this client in date range
+      var shifts = allNotes.filter(function(r) {
+        var f = r.fields || {};
+        var cn = arrayVal(f['Client Name'] || f['Client'] || '');
+        if (cn.toLowerCase() !== lcName) return false;
+        var d = f['Date'] || f['Shift Date'] || f['Session Date'] || '';
+        return inRange(d);
+      }).map(function(r) {
+        var f = r.fields || {};
+        return {
+          date: f['Date'] || f['Shift Date'] || f['Session Date'] || '',
+          worker: arrayVal(f['Staff Name'] || f['Worker'] || f['Support Worker'] || ''),
+          hours: parseFloat(f['Total Hours'] || f['Hours'] || 0) || 0,
+          activity: f['Progress Notes'] || f['Activity'] || f['Notes'] || f['Session Notes'] || ''
+        };
+      }).sort(function(a, b) { return (a.date || '').localeCompare(b.date || ''); });
+
+      // Filter incidents
+      var incidents = allIncidents.filter(function(r) {
+        var f = r.fields || {};
+        var cn = arrayVal(f['Client Name'] || f['Participant'] || '');
+        if (cn.toLowerCase() !== lcName) return false;
+        var d = f['Date'] || f['Incident Date'] || f['Date of Incident'] || '';
+        return inRange(d);
+      }).map(function(r) {
+        var f = r.fields || {};
+        return {
+          date: f['Date'] || f['Incident Date'] || f['Date of Incident'] || '',
+          category: f['Category'] || f['Incident Type'] || f['Type'] || '',
+          description: f['Description'] || f['Incident Description'] || f['Summary'] || ''
+        };
+      });
+
+      // Extract goals from progress notes (fields containing 'goal' or 'objective')
+      var goals = [];
+      shifts.forEach(function(s) {
+        if (!s.activity) return;
+        var goalFields = ['Goals', 'Goal Progress', 'Objectives', 'Goal Observation'];
+        goalFields.forEach(function(gf) {
+          if (s.activity.toLowerCase().indexOf(gf.toLowerCase()) >= 0) {
+            goals.push({ field: gf, date: s.date, content: s.activity });
+          }
+        });
+      });
+
+      // Filter photos/media
+      var photos = allMedia.filter(function(r) {
+        var f = r.fields || {};
+        var cn = arrayVal(f['Client Name'] || f['Client'] || '');
+        if (cn.toLowerCase() !== lcName) return false;
+        var d = f['Date'] || f['Upload Date'] || '';
+        return inRange(d);
+      }).map(function(r) {
+        var f = r.fields || {};
+        var attachments = f['Photo'] || f['Attachment'] || f['File'] || [];
+        if (!Array.isArray(attachments) || attachments.length === 0) return null;
+        var att = attachments[0];
+        return {
+          url: att.url || '',
+          thumbnail: (att.thumbnails && att.thumbnails.large) ? att.thumbnails.large.url : att.url || '',
+          date: f['Date'] || f['Upload Date'] || '',
+          worker: arrayVal(f['Staff Name'] || f['Uploaded By'] || '')
+        };
+      }).filter(function(p) { return p && p.url; });
+
+      // Health/behaviour concerns
+      var concerns = [];
+
+      // Build incident chart data
+      var incByDay = {};
+      incidents.forEach(function(inc) {
+        var d = (inc.date || '').split('T')[0];
+        if (d) incByDay[d] = (incByDay[d] || 0) + 1;
+      });
+      var chartIncByDay = { labels: Object.keys(incByDay).sort(), data: [] };
+      chartIncByDay.data = chartIncByDay.labels.map(function(k) { return incByDay[k]; });
+
+      var incByCat = {};
+      incidents.forEach(function(inc) {
+        var cat = inc.category || 'Other';
+        incByCat[cat] = (incByCat[cat] || 0) + 1;
+      });
+      var chartIncidents = Object.keys(incByCat).map(function(k) { return { label: k, value: incByCat[k] }; });
+
+      return {
+        name: clientName,
+        info: info,
+        shifts: shifts,
+        incidents: incidents,
+        goals: goals,
+        photos: photos,
+        concerns: concerns,
+        chartIncByDay: chartIncByDay,
+        chartIncidents: chartIncidents,
+        aiSections: {}
+      };
+    });
+
+    // Try to generate AI analysis if Anthropic key is available
+    var anthropicKey = env.anthropic && env.anthropic.apiKey;
+    if (anthropicKey && participants.length > 0) {
+      var aiPromises = participants.map(function(p) {
+        return generateAISections(anthropicKey, p, from, to).then(function(ai) {
+          p.aiSections = ai;
+        }).catch(function(e) {
+          console.warn('AI analysis failed for ' + p.name + ':', e.message);
+        });
+      });
+      Promise.all(aiPromises).then(function() {
+        res.json({ company: company, participants: participants });
+      });
+    } else {
+      res.json({ company: company, participants: participants });
+    }
+  }).catch(function(err) {
+    console.error('Stakeholder generate error:', err.message);
+    res.status(500).json({ error: err.message });
+  });
+}
+
+// Internal API call helper for company details
+function apiCall(method, path, req) {
+  var protocol = 'http';
+  var host = req.headers.host || 'localhost:3000';
+  var url = protocol + '://' + host + path;
+  var headers = { 'Content-Type': 'application/json' };
+  if (req.headers.authorization) headers['Authorization'] = req.headers.authorization;
+  if (req.headers['x-auth-token']) headers['x-auth-token'] = req.headers['x-auth-token'];
+  var cookie = req.headers.cookie;
+  if (cookie) headers['Cookie'] = cookie;
+  return fetch(url, { method: method, headers: headers }).then(function(r) {
+    return r.ok ? r.json() : {};
+  }).catch(function() { return {}; });
+}
+
+// Generate AI analysis sections using Claude API
+function generateAISections(apiKey, participant, from, to) {
+  var notesSummary = (participant.shifts || []).slice(0, 20).map(function(s) {
+    return s.date + ': ' + (s.activity || '').substring(0, 200);
+  }).join('\n');
+  var incidentsSummary = (participant.incidents || []).map(function(i) {
+    return i.date + ' [' + (i.category || '') + ']: ' + (i.description || '').substring(0, 150);
+  }).join('\n');
+
+  var prompt = 'You are writing an NDIS stakeholder report for participant "' + participant.name + '" for the period ' + from + ' to ' + to + '.\n\n'
+    + 'Progress Notes:\n' + (notesSummary || 'No progress notes in period.') + '\n\n'
+    + 'Incidents:\n' + (incidentsSummary || 'No incidents in period.') + '\n\n'
+    + 'Write 4 sections (3-5 sentences each). Return ONLY valid JSON:\n'
+    + '{"goalProgress":"...","functionalCapacity":"...","incidentRisk":"...","emergingNeeds":"..."}\n'
+    + 'goalProgress: Outcomes, goals achieved, participation.\n'
+    + 'functionalCapacity: Independence, daily living skills, functional improvements.\n'
+    + 'incidentRisk: Safety, incidents summary, risk management.\n'
+    + 'emergingNeeds: Changing needs, upcoming transitions, recommendations.';
+
+  return fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  }).then(function(r) {
+    if (!r.ok) throw new Error('Claude API ' + r.status);
+    return r.json();
+  }).then(function(data) {
+    var text = (data.content && data.content[0] && data.content[0].text) || '{}';
+    // Extract JSON from response
+    var jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try { return JSON.parse(jsonMatch[0]); } catch (e) { return {}; }
+    }
+    return {};
+  });
 }
 
 module.exports = {

@@ -46,7 +46,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .app.sb-collapsed .sb-footer{padding:8px}
 .app.sb-collapsed .sb-user{justify-content:center;padding:4px}
 .app.sb-collapsed .sb-collapse-btn svg{transform:rotate(180deg)}
-.sidebar{background:#4169E1;border-right:none;display:flex;flex-direction:column;overflow:hidden;transition:all .25s ease}
+.sidebar{background:#0f172a;border-right:none;display:flex;flex-direction:column;overflow:hidden;transition:all .25s ease}
 .sb-collapse-btn{display:flex;align-items:center;gap:8px;padding:6px 12px;margin:4px 8px;border-radius:var(--rs);cursor:pointer;font-size:11px;font-weight:600;color:rgba(255,255,255,.5);border:none;background:none;width:calc(100% - 16px);text-align:left;font-family:inherit;transition:all .12s}
 .sb-collapse-btn:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)}
 .sb-collapse-btn svg{width:16px;height:16px;flex-shrink:0;transition:transform .25s ease}
@@ -524,7 +524,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <button class="sb-sub-item sb-admin-contacts" data-view="contacts" data-subview="overview" onclick="setContactsView('overview')"><span class="sb-item-label">📊 Overview</span></button>
 <button class="sb-sub-item sb-admin-contacts" data-view="contacts" data-subview="clients" onclick="setContactsView('clients')"><span class="sb-item-label">🧑‍🦽 Clients</span></button>
 <button class="sb-sub-item sb-admin-contacts" data-view="contacts" data-subview="staff" onclick="setContactsView('staff')"><span class="sb-item-label">👷 Staff</span></button>
-<button class="sb-sub-item" id="navMyDetails" data-view="myDetails" onclick="setContactsView('myDetails')"><span class="sb-item-label">👤 My Details</span></button>
+<button class="sb-sub-item" id="navMyDetails" data-view="myDetails" onclick="setContactsView('myDetails')" style="display:none"><span class="sb-item-label">👤 My Details</span></button>
 <button class="sb-sub-item" id="navMyTraining" onclick="window.open('/lms-training.html','_blank')" style="display:none"><span class="sb-item-label">🎓 My Training</span></button>
 <button class="sb-sub-item sb-admin-contacts" data-view="contacts" data-subview="all" onclick="setContactsView('all')"><span class="sb-item-label">👥 All Contacts</span></button>
 </div>
@@ -563,8 +563,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <button class="sb-sub-item" id="navPayroll" data-view="reports" data-subview="payroll" onclick="setReportsMenuView('payroll')" style="display:none"><span class="sb-item-label">💰 Payroll</span></button>
 <button class="sb-sub-item" id="navProgressNotes" data-view="reports" data-subview="progressNotes" onclick="setReportsMenuView('progressNotes')" style="display:none"><span class="sb-item-label">📝 Progress Notes</span></button>
 <button class="sb-sub-item" id="navReceipts" data-view="reports" data-subview="receipts" onclick="setReportsMenuView('receipts')" style="display:none"><span class="sb-item-label">🧾 Receipts</span></button>
-<button class="sb-sub-item" id="navRegisters" data-view="reports" data-subview="registers" onclick="setReportsMenuView('registers')"><span class="sb-item-label">📋 Registers</span></button>
-<button class="sb-sub-item" id="navReports" data-view="reports" data-subview="reports" onclick="setReportsMenuView('reports')"><span class="sb-item-label">📊 Reports</span></button>
+<button class="sb-sub-item" id="navRegisters" data-view="reports" data-subview="registers" onclick="setReportsMenuView('registers')" style="display:none"><span class="sb-item-label">📋 Registers</span></button>
+<button class="sb-sub-item" id="navReports" data-view="reports" data-subview="reports" onclick="setReportsMenuView('reports')"><span class="sb-item-label">📊 Reports Table</span></button>
 <button class="sb-sub-item" id="navShiftcareComparison" data-view="reports" data-subview="shiftcareComparison" onclick="setReportsMenuView('shiftcareComparison')" style="display:none"><span class="sb-item-label">📊 ShiftCare Comparison</span></button>
 <button class="sb-sub-item" id="navSleepReport" data-view="reports" data-subview="sleepReport" onclick="setReportsMenuView('sleepReport')" style="display:none"><span class="sb-item-label">🌙 Sleep</span></button>
 </div>
@@ -1679,9 +1679,10 @@ var h='<div style="padding:24px;overflow-y:auto;height:100%">';
 h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">';
 h+='<div><div style="font-size:20px;font-weight:700;color:var(--text)">📊 Inbox Overview</div>';
 h+='<div style="font-size:12px;color:var(--muted)">Communication activity dashboard</div></div>';
-h+='<div style="display:flex;gap:4px">';
+h+='<div style="display:flex;gap:4px;align-items:center">';
 [7,14,30].forEach(function(d){
 h+='<button onclick="_inboxDaysFilter='+d+';renderInboxOverview()" style="padding:6px 12px;border-radius:var(--rs);border:1px solid '+(_inboxDaysFilter===d?'var(--teal)':'var(--border)')+';background:'+(_inboxDaysFilter===d?'rgba(10,147,150,.08)':'transparent')+';color:'+(_inboxDaysFilter===d?'var(--teal)':'var(--muted)')+';font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">'+d+'d</button>'});
+h+='<button id="inboxSyncBtn" onclick="syncTwilioHistory()" style="padding:6px 12px;border-radius:var(--rs);border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;margin-left:8px" title="Sync call and SMS history from Twilio">🔄 Sync Twilio</button>';
 h+='</div></div>';
 
 // Summary cards
@@ -1786,6 +1787,8 @@ h+='</tbody></table>'}
 h+='</div></div>';
 rp.innerHTML=h}
 
+
+function syncTwilioHistory(){var btn=document.getElementById("inboxSyncBtn");if(btn){btn.disabled=true;btn.textContent="⏳ Syncing..."}apiCall("POST","/api/sync-history",{days:30}).then(function(d){if(btn){btn.disabled=false;btn.textContent="🔄 Sync Twilio"}var msg="Synced "+(d.callsSynced||0)+" calls, "+(d.smsSynced||0)+" SMS";if(d.error)msg+=" ("+d.error+")";showToast(msg,"info");apiCall("GET","/api/calls").then(function(d2){calls=d2||[];buildConversations();renderInboxOverview()});apiCall("GET","/api/sms").then(function(d2){smsList=d2||[];buildConversations()})}).catch(function(e){if(btn){btn.disabled=false;btn.textContent="🔄 Sync Twilio"}showToast("Sync failed: "+e.message,"error")})}
 
 function renderCallWorkflow() {
   if(currentUser.role !== "superadmin") {
@@ -6390,6 +6393,7 @@ var allReports=[
 {icon:"📊",name:"ShiftCare Comparison",desc:"Compare ShiftCare data with Titus records",sources:["ShiftCare CSV"],output:"Table",outputCol:"#3B82F6",action:"currentView='shiftcareComparison';render()",btn:"View →",btnCol:"#3B82F6"},
 {icon:"🔍",name:"ABN Compliance",desc:"Contractor ABN validation and GST status",sources:["All Contacts"],output:"Dashboard",outputCol:"#F59E0B",action:"adminTab='abnCompliance';renderAdmin()",btn:"View →",btnCol:"#F59E0B"}
 ];
+allReports.sort(function(a,b){return a.name.localeCompare(b.name)});
 allReports.forEach(function(rpt,ri){
 var visKey=rpt.name.replace(/[^a-zA-Z]/g,"");
 var visEmails=_rptVisibility[visKey]||"";
@@ -6401,12 +6405,13 @@ html+='<td style="padding:10px 8px"><div style="display:flex;flex-wrap:wrap;gap:
 rpt.sources.forEach(function(s){html+='<span style="font-size:8px;font-weight:600;padding:2px 5px;border-radius:4px;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.12)">'+s+'</span>'});
 html+='</div></td>';
 html+='<td style="padding:10px 8px"><span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:5px;background:'+rpt.outputCol+'10;color:'+rpt.outputCol+';border:1px solid '+rpt.outputCol+'20">'+rpt.output+'</span></td>';
-if(isSuperAdmin){html+='<td style="padding:10px 8px"><input placeholder="All users" value="'+visEmails+'" onchange="saveReportVisibility(\''+visKey+'\',this.value)" style="width:120px;padding:3px 6px;font-size:9px;border:1px solid var(--border);border-radius:4px;font-family:inherit;background:var(--surface2)" title="Comma-separated emails. Leave blank = visible to all"></td>'}
+if(isSuperAdmin){var _visTitles=["Team Leader","Rosters Officer","CEO","Manager","Director"];var _visSelected=(visEmails||"").split(",").map(function(s){return s.trim()}).filter(function(s){return s});html+='<td style="padding:10px 8px"><div style="display:flex;flex-wrap:wrap;gap:3px">';_visTitles.forEach(function(t){var isOn=_visSelected.indexOf(t)>=0;html+='<span onclick="toggleReportVisTag(\''+visKey+'\',\''+t+'\')" style="font-size:8px;font-weight:600;padding:2px 6px;border-radius:4px;cursor:pointer;border:1px solid '+(isOn?'var(--teal)':'var(--border)')+';background:'+(isOn?'rgba(10,147,150,.12)':'var(--surface2)')+';color:'+(isOn?'var(--teal)':'var(--muted)')+'">'+t+'</span>'});html+='</div></td>'}
 html+='<td style="padding:10px 8px"><button onclick="'+rpt.action+'" class="btn btn-sm" style="font-size:10px;white-space:nowrap;background:'+rpt.btnCol+';color:#fff;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600">'+rpt.btn+'</button></td>';
 html+='</tr>'});
 html+='</tbody></table></div>';
 html+='</div>';rp.innerHTML=html}
 function saveReportVisibility(key,val){var v=JSON.parse(localStorage.getItem("titus_report_visibility")||"{}");v[key]=val.trim();localStorage.setItem("titus_report_visibility",JSON.stringify(v))}
+function toggleReportVisTag(key,title){var v=JSON.parse(localStorage.getItem("titus_report_visibility")||"{}");var current=(v[key]||"").split(",").map(function(s){return s.trim()}).filter(function(s){return s});var idx=current.indexOf(title);if(idx>=0)current.splice(idx,1);else current.push(title);v[key]=current.join(",");localStorage.setItem("titus_report_visibility",JSON.stringify(v));renderReportsMenu()}
 
 function renderCustomReport(){
   var rp=document.getElementById("rightPanel");
@@ -8824,12 +8829,13 @@ html+='<div style="padding:14px 16px;background:#fff;border:1px solid #E8EBF0;bo
 html+='<div style="font-size:12px;font-weight:700;color:#111;margin-bottom:4px">About This Report</div>';
 html+='This report is structured to support NDIA plan review decision-making. Each participant has an individual report section with evidence across four domains: <strong>(1) Participant Outcomes & Goal Progress</strong>, <strong>(2) Functional Capacity & Independence Metrics</strong>, <strong>(3) Incident, Risk & Safeguarding</strong>, and <strong>(4) Emerging Needs & Life Stage Transitions</strong>. All analysis is generated from factual service delivery records. Charts and photographic evidence are included where available.</div>';
 
-if(!data.clients||data.clients.length===0){
+var _shClients=data.clients||data.participants||[];
+if(!_shClients||_shClients.length===0){
 html+='<div style="text-align:center;padding:40px;color:#6B7280">No participant data found for this period.</div>';
 }else{
 
 // ═══ INDIVIDUAL CLIENT REPORTS ═══
-data.clients.forEach(function(c,cIdx){
+_shClients.forEach(function(c,cIdx){
 html+='<div class="client-page" style="padding:24px;background:#fff;border:1px solid #E8EBF0;border-radius:14px;margin-bottom:28px">';
 
 // ── Client Header ──
@@ -22118,6 +22124,7 @@ rp.innerHTML='<div style="display:flex;align-items:center;justify-content:center
 apiCall("GET","/api/lms/courses").then(function(d){
 courseLibData=d||[];
 renderCourseLibContent(rp);
+loadStaffEnrollments();
 }).catch(function(){courseLibData=[];renderCourseLibContent(rp)});
 }
 function renderCourseLibContent(rp){
@@ -22128,8 +22135,25 @@ var h='<div style="padding:24px;overflow-y:auto;height:100%">';
 h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">';
 h+='<div><div style="font-size:20px;font-weight:700;color:var(--text)">📚 Course Library</div><div style="font-size:12px;color:var(--muted)">'+courseLibData.length+' courses</div></div>';
 h+='<div style="display:flex;gap:8px"><input id="courseLibSearchInput" placeholder="Search courses..." value="'+courseLibSearch+'" oninput="courseLibSearch=this.value;renderCourseLibContent(document.getElementById(\'rightPanel\'))" style="padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);font-size:12px;color:var(--text);font-family:inherit;width:200px">';
+h+='<button onclick="courseLibTab=courseLibTab===\'progress\'?\'courses\':\'progress\';renderCourseLibContent(document.getElementById(\'rightPanel\'))" style="padding:8px 16px;background:'+(window.courseLibTab==='progress'?'var(--teal)':'var(--surface)')+';color:'+(window.courseLibTab==='progress'?'#fff':'var(--text)')+';border:1px solid '+(window.courseLibTab==='progress'?'var(--teal)':'var(--border)')+';border-radius:var(--rs);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">'+(window.courseLibTab==='progress'?'📚 Courses':'📊 Staff Progress')+'</button>';
 if(canEdit("course_library"))h+='<button onclick="showCourseModal()" style="padding:8px 16px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">+ Add Course</button>';
 h+='</div></div>';
+
+// Enrollment section
+h+='<div style="padding:14px;background:rgba(10,147,150,.04);border:1px solid rgba(10,147,150,.1);border-radius:var(--r);margin-bottom:20px">';
+h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px">📋 Enroll Staff Member</div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end">';
+h+='<div><label style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:4px">Select Staff (Employee / Contractor)</label><select id="clEnrollStaff" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface);cursor:pointer"><option value="">Choose staff member...</option>';
+contacts.forEach(function(c){var ct=(c.contactType||"").toLowerCase();if(ct.indexOf("employee")>=0||ct.indexOf("contractor")>=0||ct.indexOf("independant")>=0){h+='<option value="'+(c.email||c.id||"")+'">'+c.name+" — "+(c.contactType||"")+"</option>"}});
+h+='</select></div>';
+h+='<div><label style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:4px">Select Course</label><select id="clEnrollCourse" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface);cursor:pointer"><option value="">Choose course...</option>';
+filtered.forEach(function(c){h+='<option value="'+(c.id||"")+'">'+c.name+"</option>"});
+h+='</select></div>';
+h+='<button onclick="enrollStaffInCourse()" style="padding:10px 16px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap">Enroll →</button>';
+h+='</div><div id="clEnrollMsg" style="margin-top:6px;font-size:11px"></div></div>';
+
+// ─── Progress tab vs Courses tab ───
+if(window.courseLibTab==="progress"){h=renderStaffProgress(h);h+='</div>';rp.innerHTML=h;return}
 
 if(filtered.length===0){
 h+='<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">📚</div><div style="font-size:14px;font-weight:600">'+(courseLibSearch?"No courses match your search":"No courses yet")+'</div></div>';
@@ -22196,6 +22220,53 @@ showToast("Course deleted","success");
 renderCourseLibrary();
 }).catch(function(e){showToast("Error: "+e.message,"error")});
 }
+
+// ═══ LMS Staff Progress & Enrollment ═══
+var courseLibTab="courses";
+var staffEnrollments=[];
+function enrollStaffInCourse(){
+var staff=document.getElementById("clEnrollStaff");var course=document.getElementById("clEnrollCourse");var msg=document.getElementById("clEnrollMsg");
+if(!staff||!staff.value||!course||!course.value){if(msg)msg.innerHTML='<span style="color:var(--red)">Select both a staff member and a course</span>';return}
+apiCall("POST","/api/lms/enrollments-v2",{staffEmail:staff.value,staffName:staff.options[staff.selectedIndex].text.split(" — ")[0],courseId:course.value,courseName:course.options[course.selectedIndex].text}).then(function(d){
+if(msg)msg.innerHTML='<span style="color:var(--green)">Enrolled successfully!</span>';
+staff.value="";course.value="";
+loadStaffEnrollments()
+}).catch(function(e){if(msg)msg.innerHTML='<span style="color:var(--red)">'+e.message+'</span>'})}
+function loadStaffEnrollments(){
+apiCall("GET","/api/lms/enrollments-v2").then(function(d){staffEnrollments=(d||[]).map(function(e){return{id:e.id,staffName:e.staffName||"",staffEmail:e.staffEmail||"",courseName:e.course||"",status:(e.status||"Assigned").toLowerCase().replace(/\s+/g,"_"),progress:e.progressPct||0,enrolledAt:e.assignedDate||"",completedAt:e.completedDate||""}});if(courseLibTab==="progress")renderCourseLibContent(document.getElementById("rightPanel"))}).catch(function(){staffEnrollments=[]})}
+function renderStaffProgress(h){
+if(staffEnrollments.length===0){h+='<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">📊</div><div style="font-size:14px;font-weight:600">No enrollments yet</div><div style="font-size:12px;margin-top:4px">Enroll staff members into courses using the form above</div></div>';return h}
+// Group by staff
+var byStaff={};staffEnrollments.forEach(function(e){var k=e.staffName||e.staffEmail||"Unknown";if(!byStaff[k])byStaff[k]={name:k,email:e.staffEmail||"",enrollments:[]};byStaff[k].enrollments.push(e)});
+var staffList=Object.values(byStaff).sort(function(a,b){return a.name.localeCompare(b.name)});
+h+='<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px">📊 Staff Training Progress ('+staffList.length+' staff, '+staffEnrollments.length+' enrollments)</div>';
+staffList.forEach(function(s){
+var total=s.enrollments.length;var completed=s.enrollments.filter(function(e){return e.status==="completed"}).length;var inProgress=s.enrollments.filter(function(e){return e.status==="in_progress"}).length;var pct=total>0?Math.round(completed/total*100):0;
+h+='<div style="padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px">';
+h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+h+='<div><span style="font-size:13px;font-weight:700;color:var(--text)">'+s.name+'</span>';
+if(s.email)h+=' <span style="font-size:10px;color:var(--muted)">'+s.email+'</span>';
+h+='</div><div style="display:flex;gap:6px">';
+h+='<span style="font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(16,185,129,.08);color:#10B981;border:1px solid rgba(16,185,129,.15)">'+completed+' completed</span>';
+if(inProgress>0)h+='<span style="font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(59,130,246,.08);color:#3B82F6;border:1px solid rgba(59,130,246,.15)">'+inProgress+' in progress</span>';
+h+='</div></div>';
+h+='<div style="background:var(--border);border-radius:4px;height:6px;overflow:hidden;margin-bottom:8px"><div style="height:100%;width:'+pct+'%;background:var(--teal);border-radius:4px;transition:width .3s"></div></div>';
+h+='<table style="width:100%;border-collapse:collapse;font-size:11px"><tbody>';
+s.enrollments.forEach(function(e){
+var stCol=e.status==="completed"?"#10B981":e.status==="in_progress"?"#3B82F6":"var(--muted)";
+var stLabel=e.status==="completed"?"Completed":e.status==="in_progress"?"In Progress":"Not Started";
+h+='<tr style="border-bottom:1px solid var(--border)">';
+h+='<td style="padding:6px 8px;font-weight:600;color:var(--text)">'+(e.courseName||"Course")+'</td>';
+h+='<td style="padding:6px 8px"><span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:'+stCol+'12;color:'+stCol+'">'+stLabel+'</span></td>';
+h+='<td style="padding:6px 8px;color:var(--muted);font-size:10px">'+(e.progress||0)+'% complete</td>';
+h+='<td style="padding:6px 8px;color:var(--muted);font-size:10px">'+(e.completedAt?TitusDate.format(e.completedAt):(e.enrolledAt?'Enrolled '+TitusDate.format(e.enrolledAt):""))+'</td>';
+h+='<td style="padding:6px 8px;text-align:right">';
+if(e.status!=="completed")h+='<button onclick="updateEnrollmentStatus(\''+e.id+'\',\'completed\')" style="padding:2px 8px;background:rgba(16,185,129,.06);color:#10B981;border:1px solid rgba(16,185,129,.15);border-radius:4px;font-size:9px;font-weight:600;cursor:pointer;font-family:inherit">Mark Complete</button>';
+h+='</td></tr>'});
+h+='</tbody></table></div>'});
+return h}
+function updateEnrollmentStatus(id,status){
+apiCall("PATCH","/api/lms/enrollments-v2/"+id,{status:status==="completed"?"Completed":"In Progress",progressPct:status==="completed"?100:50}).then(function(){loadStaffEnrollments()}).catch(function(e){showToast("Error: "+e.message,"error")})}
 
 // ═══════════════════════════════════════════════
 // COMPLIANCE REPORTS MODULE

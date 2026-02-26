@@ -6,13 +6,17 @@ var env = require('../../config/env');
 
 var router = express.Router();
 
+function hasDB() {
+  return (env.airtable.apiKey && env.airtable.baseId) || (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY);
+}
+
 router.use(authenticate);
 
 // ═══════════════════════════════════════════════════════════
 //  LMS — Course List (v1, from /api/lms/courses)
 // ═══════════════════════════════════════════════════════════
 router.get('/courses', function (req, res) {
-  if (!env.airtable.apiKey || !env.airtable.baseId) return res.json([]);
+  if (!hasDB()) return res.json([]);
   airtable.fetchAllFromTable('Course List').then(function (records) {
     if (records && records.length > 0) {
       console.log('LMS Course fields:', Object.keys(records[0].fields || {}).join(', '));
@@ -641,7 +645,7 @@ router.delete('/questions/:id', requireRole('superadmin', 'admin'), function (re
 
 // GET /api/lms/enrollments-v2 — list enrollments with filters
 router.get('/enrollments-v2', function (req, res) {
-  if (!env.airtable.apiKey || !env.airtable.baseId) return res.json([]);
+  if (!hasDB()) return res.json([]);
   var filters = [];
   if (req.query.course) filters.push("{Course}='" + req.query.course + "'");
   if (req.query.status) filters.push("{Status}='" + req.query.status + "'");
@@ -683,7 +687,7 @@ router.get('/enrollments-v2', function (req, res) {
 
 // POST /api/lms/enrollments-v2 — create enrollment
 router.post('/enrollments-v2', function (req, res) {
-  if (!env.airtable.apiKey || !env.airtable.baseId) return res.status(500).json({ error: 'Airtable not configured' });
+  if (!hasDB()) return res.status(500).json({ error: 'Database not configured' });
   var staffEmail = req.body.staffEmail;
   var staffName = req.body.staffName || '';
   var courseId = req.body.courseId;
@@ -756,7 +760,7 @@ router.post('/enrollments-v2/bulk', requireRole('superadmin', 'admin'), function
 
 // PATCH /api/lms/enrollments-v2/:id — update enrollment progress
 router.patch('/enrollments-v2/:id', function (req, res) {
-  if (!env.airtable.apiKey || !env.airtable.baseId) return res.status(500).json({ error: 'Airtable not configured' });
+  if (!hasDB()) return res.status(500).json({ error: 'Database not configured' });
   var fields = {};
   if (req.body.status) fields['Status'] = req.body.status;
   if (req.body.progressPct !== undefined) fields['Progress Percentage'] = parseFloat(req.body.progressPct);

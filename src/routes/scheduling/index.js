@@ -560,7 +560,9 @@ router.get('/unmatched', function(req, res) {
 //  POST /api/scheduling/import — ShiftCare CSV bulk import
 // ═══════════════════════════════════════════════════════════
 router.post('/import', function(req, res) {
-  if (!env.airtable.apiKey || !env.airtable.baseId) return res.json({ created: 0, error: "Airtable not configured" });
+  var hasAirtable = env.airtable.apiKey && env.airtable.baseId;
+  var hasSupabase = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY;
+  if (!hasAirtable && !hasSupabase) return res.json({ created: 0, error: "Database not configured" });
   var shifts = req.body.shifts;
   if (!shifts || !Array.isArray(shifts) || shifts.length === 0) return res.json({ created: 0 });
   console.log("[IMPORT] Received " + shifts.length + " shifts -- checking for duplicates...");
@@ -667,7 +669,9 @@ router.post('/import', function(req, res) {
 //  DELETE /api/scheduling/clear-imported — Delete roster records with blank Shift Status
 // ═══════════════════════════════════════════════════════════
 router.delete('/clear-imported', function(req, res) {
-  if (!env.airtable.apiKey || !env.airtable.baseId) return res.json({ deleted: 0, error: "Airtable not configured" });
+  var hasAirtable = env.airtable.apiKey && env.airtable.baseId;
+  var hasSupabase = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY;
+  if (!hasAirtable && !hasSupabase) return res.json({ deleted: 0, error: "Database not configured" });
   console.log("[CLEAR] Fetching roster records with blank Shift Status...");
 
   airtable.fetchAllFromTable("Rosters 2025").then(function(records) {

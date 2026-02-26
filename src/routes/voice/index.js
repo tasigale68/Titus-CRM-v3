@@ -1173,6 +1173,43 @@ router.post('/transcripts/sync', authenticate, function(req, res) {
   });
 });
 
+// POST /api/voice/sync-history — Sync call + SMS history from Twilio
+router.post('/sync-history', authenticate, function(req, res) {
+  if (!twilioClient) return res.status(500).json({ error: "Twilio not configured" });
+  var days = parseInt(req.body.days) || 30;
+  var after = new Date(Date.now() - days * 86400000);
+  console.log("[SYNC] Syncing Twilio history for last " + days + " days");
+
+  var callsSync = 0;
+  var smsSync = 0;
+
+  twilioClient.calls.list({ limit: 200, startTimeAfter: after }).then(function(twilCalls) {
+    twilCalls.forEach(function(tc) {
+      var existing = db.prepare("SELECT id FROM calls WHERE sid = ?").get(tc.sid);
+      if (!existing) {
+        var type = tc.direction === "inbound" ? "inbound" : "outbound";
+        db.prepare("INSERT OR IGNORE INTO calls (sid, type, from_number, to_number, status, duration, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)").run(tc.sid, type, tc.from, tc.to, tc.status, tc.duration || 0, tc.dateCreated.toISOString());
+        callsSync++;
+      }
+    });
+    return twilioClient.messages.list({ limit: 500, dateSentAfter: after });
+  }).then(function(msgs) {
+    msgs.forEach(function(m) {
+      var existing = db.prepare("SELECT id FROM sms_messages WHERE sid = ?").get(m.sid);
+      if (!existing) {
+        var direction = m.direction.indexOf("outbound") >= 0 ? "outbound" : "inbound";
+        db.prepare("INSERT OR IGNORE INTO sms_messages (sid, direction, from_number, to_number, body, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(m.sid, direction, m.from, m.to, m.body || "", m.dateSent ? m.dateSent.toISOString() : m.dateCreated.toISOString());
+        smsSync++;
+      }
+    });
+    console.log("[SYNC] Synced " + callsSync + " calls, " + smsSync + " SMS from Twilio");
+    res.json({ success: true, callsSynced: callsSync, smsSynced: smsSync });
+  }).catch(function(err) {
+    console.error("[SYNC] Twilio sync error:", err.message);
+    res.json({ success: true, callsSynced: callsSync, smsSynced: smsSync, error: err.message });
+  });
+});
+
 // POST /api/voice/transcripts/fetch/:sid
 router.post('/transcripts/fetch/:sid', authenticate, function(req, res) {
   var io = getIO(req);

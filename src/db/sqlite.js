@@ -352,6 +352,43 @@ function migrate() {
       used INTEGER DEFAULT 0,
       reset_token TEXT DEFAULT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS chat_conversations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT DEFAULT '',
+      type TEXT DEFAULT 'direct',
+      created_by INTEGER,
+      created_by_name TEXT,
+      created_by_email TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS chat_members (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      conversation_id INTEGER NOT NULL,
+      user_email TEXT NOT NULL,
+      user_name TEXT DEFAULT '',
+      joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      last_read_at DATETIME,
+      FOREIGN KEY(conversation_id) REFERENCES chat_conversations(id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_chat_members_conv ON chat_members(conversation_id);
+    CREATE INDEX IF NOT EXISTS idx_chat_members_email ON chat_members(user_email);
+
+    CREATE TABLE IF NOT EXISTS chat_messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      conversation_id INTEGER NOT NULL,
+      sender_email TEXT NOT NULL,
+      sender_name TEXT DEFAULT '',
+      content TEXT DEFAULT '',
+      attachments TEXT DEFAULT '[]',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(conversation_id) REFERENCES chat_conversations(id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_chat_messages_conv ON chat_messages(conversation_id);
   `);
 }
 
