@@ -518,7 +518,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <button class="sb-sub-item" id="navCallWorkflow" data-view="callWorkflow" onclick="setInboxView('callWorkflow')" style="display:none"><span class="sb-item-label">🔀 Call Workflow</span></button>
 <button class="sb-sub-item" id="navSupportTickets" data-view="supportTickets" onclick="setInboxView('supportTickets')" style="display:none"><span class="sb-item-label">🎫 Support Tickets</span></button>
 </div>
-<button class="sb-item" data-view="messenger" onclick="window.open('/messenger/','_blank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="sb-item-label">Messenger</span></button>
+<button class="sb-item" data-view="messenger" onclick="openMessengerPopup()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="sb-item-label">Messenger</span></button>
 <button class="sb-item" data-view="contacts" onclick="toggleContactsMenu(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="sb-item-label">Contacts</span><span class="sb-arrow sb-item-label">▾</span></button>
 <div class="sb-sub" id="contactsSub">
 <button class="sb-sub-item sb-admin-contacts" data-view="contacts" data-subview="overview" onclick="setContactsView('overview')"><span class="sb-item-label">📊 Overview</span></button>
@@ -547,9 +547,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <button class="sb-sub-item" data-view="rosters" data-subview="scheduler" onclick="setRostersView('scheduler')"><span class="sb-item-label">📅 Scheduler</span></button>
 <button class="sb-sub-item" data-view="rosters" data-subview="accommodation" onclick="setRostersView('accommodation')"><span class="sb-item-label">🏠 Accommodation</span></button>
 <button class="sb-sub-item" data-view="rosters" data-subview="clientBudget" onclick="setRostersView('clientBudget')"><span class="sb-item-label">💰 Client Budget</span></button>
-<button class="sb-sub-item" id="navRoc" data-view="rosters" data-subview="roc" onclick="setRostersView('roc')" style="display:none"><span class="sb-item-label">📊 Roster of Care</span></button>
 <button class="sb-sub-item" id="navTimeAttendance" data-view="rosters" data-subview="timeAttendance" onclick="setRostersView('timeAttendance')" style="display:none"><span class="sb-item-label">📍 Time & Attendance</span></button>
-<button class="sb-sub-item" id="navRosterCalc" onclick="window.open('/roster-calculator.html','_blank')" style="display:none"><span class="sb-item-label">🧮 Roster Calculator</span></button>
 </div>
 <button class="sb-item" data-view="reports" onclick="toggleReportsMenu(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg><span class="sb-item-label">Reports</span><span class="sb-arrow sb-item-label">▾</span></button>
 <div class="sb-sub" id="reportsSub">
@@ -565,13 +563,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <button class="sb-sub-item" id="navPayroll" data-view="reports" data-subview="payroll" onclick="setReportsMenuView('payroll')" style="display:none"><span class="sb-item-label">💰 Payroll</span></button>
 <button class="sb-sub-item" id="navProgressNotes" data-view="reports" data-subview="progressNotes" onclick="setReportsMenuView('progressNotes')" style="display:none"><span class="sb-item-label">📝 Progress Notes</span></button>
 <button class="sb-sub-item" id="navReceipts" data-view="reports" data-subview="receipts" onclick="setReportsMenuView('receipts')" style="display:none"><span class="sb-item-label">🧾 Receipts</span></button>
-<button class="sb-sub-item" id="navReconciliation" data-view="reports" data-subview="reconciliation" onclick="setReportsMenuView('reconciliation')" style="display:none"><span class="sb-item-label">🔄 Reconciliation</span></button>
 <button class="sb-sub-item" id="navRegisters" data-view="reports" data-subview="registers" onclick="setReportsMenuView('registers')"><span class="sb-item-label">📋 Registers</span></button>
 <button class="sb-sub-item" id="navReports" data-view="reports" data-subview="reports" onclick="setReportsMenuView('reports')"><span class="sb-item-label">📊 Reports</span></button>
 <button class="sb-sub-item" id="navShiftcareComparison" data-view="reports" data-subview="shiftcareComparison" onclick="setReportsMenuView('shiftcareComparison')" style="display:none"><span class="sb-item-label">📊 ShiftCare Comparison</span></button>
 <button class="sb-sub-item" id="navSleepReport" data-view="reports" data-subview="sleepReport" onclick="setReportsMenuView('sleepReport')" style="display:none"><span class="sb-item-label">🌙 Sleep</span></button>
-<button class="sb-sub-item sb-admin-contacts" id="navInvoiceMgmt" onclick="window.open('/invoices.html','_blank')" style="display:none"><span class="sb-item-label">🧾 Invoice Management</span></button>
-<button class="sb-sub-item" id="navMyInvoices" onclick="window.open('/invoices.html','_blank')" style="display:none"><span class="sb-item-label">💵 My Invoices</span></button>
 </div>
 
 <button class="sb-item phase2-nav" id="navIntelligence" data-view="intelligence" onclick="toggleIntelMenu(event)" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.58-3.25 3.93L12 22"/><path d="M8 6a4 4 0 0 1 8 0"/><circle cx="12" cy="6" r="1"/></svg><span class="sb-item-label">Intelligence</span><span class="sb-arrow sb-item-label">▾</span></button>
@@ -864,7 +859,6 @@ var PERM_KEYS=[
 // ── Role definitions & defaults ──
 var ROLE_DEFS=[
 {key:"superadmin",label:"Super Admin",color:"#F59E0B"},
-{key:"director",label:"Director",color:"#8B5CF6"},
 {key:"team_leader",label:"Team Leader",color:"#3B82F6"},
 {key:"roster_officer",label:"Roster Officer",color:"#10B981"},
 {key:"support_worker",label:"Support Worker",color:"#6366F1"},
@@ -874,17 +868,6 @@ function buildRoleDefaults(role){
 var p={};
 if(role==="superadmin"){
 PERM_KEYS.forEach(function(pk){p[pk.key]="edit"});
-}else if(role==="director"){
-PERM_KEYS.forEach(function(pk){p[pk.key]=pk.key==="admin"?"none":"edit"});
-// Director: these are superadmin-only by default (DO NOT REMOVE)
-var dirHiddenKeys=["incidentRegister","continuousImprovement","progressNotes"];
-dirHiddenKeys.forEach(function(k){p[k]="none"});
-// Director: receipts hidden, invoices hidden, audit log view-only
-p["receipts"]="none";
-p["auditLog"]="view";
-p["invoice_management"]="none";
-p["my_invoices"]="none";
-p["knowledgeBase"]="view";
 }else if(role==="team_leader"||role==="admin"){
 PERM_KEYS.forEach(function(pk){p[pk.key]=pk.key==="admin"?"none":"edit"});
 var hiddenModuleKeys=["supportTickets","incidentRegister","continuousImprovement","progressNotes","aiRoster","newsletters","loginActivity","cancellations","handover","payroll","sleepReport","reconciliation","kmReport","automations","complianceReports","shiftcareComparison","receipts","invoice_management","my_invoices"];
@@ -1307,6 +1290,118 @@ function renderConvThread(){if(convFilter==="chats"){renderChatThreadDetail();re
 // ═══════════════════════════════════════════════════════════
 // TITUS MESSENGER — Inline Chats Tab (Conversations View)
 // ═══════════════════════════════════════════════════════════
+// ═══ MESSENGER POPUP ═══
+var _messengerOpen=false;
+var _messengerMessages=[];
+var _messengerActiveConv=null;
+function openMessengerPopup(){
+if(_messengerOpen){var el=document.getElementById("messengerPopup");if(el)el.remove();_messengerOpen=false;return}
+_messengerOpen=true;
+var staffContacts=contacts.filter(function(c){var t=(c.contactType||"").toLowerCase();return t.indexOf("employee")>=0||t.indexOf("contractor")>=0||t.indexOf("independant")>=0});
+var popup=document.createElement("div");popup.id="messengerPopup";
+popup.style.cssText="position:fixed;bottom:20px;right:20px;width:380px;height:520px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.2);z-index:9998;display:flex;flex-direction:column;overflow:hidden";
+var h='<div style="padding:12px 16px;background:linear-gradient(135deg,#1e3a5f,#0A9396);color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">';
+h+='<div style="font-size:14px;font-weight:700">💬 Messenger</div>';
+h+='<div style="display:flex;gap:6px"><button onclick="openNewMsgModal()" style="padding:4px 10px;font-size:10px;font-weight:600;border:none;background:rgba(255,255,255,.2);color:#fff;border-radius:6px;cursor:pointer;font-family:inherit">+ New</button>';
+h+='<button onclick="openGroupMsgModal()" style="padding:4px 10px;font-size:10px;font-weight:600;border:none;background:rgba(255,255,255,.2);color:#fff;border-radius:6px;cursor:pointer;font-family:inherit">Group</button>';
+h+='<button onclick="document.getElementById(\'messengerPopup\').remove();_messengerOpen=false" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0 4px">×</button></div></div>';
+h+='<div id="msgConvList" style="flex:1;overflow-y:auto;padding:8px"></div>';
+popup.innerHTML=h;
+document.body.appendChild(popup);
+loadMessengerConversations()
+}
+function loadMessengerConversations(){
+apiCall("GET","/api/chat/conversations").then(function(data){
+var convs=Array.isArray(data)?data:[];
+var list=document.getElementById("msgConvList");if(!list)return;
+if(convs.length===0){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px">No conversations yet.<br>Click <b>+ New</b> to start one.</div>';return}
+var h="";convs.forEach(function(c){
+var lastMsg=(c.lastMessage||c.last_message||"");
+var timeStr=c.lastMessageTime||c.updated_at||"";
+if(timeStr)timeStr=TitusDate.formatDayDateTime(timeStr);
+h+='<div onclick="openMsgThread(\''+c.id+'\')" style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;display:flex;align-items:center;gap:10px" onmouseover="this.style.background=\'var(--surface2)\'" onmouseout="this.style.background=\'none\'">';
+h+='<div style="width:36px;height:36px;border-radius:50%;background:rgba(10,147,150,.1);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">'+getInitials(c.title||c.name||"?")+'</div>';
+h+='<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(c.title||c.name||"Chat")+'</span>';
+h+='<span style="font-size:9px;color:var(--muted);white-space:nowrap;margin-left:4px">'+timeStr+'</span></div>';
+h+='<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+lastMsg+'</div></div>';
+if(c.unreadCount>0)h+='<span style="background:var(--teal);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;flex-shrink:0">'+c.unreadCount+'</span>';
+h+='</div>'});
+list.innerHTML=h
+}).catch(function(){var list=document.getElementById("msgConvList");if(list)list.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:11px">Could not load conversations</div>'})}
+function openMsgThread(convId){
+_messengerActiveConv=convId;
+var popup=document.getElementById("messengerPopup");if(!popup)return;
+apiCall("GET","/api/chat/conversations/"+convId).then(function(data){
+var msgs=data.messages||data||[];
+var title=data.title||data.name||"Chat";
+var h='<div style="padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0">';
+h+='<button onclick="loadMessengerConversations();document.getElementById(\'msgThreadView\').remove();document.getElementById(\'msgConvList\').style.display=\'block\'" style="background:none;border:none;font-size:16px;cursor:pointer;color:var(--muted)">←</button>';
+h+='<span style="font-size:13px;font-weight:700;color:var(--text)">'+title+'</span></div>';
+h+='<div id="msgThreadMsgs" style="flex:1;overflow-y:auto;padding:12px">';
+(Array.isArray(msgs)?msgs:[]).forEach(function(m){
+var isMe=m.sender_email===(currentUser&&currentUser.email);
+var timeStr=m.created_at?TitusDate.formatDayDateTime(m.created_at):"";
+h+='<div style="display:flex;flex-direction:column;align-items:'+(isMe?"flex-end":"flex-start")+';margin-bottom:8px">';
+h+='<div style="font-size:9px;color:var(--muted);margin-bottom:2px">'+(m.sender_name||"")+(timeStr?" · "+timeStr:"")+'</div>';
+h+='<div style="max-width:80%;padding:8px 12px;border-radius:12px;font-size:12px;background:'+(isMe?"var(--teal)":"var(--surface2)")+';color:'+(isMe?"#fff":"var(--text)")+'">'+(m.content||"")+'</div>';
+if(m.attachments&&m.attachments.length>0){m.attachments.forEach(function(a){h+='<a href="'+a.url+'" target="_blank" style="font-size:10px;color:var(--teal);margin-top:2px">📎 '+a.name+'</a>'})}
+h+='</div>'});
+h+='</div>';
+// Compose area
+h+='<div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0">';
+h+='<label style="cursor:pointer;display:flex;align-items:center"><input type="file" id="msgAttachInput" style="display:none" multiple onchange="msgAttachFiles(this.files)"><span style="font-size:18px" title="Attach">📎</span></label>';
+h+='<input id="msgComposeInput" placeholder="Type a message..." style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:20px;font-size:12px;font-family:inherit;background:var(--surface);outline:none" onkeydown="if(event.key===\'Enter\')sendMsgFromPopup(\''+convId+'\')">';
+h+='<button onclick="sendMsgFromPopup(\''+convId+'\')" style="padding:6px 12px;font-size:12px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:20px;cursor:pointer;font-family:inherit">Send</button></div>';
+var convList=document.getElementById("msgConvList");if(convList)convList.style.display="none";
+var threadDiv=document.createElement("div");threadDiv.id="msgThreadView";threadDiv.style.cssText="display:flex;flex-direction:column;flex:1;overflow:hidden";
+threadDiv.innerHTML=h;popup.appendChild(threadDiv);
+setTimeout(function(){var area=document.getElementById("msgThreadMsgs");if(area)area.scrollTop=area.scrollHeight},100);
+// Mark as read
+apiCall("POST","/api/chat/conversations/"+convId+"/read",{}).catch(function(){})
+}).catch(function(){showToast("Could not load thread","error")})}
+function sendMsgFromPopup(convId){
+var input=document.getElementById("msgComposeInput");if(!input||!input.value.trim())return;
+var content=input.value.trim();input.value="";
+var attachInput=document.getElementById("msgAttachInput");
+if(attachInput&&attachInput.files&&attachInput.files.length>0){
+var fd=new FormData();fd.append("conversation_id",convId);fd.append("content",content);
+for(var i=0;i<attachInput.files.length;i++)fd.append("files",attachInput.files[i]);
+fetch("/api/chat/attachment",{method:"POST",headers:{"Authorization":"Bearer "+token},body:fd}).then(function(){openMsgThread(convId)}).catch(function(){showToast("Send failed","error")});attachInput.value="";return}
+apiCall("POST","/api/chat/message",{conversation_id:convId,content:content}).then(function(){openMsgThread(convId)}).catch(function(){showToast("Send failed","error")})}
+function msgAttachFiles(files){if(files&&files.length>0)showToast(files.length+" file(s) attached — send to upload","info")}
+function openNewMsgModal(){
+var staffContacts=contacts.filter(function(c){var t=(c.contactType||"").toLowerCase();return t.indexOf("employee")>=0||t.indexOf("contractor")>=0||t.indexOf("independant")>=0});
+var h='<div style="padding:16px"><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">New Message</div>';
+h+='<input id="msgNewSearch" placeholder="Search staff..." oninput="filterMsgStaff()" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface);outline:none;margin-bottom:8px;box-sizing:border-box">';
+h+='<div id="msgStaffList" style="max-height:300px;overflow-y:auto">';
+staffContacts.forEach(function(c){h+='<div onclick="startDirectMsg(\''+c.email+'\')" style="padding:8px 10px;border-bottom:1px solid var(--border);cursor:pointer;font-size:12px;display:flex;align-items:center;gap:8px" onmouseover="this.style.background=\'var(--surface2)\'" onmouseout="this.style.background=\'none\'">';
+h+='<div style="width:28px;height:28px;border-radius:50%;background:rgba(10,147,150,.1);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">'+getInitials(c.name)+'</div>';
+h+='<div><div style="font-weight:600;color:var(--text)">'+c.name+'</div><div style="font-size:10px;color:var(--muted)">'+(c.contactType||"")+'</div></div></div>'});
+h+='</div></div>';
+var list=document.getElementById("msgConvList");if(list)list.innerHTML=h}
+function filterMsgStaff(){var q=(document.getElementById("msgNewSearch")||{}).value.toLowerCase();document.querySelectorAll("#msgStaffList > div").forEach(function(el){el.style.display=el.textContent.toLowerCase().indexOf(q)>=0?"":"none"})}
+function startDirectMsg(email){
+apiCall("POST","/api/chat/conversations/direct",{recipientEmail:email}).then(function(d){
+if(d&&d.id)openMsgThread(d.id);else if(d&&d.conversation_id)openMsgThread(d.conversation_id);else loadMessengerConversations()
+}).catch(function(){showToast("Could not start conversation","error")})}
+function openGroupMsgModal(){
+var staffContacts=contacts.filter(function(c){var t=(c.contactType||"").toLowerCase();return t.indexOf("employee")>=0||t.indexOf("contractor")>=0||t.indexOf("independant")>=0});
+var h='<div style="padding:16px"><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px">New Group Message</div>';
+h+='<input id="msgGroupName" placeholder="Group name..." style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface);outline:none;margin-bottom:8px;box-sizing:border-box">';
+h+='<div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Select Members</div>';
+h+='<div style="max-height:250px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px">';
+staffContacts.forEach(function(c){h+='<label style="display:flex;align-items:center;gap:8px;padding:6px 10px;cursor:pointer;font-size:11px"><input type="checkbox" value="'+c.email+'" class="grpMemberCb"> '+c.name+' <span style="color:var(--muted);font-size:9px">('+(c.contactType||"")+')</span></label>'});
+h+='</div>';
+h+='<button onclick="createGroupMsg()" style="width:100%;padding:8px;font-size:12px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit">Create Group</button></div>';
+var list=document.getElementById("msgConvList");if(list)list.innerHTML=h}
+function createGroupMsg(){
+var name=(document.getElementById("msgGroupName")||{}).value||"";
+var members=[];document.querySelectorAll(".grpMemberCb:checked").forEach(function(cb){members.push(cb.value)});
+if(members.length<2){showToast("Select at least 2 members","error");return}
+apiCall("POST","/api/chat/conversations",{title:name||"Group Chat",members:members,type:"group"}).then(function(d){
+if(d&&d.id)openMsgThread(d.id);else loadMessengerConversations()
+}).catch(function(){showToast("Could not create group","error")})}
+
 function fetchChatConversations(){
 apiCall("GET","/api/chat/conversations").then(function(data){
 _chatLoaded=true;
@@ -2352,7 +2447,7 @@ html+='<div style="display:flex;gap:0;border-bottom:1px solid var(--border);padd
 var tabs;
 if(isNDISClient){tabs=[{id:"details",label:"📋 Details"},{id:"supportPlan",label:"🛡️ Support Plan"},{id:"ndisPlanBudget",label:"💜 NDIS Plan & Budget"},{id:"stakeholders",label:"👥 Stakeholders"},{id:"serviceRecords",label:"📂 Service Records"},{id:"history",label:"📝 Contact History"},{id:"documents",label:"📁 Docs"}]}
 else if(isJobseeker){tabs=[{id:"details",label:"📋 Details"},{id:"convos",label:"💬 Conversations"},{id:"history",label:"📝 Contact History"},{id:"training",label:"🎓 Training"}]}
-else if(isStaff){var _hasContactsAccess=canView("contacts_all")||canEdit("contacts");if(_hasContactsAccess){tabs=[{id:"details",label:"📋 Details"},{id:"employment",label:"💼 Employment"},{id:"leave",label:"📅 Leave & Availability"},{id:"serviceRecords",label:"📂 Service Records"},{id:"convos",label:"💬 Conversations"}];if(isContractor){tabs.push({id:"invoices",label:"💰 Invoices"})}tabs.push({id:"history",label:"📝 Contact History"});tabs.push({id:"training",label:"🎓 Training"})}else{tabs=[{id:"details",label:"📋 Details"},{id:"employment",label:"💼 Employment"},{id:"leave",label:"📅 Leave & Availability"},{id:"serviceRecords",label:"📂 Service Records"}];if(isContractor){tabs.push({id:"invoices",label:"💰 Invoices"})}tabs.push({id:"training",label:"🎓 Training"})}}
+else if(isStaff){var _hasContactsAccess=canView("contacts_all")||canEdit("contacts");if(_hasContactsAccess){tabs=[{id:"details",label:"📋 Details"},{id:"employment",label:"💼 Employment"},{id:"serviceRecords",label:"📂 Service Records"},{id:"convos",label:"💬 Conversations"}];if(isContractor){tabs.push({id:"invoices",label:"💰 Invoices"})}tabs.push({id:"history",label:"📝 Contact History"});tabs.push({id:"training",label:"🎓 Training"})}else{tabs=[{id:"details",label:"📋 Details"},{id:"employment",label:"💼 Employment"},{id:"serviceRecords",label:"📂 Service Records"}];if(isContractor){tabs.push({id:"invoices",label:"💰 Invoices"})}tabs.push({id:"training",label:"🎓 Training"})}}
 else{tabs=[{id:"details",label:"📋 Details"},{id:"convos",label:"💬 Conversations"},{id:"history",label:"📝 Contact History"},{id:"serviceRecords",label:"📂 Service Records"},{id:"training",label:"🎓 Training"}]}
 tabs.forEach(function(tab){var isActive=activeTab===tab.id||(tab.id==="serviceRecords"&&["progress","incidents","kms","calendar","weeklyreports","sleepChart","bowelChart","fluidChart","consumables","behaviours"].indexOf(activeTab)>=0)||(tab.id==="ndisPlanBudget"&&["ndisPlan","budget"].indexOf(activeTab)>=0);html+='<button onclick="switchContactTab(\''+tab.id+'\')" style="padding:10px 12px;font-size:11px;font-weight:600;border:none;background:none;cursor:pointer;color:'+(isActive?"var(--teal)":"var(--muted)")+';border-bottom:2px solid '+(isActive?"var(--teal)":"transparent")+';transition:all .12s;white-space:nowrap">'+tab.label+'</button>'});
 html+='</div>';
@@ -2682,6 +2777,21 @@ html+='</div>';
 html+='<div id="invoiceTableWrap"><div style="text-align:center;padding:30px;color:var(--muted)"><div class="spin" style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 8px"></div>Loading invoices...</div></div>';
 html+='</div>';
 }else if(activeTab==="history"){
+html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="font-size:14px;font-weight:700;color:var(--text)">📝 Contact History</div>';
+html+='<button onclick="toggleNewHistoryNote()" style="padding:6px 14px;font-size:11px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit">+ Add Note</button></div>';
+html+='<div id="newHistoryForm" style="display:none;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px">';
+html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">';
+html+='<div><label style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:3px">Method</label>';
+html+='<select id="histMethod" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface)">';
+["Phone","Email","In Person","Video Call","SMS","Other"].forEach(function(m){html+='<option>'+m+'</option>'});
+html+='</select></div>';
+html+='<div><label style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:3px">Reason</label>';
+html+='<input id="histReason" placeholder="Reason for contact..." style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface);box-sizing:border-box"></div></div>';
+html+='<div style="position:relative;margin-bottom:8px"><label style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:3px">Summary / Notes</label>';
+html+='<textarea id="histSummary" rows="3" placeholder="Enter notes or use voice button..." style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface);resize:vertical;box-sizing:border-box"></textarea>';
+html+='<button onclick="startVoiceToText(\'histSummary\')" style="position:absolute;right:8px;bottom:8px;padding:4px 10px;font-size:11px;font-weight:600;background:rgba(239,68,68,.08);color:#EF4444;border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);cursor:pointer;font-family:inherit" title="Voice to text">🎤 Voice</button></div>';
+html+='<button onclick="saveHistoryNote(\''+(c.email||"")+'\',\''+(c.name||"").replace(/'/g,"\\'")+'\',\''+(isNDISClient?"client":"staff")+'\')" style="padding:7px 16px;font-size:12px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit">Save Note</button>';
+html+='</div>';
 html+='<div id="contactHistoryContent"><div style="text-align:center;padding:20px;color:var(--muted)"><div class="spin" style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 8px"></div>Loading contact history...</div></div>';
 }else if(activeTab==="training"){
 html+='<div id="trainingContent"><div style="text-align:center;padding:20px;color:var(--muted)"><div class="spin" style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 8px"></div>Loading training records...</div></div>';
@@ -3237,7 +3347,8 @@ var h='';
 h+='<div style="display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:0">';
 var empSubTabs=[
 {id:"payDetails",icon:"💰",label:"Pay Details"},
-{id:"contracts",icon:"📝",label:"Contracts & Documents"}
+{id:"contracts",icon:"📝",label:"Contracts & Documents"},
+{id:"leave",icon:"📅",label:"Leave & Availability"}
 ];
 empSubTabs.forEach(function(t){
 var isActive=c._empSubTab===t.id;
@@ -3250,6 +3361,8 @@ if(c._empSubTab==="payDetails"){
 h+=buildPayDetailsContent(c,isContractor);
 }else if(c._empSubTab==="contracts"){
 h+=buildContractsContent(c,isContractor);
+}else if(c._empSubTab==="leave"){
+h+='<div id="leaveContent"><div style="text-align:center;padding:20px;color:var(--muted)"><div class="spin" style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 8px"></div>Loading leave & availability...</div></div>';
 }
 
 el.innerHTML=h;
@@ -3259,6 +3372,8 @@ if(c._empSubTab==="payDetails"){
 loadRateTable(isContractor);
 }else if(c._empSubTab==="contracts"){
 loadDocSigningList(c);
+}else if(c._empSubTab==="leave"){
+loadLeaveTab(c);
 }
 }
 
@@ -3395,7 +3510,7 @@ return h;
 }
 
 function loadRateTable(isContractor){
-var endpoint=isContractor?"/api/pay-rates/contractor":"/api/pay-rates/tfn";
+var endpoint=isContractor?"/api/contacts/pay-rates/contractor":"/api/contacts/pay-rates/tfn";
 var cacheKey=isContractor?"contractor":"tfn";
 if(_payRatesCache[cacheKey]){renderRateTable(_payRatesCache[cacheKey],isContractor);return}
 apiCall("GET",endpoint).then(function(data){
@@ -3643,7 +3758,7 @@ else{match=rateData.find(function(r){return r.payLevel===level})}
 
 if(!match){
 // Try loading rates first
-var endpoint=isContractor?"/api/pay-rates/contractor":"/api/pay-rates/tfn";
+var endpoint=isContractor?"/api/contacts/pay-rates/contractor":"/api/contacts/pay-rates/tfn";
 apiCall("GET",endpoint).then(function(data){
 _payRatesCache[cacheKey]=data;
 if(isContractor)match=data.find(function(r){return r.name===level});
@@ -3720,7 +3835,7 @@ loadLeaveRecords(c);
 function loadLeaveRecords(c){
 var el=document.getElementById("leaveRecordsList");if(!el)return;
 if(!c.email){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:11px">No email — cannot load leave records</div>';return}
-apiCall("GET","/api/staff-availability?email="+encodeURIComponent(c.email)).then(function(records){
+apiCall("GET","/api/contacts/staff-availability?email="+encodeURIComponent(c.email)).then(function(records){
 if(!records||records.length===0){
 el.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted)"><div style="font-size:24px;margin-bottom:6px">📅</div><div style="font-size:12px;font-weight:600">No leave requests yet</div><div style="font-size:10px;margin-top:4px">Click "Request Leave" to submit a new request</div></div>';
 return;
@@ -3862,7 +3977,7 @@ var isCasual=ct.indexOf("casual")>=0||(c.typeOfEmployment||"").toLowerCase().ind
 var empType=isContractor?"Independent Contractor":isCasual?"Casual":(c.typeOfEmployment||"Part Time");
 var needsApproval=(leaveType==="Annual Leave"||leaveType==="Personal/Sick");
 var requiresApproval=needsApproval?"Super Admin / Manager":"";
-apiCall("POST","/api/staff-availability",{
+apiCall("POST","/api/contacts/staff-availability",{
 startDate:startDate,
 endDate:endDate,
 leaveType:leaveType,
@@ -3889,7 +4004,7 @@ function approveLeave(recordId){
 var statusEl=document.getElementById("leaveAction"+recordId);
 if(statusEl)statusEl.innerHTML='<span style="color:#F59E0B">⏳ Approving...</span>';
 var today=new Date().toISOString().split("T")[0];
-apiCall("PATCH","/api/staff-availability/"+recordId,{
+apiCall("PATCH","/api/contacts/staff-availability/"+recordId,{
 status:"Approved",
 approvedDate:today,
 approvedBy:(currentUser&&currentUser.name)||"Admin"
@@ -3906,7 +4021,7 @@ if(statusEl)statusEl.innerHTML='<span style="color:#F59E0B">⏳ Declining...</sp
 var today=new Date().toISOString().split("T")[0];
 var body={status:"Declined",approvedDate:today,approvedBy:(currentUser&&currentUser.name)||"Admin"};
 if(reason)body.statusComments=reason;
-apiCall("PATCH","/api/staff-availability/"+recordId,body).then(function(){
+apiCall("PATCH","/api/contacts/staff-availability/"+recordId,body).then(function(){
 if(statusEl)statusEl.innerHTML='<span style="color:var(--red);font-weight:700">❌ Declined</span>';
 setTimeout(function(){if(selectedConv)loadLeaveRecords(selectedConv)},1000);
 }).catch(function(e){if(statusEl)statusEl.innerHTML='<span style="color:var(--red)">❌ '+e.message+'</span>'});
@@ -3927,8 +4042,8 @@ contractor:{title:"Send Contractor Agreement",icon:"📋",subtitle:"Send indepen
 rp.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)"><div style="text-align:center"><div class="spin" style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 12px"></div><div style="font-size:13px;font-weight:600">Loading...</div></div></div>';
 
 Promise.all([
-apiCall("GET","/api/doc-templates?all=1"),
-apiCall("GET","/api/doc-signing/all?status=")
+apiCall("GET","/api/documents/templates?all=1"),
+apiCall("GET","/api/documents/signing/all?status=")
 ]).then(function(res){
 var allTemplates=res[0]||[];
 var allRequests=res[1]||[];
@@ -4192,7 +4307,7 @@ var docType=opt?opt.getAttribute("data-type"):"";
 if(btn){btn.disabled=true;btn.textContent="Sending..."}
 if(statusEl)statusEl.innerHTML='<span style="color:#F59E0B">⏳ Creating signing request...</span>';
 
-apiCall("POST","/api/doc-signing/send",{
+apiCall("POST","/api/documents/signing/send",{
 recipientName:c.name,recipientEmail:c.email,recipientPhone:c.phone,
 templateId:templateSel.value,documentType:docType,
 sendVia:sendVia,contactRecordId:c.id
@@ -4233,7 +4348,7 @@ if(results&&input&&!results.contains(e.target)&&e.target!==input)results.style.d
 function loadDocSigningList(c){
 var el=document.getElementById("docSigningList");if(!el)return;
 if(!c.email){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);font-size:11px">No email — cannot load signing requests</div>';return}
-apiCall("GET","/api/doc-signing?email="+encodeURIComponent(c.email)).then(function(records){
+apiCall("GET","/api/documents/signing?email="+encodeURIComponent(c.email)).then(function(records){
 if(!records||records.length===0){
 el.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted)"><div style="font-size:28px;margin-bottom:6px">✍️</div><div style="font-size:12px;font-weight:600">No documents sent for signing yet</div><div style="font-size:10px;margin-top:4px">Click "Send for Signing" to send an employment contract or policy document</div></div>';
 return;
@@ -4327,7 +4442,7 @@ function openSendDocModal(){
 var c=selectedConv;if(!c)return;
 
 // Load templates first
-apiCall("GET","/api/doc-templates").then(function(templates){
+apiCall("GET","/api/documents/templates").then(function(templates){
 var overlay=document.createElement("div");
 overlay.id="sendDocOverlay";
 overlay.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:10001;display:flex;align-items:center;justify-content:center";
@@ -4420,7 +4535,7 @@ if(sendVia==="SMS"&&!c.phone){if(statusEl)statusEl.innerHTML='<span style="color
 
 if(btn){btn.disabled=true;btn.textContent="Sending..."}
 
-apiCall("POST","/api/doc-signing/send",{
+apiCall("POST","/api/documents/signing/send",{
 recipientName:c.name||"",
 recipientEmail:c.email||"",
 recipientPhone:c.phone||"",
@@ -4482,12 +4597,12 @@ function loadNDISClientDetails(clientName,contact){
 var el=document.getElementById("ndisClientDetails");if(!el)return;
 // Try matching by linked client name first, then contact name
 var nameToSearch=clientName||contact.name||"";
-apiCall("GET","/api/client-details?name="+encodeURIComponent(nameToSearch)).then(function(d){
+apiCall("GET","/api/clients/details?name="+encodeURIComponent(nameToSearch)).then(function(d){
 if(d.error&&d.error!=="Client not found"){el.innerHTML='<div style="color:var(--red);padding:12px;text-align:center">'+d.error+'</div>';return}
 if(d.error==="Client not found"){
 // Try just the contact full name
 if(nameToSearch!==contact.name){
-apiCall("GET","/api/client-details?name="+encodeURIComponent(contact.name)).then(function(d2){
+apiCall("GET","/api/clients/details?name="+encodeURIComponent(contact.name)).then(function(d2){
 if(d2.error){el.innerHTML='<div style="padding:16px;text-align:center;color:var(--muted)"><div style="font-size:24px;margin-bottom:8px">👤</div><div style="font-size:13px;font-weight:600">No matching client record found</div><div style="font-size:11px;margin-top:4px">Searched: "'+nameToSearch+'" and "'+contact.name+'"</div></div>';return}
 renderNDISClientCard(el,d2,contact)}).catch(function(){el.innerHTML='<div style="color:var(--red);padding:12px;text-align:center">Failed to load client details</div>'});return}
 el.innerHTML='<div style="padding:16px;text-align:center;color:var(--muted)"><div style="font-size:24px;margin-bottom:8px">👤</div><div style="font-size:13px;font-weight:600">No matching client record found</div><div style="font-size:11px;margin-top:4px">Searched: "'+nameToSearch+'"</div></div>';return}
@@ -4898,6 +5013,9 @@ function renderConvoItems(items,filter){function fmtDT(v){return TitusDate.forma
 var _cm=[];try{_cm=JSON.parse(sm.media_urls||'[]')}catch(x){}
 if(_cm.length>0){html+='<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px">';_cm.forEach(function(m){var isImg=m.type&&m.type.indexOf('image')>=0;if(isImg){html+='<a href="'+m.url+'" target="_blank"><img src="'+m.url+'" style="max-width:180px;max-height:140px;border-radius:6px;border:1px solid var(--border)" onerror="this.style.display=\'none\'"></a>';}else{html+='<a href="'+m.url+'" target="_blank" style="display:flex;align-items:center;gap:5px;padding:5px 8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:10px;font-weight:600;color:var(--royal);text-decoration:none">📎 '+m.name+'</a>';}});html+='</div>';}
 html+='</div>'}else if(item.type==="email"){var em=item.data;var isOut=em.direction==="outbound";var _ecc=isOut?"#3B82F6":"#6366F1";html+='<div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px;border-left:3px solid '+_ecc+'">';html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div style="display:flex;align-items:center;gap:6px"><span style="font-size:14px">📧</span><span style="font-size:12px;font-weight:700;color:var(--text)">'+(isOut?"Sent Email":"Received Email")+'</span></div>'+(em.has_attachments?'<span style="font-size:10px;color:var(--muted)">📎</span>':'')+'</div>';html+='<div style="font-size:10px;color:var(--muted);margin-bottom:4px">'+fmtDT(em.received_at||em.sent_at)+'</div>';html+='<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px">'+(em.subject||"(No subject)")+'</div>';if(em.body_preview)html+='<div style="font-size:11px;color:var(--text2);line-height:1.5;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs)">'+em.body_preview.substring(0,300)+(em.body_preview.length>300?"...":"")+'</div>';var _ca=[];try{_ca=JSON.parse(em.attachments||"[]")}catch(x){}if(!_ca||!_ca.length)_ca=em.attachmentsList||[];if(_ca.length>0){html+='<div style="margin-top:6px;border-top:1px solid var(--border);padding-top:4px">';_ca.forEach(function(att){var sz=att.size>1048576?(att.size/1048576).toFixed(1)+" MB":att.size>0?(att.size/1024).toFixed(0)+" KB":"";html+='<div style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:10px;color:var(--muted)"><span>📎</span><span style="font-weight:600;color:var(--text)">'+att.name+'</span>'+(sz?' <span>('+sz+')</span>':'')+'</div>'});html+='</div>'}else if(em.has_attachments){html+='<div style="font-size:10px;color:var(--muted);margin-top:4px">📎 Has attachments</div>'}html+='<div style="margin-top:6px"><button onclick="viewFullEmail('+em.id+')" style="font-size:10px;padding:4px 10px;background:rgba(99,102,241,.06);color:#6366F1;border:1px solid rgba(99,102,241,.12);border-radius:var(--rs);cursor:pointer;font-family:inherit;font-weight:600">View Full Email</button></div>';html+='</div>'}});return html}
+function toggleNewHistoryNote(){var f=document.getElementById("newHistoryForm");if(f)f.style.display=f.style.display==="none"?"block":"none"}
+function saveHistoryNote(email,name,type){var method=(document.getElementById("histMethod")||{}).value||"Phone";var reason=(document.getElementById("histReason")||{}).value||"";var summary=(document.getElementById("histSummary")||{}).value||"";if(!summary.trim()){alert("Please enter a summary/note.");return}var btn=event&&event.target;if(btn){btn.disabled=true;btn.textContent="Saving..."}apiCall("POST","/api/contacts/history",{email:email,name:name,type:type,method:method,reason:reason,summary:summary}).then(function(r){if(r.error){alert("Error: "+r.error);return}var f=document.getElementById("newHistoryForm");if(f)f.style.display="none";(document.getElementById("histReason")||{}).value="";(document.getElementById("histSummary")||{}).value="";var el=document.getElementById("contactHistoryContent");if(el)el.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted)"><div class="spin" style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 8px"></div>Refreshing...</div>';loadContactHistory(email,name,type==="client"?name:null)}).catch(function(e){alert("Failed to save: "+e.message)}).finally(function(){if(btn){btn.disabled=false;btn.textContent="Save Note"}})}
+function startVoiceToText(targetId){var el=document.getElementById(targetId);if(!el)return;var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert("Voice recognition is not supported in this browser. Please use Chrome.");return}var rec=new SR();rec.continuous=true;rec.interimResults=true;rec.lang="en-AU";if(window._voiceRec){try{window._voiceRec.stop()}catch(x){}window._voiceRec=null;return}window._voiceRec=rec;var orig=el.value||"";rec.onresult=function(e){var transcript="";for(var i=e.resultIndex;i<e.results.length;i++){transcript+=e.results[i][0].transcript}el.value=orig+(orig?" ":"")+transcript};rec.onerror=function(e){console.log("Voice error:",e.error);window._voiceRec=null};rec.onend=function(){window._voiceRec=null};rec.start()}
 function loadContactHistory(email,name,clientName){var url="/api/contacts/history?";if(clientName)url+="clientName="+encodeURIComponent(clientName);else{if(email)url+="email="+encodeURIComponent(email);if(name)url+=(email?"&":"")+"name="+encodeURIComponent(name)}apiCall("GET",url).then(function(records){window._contactHistoryRecords=records;var el=document.getElementById("contactHistoryContent");if(!el)return;if(!records||records.length===0){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">📝</div><div style="font-size:13px;font-weight:600">No contact history found</div><div style="font-size:11px;margin-top:4px">No entries for this employee</div></div>';return}function fmtDT(v){return TitusDate.formatDateTime(v)||v}var html='<div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:600">'+records.length+' record'+(records.length!==1?"s":"")+'</div>';records.forEach(function(r,idx){var dateStr=fmtDT(r.date)||"No date";var methods=Array.isArray(r.method)?r.method:r.method?[r.method]:[];var reasons=Array.isArray(r.reason)?r.reason:r.reason?[r.reason]:[];html+='<div onclick="openContactHistoryModal('+idx+')" style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px;cursor:pointer;transition:all .12s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'var(--surface2)\'">';html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:700;color:var(--text)">'+dateStr+'</span><span style="font-size:10px;color:var(--muted)">▸</span></div>';if(methods.length>0){html+='<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">';methods.forEach(function(m){var col=m==="Phone"?"#3B82F6":m==="Email"?"#10B981":m==="SMS"?"#8B5CF6":"#6B7280";html+='<span style="font-size:9px;font-weight:600;padding:1px 6px;border-radius:8px;background:'+col+'15;color:'+col+';border:1px solid '+col+'25">'+m+'</span>'});html+='</div>'}if(reasons.length>0){html+='<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px">';reasons.forEach(function(rr){html+='<span style="font-size:9px;font-weight:600;padding:1px 6px;border-radius:8px;background:rgba(236,72,153,.08);color:#EC4899;border:1px solid rgba(236,72,153,.15)">'+rr+'</span>'});html+='</div>'}if(r.summary||(r.allFields&&r.allFields["Summarise"])){var previewText=r.summary||r.allFields["Summarise"]||"";var preview=previewText.length>120?previewText.substring(0,120)+"…":previewText;html+='<div style="font-size:11px;color:var(--muted);line-height:1.4;margin-top:2px">'+preview.replace(/\n/g," ")+'</div>'}html+='</div>'});el.innerHTML=html}).catch(function(e){var el=document.getElementById("contactHistoryContent");if(el)el.innerHTML='<div style="text-align:center;padding:20px;color:var(--red)">Failed to load: '+e.message+'</div>'})}
 function openContactHistoryModal(idx){var r=(window._contactHistoryRecords||[])[idx];if(!r)return;function fmtDT(v){return TitusDate.formatDateTime(v)||v}var methods=Array.isArray(r.method)?r.method:r.method?[r.method]:[];var reasons=Array.isArray(r.reason)?r.reason:r.reason?[r.reason]:[];var overlay=document.createElement("div");overlay.id="chModalOverlay";overlay.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px";overlay.onclick=function(e){if(e.target===overlay)overlay.remove()};var html='<div style="background:var(--surface);border-radius:12px;max-width:640px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">';html+='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1;border-radius:12px 12px 0 0"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">📝</span><span style="font-size:15px;font-weight:700;color:var(--text)">Contact History</span></div><button onclick="document.getElementById(\'chModalOverlay\').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:4px 8px">✕</button></div>';html+='<div style="padding:20px">';var dateStr=fmtDT(r.date);if(dateStr&&dateStr!=="—")html+='<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Date & Time of Contact</div><div style="font-size:14px;font-weight:700;color:var(--text)">'+dateStr+'</div></div>';if(methods.length>0){html+='<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Method of Contact</div><div style="display:flex;gap:4px;flex-wrap:wrap">';methods.forEach(function(m){var col=m==="Phone"?"#3B82F6":m==="Email"?"#10B981":m==="SMS"?"#8B5CF6":"#6B7280";html+='<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;background:'+col+'15;color:'+col+';border:1px solid '+col+'25">'+m+'</span>'});html+='</div></div>'}if(reasons.length>0){html+='<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Reason for Contact</div><div style="display:flex;gap:4px;flex-wrap:wrap">';reasons.forEach(function(rr){html+='<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;background:rgba(236,72,153,.08);color:#EC4899;border:1px solid rgba(236,72,153,.15)">'+rr+'</span>'});html+='</div></div>'}if(r.workerName)html+='<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Support Worker</div><div style="font-size:13px;font-weight:600;color:var(--text)">'+r.workerName+'</div></div>';if(r.staffName)html+='<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Staff Name (Internal Office)</div><div style="font-size:13px;font-weight:600;color:var(--royal)">'+r.staffName+'</div></div>';var metaFields=[];if(r.duration)metaFields.push({label:"Duration",val:r.duration});if(r.assignee)metaFields.push({label:"Assignee",val:r.assignee});if(r.jobTitle)metaFields.push({label:"Job Title",val:r.jobTitle});if(metaFields.length>0){html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">';metaFields.forEach(function(m){html+='<div style="padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.3px">'+m.label+'</div><div style="font-size:12px;font-weight:600;color:var(--text);margin-top:2px">'+m.val+'</div></div>'});html+='</div>'}if(r.summary||(r.allFields&&r.allFields["Summarise"])){var summaryText=r.summary||r.allFields["Summarise"]||"";if(summaryText)html+='<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Summary</div><div style="font-size:12px;color:var(--text);line-height:1.6;padding:12px;background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border);white-space:pre-wrap">'+summaryText+'</div></div>'};if(r.files&&r.files.length>0){html+='<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Attachments ('+r.files.length+')</div><div style="display:flex;flex-direction:column;gap:6px">';r.files.forEach(function(f){html+='<a href="'+f.url+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);text-decoration:none"><span style="font-size:16px">📎</span><div><div style="font-size:12px;font-weight:600;color:var(--text)">'+f.name+'</div>'+(f.size?'<div style="font-size:10px;color:var(--muted)">'+(f.size>1048576?(f.size/1048576).toFixed(1)+" MB":(f.size/1024).toFixed(0)+" KB")+'</div>':'')+'</div></a>'});html+='</div></div>'}if(r.lastModified)html+='<div style="font-size:10px;color:var(--muted);margin-top:8px">Last modified: '+fmtDT(r.lastModified)+'</div>';var af=r.allFields||{};var shown={"Date & Time of...":1,"Date & Time of":1,"Day of Contact":1,"Date & Time of Contact":1,"Support Worker Name":1,"Full Name (from Support Worker Name)":1,"Email (from Support Worker Name)":1,"Employees Full Name":1,"Full Name (Formula)":1,"Method of Contact":1,"Reason for Contact":1,"Summarise":1,"Duration of work to...":1,"Duration of work to complete contact":1,"Assignee":1,"Staff Name":1,"Upload File here":1,"Last modified":1,"Unique Contact Record":1,"Job Title":1,"Job Title (Formula)":1,"Status of Contact":1,"Status of Contact (Formula)":1};var extra={};Object.keys(af).forEach(function(k){if(shown[k])return;var v=af[k];if(!v||v===""||v===0||(Array.isArray(v)&&v.length===0))return;extra[k]=v});var extraKeys=Object.keys(extra);if(extraKeys.length>0){html+='<details style="margin-top:8px"><summary style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;cursor:pointer;padding:6px 0">All Other Fields ('+extraKeys.length+')</summary><div style="display:grid;gap:6px;margin-top:6px">';extraKeys.sort().forEach(function(k){var v=extra[k];if(Array.isArray(v))v=v.join(", ");if(typeof v==="object")v=JSON.stringify(v);html+='<div style="padding:6px 8px;background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border)"><div style="font-size:9px;font-weight:600;color:var(--muted)">'+k+'</div><div style="font-size:11px;color:var(--text);margin-top:1px;word-break:break-word">'+v+'</div></div>'});html+='</div></details>'}html+='</div></div>';overlay.innerHTML=html;document.body.appendChild(overlay)}
 function loadProgressNotes(email,clientName){var url="/api/contacts/progress-notes?";if(clientName)url+="clientName="+encodeURIComponent(clientName);else url+="email="+encodeURIComponent(email);apiCall("GET",url).then(function(records){window._progressRecords=records;var el=document.getElementById("progressNotesContent");if(!el)return;if(!records||records.length===0){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">📓</div><div style="font-size:13px;font-weight:600">No progress notes found</div><div style="font-size:11px;margin-top:4px">No entries for this employee</div></div>';return}function fmtDT(v){return TitusDate.formatDateTime(v)||v}var html='<div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:600">'+records.length+' note'+(records.length!==1?"s":"")+'</div>';records.forEach(function(r,idx){var startStr=fmtDT(r.startDate);var endStr=fmtDT(r.endDate);var hasTransport=r.transport&&r.transport.toLowerCase().indexOf("yes")>=0;html+='<div onclick="openProgressModal('+idx+')" style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px;cursor:pointer;transition:all .12s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'var(--surface2)\'">';html+='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px"><div>';html+='<div style="font-size:12px;font-weight:700;color:var(--text)">'+startStr+'</div>';if(endStr)html+='<div style="font-size:10px;color:var(--muted);margin-top:1px">→ '+endStr+'</div>';html+='</div>';html+='<div style="display:flex;gap:4px;align-items:center;flex-shrink:0">';if(r.totalHours)html+='<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.2)">⏱ '+r.totalHours+'h</span>';html+='<span style="font-size:10px;color:var(--muted)">▸</span></div></div>';if(r.client)html+='<div style="font-size:11px;font-weight:600;color:var(--royal);margin-bottom:4px">👤 '+r.client+'</div>';html+='<div style="display:flex;gap:4px;flex-wrap:wrap">';if(r.shiftType)html+='<span style="font-size:9px;font-weight:600;padding:1px 6px;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:var(--muted)">'+r.shiftType+'</span>';if(hasTransport)html+='<span style="font-size:9px;font-weight:600;padding:1px 6px;border-radius:8px;background:rgba(59,130,246,.08);color:#3B82F6;border:1px solid rgba(59,130,246,.15)">🚗 Transport</span>';if(r.kms>0)html+='<span style="font-size:9px;font-weight:600;padding:1px 6px;border-radius:8px;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.15)">'+r.kms+' km</span>';html+='</div>';html+='</div>'});el.innerHTML=html}).catch(function(e){var el=document.getElementById("progressNotesContent");if(el)el.innerHTML='<div style="text-align:center;padding:20px;color:var(--red)">Failed to load: '+e.message+'</div>'})}
@@ -6245,84 +6363,56 @@ if(reportView==="files"){renderCompanyFiles();return}
 if(reportView==="ndisReports"){renderNdisReportsList();return}
 if(reportView==="customReport"){renderCustomReport();return}
 if(reportView==="customReport"){renderCustomReport();return}
+var isSuperAdmin=currentUser&&currentUser.role==="superadmin";
 var html='<div style="padding:24px;overflow-y:auto;height:100%">';
-html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px"><div><div style="font-size:20px;font-weight:700;color:var(--text)">Internal Reports</div><div style="font-size:12px;color:var(--muted)">Generate reports from Airtable data sources</div></div></div>';
+html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px"><div><div style="font-size:20px;font-weight:700;color:var(--text)">Reports</div><div style="font-size:12px;color:var(--muted)">All reports and data views</div></div></div>';
 // Reports table
 html+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
 html+='<thead><tr style="border-bottom:2px solid var(--border)">';
-["Report","Description","Airtable Sources","Output",""].forEach(function(col){
+var rptCols=["Report","Description","Source","Output",""];
+if(isSuperAdmin)rptCols.splice(4,0,"Visible To");
+rptCols.forEach(function(col){
 html+='<th style="padding:10px 8px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">'+col+'</th>'});
 html+='</tr></thead><tbody>';
-// Operations Report row
-html+='<tr style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
-html+='<td style="padding:10px 8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">📋</span><span style="font-weight:700;color:var(--text)">Operations Report</span></div></td>';
-html+='<td style="padding:10px 8px;color:var(--muted);max-width:280px">Comprehensive internal ops report with KPIs, charts, and alerts</td>';
-html+='<td style="padding:10px 8px"><div style="display:flex;flex-wrap:wrap;gap:4px">';
-["Progress Notes","IR Reports 2025","Schedule of Support","PBSP","Handover","All Contacts","Client Core Budgets"].forEach(function(t){
-html+='<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.15)">'+t+'</span>'});
-html+='</div></td>';
-html+='<td style="padding:10px 8px"><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:rgba(99,102,241,.08);color:#6366F1;border:1px solid rgba(99,102,241,.15)">Dashboard + Charts</span></td>';
-html+='<td style="padding:10px 8px"><button onclick="window._reportsSubView=\'opsReport\';renderReportsMenu()" class="btn btn-teal btn-sm" style="font-size:10px;white-space:nowrap">Generate →</button></td>';
-html+='</tr>';
-// NDIS Stakeholder Report row
-html+='<tr style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
-html+='<td style="padding:10px 8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">📑</span><span style="font-weight:700;color:var(--text)">NDIS Stakeholder Report</span></div></td>';
-html+='<td style="padding:10px 8px;color:var(--muted);max-width:280px">Weekly update for families, SCs & NDIS planners — goal progress, service evidence, incident summaries</td>';
-html+='<td style="padding:10px 8px"><div style="display:flex;flex-wrap:wrap;gap:4px">';
-["Progress Notes","IR Reports 2025","Clients","Client Core Budgets","Weekly Stakeholder Reports"].forEach(function(t){
-html+='<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(30,75,160,.08);color:var(--royal);border:1px solid rgba(30,75,160,.15)">'+t+'</span>'});
-html+='</div></td>';
-html+='<td style="padding:10px 8px"><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:rgba(124,58,237,.08);color:#7C3AED;border:1px solid rgba(124,58,237,.15)">PDF per Client</span></td>';
-html+='<td style="padding:10px 8px"><button onclick="window._reportsSubView=\'stakeholderReport\';renderReportsMenu()" class="btn btn-sm" style="font-size:10px;white-space:nowrap;background:var(--royal);color:#fff;border:none">Generate →</button></td>';
-html+='</tr>';
-// Audit Log row
-html+='<tr style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
-html+='<td style="padding:10px 8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">🔍</span><span style="font-weight:700;color:var(--text)">Audit Log</span></div></td>';
-html+='<td style="padding:10px 8px;color:var(--muted);max-width:280px">Track every change — who edited what, when, and what values changed</td>';
-html+='<td style="padding:10px 8px"><div style="display:flex;flex-wrap:wrap;gap:4px">';
-html+='<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(99,102,241,.08);color:#6366F1;border:1px solid rgba(99,102,241,.15)">SQLite audit_log</span>';
-html+='</div></td>';
-html+='<td style="padding:10px 8px"><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:rgba(245,158,11,.08);color:#F59E0B;border:1px solid rgba(245,158,11,.15)">Searchable Table</span></td>';
-html+='<td style="padding:10px 8px"><button onclick="window._reportsSubView=\'auditLog\';renderReportsMenu()" class="btn btn-sm" style="font-size:10px;white-space:nowrap;background:#6366F1;color:#fff;border:none">View →</button></td>';
-html+='</tr>';
-// Custom Report row
-html+='<tr style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
-html+='<td style="padding:10px 8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">📊</span><span style="font-weight:700;color:var(--text)">Customised Client Report</span></div></td>';
-html+='<td style="padding:10px 8px;color:var(--muted);max-width:280px">Choose date range, clients, and any combination of 22 data tables</td>';
-html+='<td style="padding:10px 8px"><div style="display:flex;flex-wrap:wrap;gap:4px">';
-["Clients","Progress Notes","IR Reports 2025","Sleep Chart","Bowel Chart","Fluid Intake","Risk Register","+ 15 more"].forEach(function(t){
-var isMore=t.indexOf("+")===0;
-html+='<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:'+(isMore?'rgba(139,92,246,.08)':'rgba(13,148,136,.08)')+';color:'+(isMore?'#8B5CF6':'#0D9488')+';border:1px solid '+(isMore?'rgba(139,92,246,.15)':'rgba(13,148,136,.15)')+'">'+t+'</span>'});
-html+='</div></td>';
-html+='<td style="padding:10px 8px"><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:rgba(16,185,129,.08);color:#10B981;border:1px solid rgba(16,185,129,.15)">AI Analysis + Export</span></td>';
-html+='<td style="padding:10px 8px"><button onclick="window._reportsSubView=\'customReport\';renderReportsMenu()" class="btn btn-sm" style="font-size:10px;white-space:nowrap;background:#0D9488;color:#fff;border:none">Generate →</button></td>';
-html+='</tr>';
-// NDIS Reports Archive row
-html+='<tr style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
-html+='<td style="padding:10px 8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">📁</span><span style="font-weight:700;color:var(--text)">NDIS Reports Archive</span></div></td>';
-html+='<td style="padding:10px 8px;color:var(--muted);max-width:280px">Previously generated stakeholder reports — view and download PDFs</td>';
-html+='<td style="padding:10px 8px"><div style="display:flex;flex-wrap:wrap;gap:4px">';
-html+='<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(30,75,160,.08);color:var(--royal);border:1px solid rgba(30,75,160,.15)">Weekly Stakeholder Reports</span>';
-html+='</div></td>';
-html+='<td style="padding:10px 8px"><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:rgba(139,92,246,.08);color:#8B5CF6;border:1px solid rgba(139,92,246,.15)">PDF Archive</span></td>';
-html+='<td style="padding:10px 8px"><button onclick="window._reportsSubView=\'ndisReports\';renderReportsMenu()" class="btn btn-sm" style="font-size:10px;white-space:nowrap;background:#8B5CF6;color:#fff;border:none">View →</button></td>';
-html+='</tr>';
-html+='</tbody></table></div>';
-// Quick links to related views
-html+='<div style="margin-top:20px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r)">';
-html+='<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Related Data Views</div>';
-html+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
-var relatedViews=[
-{label:"📝 Progress Notes",view:"progressNotes"},{label:"🚨 Incident Register",view:"incidentRegister"},
-{label:"📈 Continuous Improvement",view:"continuousImprovement"},{label:"📋 Handover",view:"handover"},
-{label:"🌙 Sleep Report",view:"sleepReport"},{label:"🧾 Receipts",view:"receipts"},
-{label:"💰 Payroll",view:"payroll"},{label:"🚗 KM Report",view:"kmReport"},
-{label:"🔄 Reconciliation",view:"reconciliation"}
+// All reports data
+var _rptVisibility=JSON.parse(localStorage.getItem("titus_report_visibility")||"{}");
+var allReports=[
+{icon:"📋",name:"Operations Report",desc:"Internal ops report with KPIs, charts, and alerts",sources:["Progress Notes","IR Reports 2025","All Contacts"],output:"Dashboard",outputCol:"#6366F1",action:"window._reportsSubView='opsReport';renderReportsMenu()",btn:"Generate →",btnCol:"var(--teal)"},
+{icon:"📑",name:"NDIS Stakeholder Report",desc:"Weekly update for families, SCs & NDIS planners",sources:["Progress Notes","IR Reports 2025","Clients"],output:"PDF per Client",outputCol:"#7C3AED",action:"window._reportsSubView='stakeholderReport';renderReportsMenu()",btn:"Generate →",btnCol:"var(--royal)"},
+{icon:"🔍",name:"Audit Log",desc:"Track every change — who edited what, when",sources:["SQLite audit_log"],output:"Searchable Table",outputCol:"#F59E0B",action:"currentView='auditLog';render()",btn:"View →",btnCol:"#6366F1"},
+{icon:"📊",name:"Customised Client Report",desc:"Choose date range, clients, and data tables",sources:["22 Airtable tables"],output:"AI Analysis",outputCol:"#10B981",action:"window._reportsSubView='customReport';renderReportsMenu()",btn:"Generate →",btnCol:"#0D9488"},
+{icon:"📁",name:"NDIS Reports Archive",desc:"Previously generated stakeholder reports",sources:["Weekly Reports"],output:"PDF Archive",outputCol:"#8B5CF6",action:"window._reportsSubView='ndisReports';renderReportsMenu()",btn:"View →",btnCol:"#8B5CF6"},
+{icon:"📝",name:"Progress Notes",desc:"Staff progress notes on client support",sources:["Progress Notes"],output:"Table",outputCol:"#10B981",action:"currentView='progressNotes';render()",btn:"View →",btnCol:"#10B981"},
+{icon:"🚨",name:"Incident Register",desc:"Incident reports and severity tracking",sources:["IR Reports 2025"],output:"Table",outputCol:"#EF4444",action:"currentView='incidentRegister';render()",btn:"View →",btnCol:"#EF4444"},
+{icon:"📈",name:"Continuous Improvement",desc:"Quality improvement actions and outcomes",sources:["Continuous Improvement"],output:"Table",outputCol:"#3B82F6",action:"currentView='continuousImprovement';render()",btn:"View →",btnCol:"#3B82F6"},
+{icon:"📋",name:"Handover",desc:"Shift handover notes between workers",sources:["Handover"],output:"Table",outputCol:"#6366F1",action:"currentView='handover';render()",btn:"View →",btnCol:"#6366F1"},
+{icon:"❌",name:"Cancellations",desc:"Service cancellations and charge tracking",sources:["Schedule of Support"],output:"Table",outputCol:"#F59E0B",action:"currentView='cancellations';render()",btn:"View →",btnCol:"#F59E0B"},
+{icon:"🛡",name:"Compliance Reports",desc:"Worker compliance status and expiry tracking",sources:["All Contacts"],output:"Dashboard",outputCol:"#10B981",action:"currentView='complianceReports';render()",btn:"View →",btnCol:"#10B981"},
+{icon:"💰",name:"Payroll",desc:"Payroll compliance and worker pay analysis",sources:["Progress Notes","All Contacts"],output:"Dashboard",outputCol:"#3B82F6",action:"currentView='payroll';render()",btn:"View →",btnCol:"#3B82F6"},
+{icon:"🧾",name:"Receipts",desc:"Receipt uploads and OCR processing",sources:["Receipts"],output:"Table",outputCol:"#F59E0B",action:"currentView='receipts';render()",btn:"View →",btnCol:"#F59E0B"},
+{icon:"🚗",name:"KM Report",desc:"Transport kilometres and mileage tracking",sources:["Progress Notes"],output:"Table",outputCol:"#6366F1",action:"currentView='kmReport';render()",btn:"View →",btnCol:"#6366F1"},
+{icon:"🌙",name:"Sleep Report",desc:"Sleep disturbance records and analysis",sources:["Client Sleep Chart"],output:"Dashboard",outputCol:"#8B5CF6",action:"currentView='sleepReport';render()",btn:"View →",btnCol:"#8B5CF6"},
+{icon:"📋",name:"Registers",desc:"Document registers and compliance tracking",sources:["Multiple"],output:"Table",outputCol:"#6366F1",action:"currentView='registers';render()",btn:"View →",btnCol:"#6366F1"},
+{icon:"📊",name:"ShiftCare Comparison",desc:"Compare ShiftCare data with Titus records",sources:["ShiftCare CSV"],output:"Table",outputCol:"#3B82F6",action:"currentView='shiftcareComparison';render()",btn:"View →",btnCol:"#3B82F6"},
+{icon:"🔍",name:"ABN Compliance",desc:"Contractor ABN validation and GST status",sources:["All Contacts"],output:"Dashboard",outputCol:"#F59E0B",action:"adminTab='abnCompliance';renderAdmin()",btn:"View →",btnCol:"#F59E0B"}
 ];
-relatedViews.forEach(function(rv){
-html+='<button onclick="currentView=\''+rv.view+'\';render()" style="padding:6px 12px;font-size:11px;font-weight:600;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit;transition:all .1s" onmouseover="this.style.borderColor=\'var(--teal)\'" onmouseout="this.style.borderColor=\'var(--border)\'">'+rv.label+'</button>'});
-html+='</div></div>';
+allReports.forEach(function(rpt,ri){
+var visKey=rpt.name.replace(/[^a-zA-Z]/g,"");
+var visEmails=_rptVisibility[visKey]||"";
+if(!isSuperAdmin&&visEmails){var userEmail=(currentUser&&currentUser.email||"").toLowerCase();if(visEmails.toLowerCase().indexOf(userEmail)<0)return}
+html+='<tr style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
+html+='<td style="padding:10px 8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">'+rpt.icon+'</span><span style="font-weight:700;color:var(--text);font-size:12px">'+rpt.name+'</span></div></td>';
+html+='<td style="padding:10px 8px;color:var(--muted);max-width:260px;font-size:11px">'+rpt.desc+'</td>';
+html+='<td style="padding:10px 8px"><div style="display:flex;flex-wrap:wrap;gap:3px">';
+rpt.sources.forEach(function(s){html+='<span style="font-size:8px;font-weight:600;padding:2px 5px;border-radius:4px;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.12)">'+s+'</span>'});
+html+='</div></td>';
+html+='<td style="padding:10px 8px"><span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:5px;background:'+rpt.outputCol+'10;color:'+rpt.outputCol+';border:1px solid '+rpt.outputCol+'20">'+rpt.output+'</span></td>';
+if(isSuperAdmin){html+='<td style="padding:10px 8px"><input placeholder="All users" value="'+visEmails+'" onchange="saveReportVisibility(\''+visKey+'\',this.value)" style="width:120px;padding:3px 6px;font-size:9px;border:1px solid var(--border);border-radius:4px;font-family:inherit;background:var(--surface2)" title="Comma-separated emails. Leave blank = visible to all"></td>'}
+html+='<td style="padding:10px 8px"><button onclick="'+rpt.action+'" class="btn btn-sm" style="font-size:10px;white-space:nowrap;background:'+rpt.btnCol+';color:#fff;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600">'+rpt.btn+'</button></td>';
+html+='</tr>'});
+html+='</tbody></table></div>';
 html+='</div>';rp.innerHTML=html}
+function saveReportVisibility(key,val){var v=JSON.parse(localStorage.getItem("titus_report_visibility")||"{}");v[key]=val.trim();localStorage.setItem("titus_report_visibility",JSON.stringify(v))}
 
 function renderCustomReport(){
   var rp=document.getElementById("rightPanel");
@@ -8006,7 +8096,7 @@ modal.innerHTML='<div style="background:var(--bg);flex:1;display:flex;flex-direc
 +'<div style="font-size:12px;color:var(--muted);margin-top:8px">Scanning Progress Notes, Contacts, Incidents, Clients…</div>'
 +'<div style="font-size:11px;color:var(--teal);margin-top:10px">This may take 15–30 seconds</div></div></div></div>';
 document.body.appendChild(modal);document.body.style.overflow="hidden";
-apiCall("POST","/api/ops-report",{from:from,to:to}).then(function(data){
+apiCall("POST","/api/reports/ops",{from:from,to:to}).then(function(data){
 var opsPill=document.getElementById("opsReportPill");
 if(data.error){if(opsPill){updateReportPill("opsReportPill","Ops Report",false,true);showToast("Ops report failed","error")}else{document.getElementById("opsModalBody").innerHTML='<div style="text-align:center;padding:60px;color:var(--red)"><div style="font-size:36px;margin-bottom:12px">⚠️</div>Error: '+data.error+'</div>'}return}
 if(opsPill){updateReportPill("opsReportPill","Ops Report",true,false);showToast("Ops report ready — click floating bar to view","success")}
@@ -8306,8 +8396,10 @@ document.getElementById("shTo").value=now.toISOString().split("T")[0];
 loadShClients()}
 
 window._shSelectedClients=[];window._shAllClients=[];
-function loadShClients(){apiCall("GET","/api/stakeholder-clients").then(function(d){
-window._shAllClients=(d&&d.clients)||[];var list=document.getElementById("shClientList");if(!list)return;
+function loadShClients(){apiCall("GET","/api/clients").then(function(d){
+var clientArr=Array.isArray(d)?d:(d&&Array.isArray(d.clients)?d.clients:[]);
+window._shAllClients=clientArr.map(function(c){return c.name||c.clientName||(c.fields&&c.fields["Client Name"])||""}).filter(function(n){return n&&n.length>1}).sort();
+var list=document.getElementById("shClientList");if(!list)return;
 var h="";window._shAllClients.forEach(function(name,i){
 h+='<label style="display:flex;align-items:center;gap:8px;padding:6px 10px;cursor:pointer;font-size:12px;color:var(--text)" onmouseover="this.style.background=\'var(--surface2)\'" onmouseout="this.style.background=\'none\'">';
 h+='<input type="checkbox" data-client="'+name+'" onchange="updateShClientSelection()" style="accent-color:var(--royal);width:14px;height:14px">'+name+'</label>'});
@@ -8379,7 +8471,7 @@ function fetchNextClient(i){
   var clientLabel=typeof client==="object"?(client.name||client.id||"Participant "+(i+1)):String(client);
   setProgress(Math.round((i/total)*85),"Generating report for "+clientLabel+"...",null);
   var ctrl=new AbortController();var tid=setTimeout(function(){ctrl.abort();},120000);
-  fetch("/api/stakeholder-report",{method:"POST",headers:headers,body:JSON.stringify({from:from,to:to,clients:[client]}),signal:ctrl.signal})
+  fetch("/api/reports/weekly",{method:"POST",headers:headers,body:JSON.stringify({from:from,to:to,clients:[client]}),signal:ctrl.signal})
   .then(function(r){clearTimeout(tid);if(!r.ok)throw new Error("Server error "+r.status);return r.json();})
   .then(function(data){
     clearTimeout(tid);
@@ -11901,7 +11993,7 @@ if(!mapped||mapped.length===0){alert("No shifts to import");return}
 var btn=document.querySelector("#importActions button");
 if(btn){btn.disabled=true;btn.textContent="⏳ Importing "+mapped.length+" shifts...";btn.style.opacity=".7"}
 
-apiCall("POST","/api/scheduler/import",{shifts:mapped}).then(function(r){
+apiCall("POST","/api/scheduling/import",{shifts:mapped}).then(function(r){
 if(r.error&&!r.created){alert("Import failed: "+r.error);if(btn){btn.disabled=false;btn.textContent="Retry Import";btn.style.opacity="1"}return}
 var msg="✅ Successfully imported "+r.created+" of "+r.total+" shifts";
 if(r.skipped&&r.skipped>0)msg+="\n⏭ "+r.skipped+" already imported (duplicates skipped)";
@@ -14435,7 +14527,7 @@ function renderTasks(){
   var rp=document.getElementById("rightPanel");
   rp.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)"><div style="text-align:center"><div class="spin" style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 12px"></div><div style="font-size:13px;font-weight:600">Loading tasks...</div></div></div>';
   apiCall("GET","/api/tasks").then(function(d){
-    tasksData=d||[];tasksLoaded=true;
+    tasksData=(d&&Array.isArray(d.tasks))?d.tasks:(d&&Array.isArray(d))?d:[];tasksLoaded=true;
     renderTasksDashboard();
   }).catch(function(e){
     rp.innerHTML='<div style="padding:24px;color:var(--red);font-size:13px">Error loading tasks: '+e.message+'</div>';
@@ -18033,53 +18125,37 @@ if(leadsSubView==="overview")renderLeadsOverview();else if(leadsSubView==="list"
 if(leadsSubView==="overview")renderLeadsOverview();else if(leadsSubView==="list")renderLeadsList(rp);else renderLeadsKanban(rp)}
 
 var leadsScFilter="";
+var leadsStageFilterVal="";
 function renderLeadsList(rp){
 var h='<div style="padding:24px;overflow-y:auto;height:100%">';
 h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div><div style="font-size:18px;font-weight:700;color:var(--text)">Leads</div><div style="font-size:11px;color:var(--muted)">'+leadsData.length+' leads</div></div>';
 h+='<div style="display:flex;gap:6px"><button class="btn btn-teal btn-sm" onclick="setLeadsView(\'kanban\')">📌 Kanban</button></div></div>';
 // Search + SC email filter row
 h+='<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">';
-h+='<input id="leadsSearch" oninput="filterLeadsList()" placeholder="Search leads by name, suburb, disability, SC..." style="flex:1;min-width:250px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none">';
-// SC Email filter dropdown
-var scEmails={};leadsData.forEach(function(r){if(r.scEmail){var e=r.scEmail.toLowerCase();scEmails[e]=(scEmails[e]||0)+1}});
-var scEmailKeys=Object.keys(scEmails).sort();
-h+='<select id="leadsScFilter" onchange="leadsScFilter=this.value;filterLeadsList()" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none;min-width:180px;color:var(--text)">';
-h+='<option value="">All Support Coordinators</option>';
-scEmailKeys.forEach(function(e){
-var label=e;
-var matchLead=leadsData.find(function(r){return r.scEmail&&r.scEmail.toLowerCase()===e});
-if(matchLead&&matchLead.scName)label=matchLead.scName+" ("+e+")";
-h+='<option value="'+e+'"'+(leadsScFilter===e?' selected':'')+'>'+label+' ('+scEmails[e]+')</option>'});
+h+='<input id="leadsSearch" oninput="filterLeadsList()" placeholder="Search leads by name, disability, SC..." style="flex:1;min-width:250px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none">';
+// Stage filter dropdown
+h+='<select id="leadsStageFilter" onchange="leadsStageFilterVal=this.value;filterLeadsList()" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none;min-width:140px;color:var(--text)">';
+h+='<option value="">All Stages</option>';
+leadsStages.forEach(function(st){var cnt=leadsData.filter(function(r){return(r.stage||"Enquiry")===st}).length;h+='<option value="'+st+'"'+(leadsStageFilterVal===st?' selected':'')+'>'+st+' ('+cnt+')</option>'});
 h+='</select>';
-if(leadsScFilter)h+='<button onclick="leadsScFilter=\'\';filterLeadsList();document.getElementById(\'leadsScFilter\').value=\'\'" style="padding:6px 10px;font-size:11px;font-weight:600;color:var(--error);background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">✕ Clear SC</button>';
+if(leadsStageFilterVal||leadsScFilter)h+='<button onclick="leadsStageFilterVal=\'\';leadsScFilter=\'\';filterLeadsList();var sf=document.getElementById(\'leadsStageFilter\');if(sf)sf.value=\'\'" style="padding:6px 10px;font-size:11px;font-weight:600;color:var(--error);background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">✕ Clear</button>';
 h+='</div>';
 // Table
 h+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
 h+='<thead><tr style="border-bottom:2px solid var(--border)">';
-["#","Client Name","Date Received","Days","Suburb","Disability","SC Name","SC Email","SC Mobile","Stage","Created"].forEach(function(col){
+["Ref #","Created","Client Name","Disability","SC Email","Stage"].forEach(function(col){
 h+='<th style="padding:8px 6px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">'+col+'</th>'});
 h+='</tr></thead><tbody id="leadsTbody">';
 leadsData.forEach(function(r,idx){
 var col=leadsColors[r.stage||"Enquiry"]||"var(--muted)";
-var dateStr=r.date||"";if(dateStr){dateStr=TitusDate.format(dateStr)}
-var _lNow=new Date();var _lDt=r.date?new Date(r.date):null;
-var _lDays=_lDt&&!isNaN(_lDt)?Math.floor((_lNow-_lDt)/(1000*60*60*24)):null;
-var _lDateCol=_lDays!==null&&_lDays>60?"var(--error)":_lDays!==null&&_lDays>45?"var(--warning)":"var(--muted)";
-var createdStr=r.createdAt?TitusDate.format(r.createdAt):"";
-h+='<tr data-lidx="'+idx+'" data-sc-email="'+(r.scEmail||"").toLowerCase()+'" style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
+var createdStr=r.createdAt?TitusDate.format(r.createdAt):(r.date?TitusDate.format(r.date):"");
+h+='<tr data-lidx="'+idx+'" data-stage="'+(r.stage||"Enquiry")+'" style="border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'" onclick="openLeadDetail('+idx+')">';
 h+='<td style="padding:8px 6px;font-size:10px;color:var(--dim)">'+(r.refNum||"")+'</td>';
-h+='<td style="padding:8px 6px;font-weight:700;color:var(--text)">'+(r.name||"—")+(r._autoLost?' <span style="font-size:8px;color:var(--error);font-weight:600">⏰ Auto-closed</span>':"")+'</td>';
-h+='<td style="padding:8px 6px;font-size:10px;white-space:nowrap;color:'+_lDateCol+'">'+dateStr+'</td>';
-h+='<td style="padding:8px 6px;font-size:10px;white-space:nowrap;color:'+_lDateCol+'">'+(_lDays!==null?_lDays+'d':"—")+'</td>';
-h+='<td style="padding:8px 6px;font-size:11px;color:var(--text)">'+(r.suburb||"—")+'</td>';
-h+='<td style="padding:8px 6px;font-size:11px;color:var(--text)">'+(r.disabilityType||"—")+'</td>';
-h+='<td style="padding:8px 6px;font-size:11px;color:var(--text)">'+(r.scName||"—")+'</td>';
-h+='<td style="padding:8px 6px;font-size:10px;color:var(--muted);font-family:JetBrains Mono,monospace">'+(r.scEmail?'<a href="mailto:'+r.scEmail+'" style="color:var(--teal);text-decoration:none">'+r.scEmail+'</a>':"—")+'</td>';
-h+='<td style="padding:8px 6px;font-size:11px">'+(r.scMobile||"—")+'</td>';
-h+='<td style="padding:8px 6px"><select onchange="updateLeadStage('+idx+',this.value)" '+(canEdit("leads_list")?"":"disabled")+' style="padding:3px 6px;border-radius:6px;font-size:10px;font-weight:600;border:1px solid '+col+'30;background:'+col+'10;color:'+col+';font-family:inherit;cursor:'+(canEdit("leads_list")?"pointer":"default")+'">';
-leadsStages.forEach(function(st){h+='<option value="'+st+'"'+((r.stage||"Enquiry")===st?" selected":"")+'>'+st+'</option>'});
-h+='</select></td>';
 h+='<td style="padding:8px 6px;font-size:10px;white-space:nowrap;color:var(--muted)">'+createdStr+'</td>';
+h+='<td style="padding:8px 6px;font-weight:700;color:var(--text)">'+(r.name||"—")+(r._autoLost?' <span style="font-size:8px;color:var(--error);font-weight:600">⏰ Auto-closed</span>':"")+'</td>';
+h+='<td style="padding:8px 6px;font-size:11px;color:var(--text)">'+(r.disabilityType||"—")+'</td>';
+h+='<td style="padding:8px 6px;font-size:10px;color:var(--muted);font-family:JetBrains Mono,monospace">'+(r.scEmail?'<a href="mailto:'+r.scEmail+'" onclick="event.stopPropagation()" style="color:var(--teal);text-decoration:none">'+r.scEmail+'</a>':"—")+'</td>';
+h+='<td style="padding:8px 6px"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:'+col+'12;color:'+col+';border:1px solid '+col+'25">'+(r.stage||"Enquiry")+'</span></td>';
 h+='</tr>'});
 if(leadsData.length===0)h+='</tbody></table></div><div style="padding:30px;text-align:center;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">✅</div><div style="font-size:13px;font-weight:600">No leads found</div><div style="font-size:11px;margin-top:4px">Leads will load from the Leads table in Airtable</div></div>';
 else h+='</tbody></table></div>';
@@ -18087,12 +18163,12 @@ h+='</div>';rp.innerHTML=h}
 
 function filterLeadsList(){
 var q=(document.getElementById("leadsSearch")||{}).value||"";q=q.toLowerCase();
-var scF=leadsScFilter||"";
+var stgF=leadsStageFilterVal||"";
 document.querySelectorAll("#leadsTbody tr").forEach(function(row){
 var idx=parseInt(row.getAttribute("data-lidx"));var r=leadsData[idx];if(!r){row.style.display="none";return}
-var matchText=!q||(r.name||"").toLowerCase().indexOf(q)>=0||(r.suburb||"").toLowerCase().indexOf(q)>=0||(r.disabilityType||"").toLowerCase().indexOf(q)>=0||(r.scName||"").toLowerCase().indexOf(q)>=0||(r.scEmail||"").toLowerCase().indexOf(q)>=0||(r.source||"").toLowerCase().indexOf(q)>=0;
-var matchSc=!scF||(r.scEmail||"").toLowerCase()===scF;
-row.style.display=(matchText&&matchSc)?"":"none"})}
+var matchText=!q||(r.name||"").toLowerCase().indexOf(q)>=0||(r.disabilityType||"").toLowerCase().indexOf(q)>=0||(r.scName||"").toLowerCase().indexOf(q)>=0||(r.scEmail||"").toLowerCase().indexOf(q)>=0||(r.source||"").toLowerCase().indexOf(q)>=0;
+var matchStage=!stgF||(r.stage||"Enquiry")===stgF;
+row.style.display=(matchText&&matchStage)?"":"none"})}
 
 function updateLeadStage(idx,newStage){
 var r=leadsData[idx];if(!r)return;r.stage=newStage;
@@ -18116,7 +18192,7 @@ var _ldDays=_ldDate&&!isNaN(_ldDate)?Math.floor((_ldNow-_ldDate)/(1000*60*60*24)
 var _ldDateStr=r.date?TitusDate.format(r.date):"";
 var _ldDateColor=_ldDays!==null&&_ldDays>60?"var(--error)":_ldDays!==null&&_ldDays>45?"var(--warning)":"var(--muted)";
 h+='<div class="kanban-card" draggable="'+(canEdit("leads_kanban")?"true":"false")+'" ondragstart="leadsDragStart(event,'+globalIdx+')" data-leadidx="'+globalIdx+'">';
-h+='<div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">👤 '+(r.name||"—")+'</div>';
+h+='<div onclick="openLeadDetail('+globalIdx+')" style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:3px;cursor:pointer" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">👤 '+(r.name||"—")+'</div>';
 if(r.refNum)h+='<div style="font-size:9px;color:var(--dim);margin-bottom:4px">'+r.refNum+'</div>';
 if(r.disabilityType)h+='<div style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:6px;background:rgba(139,92,246,.08);color:#8B5CF6;display:inline-block;margin-bottom:4px">📋 '+r.disabilityType+'</div>';
 if(_ldDateStr)h+='<div style="font-size:9px;color:'+_ldDateColor+';margin-bottom:2px">📅 Received: '+_ldDateStr+'</div>';
@@ -18141,6 +18217,44 @@ var idx=parseInt(e.dataTransfer.getData("text/plain"));var r=leadsData[idx];if(!
 r.stage=newStage;
 if(r.airtableId)apiCall("PATCH","/api/leads/"+r.airtableId,{stage:newStage}).catch(function(){});
 renderLeadsKanban(document.getElementById("rightPanel"))}
+
+function openLeadDetail(idx){
+var r=leadsData[idx];if(!r)return;
+var rp=document.getElementById("rightPanel");
+var col=leadsColors[r.stage||"Enquiry"]||"var(--muted)";
+var dateStr=r.date?TitusDate.format(r.date):"—";
+var createdStr=r.createdAt?TitusDate.format(r.createdAt):"—";
+var _lNow=new Date();var _lDt=r.date?new Date(r.date):null;
+var _lDays=_lDt&&!isNaN(_lDt)?Math.floor((_lNow-_lDt)/(1000*60*60*24)):null;
+var h='<div style="padding:24px;overflow-y:auto;height:100%">';
+h+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px"><button onclick="renderLeads()" style="padding:6px 12px;font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--surface);color:var(--muted);border-radius:var(--rs);cursor:pointer;font-family:inherit">← Back</button>';
+h+='<div><div style="font-size:18px;font-weight:700;color:var(--text)">'+(r.name||"Unknown Lead")+'</div>';
+h+='<div style="font-size:11px;color:var(--muted)">'+(r.refNum||"")+(r.refNum?" · ":"")+'Added '+createdStr+'</div></div>';
+h+='<span style="margin-left:auto;font-size:12px;font-weight:700;padding:4px 12px;border-radius:8px;background:'+col+'12;color:'+col+';border:1px solid '+col+'25">'+(r.stage||"Enquiry")+'</span></div>';
+// Stage selector
+h+='<div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap">';
+leadsStages.forEach(function(st){var sc=leadsColors[st]||"var(--muted)";var isActive=(r.stage||"Enquiry")===st;h+='<button onclick="leadsData['+idx+'].stage=\''+st+'\';if(leadsData['+idx+'].airtableId)apiCall(\'PATCH\',\'/api/leads/\'+leadsData['+idx+'].airtableId,{stage:\''+st+'\'});openLeadDetail('+idx+')" style="padding:6px 14px;font-size:11px;font-weight:'+(isActive?"700":"500")+';border:1px solid '+sc+'30;background:'+(isActive?sc+'18':'var(--surface)')+';color:'+sc+';border-radius:var(--rs);cursor:pointer;font-family:inherit">'+st+'</button>'});
+h+='</div>';
+// Detail cards
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">';
+// Left column - Client Info
+h+='<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px">';
+h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Client Information</div>';
+var fields=[{l:"Full Name",v:r.name},{l:"Email",v:r.email},{l:"Phone",v:r.phone},{l:"Suburb",v:r.suburb},{l:"Disability Type",v:r.disabilityType},{l:"NDIS Number",v:r.ndisNumber},{l:"Service Type",v:r.serviceType},{l:"Source",v:r.source}];
+fields.forEach(function(f){h+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="color:var(--muted);font-weight:600">'+f.l+'</span><span style="color:var(--text);font-weight:500;text-align:right">'+(f.v||"—")+'</span></div>'});
+h+='</div>';
+// Right column - Support Coordinator + Dates
+h+='<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px">';
+h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Support Coordinator</div>';
+var scFields=[{l:"SC Name",v:r.scName},{l:"SC Email",v:r.scEmail?'<a href="mailto:'+r.scEmail+'" style="color:var(--teal)">'+r.scEmail+'</a>':""},{l:"SC Mobile",v:r.scMobile}];
+scFields.forEach(function(f){h+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="color:var(--muted);font-weight:600">'+f.l+'</span><span style="color:var(--text);font-weight:500;text-align:right">'+(f.v||"—")+'</span></div>'});
+h+='<div style="margin-top:16px;font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Timeline</div>';
+var dateFields=[{l:"Date Received",v:dateStr},{l:"Created",v:createdStr},{l:"Days Since Enquiry",v:_lDays!==null?_lDays+" days":"—"},{l:"Last Modified",v:r.lastModified?TitusDate.format(r.lastModified):"—"},{l:"Assignee",v:r.assignee}];
+dateFields.forEach(function(f){h+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="color:var(--muted);font-weight:600">'+f.l+'</span><span style="color:var(--text);font-weight:500;text-align:right">'+(f.v||"—")+'</span></div>'});
+h+='</div></div>';
+// Notes
+if(r.notes){h+='<div style="margin-top:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px"><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px">Notes</div><div style="font-size:12px;color:var(--text2);line-height:1.6;white-space:pre-wrap">'+r.notes+'</div></div>'}
+h+='</div>';rp.innerHTML=h}
 
 // ═══════════════════════════════════════════════
 // ═══ TIME & ATTENDANCE ADMIN VIEW ═══
@@ -18248,7 +18362,7 @@ var adminEditingUser=null;
 var adminDocTemplates=[];
 
 function renderAdmin(){var rp=document.getElementById("rightPanel");
-Promise.all([apiCall("GET","/api/admin/users"),apiCall("GET","/api/admin/templates"),apiCall("GET","/api/doc-templates?all=1")]).then(function(res){
+Promise.all([apiCall("GET","/api/admin/users"),apiCall("GET","/api/admin/templates"),apiCall("GET","/api/documents/templates?all=1")]).then(function(res){
 adminUsers=res[0]||[];adminTemplates=res[1]||[];adminDocTemplates=res[2]||[];renderAdminContent(rp);
 }).catch(function(){renderAdminContent(rp)})}
 
@@ -18258,8 +18372,8 @@ h+='<div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:4
 h+='<div style="font-size:12px;color:var(--muted);margin-bottom:16px">Manage users, job titles, and granular access control</div>';
 // Tabs
 h+='<div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px">';
-["users","permMatrix","templates","docTemplates","abnCompliance","portalLinks","timezone","emailSig","knowledgeBase","automations"].forEach(function(t){
-var label=t==="users"?"👥 Users ("+adminUsers.length+")":t==="permMatrix"?"🔐 Permission Matrix":t==="templates"?"📋 Job Title Templates":t==="docTemplates"?"📄 Document Templates":t==="abnCompliance"?"🔍 ABN Compliance":t==="portalLinks"?"🔗 Portal Links":t==="timezone"?"🕐 Timezone":t==="emailSig"?"📧 Email Signature":t==="knowledgeBase"?"🧠 Denise Knowledge Base":"⚙️ Automations";
+["users","permMatrix","templates","docTemplates","timezone","knowledgeBase","automations"].forEach(function(t){
+var label=t==="users"?"👥 Users ("+adminUsers.length+")":t==="permMatrix"?"🔐 Permission Matrix":t==="templates"?"📋 Job Title Templates":t==="docTemplates"?"📄 Document Templates":t==="timezone"?"🕐 Timezone":t==="knowledgeBase"?"🧠 Denise Knowledge Base":"⚙️ Automations";
 var active=adminTab===t;
 h+='<button onclick="adminTab=\''+t+'\';renderAdminContent(document.getElementById(\'rightPanel\'))" style="padding:10px 20px;font-size:12px;font-weight:'+(active?"700":"500")+';color:'+(active?"var(--teal)":"var(--muted)")+';border:none;border-bottom:2px solid '+(active?"var(--teal)":"transparent")+';background:none;cursor:pointer;font-family:inherit;margin-bottom:-2px">'+label+'</button>'});
 h+='</div>';
@@ -18268,9 +18382,6 @@ if(adminTab==="users")h+=renderAdminUsers();
 else if(adminTab==="permMatrix")h+=renderPermMatrix();
 else if(adminTab==="templates")h+=renderAdminTemplates();
 else if(adminTab==="docTemplates")h+=renderAdminDocTemplates();
-else if(adminTab==="abnCompliance")h+=renderABNCompliance();
-else if(adminTab==="portalLinks")h+=renderPortalLinks();
-else if(adminTab==="emailSig")h+=renderAdminEmailSig();
 else if(adminTab==="knowledgeBase")h+=renderKnowledgeBaseTab();
 else if(adminTab==="automations")h+=renderAutomationsTab();
 else h+=renderAdminTimezone();
@@ -18828,7 +18939,7 @@ grp.keys.forEach(function(pk){
 h+='<tr style="border-bottom:1px solid var(--border)">';
 h+='<td style="position:sticky;left:0;z-index:1;background:var(--surface);padding:7px 12px 7px 24px;color:var(--text);font-weight:500;white-space:nowrap">'+pk.icon+' '+pk.label+'</td>';
 roles.forEach(function(r){
-var isLocked=(r.key==="superadmin"||r.key==="director");
+var isLocked=(r.key==="superadmin");
 var val=isLocked?"edit":(matrix[r.key]||{})[pk.key]||"none";
 var bg=val==="edit"?"var(--green)":val==="view"?"#3B82F6":"var(--border)";
 var knobPos=val==="none"?"left:2px":"right:2px";
@@ -19515,7 +19626,7 @@ var formData=new FormData();
 formData.append("file",file);
 var headers={};
 if(token)headers["Authorization"]="Bearer "+token;
-fetch("/api/doc-templates/upload",{method:"POST",headers:headers,body:formData}).then(function(r){return r.json()}).then(function(data){
+fetch("/api/documents/templates/upload",{method:"POST",headers:headers,body:formData}).then(function(r){return r.json()}).then(function(data){
 if(data.error){if(statusEl)statusEl.innerHTML='<span style="color:var(--red)">❌ '+data.error+'</span>';return}
 
 if(mode==="new"){
@@ -19524,7 +19635,7 @@ if(statusEl)statusEl.innerHTML='<span style="color:#059669">✅ File ready</span
 renderAdminContent(document.getElementById("rightPanel"));
 }else{
 // Attach file to existing template via PATCH
-apiCall("PATCH","/api/doc-templates/"+templateId,{fileUrl:data.url,fileName:data.filename}).then(function(patchData){
+apiCall("PATCH","/api/documents/templates/"+templateId,{fileUrl:data.url,fileName:data.filename}).then(function(patchData){
 if(patchData.error){if(statusEl)statusEl.innerHTML='<span style="color:var(--red)">❌ '+patchData.error+'</span>';return}
 if(statusEl)statusEl.innerHTML='<span style="color:#059669">✅ File uploaded & attached!</span>';
 // Refresh
@@ -19580,7 +19691,7 @@ var t=adminDocTemplates.find(function(t){return t.id===templateId});
 if(!t)return;
 var statusEl=document.getElementById("docTplSFStatus_"+templateId);
 if(statusEl)statusEl.innerHTML='<span style="color:#F59E0B">⏳ Saving...</span>';
-apiCall("PATCH","/api/doc-templates/"+templateId,{signingFields:t.signingFields||[]}).then(function(data){
+apiCall("PATCH","/api/documents/templates/"+templateId,{signingFields:t.signingFields||[]}).then(function(data){
 if(data.error){if(statusEl)statusEl.innerHTML='<span style="color:var(--red)">❌ '+data.error+'</span>';return}
 if(statusEl)statusEl.innerHTML='<span style="color:#059669;font-weight:700">✅ Saved!</span>';
 setTimeout(function(){if(statusEl)statusEl.innerHTML="";renderAdminContent(document.getElementById("rightPanel"))},1200);
@@ -19603,7 +19714,7 @@ function toggleNomineeRequiredOnTemplate(tplId, newVal){
   if(!tpl.signerConfig)tpl.signerConfig={participantRequired:true,nomineeRequired:false,providerCountersign:true};
   tpl.signerConfig.nomineeRequired=newVal;
   // Save to Airtable
-  apiCall("PATCH","/api/doc-templates/"+tplId,{signerConfig:JSON.stringify(tpl.signerConfig)}).then(function(){
+  apiCall("PATCH","/api/documents/templates/"+tplId,{signerConfig:JSON.stringify(tpl.signerConfig)}).then(function(){
     loadAdminData();
   }).catch(function(e){console.error("signerConfig update error:",e)});
 }
@@ -19613,7 +19724,7 @@ function toggleProviderSignOnTemplate(tplId, newVal){
   if(!tpl)return;
   if(!tpl.signerConfig)tpl.signerConfig={participantRequired:true,nomineeRequired:false,providerCountersign:true};
   tpl.signerConfig.providerCountersign=newVal;
-  apiCall("PATCH","/api/doc-templates/"+tplId,{signerConfig:JSON.stringify(tpl.signerConfig)}).then(function(){
+  apiCall("PATCH","/api/documents/templates/"+tplId,{signerConfig:JSON.stringify(tpl.signerConfig)}).then(function(){
     loadAdminData();
   }).catch(function(e){console.error("signerConfig update error:",e)});
 }
@@ -20096,7 +20207,7 @@ function sendDocWithSignerWorkflow(docCategory){
     distributionNames:_sdpDistRecipients.map(function(r){return r.name})
   };
 
-  apiCall("POST","/api/doc-signing/send",sendPayload).then(function(data){
+  apiCall("POST","/api/documents/signing/send",sendPayload).then(function(data){
     if(data.error){if(statusEl)statusEl.innerHTML='<span style="color:var(--red)">❌ '+data.error+'</span>';if(btn){btn.disabled=false;btn.textContent="📤 Send for Signing"}return}
 
     var successMsg='<span style="color:#059669;font-weight:700">✅ Signing request sent to '+c.name+'</span>';
@@ -20114,7 +20225,7 @@ function sendDocWithSignerWorkflow(docCategory){
         signerRole:"nominee",
         parentSigningToken:data.token
       };
-      apiCall("POST","/api/doc-signing/send",nomineePayload).then(function(d2){
+      apiCall("POST","/api/documents/signing/send",nomineePayload).then(function(d2){
         if(!d2.error){
           successMsg+='<br><span style="color:#7C3AED;font-size:10px">+ Nominee link also created for '+client.nominee+'</span>';
         }
@@ -20175,7 +20286,7 @@ payload.fileUrl=_pendingTemplateFile.url;
 payload.fileName=_pendingTemplateFile.filename;
 }
 
-apiCall("POST","/api/doc-templates",payload).then(function(data){
+apiCall("POST","/api/documents/templates",payload).then(function(data){
 if(data.error){if(statusEl)statusEl.innerHTML='<span style="color:var(--red)">❌ '+data.error+'</span>';return}
 if(statusEl)statusEl.innerHTML='<span style="color:#059669;font-weight:700">✅ Template created!</span>';
 _pendingTemplateFile=null;
@@ -20186,7 +20297,7 @@ setTimeout(function(){renderAdmin()},800);
 
 function deleteDocTemplate(id){
 if(!confirm("Delete this document template? This cannot be undone."))return;
-apiCall("DELETE","/api/doc-templates/"+id).then(function(){renderAdmin()}).catch(function(e){alert("Error: "+e.message)});
+apiCall("DELETE","/api/documents/templates/"+id).then(function(){renderAdmin()}).catch(function(e){alert("Error: "+e.message)});
 }
 
 function updateDocTplStatus(id){
@@ -20194,7 +20305,7 @@ var sel=document.getElementById("docTplStatus_"+id);
 var statusEl=document.getElementById("docTplActionStatus_"+id);
 if(!sel)return;
 if(statusEl)statusEl.innerHTML='<span style="color:#F59E0B">⏳ Updating...</span>';
-apiCall("PATCH","/api/doc-templates/"+id,{status:sel.value}).then(function(){
+apiCall("PATCH","/api/documents/templates/"+id,{status:sel.value}).then(function(){
 if(statusEl)statusEl.innerHTML='<span style="color:#059669;font-weight:700">✅ Updated</span>';
 var t=adminDocTemplates.find(function(t){return t.id===id});
 if(t)t.status=sel.value;
@@ -20209,7 +20320,7 @@ var max=(document.getElementById("docTplMaxReminders_"+id)||{}).value||"3";
 var via=(document.getElementById("docTplReminderVia_"+id)||{}).value||"Email";
 var statusEl=document.getElementById("docTplActionStatus_"+id);
 
-apiCall("PATCH","/api/doc-templates/"+id,{
+apiCall("PATCH","/api/documents/templates/"+id,{
 reminderEnabled:enabled,reminderDays:parseInt(days),maxReminders:parseInt(max),reminderVia:via
 }).then(function(){
 var t=adminDocTemplates.find(function(t){return t.id===id});
@@ -21957,35 +22068,18 @@ var h='<div style="padding:24px;overflow-y:auto;height:100%">';
 h+='<div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px">👥 Contacts Overview</div>';
 h+='<div style="font-size:12px;color:var(--muted);margin-bottom:20px">Summary of all contacts in the system</div>';
 
-// Summary cards
-h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">';
-h+='<div style="padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);text-align:center;border-left:4px solid var(--teal)"><div style="font-size:28px;font-weight:700;color:var(--text)">'+total+'</div><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-top:4px">Total Contacts</div></div>';
-h+='<div style="padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);text-align:center;border-left:4px solid #3B82F6"><div style="font-size:28px;font-weight:700;color:#3B82F6">'+activeClients+'</div><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-top:4px">Active Clients</div></div>';
-h+='<div style="padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);text-align:center;border-left:4px solid #10B981"><div style="font-size:28px;font-weight:700;color:#10B981">'+activeStaff+'</div><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-top:4px">Active Staff</div></div>';
-h+='<div style="padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);text-align:center;border-left:4px solid #F59E0B"><div style="font-size:28px;font-weight:700;color:#F59E0B">'+newThisMonth+'</div><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-top:4px">New This Month</div></div>';
-h+='</div>';
-
-// Compliance snapshot + type breakdown side-by-side
-h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">';
-
-// Compliance snapshot
-h+='<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px">';
-h+='<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px">🛡 Compliance Snapshot</div>';
-h+='<div id="complianceSnapshot" style="text-align:center;color:var(--muted);font-size:12px"><div class="spin" style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 8px"></div>Loading...</div>';
-h+='</div>';
-
-// Type breakdown
+// Type breakdown (full width)
+h+='<div style="margin-bottom:24px">';
 h+='<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px">';
 h+='<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px">📊 Contact Type Breakdown</div>';
 sortedTypes.slice(0,8).forEach(function(t){
 var pct=total>0?Math.round(typeCount[t]/total*100):0;
-var colors={"SIL Client":"#3B82F6","Community Client":"#6366F1","Support Worker":"#10B981","Team Leader":"#F59E0B","Independent Contractor":"#8B5CF6","Roster Officer":"#EC4899"};
+var colors={"NDIS Client (Active)":"#3B82F6","NDIS Client (Prospect)":"#F59E0B","SIL Client":"#3B82F6","Community Client":"#6366F1","Employee":"#10B981","Independant Contractor":"#8B5CF6","Support Worker":"#10B981","Team Leader":"#F59E0B","Independent Contractor":"#8B5CF6","Roster Officer":"#EC4899","Jobseeker":"#EA580C"};
 var col=colors[t]||"var(--teal)";
 h+='<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span style="color:var(--text);font-weight:600">'+t+'</span><span style="color:var(--muted)">'+typeCount[t]+' ('+pct+'%)</span></div>';
 h+='<div style="height:6px;background:var(--surface2);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+col+';border-radius:3px;transition:width .3s"></div></div></div>';
 });
-h+='</div>';
-h+='</div>';
+h+='</div></div>';
 
 // Recently added contacts
 h+='<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px">';
@@ -22009,22 +22103,6 @@ h+='</tbody></table>';
 h+='</div>';
 h+='</div>';
 rp.innerHTML=h;
-
-// Load compliance snapshot async
-apiCall("GET","/api/compliance/dashboard").then(function(d){
-var snap=document.getElementById("complianceSnapshot");
-if(!snap)return;
-var sh='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">';
-sh+='<div style="text-align:center"><div style="font-size:20px;font-weight:700;color:#10B981">'+(d.compliant||0)+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Compliant</div></div>';
-sh+='<div style="text-align:center"><div style="font-size:20px;font-weight:700;color:#F59E0B">'+(d.partial||0)+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Partial</div></div>';
-sh+='<div style="text-align:center"><div style="font-size:20px;font-weight:700;color:#EF4444">'+(d.nonCompliant||0)+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase">Non-Compliant</div></div>';
-sh+='</div>';
-if(d.expiringIn30Days){sh+='<div style="margin-top:12px;padding:8px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:11px;color:#F59E0B;font-weight:600;text-align:center">⚠ '+d.expiringIn30Days+' document(s) expiring in 30 days</div>'}
-snap.innerHTML=sh;
-}).catch(function(){
-var snap=document.getElementById("complianceSnapshot");
-if(snap)snap.innerHTML='<div style="color:var(--muted);font-size:11px">Unable to load compliance data</div>';
-});
 }
 
 // ═══════════════════════════════════════════════
@@ -22035,7 +22113,7 @@ var courseLibSearch="";
 function renderCourseLibrary(){
 var rp=document.getElementById("rightPanel");
 rp.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)"><div class="spin" style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%"></div></div>';
-apiCall("GET","/api/courses").then(function(d){
+apiCall("GET","/api/lms/courses").then(function(d){
 courseLibData=d||[];
 renderCourseLibContent(rp);
 }).catch(function(){courseLibData=[];renderCourseLibContent(rp)});
@@ -22101,7 +22179,7 @@ var description=document.getElementById("courseDescInput").value.trim();
 if(!name){showToast("Course name is required","error");return}
 var body={name:name,category:category,description:description};
 var method=editId?"PATCH":"POST";
-var url=editId?"/api/courses/"+editId:"/api/courses";
+var url=editId?"/api/lms/courses/"+editId:"/api/lms/courses";
 apiCall(method,url,body).then(function(d){
 showToast(editId?"Course updated":"Course created","success");
 var modal=document.getElementById("courseModal");if(modal)modal.remove();
@@ -22111,7 +22189,7 @@ renderCourseLibrary();
 
 function deleteCourse(id){
 if(!confirm("Delete this course? This cannot be undone."))return;
-apiCall("DELETE","/api/courses/"+id).then(function(d){
+apiCall("DELETE","/api/lms/courses/"+id).then(function(d){
 showToast("Course deleted","success");
 renderCourseLibrary();
 }).catch(function(e){showToast("Error: "+e.message,"error")});

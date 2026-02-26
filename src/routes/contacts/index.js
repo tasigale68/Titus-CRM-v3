@@ -271,6 +271,32 @@ router.get('/history', function (req, res) {
     .catch(function (err) { console.error('Contact History error:', err); res.json([]); });
 });
 
+// ═══ POST /api/contacts/history — add a new contact history note ═══
+router.post('/history', function (req, res) {
+  if (!env.airtable.apiKey) return res.json({ error: 'Airtable not configured' });
+  var type = req.body.type || 'staff'; // 'client' or 'staff'
+  var tableName = type === 'client' ? 'Client Contact History' : 'Employee Contact History';
+  var fields = {};
+  fields['Date & Time of Contact'] = new Date().toISOString();
+  if (req.body.method) fields['Method of Contact'] = [req.body.method];
+  if (req.body.reason) fields['Reason for Contact'] = [req.body.reason];
+  if (req.body.summary) fields['Summarise'] = req.body.summary;
+  if (req.body.name && type === 'staff') fields['Employees Full Name'] = req.body.name;
+  if (req.body.name && type === 'client') fields['Client Name'] = req.body.name;
+  if (req.user && req.user.name) fields['Staff Name'] = req.user.name;
+
+  airtable.rawFetch(tableName, 'POST', '', { records: [{ fields: fields }] })
+    .then(function (data) {
+      if (data.error) return res.json({ error: data.error.message || 'Failed to create' });
+      if (data.records && data.records.length > 0) {
+        res.json({ ok: true, id: data.records[0].id });
+      } else {
+        res.json({ error: 'No record created' });
+      }
+    })
+    .catch(function (err) { res.json({ error: err.message }); });
+});
+
 // ═══ GET /api/contacts/progress-notes ═══
 router.get('/progress-notes', function (req, res) {
   if (!env.airtable.apiKey) return res.json([]);
@@ -722,6 +748,122 @@ router.delete('/:id', function (req, res) {
       res.json({ success: true });
     })
     .catch(function (err) { res.status(500).json({ error: err.message }); });
+});
+
+// ═══ PAY RATES (Contractor & TFN) ═══
+// These are separate Airtable tables containing rate cards
+
+// GET /api/contacts/pay-rates/contractor — contractor rate table
+router.get('/pay-rates/contractor', function (req, res) {
+  if (!env.airtable.apiKey) return res.json([]);
+  airtable.fetchAllFromTable('SW Independant Contractor Rates').then(function (records) {
+    var result = (records || []).map(function (r) {
+      var f = r.fields || {};
+      return {
+        id: r.id,
+        name: f['Name'] || f['Level'] || f['Rate Name'] || '',
+        weekday: f['Weekday per hour (6am to 8pm)'] || f['Weekday'] || '',
+        weeknight: f['Weeknight (8pm to 6am)'] || f['Weeknight'] || '',
+        saturday: f['Saturday'] || '',
+        sunday: f['Sunday'] || '',
+        pubHolidays: f['Public Holidays'] || f['Public Holiday'] || '',
+        sleepover: f['Sleepover (per sleep)'] || f['Sleepover'] || '',
+        description: f['Criteria'] || f['Description'] || f['Notes'] || ''
+      };
+    });
+    res.json(result);
+  }).catch(function (e) { console.error('Contractor pay rates error:', e.message); res.json([]); });
+});
+
+// GET /api/contacts/pay-rates/tfn — TFN employee rate table
+router.get('/pay-rates/tfn', function (req, res) {
+  if (!env.airtable.apiKey) return res.json([]);
+  airtable.fetchAllFromTable('TFN Pay Rates').then(function (records) {
+    var result = (records || []).map(function (r) {
+      var f = r.fields || {};
+      return {
+        id: r.id,
+        payLevel: f['Pay Level'] || f['Name'] || f['Level'] || '',
+        dayRate: f['Day Rate'] || f['Weekday'] || '',
+        afternoon: f['Afternoon'] || f['Afternoon Rate'] || '',
+        night: f['Night'] || f['Night Rate'] || '',
+        saturday: f['Saturday'] || '',
+        sunday: f['Sunday'] || '',
+        pubHolidays: f['Public Holidays'] || f['Public Holiday'] || '',
+        sleepover: f['Sleepover'] || f['Sleepover (per sleep)'] || '',
+        lastUpdated: f['Last Modified'] || f['Last Updated'] || ''
+      };
+    });
+    res.json(result);
+  }).catch(function (e) { console.error('TFN pay rates error:', e.message); res.json([]); });
+});
+
+// ═══ STAFF AVAILABILITY / LEAVE ═══
+
+// GET /api/contacts/staff-availability — get leave records for a staff member
+router.get('/staff-availability', function (req, res) {
+  if (!env.airtable.apiKey) return res.json([]);
+  var email = req.query.email || '';
+  if (!email) return res.json([]);
+  var formula = "FIND('" + email.replace(/'/g, "\\'") + "', {Email})";
+  airtable.fetchAllFromTable(airtable.TABLES.STAFF_AVAILABILITY, formula).then(function (records) {
+    var result = (records || []).map(function (r) {
+      var f = r.fields || {};
+      return {
+        id: r.id,
+        startDate: f['Start Date'] || f['From'] || '',
+        endDate: f['End Date'] || f['To'] || '',
+        leaveType: f['Leave Type'] || f['Type'] || f['Reason'] || '',
+        status: f['Status'] || f['Approval Status'] || 'Pending',
+        reason: f['Reason'] || f['Notes'] || f['Comments'] || '',
+        totalDays: f['Total Days'] || f['Days'] || 0,
+        employmentType: f['Employment Type'] || '',
+        approvedBy: f['Approved By'] || '',
+        approvedDate: f['Approved Date'] || '',
+        statusComments: f['Status Comments'] || f['Decline Reason'] || ''
+      };
+    });
+    result.sort(function (a, b) { return (b.startDate || '').localeCompare(a.startDate || ''); });
+    res.json(result);
+  }).catch(function (e) { console.error('Staff availability error:', e.message); res.json([]); });
+});
+
+// POST /api/contacts/staff-availability — create leave request
+router.post('/staff-availability', function (req, res) {
+  if (!env.airtable.apiKey) return res.json({ error: 'Airtable not configured' });
+  var fields = {};
+  if (req.body.startDate) fields['Start Date'] = req.body.startDate;
+  if (req.body.endDate) fields['End Date'] = req.body.endDate;
+  if (req.body.leaveType) fields['Leave Type'] = req.body.leaveType;
+  if (req.body.status) fields['Status'] = req.body.status;
+  if (req.body.reason) fields['Reason'] = req.body.reason;
+  if (req.body.employmentType) fields['Employment Type'] = req.body.employmentType;
+  if (req.body.requiresApproval) fields['Requires Approval'] = req.body.requiresApproval;
+  if (req.body.contactRecordId) fields['Contact'] = [req.body.contactRecordId];
+  if (req.user && req.user.email) fields['Email'] = req.user.email;
+  airtable.rawFetch(airtable.TABLES.STAFF_AVAILABILITY, 'POST', '', { records: [{ fields: fields }] })
+    .then(function (data) {
+      if (data.error) return res.json({ error: data.error.message || 'Failed to create' });
+      if (data.records && data.records[0]) res.json({ ok: true, id: data.records[0].id });
+      else res.json({ error: 'No record created' });
+    })
+    .catch(function (err) { res.json({ error: err.message }); });
+});
+
+// PATCH /api/contacts/staff-availability/:id — update leave request (approve/decline)
+router.patch('/staff-availability/:id', function (req, res) {
+  if (!env.airtable.apiKey) return res.json({ error: 'Airtable not configured' });
+  var fields = {};
+  if (req.body.status) fields['Status'] = req.body.status;
+  if (req.body.approvedBy) fields['Approved By'] = req.body.approvedBy;
+  if (req.body.approvedDate) fields['Approved Date'] = req.body.approvedDate;
+  if (req.body.statusComments) fields['Status Comments'] = req.body.statusComments;
+  airtable.rawFetch(airtable.TABLES.STAFF_AVAILABILITY, 'PATCH', '/' + req.params.id, { fields: fields })
+    .then(function (data) {
+      if (data.error) return res.json({ error: data.error.message || 'Update failed' });
+      res.json({ ok: true });
+    })
+    .catch(function (err) { res.json({ error: err.message }); });
 });
 
 module.exports = router;

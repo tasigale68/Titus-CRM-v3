@@ -181,6 +181,8 @@ const TABLES = {
   ROC_PARTICIPANTS: 'RoC Participants',
   ROC_SHIFTS: 'RoC Shifts',
   LEADS: 'Leads',
+  TASKS: 'Tasks',
+  COURSE_LIST: 'Course List',
 };
 
 module.exports = {

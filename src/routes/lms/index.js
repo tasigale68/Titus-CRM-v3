@@ -20,13 +20,15 @@ router.get('/courses', function (req, res) {
     var result = (records || []).map(function (r) {
       var f = r.fields || {};
       return {
+        id: r.id,
         airtableId: r.id,
-        name: f['Name'] || '',
+        name: f['Name'] || f['Course Name'] || '',
         category: f['Category'] || '',
         description: f['Course Description'] || f['Description'] || '',
         frequency: f['Frequency of Delivery (months)'] || f['Frequency'] || '',
         status: f['Status of Course'] || f['Status'] || '',
-        duration: f['Time in Minutes'] || f['Duration'] || ''
+        duration: f['Time in Minutes'] || f['Duration'] || '',
+        moduleCount: f['Module Count'] || f['Modules'] || 0
       };
     });
     console.log('LMS: Found ' + result.length + ' courses');
@@ -35,6 +37,41 @@ router.get('/courses', function (req, res) {
     console.error('LMS error:', e.message);
     res.json([]);
   });
+});
+
+// POST /api/lms/courses — create course
+router.post('/courses', function (req, res) {
+  if (!env.airtable.apiKey) return res.json({ error: 'Airtable not configured' });
+  var fields = {};
+  if (req.body.name) fields['Name'] = req.body.name;
+  if (req.body.category) fields['Category'] = req.body.category;
+  if (req.body.description) fields['Course Description'] = req.body.description;
+  fields['Status of Course'] = 'Active';
+  airtable.rawFetch('Course List', 'POST', '', { records: [{ fields: fields }] }).then(function (data) {
+    if (data.records && data.records[0]) res.json({ success: true, id: data.records[0].id });
+    else res.json({ error: 'Failed to create course' });
+  }).catch(function (err) { res.json({ error: err.message }); });
+});
+
+// PATCH /api/lms/courses/:id — update course
+router.patch('/courses/:id', function (req, res) {
+  if (!env.airtable.apiKey) return res.json({ error: 'Airtable not configured' });
+  var fields = {};
+  if (req.body.name) fields['Name'] = req.body.name;
+  if (req.body.category) fields['Category'] = req.body.category;
+  if (req.body.description !== undefined) fields['Course Description'] = req.body.description;
+  airtable.rawFetch('Course List', 'PATCH', '/' + req.params.id, { fields: fields }).then(function (data) {
+    if (data.error) return res.json({ error: data.error.message || 'Update failed' });
+    res.json({ success: true });
+  }).catch(function (err) { res.json({ error: err.message }); });
+});
+
+// DELETE /api/lms/courses/:id — archive course
+router.delete('/courses/:id', function (req, res) {
+  if (!env.airtable.apiKey) return res.json({ error: 'Airtable not configured' });
+  airtable.rawFetch('Course List', 'PATCH', '/' + req.params.id, { fields: { 'Status of Course': 'Archived' } }).then(function () {
+    res.json({ success: true });
+  }).catch(function (err) { res.json({ error: err.message }); });
 });
 
 // ═══════════════════════════════════════════════════════════
