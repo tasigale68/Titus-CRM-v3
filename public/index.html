@@ -1320,8 +1320,14 @@ function loadMessengerConversations(){
 apiCall("GET","/api/chat/conversations").then(function(data){
 var convs=Array.isArray(data)?data:[];
 var list=document.getElementById("msgConvList");if(!list)return;
-if(convs.length===0){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px">No conversations yet.<br>Click <b>+ New</b> to start one.</div>';return}
-var h="";convs.forEach(function(c){
+// Tab bar: Internal Chats | Worker Channels
+var tabs='<div style="display:flex;border-bottom:1px solid var(--border);flex-shrink:0">';
+tabs+='<button onclick="_msgTab=\'chats\';loadMessengerConversations()" style="flex:1;padding:8px;font-size:11px;font-weight:600;border:none;cursor:pointer;font-family:inherit;background:'+(_msgTab==="chats"?"var(--surface2)":"transparent")+';color:'+(_msgTab==="chats"?"var(--teal)":"var(--muted)")+';border-bottom:'+(_msgTab==="chats"?"2px solid var(--teal)":"2px solid transparent")+'">Internal Chats</button>';
+tabs+='<button onclick="_msgTab=\'workers\';loadWorkerChannels()" style="flex:1;padding:8px;font-size:11px;font-weight:600;border:none;cursor:pointer;font-family:inherit;background:'+(_msgTab==="workers"?"var(--surface2)":"transparent")+';color:'+(_msgTab==="workers"?"var(--teal)":"var(--muted)")+';border-bottom:'+(_msgTab==="workers"?"2px solid var(--teal)":"2px solid transparent")+'">Worker Channels</button>';
+tabs+='</div>';
+if(_msgTab==="workers"){loadWorkerChannels();return}
+if(convs.length===0){list.innerHTML=tabs+'<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px">No conversations yet.<br>Click <b>+ New</b> to start one.</div>';return}
+var h=tabs;convs.forEach(function(c){
 var lastMsg=(c.lastMessage||c.last_message||"");
 var timeStr=c.lastMessageTime||c.updated_at||"";
 if(timeStr)timeStr=TitusDate.formatDayDateTime(timeStr);
@@ -1334,6 +1340,107 @@ if(c.unreadCount>0)h+='<span style="background:var(--teal);color:#fff;font-size:
 h+='</div>'});
 list.innerHTML=h
 }).catch(function(){var list=document.getElementById("msgConvList");if(list)list.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:11px">Could not load conversations</div>'})}
+var _msgTab="chats";
+function loadWorkerChannels(){
+apiCall("GET","/api/messenger/admin/all-channels").then(function(channels){
+var list=document.getElementById("msgConvList");if(!list)return;
+var tabs='<div style="display:flex;border-bottom:1px solid var(--border);flex-shrink:0">';
+tabs+='<button onclick="_msgTab=\'chats\';loadMessengerConversations()" style="flex:1;padding:8px;font-size:11px;font-weight:600;border:none;cursor:pointer;font-family:inherit;background:transparent;color:var(--muted);border-bottom:2px solid transparent">Internal Chats</button>';
+tabs+='<button onclick="_msgTab=\'workers\';loadWorkerChannels()" style="flex:1;padding:8px;font-size:11px;font-weight:600;border:none;cursor:pointer;font-family:inherit;background:var(--surface2);color:var(--teal);border-bottom:2px solid var(--teal)">Worker Channels</button>';
+tabs+='</div>';
+var h=tabs;
+h+='<div style="padding:8px;display:flex;gap:6px"><button onclick="showCreateChannelForm()" style="flex:1;padding:6px;font-size:10px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:6px;cursor:pointer;font-family:inherit">+ New Channel</button>';
+h+='<button onclick="showDMWorkerForm()" style="flex:1;padding:6px;font-size:10px;font-weight:600;background:rgba(10,147,150,.1);color:var(--teal);border:1px solid rgba(10,147,150,.2);border-radius:6px;cursor:pointer;font-family:inherit">DM Worker</button></div>';
+if(!channels||channels.length===0){h+='<div style="text-align:center;padding:30px;color:var(--muted);font-size:12px">No worker channels yet</div>';list.innerHTML=h;return}
+channels.forEach(function(c){
+var icons={group:'📋',broadcast:'📢',direct:'💬'};
+var icon=icons[c.type]||'💬';
+h+='<div onclick="openWorkerChannelThread('+c.id+')" style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:10px" onmouseover="this.style.background=\'var(--surface2)\'" onmouseout="this.style.background=\'none\'">';
+h+='<div style="width:36px;height:36px;border-radius:50%;background:rgba(37,99,235,.1);color:#2563eb;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">'+icon+'</div>';
+h+='<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--text)">'+(c.name||"Channel")+' <span style="font-size:9px;color:var(--muted);font-weight:400">'+(c.type==="broadcast"?"read-only":"")+'</span></div>';
+h+='<div style="font-size:10px;color:var(--muted)">'+(c.member_count||0)+' members · '+(c.message_count||0)+' messages</div></div></div>'});
+list.innerHTML=h
+}).catch(function(){var list=document.getElementById("msgConvList");if(list)list.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:11px">Could not load worker channels</div>'})}
+function openWorkerChannelThread(channelId){
+_messengerActiveConv="wc:"+channelId;
+var popup=document.getElementById("messengerPopup");if(!popup)return;
+apiCall("GET","/api/messenger/channels/"+channelId).then(function(data){
+var msgs=data.messages||[];
+var title=data.name||"Channel";
+var h='<div style="padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0">';
+h+='<button onclick="loadWorkerChannels();var tv=document.getElementById(\'msgThreadView\');if(tv)tv.remove();document.getElementById(\'msgConvList\').style.display=\'block\'" style="background:none;border:none;font-size:16px;cursor:pointer;color:var(--muted)">←</button>';
+h+='<span style="font-size:13px;font-weight:700;color:var(--text)">'+title+'</span>';
+h+='<span style="font-size:9px;color:var(--muted);margin-left:auto">'+(data.members||[]).length+' members</span></div>';
+h+='<div id="msgThreadMsgs" style="flex:1;overflow-y:auto;padding:12px">';
+msgs.forEach(function(m){
+var isMe=m.sender_email===(currentUser&&currentUser.email);
+var timeStr=m.created_at?TitusDate.formatDayDateTime(m.created_at):"";
+// Special message types
+if(m.message_type==="announcement"||m.message_type==="running_late"||m.message_type==="shift_swap"||m.message_type==="incident_alert"){
+var colors={announcement:"#2454A0",running_late:"#F59E0B",shift_swap:"#00B4D8",incident_alert:"#EF4444"};
+var labels={announcement:"📢 Announcement",running_late:"⏰ Running Late",shift_swap:"🔄 Shift Swap",incident_alert:"🚨 Alert"};
+h+='<div style="padding:10px 12px;border-radius:10px;border:1px solid '+(colors[m.message_type]||"#666")+'30;background:'+(colors[m.message_type]||"#666")+'08;margin-bottom:8px">';
+h+='<div style="font-size:10px;font-weight:700;color:'+(colors[m.message_type]||"var(--muted)")+';text-transform:uppercase;margin-bottom:3px">'+(labels[m.message_type]||m.message_type)+'</div>';
+h+='<div style="font-size:12px;color:var(--text)">'+(m.content||"")+'</div>';
+h+='<div style="font-size:9px;color:var(--muted);margin-top:4px">'+(m.sender_name||"")+" · "+timeStr+'</div></div>';
+return}
+h+='<div style="display:flex;flex-direction:column;align-items:'+(isMe?"flex-end":"flex-start")+';margin-bottom:8px">';
+h+='<div style="font-size:9px;color:var(--muted);margin-bottom:2px">'+(m.sender_name||"")+(m.sender_type==="admin"?" (Admin)":"")+(timeStr?" · "+timeStr:"")+'</div>';
+h+='<div style="max-width:80%;padding:8px 12px;border-radius:12px;font-size:12px;background:'+(isMe?"var(--teal)":"var(--surface2)")+';color:'+(isMe?"#fff":"var(--text)")+'">'+(m.content||"")+'</div></div>'});
+h+='</div>';
+// Compose area
+h+='<div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0">';
+h+='<input id="msgComposeInput" placeholder="Type a message..." style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:20px;font-size:12px;font-family:inherit;background:var(--surface);outline:none" onkeydown="if(event.key===\'Enter\')sendWorkerChannelMsg('+channelId+')">';
+h+='<button onclick="sendWorkerChannelMsg('+channelId+')" style="padding:6px 12px;font-size:12px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:20px;cursor:pointer;font-family:inherit">Send</button></div>';
+var convList=document.getElementById("msgConvList");if(convList)convList.style.display="none";
+var threadDiv=document.createElement("div");threadDiv.id="msgThreadView";threadDiv.style.cssText="display:flex;flex-direction:column;flex:1;overflow:hidden";
+threadDiv.innerHTML=h;popup.appendChild(threadDiv);
+setTimeout(function(){var area=document.getElementById("msgThreadMsgs");if(area)area.scrollTop=area.scrollHeight},100)
+}).catch(function(){showToast("Could not load channel","error")})}
+function sendWorkerChannelMsg(channelId){
+var input=document.getElementById("msgComposeInput");if(!input||!input.value.trim())return;
+var content=input.value.trim();input.value="";
+apiCall("POST","/api/messenger/channels/"+channelId+"/message",{content:content,message_type:"text"}).then(function(){
+openWorkerChannelThread(channelId)
+}).catch(function(){showToast("Send failed","error")})}
+function showCreateChannelForm(){
+var list=document.getElementById("msgConvList");if(!list)return;
+var h='<div style="padding:16px"><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Create Worker Channel</div>';
+h+='<input id="wcName" placeholder="Channel name (e.g. My House Team)" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;background:var(--surface);outline:none;margin-bottom:8px;box-sizing:border-box">';
+h+='<input id="wcDesc" placeholder="Description..." style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;background:var(--surface);outline:none;margin-bottom:8px;box-sizing:border-box">';
+h+='<label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-bottom:8px"><input type="checkbox" id="wcReadOnly"> Read-only (announcements only)</label>';
+h+='<label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-bottom:12px"><input type="checkbox" id="wcPinned"> Pinned at top</label>';
+h+='<div style="display:flex;gap:6px"><button onclick="_msgTab=\'workers\';loadWorkerChannels()" style="flex:1;padding:8px;font-size:11px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-family:inherit">Cancel</button>';
+h+='<button onclick="submitCreateChannel()" style="flex:1;padding:8px;font-size:11px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:6px;cursor:pointer;font-family:inherit">Create</button></div></div>';
+list.innerHTML=h}
+function submitCreateChannel(){
+var name=(document.getElementById("wcName")||{}).value;
+var desc=(document.getElementById("wcDesc")||{}).value;
+var readOnly=document.getElementById("wcReadOnly")&&document.getElementById("wcReadOnly").checked;
+var pinned=document.getElementById("wcPinned")&&document.getElementById("wcPinned").checked;
+if(!name){showToast("Channel name required","error");return}
+apiCall("POST","/api/messenger/channels",{name:name,description:desc,read_only:readOnly,pinned:pinned,type:readOnly?"broadcast":"group"}).then(function(){
+showToast("Channel created","success");_msgTab="workers";loadWorkerChannels()
+}).catch(function(){showToast("Failed to create channel","error")})}
+function showDMWorkerForm(){
+apiCall("GET","/api/messenger/admin/workers").then(function(workers){
+var list=document.getElementById("msgConvList");if(!list)return;
+var h='<div style="padding:16px"><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px">Message a Support Worker</div>';
+h+='<input id="dmWorkerSearch" placeholder="Search workers..." oninput="filterDMWorkers()" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;background:var(--surface);outline:none;margin-bottom:8px;box-sizing:border-box">';
+h+='<div id="dmWorkerList" style="max-height:340px;overflow-y:auto">';
+if(!workers||workers.length===0){h+='<div style="padding:20px;text-align:center;color:var(--muted);font-size:11px">No support workers registered yet</div>'}
+(workers||[]).forEach(function(w){
+h+='<div onclick="startWorkerDM(\''+w.email+'\',\''+escHtml(w.full_name||w.email)+'\')" style="padding:8px 10px;border-bottom:1px solid var(--border);cursor:pointer;font-size:12px;display:flex;align-items:center;gap:8px" onmouseover="this.style.background=\'var(--surface2)\'" onmouseout="this.style.background=\'none\'">';
+h+='<div style="width:28px;height:28px;border-radius:50%;background:rgba(37,99,235,.1);color:#2563eb;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">'+getInitials(w.full_name||w.email)+'</div>';
+h+='<div><div style="font-weight:600;color:var(--text)">'+(w.full_name||w.email)+'</div><div style="font-size:10px;color:var(--muted)">'+(w.type_of_employment||w.contact_type||"Support Worker")+'</div></div></div>'});
+h+='</div></div>';
+list.innerHTML=h
+}).catch(function(){showToast("Could not load workers","error")})}
+function filterDMWorkers(){var q=(document.getElementById("dmWorkerSearch")||{}).value.toLowerCase();document.querySelectorAll("#dmWorkerList > div").forEach(function(el){el.style.display=el.textContent.toLowerCase().indexOf(q)>=0?"":"none"})}
+function startWorkerDM(email,name){
+apiCall("POST","/api/messenger/admin/direct",{worker_email:email,worker_name:name}).then(function(d){
+if(d&&d.id)openWorkerChannelThread(d.id);else loadWorkerChannels()
+}).catch(function(){showToast("Could not start DM","error")})}
 function openMsgThread(convId){
 _messengerActiveConv=convId;
 var popup=document.getElementById("messengerPopup");if(!popup)return;

@@ -30,6 +30,7 @@ const supportWorkerRoutes = require('./routes/support-worker');
 const adminRoutes = require('./routes/admin');
 const deniseRoutes = require('./routes/denise-agent');
 const chatRoutes = require('./routes/chat');
+const messengerRoutes = require('./routes/messenger');
 
 // Initialize
 const app = express();
@@ -84,9 +85,11 @@ app.use('/api/leads', leadsRoutes);
 app.use('/api/accommodation', accommodationRoutes);
 app.use('/api/budget', budgetRoutes);
 app.use('/api/support-worker', supportWorkerRoutes);
+app.use('/api/sw', supportWorkerRoutes); // Shorthand alias used by PWA frontend
 app.use('/api/admin', adminRoutes);
 app.use('/api/denise-agent', deniseRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/messenger', messengerRoutes);
 
 // ═══════════════════════════════════════════════════════
 //  Health check
@@ -105,6 +108,24 @@ io.on('connection', (socket) => {
 
   socket.on('join', (room) => {
     socket.join(room);
+  });
+
+  // Messenger: join channel rooms
+  socket.on('messenger:join', (channelId) => {
+    socket.join('messenger:' + channelId);
+  });
+
+  socket.on('messenger:leave', (channelId) => {
+    socket.leave('messenger:' + channelId);
+  });
+
+  // Messenger: typing indicator
+  socket.on('messenger:typing', (data) => {
+    socket.to('messenger:' + data.channel_id).emit('messenger:typing', {
+      channel_id: data.channel_id,
+      user: data.user,
+      typing: data.typing
+    });
   });
 
   socket.on('disconnect', () => {

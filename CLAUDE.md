@@ -100,3 +100,22 @@ npm run worker              # Background sync process
 ## Migration from Titus Voice
 
 This project replaces `~/Titus-Voice-version-2-/`. Route stubs marked with `// TODO: migrate` are ready for logic to be ported from the original `server/index.js`. Each route module is self-contained — migrate one domain at a time.
+
+## Active Skills
+
+Claude Code skills are installed in `.claude/skills/` and auto-activate based on context. Available skills:
+
+| Skill | Description | Use When |
+|-------|-------------|----------|
+| **ui-ux-pro-max** | Design intelligence with BM25 search across styles, palettes, fonts, UX guidelines | UI/UX redesigns, design system generation, accessibility audits |
+| **awesome-claude-code** | Curated Claude Code ecosystem knowledge + repo security evaluation | Evaluating new skills/plugins, finding community tools |
+| **n8n-mcp** | MCP server bridging n8n workflow automation with AI assistants | Building automation workflows, n8n integration |
+| **remotion** | Programmatic video creation with React (9 sub-skills) | Video generation, motion graphics, automated media |
+| **cookbook-audit** | Anthropic cookbook notebook review rubric and scoring | Reviewing Jupyter notebooks against style guide |
+| **financial-models** | DCF analysis, Monte Carlo simulation, sensitivity testing, scenario planning | Investment analysis, valuations, risk assessment |
+| **financial-statements** | Financial ratio calculator (profitability, liquidity, leverage, valuation) | Analyzing company financials, ratio analysis |
+| **brand-guidelines** | Corporate branding standards for documents (colors, fonts, layouts) | Generating branded reports, presentations, PDFs |
+
+### Workflow System
+
+**Get Shit Done (GSD)** is installed globally at `~/.claude/get-shit-done/`. Use `/gsd:help` for available commands including project planning, phase execution, codebase mapping, and debugging workflows.
