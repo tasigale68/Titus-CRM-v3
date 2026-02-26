@@ -2403,9 +2403,9 @@ var jsAppliedFor=c.appliedForRole||(jsRecruitMatch?jsRecruitMatch.appliedFor:"")
 // Always show for Jobseekers even if fields are empty
 var showRecruitCard=(c.contactType==="Jobseeker")||jsRecruitStage||jsDateApplied||jsAppliedFor;
 if(showRecruitCard){
-  var rsBadgeCol=kanbanColors[jsRecruitStage||"Applied"]||"var(--royal)";
+  var rsBadgeCol=kanbanColors[jsRecruitStage||"CV Received"]||"var(--royal)";
   html+='<div style="text-align:center;margin-bottom:16px;padding:14px 16px;background:'+rsBadgeCol+'06;border:1px solid '+rsBadgeCol+'15;border-radius:12px">';
-  html+='<div style="margin-bottom:8px"><span style="display:inline-block;padding:6px 20px;border-radius:10px;font-size:16px;font-weight:800;background:'+rsBadgeCol+'10;color:'+rsBadgeCol+';border:2px solid '+rsBadgeCol+'30">🏷️ '+(jsRecruitStage||"Applied")+'</span></div>';
+  html+='<div style="margin-bottom:8px"><span style="display:inline-block;padding:6px 20px;border-radius:10px;font-size:16px;font-weight:800;background:'+rsBadgeCol+'10;color:'+rsBadgeCol+';border:2px solid '+rsBadgeCol+'30">🏷️ '+(jsRecruitStage||"CV Received")+'</span></div>';
   html+='<div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap">';
   if(jsDateApplied){
     var fmtDate=jsDateApplied;
@@ -12246,7 +12246,7 @@ function autoIndicatorDot(r){
 function renderRecruitOverview(rp){
   var total=recruitData.length;
   var bySt={};V8_STAGES.forEach(function(s){bySt[s]=0});
-  recruitData.forEach(function(r){var st=r.stage||"Applied";if(bySt[st]!==undefined)bySt[st]++;else bySt["Applied"]++});
+  recruitData.forEach(function(r){var st=r.stage||"CV Received";if(bySt[st]!==undefined)bySt[st]++;else bySt["CV Received"]++});
   var h='<div style="padding:24px;overflow-y:auto;height:100%">';
   h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div><div style="font-size:22px;font-weight:700;color:var(--text)">Recruitment Pipeline</div><div style="font-size:13px;color:var(--muted)">'+total+' candidate'+(total!==1?"s":"")+'</div></div>';
   h+='<div style="display:flex;align-items:center;gap:6px">'+recruitAutoToggleHtml()+'</div></div>';
@@ -12272,7 +12272,7 @@ function renderRecruitOverview(rp){
   h+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
   h+='<thead><tr style="border-bottom:2px solid var(--border)">';
   h+='<th style="padding:8px 4px;width:30px"><input type="checkbox" onchange="toggleAllRecruitChecks(this.checked)" id="recruitCheckAll"></th>';
-  ["Name","Email","Applied","Stage","Type","Score","Days"].forEach(function(col){
+  ["Name","Email","Applied","Last Updated","Stage","Type","Score","Days"].forEach(function(col){
     h+='<th style="padding:8px 6px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">'+col+'</th>'});
   h+='</tr></thead><tbody id="recruitOverviewTbody">';
   recruitData.forEach(function(r,idx){h+=buildOverviewRow(r,idx)});
@@ -12282,8 +12282,9 @@ function renderRecruitOverview(rp){
 }
 
 function buildOverviewRow(r,idx){
-  var col=V8_COLORS[r.stage||"Applied"]||"var(--muted)";
+  var col=V8_COLORS[r.stage||"CV Received"]||"var(--muted)";
   var dateApplied=r.dateApplied||"";if(dateApplied){dateApplied=TitusDate.format(dateApplied)}
+  var lastEditStr=r.lastEdited?TitusDate.format(r.lastEdited):"";
   var fullName=r.fullName||(r.firstName||"")+" "+(r.lastName||"");
   var days=daysInStage(r.dateApplied);
   var dayCol=days>7?'var(--error)':days>3?'var(--warning)':'var(--dim)';
@@ -12292,7 +12293,8 @@ function buildOverviewRow(r,idx){
   h+='<td style="padding:6px"><a href="#" onclick="openRecruitDetail('+idx+');return false" style="font-weight:700;color:var(--royal);text-decoration:none;font-size:12px">'+fullName.trim()+'</a> '+autoIndicatorDot(r)+'</td>';
   h+='<td style="padding:6px;font-size:11px;color:var(--muted);font-family:JetBrains Mono,monospace">'+(r.email||"")+'</td>';
   h+='<td style="padding:6px;font-size:11px;white-space:nowrap">'+dateApplied+'</td>';
-  h+='<td style="padding:6px"><span style="padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;background:'+col+'15;color:'+col+'">'+(r.stage||"Applied")+'</span></td>';
+  h+='<td style="padding:6px;font-size:10px;white-space:nowrap;color:var(--muted)">'+lastEditStr+'</td>';
+  h+='<td style="padding:6px"><span style="padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;background:'+col+'15;color:'+col+'">'+(r.stage||"CV Received")+'</span></td>';
   h+='<td style="padding:6px">'+empTypeBadge(r.employmentType)+'</td>';
   h+='<td style="padding:6px">'+scoreBadge(r.totalScore)+'</td>';
   h+='<td style="padding:6px"><span style="font-size:10px;font-weight:600;color:'+dayCol+'">'+days+'d</span></td>';
@@ -12308,7 +12310,7 @@ function filterRecruitOverview(stageFilt){
   rows.forEach(function(row){
     var idx=parseInt(row.getAttribute("data-oidx"));var r=recruitData[idx];if(!r){row.style.display="none";return}
     var matchQ=!q||((r.firstName||"")+" "+(r.lastName||"")+" "+(r.email||"")).toLowerCase().indexOf(q)>=0;
-    var matchSt=!sf||(r.stage||"Applied")===sf;
+    var matchSt=!sf||(r.stage||"CV Received")===sf;
     var matchEmp=!ef||(r.employmentType||"")===ef;
     row.style.display=(matchQ&&matchSt&&matchEmp)?"":"none";
   });
@@ -12334,7 +12336,7 @@ function applyBulkStage(){
 
 function updateRecruitStageOverview(idx,newStage){
   var r=recruitData[idx];if(!r)return;
-  var oldStage=r.stage||"Applied";r.stage=newStage;
+  var oldStage=r.stage||"CV Received";r.stage=newStage;
   if(r.airtableId){
     apiCall("POST","/api/recruit/stage-change",{candidateId:r.airtableId,fromStage:oldStage,toStage:newStage}).then(function(d){
       showToast("Stage updated to "+newStage,"success");
@@ -12375,7 +12377,7 @@ function renderRecruitKanban(rp){
   h+='<div class="kanban-wrap" style="gap:8px">';
   V8_STAGES.forEach(function(stage){
     var col=V8_COLORS[stage];
-    var stageItems=recruitData.filter(function(r){return(r.stage||"Applied")===stage&&(!r.archived||recruitShowArchived)});
+    var stageItems=recruitData.filter(function(r){return(r.stage||"CV Received")===stage&&(!r.archived||recruitShowArchived)});
     h+='<div class="kanban-col" data-stage="'+stage+'" style="min-width:180px">';
     h+='<div class="kanban-col-hdr" style="color:'+col+';border-top:3px solid '+col+';padding:8px 10px"><div style="display:flex;align-items:center;justify-content:space-between;width:100%"><span style="font-size:11px;font-weight:700">'+stage+'</span><span style="background:'+col+'15;color:'+col+';padding:2px 6px;border-radius:8px;font-size:10px;font-weight:700">'+stageItems.length+'</span></div></div>';
     h+='<div class="kanban-col-body" ondragover="kanbanDragOver(event)" ondragleave="kanbanDragLeave(event)" ondrop="kanbanDrop(event,\''+stage.replace(/'/g,"\\'")+'\')" style="padding:4px;min-height:60px">';
@@ -12393,14 +12395,17 @@ function renderRecruitKanban(rp){
       if(r.email)h+='<div style="font-size:9px;color:var(--muted);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px">'+r.email+'</div>';
       h+='<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">';
       if(dateStr)h+='<span style="font-size:9px;color:var(--dim)">'+dateStr+'</span>';
+      if(r.lastEdited){var _leStr=TitusDate.format(r.lastEdited);h+='<span style="font-size:8px;color:var(--muted)" title="Last updated">✏️ '+_leStr+'</span>';}
       h+='<span style="font-size:9px;font-weight:600;color:'+dayCol+'">'+days+'d</span>';
       h+=empTypeBadge(r.employmentType);
       h+=scoreBadge(r.totalScore);
+      if(r.videoInterviewCompleted)h+='<span style="font-size:9px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(16,185,129,.08);color:#10B981;border:1px solid rgba(16,185,129,.15)" title="Video interview completed">📹 ✓</span>';
+      else if(r.stage==="In-Person Interview"||r.stage==="Phone Interview")h+='<span style="font-size:9px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(245,158,11,.08);color:#F59E0B;border:1px solid rgba(245,158,11,.15)" title="Video interview pending">📹 ?</span>';
       if(r.cvUrl)h+='<a href="'+r.cvUrl+'" target="_blank" onclick="event.stopPropagation()" style="font-size:9px;color:var(--teal);text-decoration:none;font-weight:600">📎</a>';
       h+='</div>';
       // Next stage button
       if(!recruitBulkMode&&canEdit("recruit_kanban")){
-        var stIdx=V8_STAGES.indexOf(r.stage||"Applied");
+        var stIdx=V8_STAGES.indexOf(r.stage||"CV Received");
         if(stIdx>=0&&stIdx<V8_STAGES.length-3){
           h+='<button onclick="event.stopPropagation();moveToNextStage('+globalIdx+')" style="margin-top:4px;font-size:9px;font-weight:600;padding:2px 8px;border-radius:4px;border:1px solid '+col+'40;background:'+col+'10;color:'+col+';cursor:pointer;width:100%">→ Next Stage</button>';
         }
@@ -12470,10 +12475,10 @@ function bulkMarkUnsuccessful(){
 
 function moveToNextStage(idx){
   var r=recruitData[idx];if(!r)return;
-  var curIdx=V8_STAGES.indexOf(r.stage||"Applied");
+  var curIdx=V8_STAGES.indexOf(r.stage||"CV Received");
   if(curIdx<0||curIdx>=V8_STAGES.length-1)return;
   var next=V8_STAGES[curIdx+1];
-  var old=r.stage||"Applied";
+  var old=r.stage||"CV Received";
   r.stage=next;
   apiCall("POST","/api/recruit/stage-change",{candidateId:r.airtableId,fromStage:old,toStage:next}).then(function(d){
     showToast("Moved to "+next,"success");
@@ -12490,7 +12495,7 @@ function kanbanDrop(e,newStage){
   e.preventDefault();e.currentTarget.classList.remove("drag-over");
   if(_dragIdx===null||_dragIdx===undefined)return;
   var r=recruitData[_dragIdx];if(!r)return;
-  var oldStage=r.stage||"Applied";
+  var oldStage=r.stage||"CV Received";
   if(oldStage===newStage){_dragIdx=null;return}
   r.stage=newStage;
   if(r.airtableId){
@@ -12504,7 +12509,7 @@ function kanbanDrop(e,newStage){
 
 function updateRecruitStage(idx,newStage){
   var r=recruitData[idx];if(!r)return;
-  var old=r.stage||"Applied";r.stage=newStage;
+  var old=r.stage||"CV Received";r.stage=newStage;
   if(r.airtableId){
     apiCall("POST","/api/recruit/stage-change",{candidateId:r.airtableId,fromStage:old,toStage:newStage}).then(function(){
       showToast("Stage updated","success");
@@ -12526,7 +12531,7 @@ function renderRecruitList(rp){
   h+='<input id="recruitSearch" oninput="filterRecruitList()" placeholder="Search candidates..." style="width:100%;max-width:400px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);margin-bottom:12px;outline:none">';
   h+='<div style="overflow-x:auto"><table id="recruitTable" style="width:100%;border-collapse:collapse;font-size:12px">';
   h+='<thead><tr style="border-bottom:2px solid var(--border)">';
-  ["Name","Email","Phone","Applied For","Date","Stage","Type","Score"].forEach(function(col){
+  ["Name","Email","Phone","Applied For","Date","Last Updated","Stage","Type","Score"].forEach(function(col){
     h+='<th style="padding:10px 8px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">'+col+'</th>'});
   h+='</tr></thead><tbody id="recruitTbody">';
   recruitData.forEach(function(r,idx){h+=buildRecruitRow(r,idx)});
@@ -12534,8 +12539,9 @@ function renderRecruitList(rp){
 }
 
 function buildRecruitRow(r,idx){
-  var col=V8_COLORS[r.stage||"Applied"]||"var(--muted)";
+  var col=V8_COLORS[r.stage||"CV Received"]||"var(--muted)";
   var dateApplied=r.dateApplied||"";if(dateApplied){dateApplied=TitusDate.format(dateApplied)}
+  var lastEditStr=r.lastEdited?TitusDate.format(r.lastEdited):"";
   var fullName=r.fullName||(r.firstName||"")+" "+(r.lastName||"");
   var h='<tr data-ridx="'+idx+'" style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'">';
   h+='<td style="padding:8px"><a href="#" onclick="openRecruitDetail('+idx+');return false" style="font-weight:700;color:var(--royal);text-decoration:none">'+fullName.trim()+'</a> '+autoIndicatorDot(r)+'</td>';
@@ -12543,8 +12549,9 @@ function buildRecruitRow(r,idx){
   h+='<td style="padding:8px;font-size:11px">'+(r.phone||"")+'</td>';
   h+='<td style="padding:8px;font-size:11px;font-weight:600;color:var(--royal)">'+(r.appliedFor||"")+'</td>';
   h+='<td style="padding:8px;font-size:11px;white-space:nowrap">'+dateApplied+'</td>';
+  h+='<td style="padding:8px;font-size:10px;white-space:nowrap;color:var(--muted)">'+lastEditStr+'</td>';
   h+='<td style="padding:8px"><select onchange="updateRecruitStage('+idx+',this.value)" '+(canEdit("recruit_list")?"":"disabled")+' style="padding:3px 6px;border-radius:6px;font-size:10px;font-weight:600;border:1px solid '+col+'30;background:'+col+'10;color:'+col+';font-family:inherit;cursor:'+(canEdit("recruit_list")?"pointer":"default")+'">';
-  V8_STAGES.forEach(function(st){h+='<option value="'+st+'"'+((r.stage||"Applied")===st?" selected":"")+'>'+st+'</option>'});
+  V8_STAGES.forEach(function(st){h+='<option value="'+st+'"'+((r.stage||"CV Received")===st?" selected":"")+'>'+st+'</option>'});
   h+='</select></td>';
   h+='<td style="padding:8px">'+empTypeBadge(r.employmentType)+'</td>';
   h+='<td style="padding:8px">'+scoreBadge(r.totalScore)+'</td>';
@@ -12615,7 +12622,7 @@ function createNewCandidate(){
   var email=(document.getElementById("ncEmail")||{}).value||"";
   var mobile=(document.getElementById("ncMobile")||{}).value||"";
   if(!firstName||!lastName||!email||!mobile){showToast("Fill in all required fields","error");return}
-  var stage=(document.getElementById("ncStage")||{}).value||"Applied";
+  var stage=(document.getElementById("ncStage")||{}).value||"CV Received";
   var empType=(document.getElementById("ncEmpType")||{}).value||"";
   var role=(document.getElementById("ncRole")||{}).value||"";
   var notes=(document.getElementById("ncNotes")||{}).value||"";
@@ -12683,13 +12690,13 @@ function renderRecruitDetailPanel(){
   document.body.appendChild(backdrop);
 
   var fullName=r.fullName||(r.firstName||"")+" "+(r.lastName||"");
-  var col=V8_COLORS[r.stage||"Applied"]||"var(--muted)";
+  var col=V8_COLORS[r.stage||"CV Received"]||"var(--muted)";
   var h='';
   // Header
   h+='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:1">';
   h+='<div><div style="font-size:16px;font-weight:700;color:var(--text)">'+fullName+'</div>';
   h+='<div style="font-size:11px;color:var(--muted);margin-top:2px">'+(r.email||"")+(r.phone?' · '+r.phone:'')+'</div></div>';
-  h+='<div style="display:flex;align-items:center;gap:8px"><span style="padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;background:'+col+'15;color:'+col+'">'+(r.stage||"Applied")+'</span>';
+  h+='<div style="display:flex;align-items:center;gap:8px"><span style="padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;background:'+col+'15;color:'+col+'">'+(r.stage||"CV Received")+'</span>';
   h+='<button onclick="document.getElementById(\'recruitDetailOverlay\').remove();document.getElementById(\'recruitDetailBackdrop\').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button></div></div>';
 
   // Tabs
@@ -12720,7 +12727,7 @@ function renderDetailProfile(r){
   // Stage selector
   h+='<div style="margin-bottom:16px"><label style="font-size:10px;font-weight:600;color:var(--muted)">Pipeline Stage</label><br>';
   h+='<select onchange="changeDetailStage(this.value)" style="padding:8px 12px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;margin-top:4px">';
-  V8_STAGES.forEach(function(s){h+='<option value="'+s+'"'+((r.stage||"Applied")===s?' selected':'')+'>'+s+'</option>'});
+  V8_STAGES.forEach(function(s){h+='<option value="'+s+'"'+((r.stage||"CV Received")===s?' selected':'')+'>'+s+'</option>'});
   h+='</select></div>';
   // Employment type
   h+='<div style="margin-bottom:16px"><label style="font-size:10px;font-weight:600;color:var(--muted)">Employment Type</label><br>';
@@ -12754,7 +12761,7 @@ function renderDetailProfile(r){
 
 function changeDetailStage(newStage){
   var r=recruitDetailCandidate;if(!r)return;
-  var old=r.stage||"Applied";r.stage=newStage;
+  var old=r.stage||"CV Received";r.stage=newStage;
   apiCall("POST","/api/recruit/stage-change",{candidateId:r.airtableId,fromStage:old,toStage:newStage}).then(function(){
     showToast("Stage updated to "+newStage,"success");
     renderRecruitDetailPanel();
@@ -12932,7 +12939,7 @@ function triggerRefereeCall(n){
 
 // ─── Tab 5: Onboarding ───
 function renderDetailOnboarding(r){
-  if(V8_STAGES.indexOf(r.stage||"Applied")<V8_STAGES.indexOf("Onboarding")){
+  if(V8_STAGES.indexOf(r.stage||"CV Received")<V8_STAGES.indexOf("Onboarding")){
     return '<div style="padding:20px;text-align:center;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">🔒</div><div style="font-size:13px;font-weight:600">Onboarding tab activates when candidate reaches the Onboarding stage</div></div>';
   }
   var af=r.allFields||{};
@@ -14277,32 +14284,6 @@ h+='<button class="btn btn-p" onclick="lmsBackToCatalog()">'+(passed?'\u{1F3C6} 
 h+='</div></div>';
 rp.innerHTML=h;
 }
-
-function enrollCandidate(){
-var candidateId=(document.getElementById('lmsCandidate')||{}).value;
-var courseSelect=document.getElementById('lmsCourseSelect');
-var msgEl=document.getElementById('lmsEnrollMsg');
-if(!candidateId){if(msgEl)msgEl.innerHTML='<span style="color:var(--red)">Please select a candidate</span>';return;}
-var selectedCourses=[];
-if(courseSelect){for(var i=0;i<courseSelect.options.length;i++){if(courseSelect.options[i].selected)selectedCourses.push(lmsCourses[parseInt(courseSelect.options[i].value)]);}}
-if(selectedCourses.length===0){if(msgEl)msgEl.innerHTML='<span style="color:var(--red)">Please select at least one course</span>';return;}
-var candidate=contacts.find(function(c){return(c.id||c.airtable_id)===candidateId;});
-if(msgEl)msgEl.innerHTML='<span style="color:var(--muted)">Enrolling...</span>';
-var enrollNext=function(idx){
-if(idx>=selectedCourses.length){
-if(msgEl)msgEl.innerHTML='<span style="color:var(--green)">\u2705 '+(candidate?candidate.name:'Candidate')+' enrolled in '+selectedCourses.length+' course'+(selectedCourses.length!==1?'s':'')+'!</span>';
-return;
-}
-var c=selectedCourses[idx];
-apiCall('POST','/api/lms/enroll-v2',{
-staffId:candidateId,courseId:c.airtableId,courseName:c.name,staffName:candidate?candidate.name:''
-}).then(function(){enrollNext(idx+1);}).catch(function(e){
-if(msgEl)msgEl.innerHTML='<span style="color:var(--red)">\u274C Error: '+e.message+'</span>';
-});
-};
-enrollNext(0);
-}
-
 
 function enrollCandidate(){
   var sel=document.getElementById("lmsCandidate");
