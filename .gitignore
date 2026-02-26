@@ -1,0 +1,10 @@
+node_modules/
+.env
+*.db
+*.db-shm
+*.db-wal
+uploads/cv-temp/*
+uploads/doc-scan/*
+!uploads/cv-temp/.gitkeep
+!uploads/doc-scan/.gitkeep
+.DS_Store

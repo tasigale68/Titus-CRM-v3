@@ -1,0 +1,89 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code when working with this repository.
+
+## Project Overview
+
+Titus CRM is an AI-powered operations platform for **Delta Community Support (DCS)**, an NDIS disability services provider in Brisbane, AU. This is a modular rewrite of the original Titus Voice monolith (17,000+ line single-file Express app).
+
+## Commands
+
+- **Start server:** `npm start` (runs `node src/server.js` on port 3000)
+- **Dev mode:** `npm run dev` (auto-restart with `--watch`)
+- **Install deps:** `npm install` (requires Python 3, make, g++ for better-sqlite3)
+- **Docker build:** `docker build -t titus-crm .`
+
+## Architecture
+
+### Modular Express backend
+
+```
+src/
+├── server.js              # Entry point — mounts all route modules
+├── config/
+│   ├── env.js             # Environment variables (centralized)
+│   └── upload.js          # Multer file upload configs
+├── db/
+│   └── sqlite.js          # SQLite connection + migrations (legacy)
+├── middleware/
+│   ├── auth.js            # Session auth, role guards
+│   └── error-handler.js   # Global error handler
+├── services/
+│   └── airtable.js        # Airtable CRUD with rate limiting
+└── routes/
+    ├── auth/              # Login, logout, session management
+    ├── contacts/          # CRM contacts (Airtable)
+    ├── voice/             # Twilio calls, SMS, ElevenLabs webhooks
+    ├── scheduling/        # Rosters, shifts, roster of care
+    ├── clients/           # Client profiles, budgets, progress notes
+    ├── recruitment/       # HR pipeline, CV scan, referee calls
+    ├── reports/           # Ops reports, stakeholder reports (Claude AI)
+    ├── email/             # Microsoft Graph email integration
+    ├── lms/               # Learning management system
+    ├── documents/         # Signing, scanning, agreements
+    ├── tasks/             # Tasks and projects (SQLite)
+    ├── compliance/        # Audit log, incidents, tickets
+    ├── receipts/          # Receipt upload and OCR
+    ├── leads/             # Lead management
+    ├── accommodation/     # SIL properties
+    ├── budget/            # NDIS budget tracking
+    └── support-worker/    # Support worker PWA (OTP auth)
+```
+
+### Data layer
+
+- **Airtable** — primary CRM database (temporary). Base ID: `appg3Cz7mEsGA6IOI`. Stores contacts, clients, rosters, budgets, progress notes, incidents, courses, etc. **Supabase migration planned in 4-6 weeks.**
+- **SQLite** (`better-sqlite3`, WAL mode) — legacy local data: users, sessions, calls, SMS, tasks, audit logs. DB path uses `RAILWAY_VOLUME_MOUNT_PATH` in production.
+
+### External integrations
+
+- **Twilio** — calls (hunt group routing), SMS, WebRTC browser dialer, recording
+- **ElevenLabs** — AI voice agent ("Denise") fallback, post-call transcripts
+- **Anthropic Claude API** — ops reports, CV scanning, receipt OCR, AI chat, compliance scanning
+- **Microsoft Graph** — email sync and sending (OAuth client credentials)
+- **Airtable REST API** — all CRM data with pagination and rate limiting
+
+### Authentication
+
+Session-based auth using SQLite. SHA-256 password hashing. Token from `x-auth-token` header or `authToken` cookie. Roles: superadmin, director, admin, team_leader, roster_officer, manager, ceo, office_staff, support_worker. Support worker PWA uses separate OTP-based auth.
+
+### Key domain concepts
+
+- **NDIS** — National Disability Insurance Scheme (Australian)
+- **SIL** — Supported Independent Living (24/7 residential)
+- **CAS** — Community Access Support
+- **SOS** — Schedule of Support (funding document)
+- **Hunt groups** — Sequential call routing to available staff before AI fallback
+- **RoC** — Roster of Care
+
+### Deployment
+
+Production on **Railway** (auto-deploy on push to main). Uses Railway persistent volume for SQLite.
+
+## Environment Variables
+
+See `.env.example` for the full list.
+
+## Migration from Titus Voice
+
+This project replaces `~/Titus-Voice-version-2-/`. Route stubs marked with `// TODO: migrate` are ready for logic to be ported from the original `server/index.js`. Each route module is self-contained — migrate one domain at a time.
