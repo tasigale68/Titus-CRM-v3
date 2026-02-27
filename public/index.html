@@ -4827,68 +4827,1267 @@ var expStatus=daysLeft<0?"EXPIRED — "+Math.abs(daysLeft)+" days ago":daysLeft<
 h+='<div style="padding:10px;background:'+expBg+';border:1px solid '+expBorder+';border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:'+expColor+';text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">📅 NDIS Plan Expiry</div><div style="display:flex;align-items:center;gap:12px"><span style="font-size:14px;font-weight:700;color:'+expColor+'">'+expDisp+'</span><span style="font-size:11px;color:'+expColor+';font-weight:600">'+expStatus+'</span></div></div>'}
 el.innerHTML=h}
 
-function loadNDISClientSupportPlan(clientName){
-var el=document.getElementById("supportPlanContent");if(!el)return;
-apiCall("GET","/api/clients/support-plan?name="+encodeURIComponent(clientName)).then(function(data){
-var records=data.records||[];
-if(records.length===0){
-// Fallback to clientData overview
-var d=selectedConv&&selectedConv._clientData;
-if(d)renderSupportPlanFromClientData(el,d);
-else el.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">🛡️</div><div style="font-size:13px;font-weight:600">No support plan records found</div><div style="font-size:11px;margin-top:4px">No entries in Support Plan - 2025 for '+clientName+'</div></div>';
-return}
-renderSupportPlanRecords(el,records,clientName)
-}).catch(function(e){el.innerHTML='<div style="color:var(--red);padding:12px;text-align:center">Failed to load: '+e.message+'</div>'})}
+// ═══════════════════════════════════════════════════════════════════════════════
+//  CLIENT SUPPORT PLAN — Full Frontend Implementation
+//  Replace lines 4830-4891 in public/index.html with this code
+// ═══════════════════════════════════════════════════════════════════════════════
 
-function renderSupportPlanRecords(el,records,clientName){
-var h='<div style="margin-bottom:16px"><div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px">Support Plan</div><div style="font-size:11px;color:var(--muted)">'+records.length+' record'+(records.length!==1?"s":"")+" from Support Plan - 2025"+'</div></div>';
-records.forEach(function(f,idx){
-h+='<div style="padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px">';
-// Show all fields dynamically
-var keys=Object.keys(f).sort();
-var skipFields=["Client Name","Client Name (from Client)","Full Name (from Client)","Client"];
-keys.forEach(function(k){
-if(skipFields.indexOf(k)>=0)return;
-var v=f[k];if(!v||v===""||v===0)return;
-if(Array.isArray(v)){
-if(v.length>0&&typeof v[0]==="object"&&v[0].url){
-// Attachments
-h+='<div style="margin-bottom:8px"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">'+k+'</div>';
-v.forEach(function(att){h+='<a href="'+(att.url||"")+'" target="_blank" style="font-size:11px;color:var(--teal);text-decoration:none;display:block">📎 '+(att.filename||"Attachment")+'</a>'});
-h+='</div>';return}
-v=v.join(", ")}
-if(typeof v==="object")v=JSON.stringify(v);
-var isDate=typeof v==="string"&&v.match(/^\d{4}-\d{2}/);
-var displayVal=v;
-if(isDate){displayVal=TitusDate.format(v)}
-var isLong=String(displayVal).length>80;
-h+='<div style="margin-bottom:8px"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">'+k+'</div><div style="font-size:12px;color:var(--text);'+(isLong?"line-height:1.5;white-space:pre-wrap":"font-weight:600")+'">'+displayVal+'</div></div>'});
-h+='</div>'});
-el.innerHTML=h}
+// ── Global state ─────────────────────────────────────────────────────────────
+window._supportPlan = {
+  plan: null,
+  clientId: null,
+  clientName: "",
+  activeSection: 0,
+  editActiveSection: 0
+};
 
-function renderSupportPlanFromClientData(el,d){
-var h='';
-h+='<div style="margin-bottom:16px"><div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px">Support Plan Overview</div><div style="font-size:11px;color:var(--muted)">Service delivery details for '+(d.name||"this participant")+'</div></div>';
-// Service type
-h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">';
-h+='<div style="padding:14px;background:rgba(30,75,160,.04);border:1px solid rgba(30,75,160,.15);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Service Type</div><div style="font-size:14px;font-weight:700;color:var(--royal)">'+(d.serviceType||"—")+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px">'+(d.silOrCas||"")+'</div></div>';
-h+='<div style="padding:14px;background:rgba(10,147,150,.04);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">NDIS Plan Type</div><div style="font-size:14px;font-weight:700;color:var(--teal)">'+(d.ndisType||"—")+'</div></div>';
-h+='</div>';
-// Required skills
-if(d.requiredSkills&&d.requiredSkills.length>0){
-h+='<div style="padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:12px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">⚡ Required Staff Skills</div><div style="display:flex;flex-wrap:wrap;gap:6px">';
-var skillColors=["#EF4444","#F59E0B","#7C3AED","#1E4BA0","#0A9396","#EC4899","#6366F1","#10B981"];
-d.requiredSkills.forEach(function(s,i){var col=skillColors[i%skillColors.length];h+='<span style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;background:'+col+'12;color:'+col+';border:1px solid '+col+'25">'+s+'</span>'});
-h+='</div></div>'}
-// Key contacts
-h+='<div style="padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:12px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">👥 Key Contacts</div>';
-h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
-[{l:"Support Coordinator",v:d.supportCoordinator},{l:"Plan Manager",v:d.planManager},{l:"Nominee/Guardian",v:d.nominee},{l:"Emergency Contact",v:d.emergencyContact}].forEach(function(kc){
-h+='<div style="padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted)">'+kc.l+'</div><div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px">'+(kc.v||"Not assigned")+'</div></div>'});
-h+='</div></div>';
-// KM allowance
-if(d.kmAllowance)h+='<div style="padding:12px;background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.15);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">🚗 KM Allowance</div><div style="font-size:16px;font-weight:700;color:var(--green)">'+d.kmAllowance+' km per week</div></div>';
-el.innerHTML=h}
+// ── Section definitions ──────────────────────────────────────────────────────
+var SP_SECTIONS = [
+  { num: 1, icon: "⚡", name: "Quick Reference", key: "quickRef",
+    fields: ["preferred_name","photo_url","summary_key_info"] },
+  { num: 2, icon: "👤", name: "About Me", key: "aboutMe",
+    fields: ["preferred_language","cultural_identity","cultural_background_notes","traditional_country","gender_identity","pronouns","lives_at_type","lives_with","what_makes_my_day","loved_ones_description","proud_of_and_talks_about","favourite_activities","favourite_tv_movies","favourite_food_drink"] },
+  { num: 3, icon: "💬", name: "How I Communicate", key: "communication",
+    fields: ["communication_methods","communication_partner","communication_aids","communication_aids_notes","feel_respected_when","helps_me_understand","interpreter_required","interpreter_language","other_communication_notes"] },
+  { num: 4, icon: "🛡️", name: "Disability & Support", key: "disability",
+    fields: ["identified_disabilities","disability_other_notes","disability_impact_notes","decision_making_type","decision_making_supporters","legal_documents","independence_level"] },
+  { num: 5, icon: "🧠", name: "Behavioural & Emotional", key: "behaviour",
+    fields: ["calm_appearance","calm_strategies","known_triggers","escalation_signs","de_escalation_steps","calming_techniques","scripted_phrases","do_not_say_or_do","restricted_persons","behaviour_video_links","behaviour_documents"] },
+  { num: 6, icon: "🏥", name: "Health & Medical", key: "health",
+    fields: ["medical_conditions","allergies_present","allergies_detail","medications_present","medications_management","medications_notes","swallowing_difficulty","swallowing_detail","diet_type","fluid_consistency","mealtime_plan_exists","mealtime_plan_url","how_i_eat","how_i_drink","mobility_notes","mobility_aids","skin_care_notes","bowel_bladder_notes","breathing_notes","pain_description","pain_triggers","pain_indicators","pain_management","hospital_safety_notes","dentures","dentures_detail","medical_history_summary","medical_assessment_notes"] },
+  { num: 7, icon: "🌅", name: "Daily Living", key: "daily",
+    fields: ["personal_care_notes","wake_up_routine","breakfast_routine","lunch_routine","dinner_routine","bedtime_routine","sleep_notes","toileting_notes","support_days"] },
+  { num: 8, icon: "🚗", name: "Community Access", key: "community",
+    fields: ["shopping_routine","community_access_routine","transport_type","support_ratio","vehicle_seat_preference","transport_strategies","restricted_addresses","transport_plan_url"] },
+  { num: 9, icon: "💰", name: "Financial", key: "financial",
+    fields: ["money_handling_responsible","weekly_budget","worker_finance_role","receipts_protocol","online_shopping_notes","preferred_shops","financial_restrictions"] },
+  { num: 10, icon: "👥", name: "Support Network", key: "network",
+    fields: ["gp_name","gp_practice","gp_phone","specialists","support_network","next_of_kin_name","next_of_kin_relationship","next_of_kin_phone","preferred_contact_method"] },
+  { num: 11, icon: "📁", name: "Documents", key: "documents",
+    fields: ["plan_documents"] }
+];
+
+// ── Field metadata ───────────────────────────────────────────────────────────
+var SP_FIELD_META = {
+  // Quick Reference
+  preferred_name: { label: "Preferred Name", type: "text" },
+  photo_url: { label: "Photo", type: "url" },
+  summary_key_info: { label: "Summary / Key Information", type: "textarea" },
+  // About Me
+  preferred_language: { label: "Preferred Language", type: "text" },
+  cultural_identity: { label: "Cultural Identity", type: "tags", options: ["Aboriginal","Torres Strait Islander","Culturally Diverse","Australian","Pacific Islander","European","Asian","African","Middle Eastern","South American","Other"] },
+  cultural_background_notes: { label: "Cultural Background Notes", type: "textarea" },
+  traditional_country: { label: "Traditional Country", type: "text" },
+  gender_identity: { label: "Gender Identity", type: "text" },
+  pronouns: { label: "Pronouns", type: "select", options: ["He/Him","She/Her","They/Them","Other"] },
+  lives_at_type: { label: "Lives At (Type)", type: "select", options: ["SIL House","Family Home","Own Home","Group Home","Boarding","Other"] },
+  lives_with: { label: "Lives With", type: "text" },
+  what_makes_my_day: { label: "What Makes My Day", type: "textarea" },
+  loved_ones_description: { label: "Loved Ones", type: "textarea" },
+  proud_of_and_talks_about: { label: "Proud Of & Talks About", type: "textarea" },
+  favourite_activities: { label: "Favourite Activities", type: "textarea" },
+  favourite_tv_movies: { label: "Favourite TV / Movies", type: "textarea" },
+  favourite_food_drink: { label: "Favourite Food & Drink", type: "textarea" },
+  // Communication
+  communication_methods: { label: "Communication Methods", type: "tags", options: ["Verbal","Non-Verbal","Sign Language","PECS","AAC Device","Gestures","Written","Key Word Signs","Eye Gaze","Body Language","Other"] },
+  communication_partner: { label: "Communication Partner", type: "text" },
+  communication_aids: { label: "Communication Aids", type: "tags", options: ["AAC Device","PECS Board","Visual Schedule","Social Stories","Communication Book","iPad/Tablet","Key Word Signs","None","Other"] },
+  communication_aids_notes: { label: "Communication Aids Notes", type: "textarea" },
+  feel_respected_when: { label: "I Feel Respected When...", type: "tags", options: ["Given choices","Spoken to directly","Asked before doing","Given time to respond","Not rushed","Privacy respected","Treated age-appropriately","Listened to","Other"] },
+  helps_me_understand: { label: "It Helps Me Understand When...", type: "tags", options: ["Simple language","Visual aids","Repeated instructions","Demonstrations","Written steps","Short sentences","One instruction at a time","Familiar voice","Other"] },
+  interpreter_required: { label: "Interpreter Required", type: "boolean" },
+  interpreter_language: { label: "Interpreter Language", type: "text" },
+  other_communication_notes: { label: "Other Communication Notes", type: "textarea" },
+  // Disability & Support
+  identified_disabilities: { label: "Identified Disabilities", type: "tags", options: ["Intellectual Disability","Autism Spectrum","Down Syndrome","Cerebral Palsy","Acquired Brain Injury","Psychosocial Disability","Physical Disability","Vision Impairment","Hearing Impairment","Epilepsy","ADHD","Other"] },
+  disability_other_notes: { label: "Disability Notes", type: "textarea" },
+  disability_impact_notes: { label: "Disability Impact Notes", type: "textarea" },
+  decision_making_type: { label: "Decision Making Type", type: "select", options: ["Independent","Supported","Substitute (Guardian)","Shared","Informal"] },
+  decision_making_supporters: { label: "Decision Making Supporters", type: "textarea" },
+  legal_documents: { label: "Legal Documents", type: "tags", options: ["Guardianship Order","Administration Order","Power of Attorney","Advance Health Directive","Behaviour Support Plan","Restrictive Practices Approval","None"] },
+  independence_level: { label: "Independence Level", type: "select", options: ["Fully Independent","Mostly Independent","Moderate Support","High Support","Full Assistance Required"] },
+  // Behavioural & Emotional
+  calm_appearance: { label: "What I Look Like When Calm", type: "textarea" },
+  calm_strategies: { label: "Strategies That Keep Me Calm", type: "textarea" },
+  known_triggers: { label: "Known Triggers", type: "textarea" },
+  escalation_signs: { label: "Escalation Signs", type: "textarea" },
+  de_escalation_steps: { label: "De-escalation Steps", type: "textarea" },
+  calming_techniques: { label: "Calming Techniques", type: "textarea" },
+  scripted_phrases: { label: "Scripted Phrases That Help", type: "textarea" },
+  do_not_say_or_do: { label: "Do NOT Say or Do", type: "textarea" },
+  restricted_persons: { label: "Restricted Persons", type: "textarea" },
+  behaviour_video_links: { label: "Behaviour Video Links", type: "jsonb_links" },
+  behaviour_documents: { label: "Behaviour Documents", type: "jsonb_files" },
+  // Health & Medical
+  medical_conditions: { label: "Medical Conditions", type: "textarea" },
+  allergies_present: { label: "Allergies", type: "text" },
+  allergies_detail: { label: "Allergy Details", type: "textarea" },
+  medications_present: { label: "Takes Medications", type: "boolean" },
+  medications_management: { label: "Medication Management", type: "select", options: ["Self-managed","Prompt only","Staff administered","Webster pack","Nurse administered","N/A"] },
+  medications_notes: { label: "Medication Notes", type: "textarea" },
+  swallowing_difficulty: { label: "Swallowing Difficulty", type: "text" },
+  swallowing_detail: { label: "Swallowing Details", type: "textarea" },
+  diet_type: { label: "Diet Type", type: "text" },
+  fluid_consistency: { label: "Fluid Consistency", type: "text" },
+  mealtime_plan_exists: { label: "Mealtime Plan Exists", type: "boolean" },
+  mealtime_plan_url: { label: "Mealtime Plan URL", type: "url" },
+  how_i_eat: { label: "How I Eat", type: "textarea" },
+  how_i_drink: { label: "How I Drink", type: "textarea" },
+  mobility_notes: { label: "Mobility Notes", type: "textarea" },
+  mobility_aids: { label: "Mobility Aids", type: "text" },
+  skin_care_notes: { label: "Skin Care Notes", type: "textarea" },
+  bowel_bladder_notes: { label: "Bowel & Bladder Notes", type: "textarea" },
+  breathing_notes: { label: "Breathing Notes", type: "textarea" },
+  pain_description: { label: "Pain Description", type: "textarea" },
+  pain_triggers: { label: "Pain Triggers", type: "textarea" },
+  pain_indicators: { label: "Pain Indicators", type: "textarea" },
+  pain_management: { label: "Pain Management", type: "textarea" },
+  hospital_safety_notes: { label: "Hospital Safety Notes", type: "textarea" },
+  dentures: { label: "Dentures", type: "boolean" },
+  dentures_detail: { label: "Dentures Detail", type: "text" },
+  medical_history_summary: { label: "Medical History Summary", type: "textarea" },
+  medical_assessment_notes: { label: "Medical Assessment Notes", type: "textarea" },
+  // Daily Living
+  personal_care_notes: { label: "Personal Care Notes", type: "textarea" },
+  wake_up_routine: { label: "Wake Up Routine", type: "textarea" },
+  breakfast_routine: { label: "Breakfast Routine", type: "textarea" },
+  lunch_routine: { label: "Lunch Routine", type: "textarea" },
+  dinner_routine: { label: "Dinner Routine", type: "textarea" },
+  bedtime_routine: { label: "Bedtime Routine", type: "textarea" },
+  sleep_notes: { label: "Sleep Notes", type: "textarea" },
+  toileting_notes: { label: "Toileting Notes", type: "textarea" },
+  support_days: { label: "Support Days", type: "tags", options: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"] },
+  // Community Access
+  shopping_routine: { label: "Shopping Routine", type: "textarea" },
+  community_access_routine: { label: "Community Access Routine", type: "textarea" },
+  transport_type: { label: "Transport Type", type: "select", options: ["Company Vehicle","Own Vehicle","Public Transport","Taxi/Rideshare","Walked","Wheelchair Accessible Vehicle","Other"] },
+  support_ratio: { label: "Support Ratio", type: "select", options: ["1:1","1:2","1:3","2:1","Shared","Group","Independent"] },
+  vehicle_seat_preference: { label: "Vehicle Seat Preference", type: "text" },
+  transport_strategies: { label: "Transport Strategies", type: "textarea" },
+  restricted_addresses: { label: "Restricted Addresses", type: "textarea" },
+  transport_plan_url: { label: "Transport Plan URL", type: "url" },
+  // Financial
+  money_handling_responsible: { label: "Money Handling Responsible", type: "text" },
+  weekly_budget: { label: "Weekly Budget", type: "text" },
+  worker_finance_role: { label: "Worker Finance Role", type: "textarea" },
+  receipts_protocol: { label: "Receipts Protocol", type: "textarea" },
+  online_shopping_notes: { label: "Online Shopping Notes", type: "textarea" },
+  preferred_shops: { label: "Preferred Shops", type: "textarea" },
+  financial_restrictions: { label: "Financial Restrictions", type: "textarea" },
+  // Support Network
+  gp_name: { label: "GP Name", type: "text" },
+  gp_practice: { label: "GP Practice", type: "text" },
+  gp_phone: { label: "GP Phone", type: "text" },
+  specialists: { label: "Specialists", type: "jsonb_specialists" },
+  support_network: { label: "Support Network", type: "jsonb_network" },
+  next_of_kin_name: { label: "Next of Kin Name", type: "text" },
+  next_of_kin_relationship: { label: "Next of Kin Relationship", type: "text" },
+  next_of_kin_phone: { label: "Next of Kin Phone", type: "text" },
+  preferred_contact_method: { label: "Preferred Contact Method", type: "select", options: ["Phone","Email","SMS","In Person","Through Support Worker","Other"] },
+  // Documents
+  plan_documents: { label: "Plan Documents", type: "jsonb_files" }
+};
+
+// ── Meta fields ──────────────────────────────────────────────────────────────
+var SP_META_FIELDS = ["completed_by","completed_date","last_reviewed_by","last_reviewed_date","review_due_date"];
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  1. ENTRY POINT
+// ═══════════════════════════════════════════════════════════════════════════════
+function loadNDISClientSupportPlan(clientName) {
+  var el = document.getElementById("supportPlanContent");
+  if (!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted)"><div class="spin" style="width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 8px"></div>Loading support plan...</div>';
+  window._supportPlan.clientName = clientName;
+  window._supportPlan.activeSection = 0;
+
+  apiCall("GET", "/api/clients/full-support-plan?name=" + encodeURIComponent(clientName)).then(function (data) {
+    window._supportPlan.plan = data.plan || null;
+    window._supportPlan.clientId = data.client_id || null;
+
+    if (!data.plan) {
+      renderSPEmptyState(el, clientName, data.client_id);
+    } else {
+      renderSPPopulatedView(el, data.plan, clientName);
+    }
+  }).catch(function (e) {
+    el.innerHTML = '<div style="color:var(--red);padding:12px;text-align:center;font-size:12px;font-weight:600">Failed to load support plan: ' + (e.message || "Unknown error") + '</div>';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  2. EMPTY STATE
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderSPEmptyState(el, clientName, clientId) {
+  var h = '';
+  // Main empty state card
+  h += '<div style="text-align:center;padding:40px 20px;max-width:480px;margin:0 auto">';
+  h += '<div style="width:64px;height:64px;border-radius:50%;background:rgba(10,147,150,.08);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px">🛡️</div>';
+  h += '<div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px">No Support Plan Yet</div>';
+  h += '<div style="font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.6">A comprehensive support plan has not been created for <strong>' + (clientName || "this participant") + '</strong> in the new system. Create one now to record their preferences, support needs, and key information.</div>';
+
+  if (clientId) {
+    h += '<button onclick="spCreateNewPlan()" style="padding:10px 24px;font-size:13px;font-weight:700;background:linear-gradient(135deg,var(--teal),#0E7C7B);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(10,147,150,.3);transition:all .15s" onmouseover="this.style.transform=\'translateY(-1px)\';this.style.boxShadow=\'0 4px 12px rgba(10,147,150,.4)\'" onmouseout="this.style.transform=\'none\';this.style.boxShadow=\'0 2px 8px rgba(10,147,150,.3)\'">🛡️ Create Support Plan</button>';
+  } else {
+    h += '<div style="font-size:11px;color:var(--red);font-weight:600">Client not found in database — cannot create plan</div>';
+  }
+  h += '</div>';
+
+  // Airtable fallback collapsible
+  h += '<div id="spAirtableFallback" style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px">';
+  h += '<button onclick="spToggleAirtableFallback()" style="display:flex;align-items:center;gap:8px;width:100%;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--muted);text-align:left">';
+  h += '<span id="spFallbackArrow" style="transition:transform .2s;font-size:10px">▶</span>';
+  h += '<span>📋 View Legacy Airtable Support Plan Data</span></button>';
+  h += '<div id="spFallbackBody" style="display:none;margin-top:10px"></div>';
+  h += '</div>';
+
+  el.innerHTML = h;
+
+  // Pre-load old Airtable data in background
+  spLoadAirtableFallback(clientName);
+}
+
+function spCreateNewPlan() {
+  var clientId = window._supportPlan.clientId;
+  var clientName = window._supportPlan.clientName;
+  if (!clientId) { showToast("Client ID not found", "error"); return; }
+
+  var user = JSON.parse(localStorage.getItem("titus_user") || "{}");
+  var body = {
+    client_id: clientId,
+    completed_by: user.name || user.username || "",
+    completed_date: new Date().toISOString().split("T")[0]
+  };
+
+  apiCall("POST", "/api/clients/full-support-plan", body).then(function (data) {
+    if (data.error) { showToast("Error: " + data.error, "error"); return; }
+    showToast("Support plan created", "success");
+    loadNDISClientSupportPlan(clientName);
+  }).catch(function (e) { showToast("Failed: " + e.message, "error"); });
+}
+
+function spToggleAirtableFallback() {
+  var body = document.getElementById("spFallbackBody");
+  var arrow = document.getElementById("spFallbackArrow");
+  if (!body) return;
+  if (body.style.display === "none") {
+    body.style.display = "block";
+    if (arrow) arrow.style.transform = "rotate(90deg)";
+  } else {
+    body.style.display = "none";
+    if (arrow) arrow.style.transform = "rotate(0deg)";
+  }
+}
+
+function spLoadAirtableFallback(clientName) {
+  apiCall("GET", "/api/clients/support-plan?name=" + encodeURIComponent(clientName)).then(function (data) {
+    var fbEl = document.getElementById("spFallbackBody");
+    if (!fbEl) return;
+    var records = data.records || [];
+    if (records.length === 0) {
+      // Also try client overview data
+      var d = selectedConv && selectedConv._clientData;
+      if (d) {
+        renderSupportPlanFromClientData(fbEl, d);
+      } else {
+        fbEl.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:11px">No legacy Airtable records found</div>';
+      }
+      return;
+    }
+    renderSupportPlanRecords(fbEl, records, clientName);
+  }).catch(function () {
+    var fbEl = document.getElementById("spFallbackBody");
+    if (fbEl) fbEl.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:11px">Could not load legacy data</div>';
+  });
+}
+
+// Keep old functions for fallback rendering
+function renderSupportPlanRecords(el, records, clientName) {
+  var h = '<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Legacy Airtable Records</div><div style="font-size:10px;color:var(--muted)">' + records.length + ' record' + (records.length !== 1 ? "s" : "") + " from Airtable" + '</div></div>';
+  records.forEach(function (f) {
+    h += '<div style="padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px">';
+    var keys = Object.keys(f).sort();
+    var skipFields = ["Client Name", "Client Name (from Client)", "Full Name (from Client)", "Client"];
+    keys.forEach(function (k) {
+      if (skipFields.indexOf(k) >= 0) return;
+      var v = f[k]; if (!v || v === "" || v === 0) return;
+      if (Array.isArray(v)) {
+        if (v.length > 0 && typeof v[0] === "object" && v[0].url) {
+          h += '<div style="margin-bottom:6px"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">' + k + '</div>';
+          v.forEach(function (att) { h += '<a href="' + (att.url || "") + '" target="_blank" style="font-size:11px;color:var(--teal);text-decoration:none;display:block">📎 ' + (att.filename || "Attachment") + '</a>'; });
+          h += '</div>'; return;
+        }
+        v = v.join(", ");
+      }
+      if (typeof v === "object") v = JSON.stringify(v);
+      var isDate = typeof v === "string" && v.match(/^\d{4}-\d{2}/);
+      var displayVal = v;
+      if (isDate) { try { displayVal = TitusDate.format(v); } catch (e) { displayVal = v; } }
+      var isLong = String(displayVal).length > 80;
+      h += '<div style="margin-bottom:6px"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">' + k + '</div><div style="font-size:12px;color:var(--text);' + (isLong ? "line-height:1.5;white-space:pre-wrap" : "font-weight:600") + '">' + displayVal + '</div></div>';
+    });
+    h += '</div>';
+  });
+  el.innerHTML = h;
+}
+
+function renderSupportPlanFromClientData(el, d) {
+  var h = '';
+  h += '<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Support Plan Overview</div><div style="font-size:10px;color:var(--muted)">Service delivery details for ' + (d.name || "this participant") + '</div></div>';
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">';
+  h += '<div style="padding:12px;background:rgba(30,75,160,.04);border:1px solid rgba(30,75,160,.15);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Service Type</div><div style="font-size:13px;font-weight:700;color:var(--royal)">' + (d.serviceType || "\u2014") + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">' + (d.silOrCas || "") + '</div></div>';
+  h += '<div style="padding:12px;background:rgba(10,147,150,.04);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">NDIS Plan Type</div><div style="font-size:13px;font-weight:700;color:var(--teal)">' + (d.ndisType || "\u2014") + '</div></div>';
+  h += '</div>';
+  if (d.requiredSkills && d.requiredSkills.length > 0) {
+    h += '<div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Required Staff Skills</div><div style="display:flex;flex-wrap:wrap;gap:5px">';
+    var skillColors = ["#EF4444", "#F59E0B", "#7C3AED", "#1E4BA0", "#0A9396", "#EC4899", "#6366F1", "#10B981"];
+    d.requiredSkills.forEach(function (s, i) { var col = skillColors[i % skillColors.length]; h += '<span style="padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;background:' + col + '12;color:' + col + ';border:1px solid ' + col + '25">' + s + '</span>'; });
+    h += '</div></div>';
+  }
+  h += '<div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Key Contacts</div>';
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
+  [{ l: "Support Coordinator", v: d.supportCoordinator }, { l: "Plan Manager", v: d.planManager }, { l: "Nominee/Guardian", v: d.nominee }, { l: "Emergency Contact", v: d.emergencyContact }].forEach(function (kc) {
+    h += '<div style="padding:7px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted)">' + kc.l + '</div><div style="font-size:11px;font-weight:700;color:var(--text);margin-top:2px">' + (kc.v || "Not assigned") + '</div></div>';
+  });
+  h += '</div></div>';
+  if (d.kmAllowance) h += '<div style="padding:10px;background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.15);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">KM Allowance</div><div style="font-size:14px;font-weight:700;color:var(--green)">' + d.kmAllowance + ' km per week</div></div>';
+  el.innerHTML = h;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  3. POPULATED VIEW — 2-Column Layout
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderSPPopulatedView(el, plan, clientName) {
+  var h = '';
+
+  // ── Header bar ──
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">';
+  h += '<div>';
+  h += '<div style="font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px">🛡️ Support Plan</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + (clientName || "") + '</div>';
+  h += '</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">';
+
+  // Meta info badges
+  if (plan.last_reviewed_date) {
+    var revDate = plan.last_reviewed_date;
+    try { revDate = TitusDate.format(plan.last_reviewed_date); } catch (e) {}
+    h += '<span style="font-size:10px;font-weight:600;padding:4px 10px;border-radius:8px;background:rgba(16,185,129,.06);color:var(--green);border:1px solid rgba(16,185,129,.15)">Reviewed: ' + revDate + '</span>';
+  }
+  if (plan.review_due_date) {
+    var dueDate = plan.review_due_date;
+    try { dueDate = TitusDate.format(plan.review_due_date); } catch (e) {}
+    var dueDays = Math.ceil((new Date(plan.review_due_date) - new Date()) / (1000 * 60 * 60 * 24));
+    var duCol = dueDays < 0 ? "var(--red)" : dueDays < 30 ? "var(--orange)" : "var(--muted)";
+    h += '<span style="font-size:10px;font-weight:600;padding:4px 10px;border-radius:8px;background:rgba(245,158,11,.06);color:' + duCol + ';border:1px solid rgba(245,158,11,.15)">Due: ' + dueDate + '</span>';
+  }
+
+  h += '<button onclick="spOpenEditModal()" style="padding:8px 16px;font-size:12px;font-weight:700;background:linear-gradient(135deg,var(--royal),#2563EB);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px" onmouseover="this.style.opacity=\'.9\'" onmouseout="this.style.opacity=\'1\'">✏️ Edit Support Plan</button>';
+  h += '</div></div>';
+
+  // ── Completion bar ──
+  var completedCount = 0;
+  SP_SECTIONS.forEach(function (s) { if (spSectionHasData(plan, s)) completedCount++; });
+  var pct = Math.round((completedCount / SP_SECTIONS.length) * 100);
+  var barCol = pct === 100 ? "var(--green)" : pct >= 50 ? "var(--teal)" : "var(--orange)";
+  h += '<div style="margin-bottom:16px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs)">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Plan Completion</span><span style="font-size:11px;font-weight:700;color:' + barCol + '">' + completedCount + ' of ' + SP_SECTIONS.length + ' sections (' + pct + '%)</span></div>';
+  h += '<div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:' + barCol + ';border-radius:3px;transition:width .3s"></div></div>';
+  h += '</div>';
+
+  // ── 2-column layout ──
+  h += '<div style="display:flex;gap:16px;align-items:flex-start">';
+
+  // Left sidebar — section nav
+  h += '<div id="spSideNav" style="width:200px;min-width:200px;position:sticky;top:0;max-height:calc(100vh - 200px);overflow-y:auto">';
+  SP_SECTIONS.forEach(function (s, idx) {
+    var hasData = spSectionHasData(plan, s);
+    var isActive = idx === window._supportPlan.activeSection;
+    h += '<button onclick="spScrollToSection(' + idx + ')" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;margin-bottom:2px;background:' + (isActive ? "rgba(10,147,150,.06)" : "transparent") + ';border:none;border-left:3px solid ' + (isActive ? "var(--teal)" : "transparent") + ';border-radius:0 var(--rs) var(--rs) 0;cursor:pointer;font-family:inherit;text-align:left;transition:all .12s" onmouseover="if(' + (!isActive) + ')this.style.background=\'var(--surface2)\'" onmouseout="if(' + (!isActive) + ')this.style.background=\'transparent\'">';
+    h += '<span style="font-size:14px">' + s.icon + '</span>';
+    h += '<span style="font-size:11px;font-weight:' + (isActive ? "700" : "500") + ';color:' + (isActive ? "var(--teal)" : "var(--text)") + ';flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + s.name + '</span>';
+    if (hasData) {
+      h += '<span style="font-size:10px;color:var(--green)">✓</span>';
+    } else {
+      h += '<span style="width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0"></span>';
+    }
+    h += '</button>';
+  });
+  h += '</div>';
+
+  // Right panel — scrollable sections
+  h += '<div id="spSectionsPanel" style="flex:1;min-width:0;max-height:calc(100vh - 200px);overflow-y:auto;scroll-behavior:smooth" onscroll="spHandleScroll()">';
+
+  SP_SECTIONS.forEach(function (sec, idx) {
+    h += '<div id="spSec_' + idx + '" style="margin-bottom:16px">';
+    // Section header
+    h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)">';
+    h += '<span style="font-size:18px">' + sec.icon + '</span>';
+    h += '<span style="font-size:14px;font-weight:700;color:var(--text)">' + sec.name + '</span>';
+    var hasSec = spSectionHasData(plan, sec);
+    if (hasSec) {
+      h += '<span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;background:rgba(16,185,129,.08);color:var(--green);border:1px solid rgba(16,185,129,.15);margin-left:auto">COMPLETE</span>';
+    } else {
+      h += '<span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;background:rgba(245,158,11,.08);color:var(--orange);border:1px solid rgba(245,158,11,.15);margin-left:auto">NEEDS DATA</span>';
+    }
+    h += '</div>';
+
+    // Section fields
+    var hasAnyField = false;
+    var fieldsHtml = '';
+    sec.fields.forEach(function (fieldKey) {
+      var val = plan[fieldKey];
+      if (val === null || val === undefined || val === "" || (Array.isArray(val) && val.length === 0)) return;
+      if (typeof val === "object" && !Array.isArray(val) && Object.keys(val).length === 0) return;
+      hasAnyField = true;
+      var meta = SP_FIELD_META[fieldKey] || { label: spFieldLabel(fieldKey), type: "text" };
+      fieldsHtml += spRenderViewField(fieldKey, val, meta);
+    });
+
+    if (hasAnyField) {
+      h += '<div style="padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs)">' + fieldsHtml + '</div>';
+    } else {
+      h += '<div style="padding:20px;text-align:center;background:var(--surface2);border:1px dashed var(--border);border-radius:var(--rs)">';
+      h += '<div style="font-size:11px;color:var(--muted)">No data recorded for this section</div>';
+      h += '<button onclick="spOpenEditModal(' + idx + ')" style="margin-top:8px;padding:6px 14px;font-size:11px;font-weight:600;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">+ Add Information</button>';
+      h += '</div>';
+    }
+    h += '</div>';
+  });
+
+  h += '</div>'; // end right panel
+  h += '</div>'; // end 2-col
+
+  el.innerHTML = h;
+}
+
+// ── Scroll handling for sidebar ──
+function spScrollToSection(idx) {
+  var panel = document.getElementById("spSectionsPanel");
+  var target = document.getElementById("spSec_" + idx);
+  if (panel && target) {
+    panel.scrollTop = target.offsetTop - panel.offsetTop;
+  }
+  spUpdateActiveSidebar(idx);
+}
+
+function spHandleScroll() {
+  var panel = document.getElementById("spSectionsPanel");
+  if (!panel) return;
+  var scrollTop = panel.scrollTop;
+  var closest = 0;
+  var closestDist = Infinity;
+  SP_SECTIONS.forEach(function (s, idx) {
+    var secEl = document.getElementById("spSec_" + idx);
+    if (secEl) {
+      var dist = Math.abs((secEl.offsetTop - panel.offsetTop) - scrollTop);
+      if (dist < closestDist) { closestDist = dist; closest = idx; }
+    }
+  });
+  if (closest !== window._supportPlan.activeSection) {
+    spUpdateActiveSidebar(closest);
+  }
+}
+
+function spUpdateActiveSidebar(idx) {
+  window._supportPlan.activeSection = idx;
+  var nav = document.getElementById("spSideNav");
+  if (!nav) return;
+  var btns = nav.querySelectorAll("button");
+  for (var i = 0; i < btns.length; i++) {
+    var isA = i === idx;
+    btns[i].style.background = isA ? "rgba(10,147,150,.06)" : "transparent";
+    btns[i].style.borderLeftColor = isA ? "var(--teal)" : "transparent";
+    var spans = btns[i].querySelectorAll("span");
+    if (spans.length >= 2) {
+      spans[1].style.fontWeight = isA ? "700" : "500";
+      spans[1].style.color = isA ? "var(--teal)" : "var(--text)";
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  VIEW FIELD RENDERERS
+// ═══════════════════════════════════════════════════════════════════════════════
+function spRenderViewField(fieldKey, val, meta) {
+  var h = '';
+  var label = meta.label || spFieldLabel(fieldKey);
+
+  if (meta.type === "boolean") {
+    var boolVal = val === true || val === "true" || val === 1;
+    var bColor = boolVal ? "var(--green)" : "var(--red)";
+    var bBg = boolVal ? "rgba(16,185,129,.08)" : "rgba(239,68,68,.08)";
+    var bBorder = boolVal ? "rgba(16,185,129,.15)" : "rgba(239,68,68,.15)";
+    h += '<div style="margin-bottom:10px"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">' + label + '</div>';
+    h += '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px;background:' + bBg + ';color:' + bColor + ';border:1px solid ' + bBorder + '">' + (boolVal ? "Yes" : "No") + '</span></div>';
+    return h;
+  }
+
+  if (meta.type === "tags" && Array.isArray(val)) {
+    h += '<div style="margin-bottom:10px"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">' + label + '</div>';
+    h += '<div style="display:flex;flex-wrap:wrap;gap:4px">';
+    var tagColors = ["#0A9396", "#1E4BA0", "#7C3AED", "#EC4899", "#F59E0B", "#EF4444", "#10B981", "#6366F1"];
+    val.forEach(function (tag, ti) {
+      var tc = tagColors[ti % tagColors.length];
+      h += '<span style="padding:3px 10px;border-radius:8px;font-size:10px;font-weight:700;background:' + tc + '12;color:' + tc + ';border:1px solid ' + tc + '25">' + spEsc(tag) + '</span>';
+    });
+    h += '</div></div>';
+    return h;
+  }
+
+  if (meta.type === "url") {
+    h += '<div style="margin-bottom:10px"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">' + label + '</div>';
+    if (fieldKey === "photo_url" && val) {
+      h += '<div style="margin-top:4px"><img src="' + spEsc(val) + '" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--border)" onerror="this.style.display=\'none\'"></div>';
+    } else {
+      h += '<a href="' + spEsc(val) + '" target="_blank" style="font-size:12px;color:var(--teal);text-decoration:none;font-weight:600">📎 View Document</a>';
+    }
+    h += '</div>';
+    return h;
+  }
+
+  if (meta.type === "jsonb_specialists" && Array.isArray(val)) {
+    h += '<div style="margin-bottom:10px"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">' + label + '</div>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
+    val.forEach(function (spec) {
+      h += '<div style="padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs)">';
+      h += '<div style="font-size:12px;font-weight:700;color:var(--text)">' + spEsc(spec.name || "Unknown") + '</div>';
+      if (spec.specialty) h += '<div style="font-size:10px;color:var(--teal);font-weight:600;margin-top:2px">' + spEsc(spec.specialty) + '</div>';
+      if (spec.phone) h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">📞 ' + spEsc(spec.phone) + '</div>';
+      if (spec.notes) h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + spEsc(spec.notes) + '</div>';
+      h += '</div>';
+    });
+    h += '</div></div>';
+    return h;
+  }
+
+  if (meta.type === "jsonb_network" && Array.isArray(val)) {
+    h += '<div style="margin-bottom:10px"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">' + label + '</div>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
+    val.forEach(function (person) {
+      h += '<div style="padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs)">';
+      h += '<div style="font-size:12px;font-weight:700;color:var(--text)">' + spEsc(person.name || "Unknown") + '</div>';
+      if (person.relationship) h += '<div style="font-size:10px;color:var(--royal);font-weight:600;margin-top:2px">' + spEsc(person.relationship) + '</div>';
+      if (person.phone) h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">📞 ' + spEsc(person.phone) + '</div>';
+      if (person.email) h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">✉ ' + spEsc(person.email) + '</div>';
+      if (person.notes) h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + spEsc(person.notes) + '</div>';
+      h += '</div>';
+    });
+    h += '</div></div>';
+    return h;
+  }
+
+  if (meta.type === "jsonb_links" && Array.isArray(val)) {
+    h += '<div style="margin-bottom:10px"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">' + label + '</div>';
+    val.forEach(function (link) {
+      var url = typeof link === "string" ? link : (link.url || link.href || "");
+      var title = typeof link === "string" ? url : (link.title || link.name || url);
+      h += '<a href="' + spEsc(url) + '" target="_blank" style="display:block;font-size:11px;color:var(--teal);text-decoration:none;margin-bottom:3px;font-weight:600">🔗 ' + spEsc(title) + '</a>';
+    });
+    h += '</div>';
+    return h;
+  }
+
+  if (meta.type === "jsonb_files" && Array.isArray(val)) {
+    h += '<div style="margin-bottom:10px"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">' + label + '</div>';
+    val.forEach(function (file) {
+      var url = typeof file === "string" ? file : (file.url || "");
+      var name = typeof file === "string" ? "Document" : (file.name || file.title || "Document");
+      var uploadedAt = file.uploaded_at || file.uploadedAt || "";
+      h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:4px">';
+      h += '<span style="font-size:14px">📎</span>';
+      h += '<a href="' + spEsc(url) + '" target="_blank" style="font-size:11px;font-weight:600;color:var(--teal);text-decoration:none;flex:1">' + spEsc(name) + '</a>';
+      if (uploadedAt) {
+        var dispDate = uploadedAt;
+        try { dispDate = TitusDate.format(uploadedAt); } catch (e) {}
+        h += '<span style="font-size:9px;color:var(--muted)">' + dispDate + '</span>';
+      }
+      h += '</div>';
+    });
+    h += '</div>';
+    return h;
+  }
+
+  // Default: text/textarea/select
+  var displayVal = String(val);
+  var isLong = displayVal.length > 80;
+  h += '<div style="margin-bottom:10px"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">' + label + '</div>';
+  h += '<div style="font-size:12px;color:var(--text);' + (isLong ? "line-height:1.6;white-space:pre-wrap" : "font-weight:600") + '">' + spEsc(displayVal) + '</div></div>';
+  return h;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  4. EDIT MODAL — Full-screen slide-over from right
+// ═══════════════════════════════════════════════════════════════════════════════
+function spOpenEditModal(startSection) {
+  var plan = window._supportPlan.plan;
+  if (!plan) { showToast("No plan loaded", "error"); return; }
+  window._supportPlan.editActiveSection = typeof startSection === "number" ? startSection : 0;
+
+  // Remove any existing
+  var existing = document.getElementById("spEditOverlay");
+  if (existing) existing.remove();
+
+  var overlay = document.createElement("div");
+  overlay.id = "spEditOverlay";
+  overlay.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;justify-content:flex-end;animation:spFadeIn .2s ease";
+  overlay.onclick = function (e) { if (e.target === overlay) spCloseEditModal(); };
+
+  var panel = document.createElement("div");
+  panel.id = "spEditPanel";
+  panel.style.cssText = "width:80%;max-width:1100px;height:100%;background:var(--surface);box-shadow:-10px 0 40px rgba(0,0,0,.2);display:flex;flex-direction:column;animation:spSlideIn .25s ease";
+
+  // Inject animations if not already there
+  if (!document.getElementById("spAnimStyles")) {
+    var style = document.createElement("style");
+    style.id = "spAnimStyles";
+    style.textContent = "@keyframes spFadeIn{from{opacity:0}to{opacity:1}} @keyframes spSlideIn{from{transform:translateX(100%)}to{transform:translateX(0)}} @keyframes spSlideOut{from{transform:translateX(0)}to{transform:translateX(100%)}}";
+    document.head.appendChild(style);
+  }
+
+  var h = '';
+  // ── Header ──
+  h += '<div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">';
+  h += '<div style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">🛡️</span><span style="font-size:16px;font-weight:700;color:var(--text)">Edit Support Plan</span><span style="font-size:11px;color:var(--muted);font-weight:500">' + spEsc(window._supportPlan.clientName) + '</span></div>';
+  h += '<div style="display:flex;align-items:center;gap:8px">';
+  h += '<button onclick="spSaveEditPlan()" style="padding:8px 20px;font-size:12px;font-weight:700;background:linear-gradient(135deg,var(--teal),#0E7C7B);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px">💾 Save Changes</button>';
+  h += '<button onclick="spCloseEditModal()" style="padding:8px 14px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit">Cancel</button>';
+  h += '</div></div>';
+
+  // ── Meta fields row ──
+  h += '<div style="padding:10px 20px;border-bottom:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;flex-shrink:0;background:var(--surface2)">';
+  h += '<div style="flex:1;min-width:150px"><label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">Completed By</label><input id="spMeta_completed_by" value="' + spEsc(plan.completed_by || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box"></div>';
+  h += '<div style="min-width:140px"><label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">Completed Date</label><input id="spMeta_completed_date" type="date" value="' + spEsc(plan.completed_date || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box"></div>';
+  h += '<div style="flex:1;min-width:150px"><label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">Last Reviewed By</label><input id="spMeta_last_reviewed_by" value="' + spEsc(plan.last_reviewed_by || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box"></div>';
+  h += '<div style="min-width:140px"><label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">Last Reviewed Date</label><input id="spMeta_last_reviewed_date" type="date" value="' + spEsc(plan.last_reviewed_date || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box"></div>';
+  h += '<div style="min-width:140px"><label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">Review Due Date</label><input id="spMeta_review_due_date" type="date" value="' + spEsc(plan.review_due_date || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box"></div>';
+  h += '</div>';
+
+  // ── Body: sidebar + form ──
+  h += '<div style="display:flex;flex:1;overflow:hidden">';
+
+  // Edit sidebar
+  h += '<div id="spEditSideNav" style="width:200px;min-width:200px;border-right:1px solid var(--border);overflow-y:auto;padding:8px 0">';
+  SP_SECTIONS.forEach(function (s, idx) {
+    var isActive = idx === window._supportPlan.editActiveSection;
+    h += '<button onclick="spSwitchEditSection(' + idx + ')" id="spEditNavBtn_' + idx + '" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;background:' + (isActive ? "rgba(10,147,150,.06)" : "transparent") + ';border:none;border-left:3px solid ' + (isActive ? "var(--teal)" : "transparent") + ';cursor:pointer;font-family:inherit;text-align:left;transition:all .12s" onmouseover="this.style.background=\'rgba(10,147,150,.04)\'" onmouseout="if(' + (!isActive) + ')this.style.background=\'transparent\'">';
+    h += '<span style="font-size:12px">' + s.icon + '</span>';
+    h += '<span style="font-size:11px;font-weight:' + (isActive ? "700" : "500") + ';color:' + (isActive ? "var(--teal)" : "var(--text)") + '">' + s.num + '. ' + s.name + '</span>';
+    h += '</button>';
+  });
+  h += '</div>';
+
+  // Edit form area
+  h += '<div id="spEditFormArea" style="flex:1;overflow-y:auto;padding:20px">';
+  h += spRenderEditSection(window._supportPlan.editActiveSection, plan);
+  h += '</div>';
+
+  h += '</div>'; // end body
+
+  panel.innerHTML = h;
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+}
+
+function spCloseEditModal() {
+  var overlay = document.getElementById("spEditOverlay");
+  if (!overlay) return;
+  var panel = document.getElementById("spEditPanel");
+  if (panel) {
+    panel.style.animation = "spSlideOut .2s ease forwards";
+    setTimeout(function () { overlay.remove(); }, 200);
+  } else {
+    overlay.remove();
+  }
+}
+
+function spSwitchEditSection(idx) {
+  // First, collect current section data into _supportPlan.plan to preserve edits
+  spCollectCurrentSectionData();
+
+  window._supportPlan.editActiveSection = idx;
+  var formArea = document.getElementById("spEditFormArea");
+  if (formArea) {
+    formArea.innerHTML = spRenderEditSection(idx, window._supportPlan.plan);
+  }
+  // Update sidebar
+  var navEl = document.getElementById("spEditSideNav");
+  if (navEl) {
+    var btns = navEl.querySelectorAll("button");
+    for (var i = 0; i < btns.length; i++) {
+      var isA = i === idx;
+      btns[i].style.background = isA ? "rgba(10,147,150,.06)" : "transparent";
+      btns[i].style.borderLeftColor = isA ? "var(--teal)" : "transparent";
+      var spans = btns[i].querySelectorAll("span");
+      if (spans.length >= 2) {
+        spans[1].style.fontWeight = isA ? "700" : "500";
+        spans[1].style.color = isA ? "var(--teal)" : "var(--text)";
+      }
+    }
+  }
+}
+
+// ── Render edit section form ──
+function spRenderEditSection(idx, plan) {
+  var sec = SP_SECTIONS[idx];
+  if (!sec) return "";
+  var h = '';
+  h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="font-size:20px">' + sec.icon + '</span><span style="font-size:15px;font-weight:700;color:var(--text)">' + sec.num + '. ' + sec.name + '</span></div>';
+
+  sec.fields.forEach(function (fieldKey) {
+    var meta = SP_FIELD_META[fieldKey] || { label: spFieldLabel(fieldKey), type: "text" };
+    var val = plan[fieldKey];
+    h += spRenderEditField(fieldKey, val, meta);
+  });
+
+  return h;
+}
+
+// ── Render individual edit field ──
+function spRenderEditField(fieldKey, val, meta) {
+  var h = '';
+  var label = meta.label || spFieldLabel(fieldKey);
+  var lStyle = 'style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px"';
+  var iStyle = 'style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none;box-sizing:border-box"';
+
+  if (meta.type === "textarea") {
+    var textVal = val || "";
+    h += '<div style="margin-bottom:14px;position:relative"><label ' + lStyle + '>' + label + '</label>';
+    h += '<textarea id="spEdit_' + fieldKey + '" rows="4" ' + iStyle + ' style="width:100%;padding:8px 10px;padding-right:90px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none;box-sizing:border-box;resize:vertical">' + spEsc(textVal) + '</textarea>';
+    h += '<button onclick="startVoiceToText(\'spEdit_' + fieldKey + '\')" style="position:absolute;right:8px;bottom:8px;padding:4px 10px;font-size:11px;font-weight:600;background:rgba(239,68,68,.08);color:#EF4444;border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);cursor:pointer;font-family:inherit" title="Voice to text">🎤 Voice</button>';
+    h += '</div>';
+    return h;
+  }
+
+  if (meta.type === "text") {
+    h += '<div style="margin-bottom:14px"><label ' + lStyle + '>' + label + '</label>';
+    h += '<input id="spEdit_' + fieldKey + '" type="text" value="' + spEsc(val || "") + '" ' + iStyle + '></div>';
+    return h;
+  }
+
+  if (meta.type === "select") {
+    h += '<div style="margin-bottom:14px"><label ' + lStyle + '>' + label + '</label>';
+    h += '<select id="spEdit_' + fieldKey + '" ' + iStyle + '>';
+    h += '<option value="">— Select —</option>';
+    (meta.options || []).forEach(function (opt) {
+      h += '<option value="' + spEsc(opt) + '"' + (val === opt ? ' selected' : '') + '>' + spEsc(opt) + '</option>';
+    });
+    h += '</select></div>';
+    return h;
+  }
+
+  if (meta.type === "boolean") {
+    var boolVal = val === true || val === "true" || val === 1;
+    h += '<div style="margin-bottom:14px"><label ' + lStyle + '>' + label + '</label>';
+    h += '<div style="display:flex;gap:8px;margin-top:4px">';
+    h += '<label style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--rs);border:1px solid ' + (boolVal ? "rgba(16,185,129,.3)" : "var(--border)") + ';background:' + (boolVal ? "rgba(16,185,129,.06)" : "var(--surface2)") + ';cursor:pointer;font-size:12px;font-weight:600;color:' + (boolVal ? "var(--green)" : "var(--muted)") + '">';
+    h += '<input type="radio" name="spBool_' + fieldKey + '" value="true"' + (boolVal ? ' checked' : '') + ' onchange="spBoolToggle(\'' + fieldKey + '\',true)" style="display:none"> Yes</label>';
+    h += '<label style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--rs);border:1px solid ' + (!boolVal ? "rgba(239,68,68,.3)" : "var(--border)") + ';background:' + (!boolVal ? "rgba(239,68,68,.06)" : "var(--surface2)") + ';cursor:pointer;font-size:12px;font-weight:600;color:' + (!boolVal ? "var(--red)" : "var(--muted)") + '">';
+    h += '<input type="radio" name="spBool_' + fieldKey + '" value="false"' + (!boolVal ? ' checked' : '') + ' onchange="spBoolToggle(\'' + fieldKey + '\',false)" style="display:none"> No</label>';
+    h += '</div></div>';
+    return h;
+  }
+
+  if (meta.type === "tags") {
+    var currentTags = Array.isArray(val) ? val : [];
+    h += '<div style="margin-bottom:14px"><label ' + lStyle + '>' + label + '</label>';
+    h += '<div id="spTags_' + fieldKey + '" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px">';
+    (meta.options || []).forEach(function (opt) {
+      var isSelected = currentTags.indexOf(opt) >= 0;
+      h += '<button type="button" onclick="spToggleTag(\'' + fieldKey + '\',\'' + opt.replace(/'/g, "\\'") + '\')" id="spTag_' + fieldKey + '_' + opt.replace(/[^a-zA-Z0-9]/g, "_") + '" style="padding:5px 12px;border-radius:8px;font-size:11px;font-weight:' + (isSelected ? "700" : "500") + ';background:' + (isSelected ? "rgba(10,147,150,.1)" : "var(--surface2)") + ';color:' + (isSelected ? "var(--teal)" : "var(--muted)") + ';border:1px solid ' + (isSelected ? "rgba(10,147,150,.3)" : "var(--border)") + ';cursor:pointer;font-family:inherit;transition:all .12s">' + spEsc(opt) + '</button>';
+    });
+    h += '</div>';
+    // Hidden input to store selected tags as JSON
+    h += '<input type="hidden" id="spEdit_' + fieldKey + '" value="' + spEsc(JSON.stringify(currentTags)) + '">';
+    h += '</div>';
+    return h;
+  }
+
+  if (meta.type === "url") {
+    h += '<div style="margin-bottom:14px"><label ' + lStyle + '>' + label + '</label>';
+    h += '<input id="spEdit_' + fieldKey + '" type="url" value="' + spEsc(val || "") + '" placeholder="https://..." ' + iStyle + '>';
+    if (fieldKey === "photo_url" || fieldKey === "mealtime_plan_url" || fieldKey === "transport_plan_url") {
+      h += '<div style="margin-top:6px"><button onclick="spTriggerFileUpload(\'' + fieldKey + '\',\'' + (fieldKey === "photo_url" ? "photo" : "document") + '\')" style="padding:5px 12px;font-size:11px;font-weight:600;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">📤 Upload File</button>';
+      h += '<input type="file" id="spFileInput_' + fieldKey + '" style="display:none" onchange="spHandleFileUpload(\'' + fieldKey + '\',this,' + (fieldKey === "photo_url" ? "'photo'" : "'document'") + ')">';
+      h += '</div>';
+    }
+    h += '</div>';
+    return h;
+  }
+
+  if (meta.type === "jsonb_specialists") {
+    var specs = Array.isArray(val) ? val : [];
+    h += '<div style="margin-bottom:14px"><label ' + lStyle + '>' + label + '</label>';
+    h += '<div id="spJsonb_' + fieldKey + '">';
+    specs.forEach(function (spec, si) {
+      h += spRenderSpecialistBlock(fieldKey, si, spec);
+    });
+    h += '</div>';
+    h += '<button onclick="spAddJsonbBlock(\'' + fieldKey + '\',\'specialist\')" style="margin-top:6px;padding:6px 14px;font-size:11px;font-weight:600;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">+ Add Specialist</button>';
+    h += '</div>';
+    return h;
+  }
+
+  if (meta.type === "jsonb_network") {
+    var netItems = Array.isArray(val) ? val : [];
+    h += '<div style="margin-bottom:14px"><label ' + lStyle + '>' + label + '</label>';
+    h += '<div id="spJsonb_' + fieldKey + '">';
+    netItems.forEach(function (person, ni) {
+      h += spRenderNetworkBlock(fieldKey, ni, person);
+    });
+    h += '</div>';
+    h += '<button onclick="spAddJsonbBlock(\'' + fieldKey + '\',\'network\')" style="margin-top:6px;padding:6px 14px;font-size:11px;font-weight:600;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">+ Add Contact</button>';
+    h += '</div>';
+    return h;
+  }
+
+  if (meta.type === "jsonb_links") {
+    var links = Array.isArray(val) ? val : [];
+    h += '<div style="margin-bottom:14px"><label ' + lStyle + '>' + label + '</label>';
+    h += '<div id="spJsonb_' + fieldKey + '">';
+    links.forEach(function (link, li) {
+      h += spRenderLinkBlock(fieldKey, li, link);
+    });
+    h += '</div>';
+    h += '<button onclick="spAddJsonbBlock(\'' + fieldKey + '\',\'link\')" style="margin-top:6px;padding:6px 14px;font-size:11px;font-weight:600;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">+ Add Link</button>';
+    h += '</div>';
+    return h;
+  }
+
+  if (meta.type === "jsonb_files") {
+    var files = Array.isArray(val) ? val : [];
+    h += '<div style="margin-bottom:14px"><label ' + lStyle + '>' + label + '</label>';
+    h += '<div id="spJsonb_' + fieldKey + '">';
+    files.forEach(function (file, fi) {
+      h += spRenderFileBlock(fieldKey, fi, file);
+    });
+    h += '</div>';
+    h += '<div style="margin-top:6px;display:flex;gap:8px">';
+    h += '<button onclick="spTriggerJsonbFileUpload(\'' + fieldKey + '\')" style="padding:6px 14px;font-size:11px;font-weight:600;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">📤 Upload Document</button>';
+    h += '<input type="file" id="spJsonbFileInput_' + fieldKey + '" style="display:none" onchange="spHandleJsonbFileUpload(\'' + fieldKey + '\',this)">';
+    h += '</div></div>';
+    return h;
+  }
+
+  // Fallback: text input
+  h += '<div style="margin-bottom:14px"><label ' + lStyle + '>' + label + '</label>';
+  h += '<input id="spEdit_' + fieldKey + '" type="text" value="' + spEsc(val || "") + '" ' + iStyle + '></div>';
+  return h;
+}
+
+// ── JSONB block renderers ──
+function spRenderSpecialistBlock(fieldKey, idx, spec) {
+  var h = '<div id="spJsonbItem_' + fieldKey + '_' + idx + '" style="padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:6px">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font-size:11px;font-weight:700;color:var(--text)">Specialist #' + (idx + 1) + '</span>';
+  h += '<button onclick="spRemoveJsonbBlock(\'' + fieldKey + '\',' + idx + ')" style="padding:2px 8px;font-size:10px;font-weight:600;background:rgba(239,68,68,.08);color:var(--red);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">Remove</button></div>';
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+  h += '<div><label style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:2px">Name</label><input id="spJ_' + fieldKey + '_' + idx + '_name" value="' + spEsc(spec.name || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box"></div>';
+  h += '<div><label style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:2px">Specialty</label><input id="spJ_' + fieldKey + '_' + idx + '_specialty" value="' + spEsc(spec.specialty || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box"></div>';
+  h += '<div><label style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:2px">Phone</label><input id="spJ_' + fieldKey + '_' + idx + '_phone" value="' + spEsc(spec.phone || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box"></div>';
+  h += '<div><label style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:2px">Notes</label><input id="spJ_' + fieldKey + '_' + idx + '_notes" value="' + spEsc(spec.notes || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box"></div>';
+  h += '</div></div>';
+  return h;
+}
+
+function spRenderNetworkBlock(fieldKey, idx, person) {
+  var h = '<div id="spJsonbItem_' + fieldKey + '_' + idx + '" style="padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:6px">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font-size:11px;font-weight:700;color:var(--text)">Contact #' + (idx + 1) + '</span>';
+  h += '<button onclick="spRemoveJsonbBlock(\'' + fieldKey + '\',' + idx + ')" style="padding:2px 8px;font-size:10px;font-weight:600;background:rgba(239,68,68,.08);color:var(--red);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">Remove</button></div>';
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+  h += '<div><label style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:2px">Name</label><input id="spJ_' + fieldKey + '_' + idx + '_name" value="' + spEsc(person.name || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box"></div>';
+  h += '<div><label style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:2px">Relationship</label><input id="spJ_' + fieldKey + '_' + idx + '_relationship" value="' + spEsc(person.relationship || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box"></div>';
+  h += '<div><label style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:2px">Phone</label><input id="spJ_' + fieldKey + '_' + idx + '_phone" value="' + spEsc(person.phone || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box"></div>';
+  h += '<div><label style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:2px">Email</label><input id="spJ_' + fieldKey + '_' + idx + '_email" value="' + spEsc(person.email || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box"></div>';
+  h += '</div>';
+  h += '<div style="margin-top:6px"><label style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:2px">Notes</label><input id="spJ_' + fieldKey + '_' + idx + '_notes" value="' + spEsc(person.notes || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box"></div>';
+  h += '</div>';
+  return h;
+}
+
+function spRenderLinkBlock(fieldKey, idx, link) {
+  var url = typeof link === "string" ? link : (link.url || link.href || "");
+  var title = typeof link === "string" ? "" : (link.title || link.name || "");
+  var h = '<div id="spJsonbItem_' + fieldKey + '_' + idx + '" style="display:flex;gap:8px;align-items:center;margin-bottom:6px">';
+  h += '<input id="spJ_' + fieldKey + '_' + idx + '_title" placeholder="Title" value="' + spEsc(title) + '" style="flex:1;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box">';
+  h += '<input id="spJ_' + fieldKey + '_' + idx + '_url" placeholder="https://..." value="' + spEsc(url) + '" style="flex:2;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box">';
+  h += '<button onclick="spRemoveJsonbBlock(\'' + fieldKey + '\',' + idx + ')" style="padding:4px 8px;font-size:10px;font-weight:600;background:rgba(239,68,68,.08);color:var(--red);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit;flex-shrink:0">✕</button>';
+  h += '</div>';
+  return h;
+}
+
+function spRenderFileBlock(fieldKey, idx, file) {
+  var url = typeof file === "string" ? file : (file.url || "");
+  var name = typeof file === "string" ? "Document" : (file.name || file.title || "Document");
+  var h = '<div id="spJsonbItem_' + fieldKey + '_' + idx + '" style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:4px">';
+  h += '<span style="font-size:14px">📎</span>';
+  h += '<input id="spJ_' + fieldKey + '_' + idx + '_name" value="' + spEsc(name) + '" placeholder="Document name" style="flex:1;padding:4px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box">';
+  h += '<input id="spJ_' + fieldKey + '_' + idx + '_url" type="hidden" value="' + spEsc(url) + '">';
+  if (url) h += '<a href="' + spEsc(url) + '" target="_blank" style="font-size:10px;color:var(--teal);text-decoration:none;font-weight:600;flex-shrink:0">View</a>';
+  h += '<button onclick="spRemoveJsonbBlock(\'' + fieldKey + '\',' + idx + ')" style="padding:3px 8px;font-size:10px;font-weight:600;background:rgba(239,68,68,.08);color:var(--red);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit;flex-shrink:0">✕</button>';
+  h += '</div>';
+  return h;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  INTERACTIVE HANDLERS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function spBoolToggle(fieldKey, val) {
+  // Re-render the boolean toggle with updated styling
+  var radios = document.querySelectorAll('input[name="spBool_' + fieldKey + '"]');
+  radios.forEach(function (r) {
+    var parent = r.parentElement;
+    if (!parent) return;
+    var isTrue = r.value === "true";
+    var isSelected = (isTrue && val) || (!isTrue && !val);
+    if (isTrue) {
+      parent.style.borderColor = isSelected ? "rgba(16,185,129,.3)" : "var(--border)";
+      parent.style.background = isSelected ? "rgba(16,185,129,.06)" : "var(--surface2)";
+      parent.style.color = isSelected ? "var(--green)" : "var(--muted)";
+    } else {
+      parent.style.borderColor = isSelected ? "rgba(239,68,68,.3)" : "var(--border)";
+      parent.style.background = isSelected ? "rgba(239,68,68,.06)" : "var(--surface2)";
+      parent.style.color = isSelected ? "var(--red)" : "var(--muted)";
+    }
+  });
+}
+
+function spToggleTag(fieldKey, tagValue) {
+  var hiddenInput = document.getElementById("spEdit_" + fieldKey);
+  if (!hiddenInput) return;
+  var current = [];
+  try { current = JSON.parse(hiddenInput.value || "[]"); } catch (e) { current = []; }
+  var tagIdx = current.indexOf(tagValue);
+  if (tagIdx >= 0) {
+    current.splice(tagIdx, 1);
+  } else {
+    current.push(tagValue);
+  }
+  hiddenInput.value = JSON.stringify(current);
+
+  // Update button styling
+  var btnId = "spTag_" + fieldKey + "_" + tagValue.replace(/[^a-zA-Z0-9]/g, "_");
+  var btn = document.getElementById(btnId);
+  if (btn) {
+    var isSelected = current.indexOf(tagValue) >= 0;
+    btn.style.fontWeight = isSelected ? "700" : "500";
+    btn.style.background = isSelected ? "rgba(10,147,150,.1)" : "var(--surface2)";
+    btn.style.color = isSelected ? "var(--teal)" : "var(--muted)";
+    btn.style.borderColor = isSelected ? "rgba(10,147,150,.3)" : "var(--border)";
+  }
+}
+
+function spAddJsonbBlock(fieldKey, type) {
+  // Collect current data first
+  spCollectCurrentSectionData();
+  var plan = window._supportPlan.plan;
+  var currentArr = Array.isArray(plan[fieldKey]) ? plan[fieldKey] : [];
+
+  if (type === "specialist") {
+    currentArr.push({ name: "", specialty: "", phone: "", notes: "" });
+  } else if (type === "network") {
+    currentArr.push({ name: "", relationship: "", phone: "", email: "", notes: "" });
+  } else if (type === "link") {
+    currentArr.push({ title: "", url: "" });
+  }
+  plan[fieldKey] = currentArr;
+
+  // Re-render the section
+  var formArea = document.getElementById("spEditFormArea");
+  if (formArea) {
+    formArea.innerHTML = spRenderEditSection(window._supportPlan.editActiveSection, plan);
+  }
+}
+
+function spRemoveJsonbBlock(fieldKey, idx) {
+  // Collect current data first
+  spCollectCurrentSectionData();
+  var plan = window._supportPlan.plan;
+  var currentArr = Array.isArray(plan[fieldKey]) ? plan[fieldKey] : [];
+  if (idx >= 0 && idx < currentArr.length) {
+    currentArr.splice(idx, 1);
+  }
+  plan[fieldKey] = currentArr;
+
+  // Re-render the section
+  var formArea = document.getElementById("spEditFormArea");
+  if (formArea) {
+    formArea.innerHTML = spRenderEditSection(window._supportPlan.editActiveSection, plan);
+  }
+}
+
+// ── File upload handlers ──
+function spTriggerFileUpload(fieldKey, fileType) {
+  var input = document.getElementById("spFileInput_" + fieldKey);
+  if (input) input.click();
+}
+
+function spHandleFileUpload(fieldKey, input, fileType) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  if (file.size > 15 * 1024 * 1024) { showToast("File too large (max 15MB)", "error"); return; }
+
+  var clientId = window._supportPlan.clientId;
+  var fd = new FormData();
+  fd.append("file", file);
+  fd.append("client_id", clientId || "unknown");
+  fd.append("fileType", fileType || "general");
+
+  showToast("Uploading...", "info");
+  var headers = {};
+  if (token) headers["Authorization"] = "Bearer " + token;
+  fetch("/api/clients/full-support-plan/upload", { method: "POST", headers: headers, body: fd }).then(function (r) { return r.json(); }).then(function (data) {
+    if (data.error) { showToast("Upload failed: " + data.error, "error"); return; }
+    var urlInput = document.getElementById("spEdit_" + fieldKey);
+    if (urlInput) urlInput.value = data.url || "";
+    showToast("File uploaded", "success");
+  }).catch(function (e) { showToast("Upload failed: " + e.message, "error"); });
+}
+
+function spTriggerJsonbFileUpload(fieldKey) {
+  var input = document.getElementById("spJsonbFileInput_" + fieldKey);
+  if (input) input.click();
+}
+
+function spHandleJsonbFileUpload(fieldKey, input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  if (file.size > 15 * 1024 * 1024) { showToast("File too large (max 15MB)", "error"); return; }
+
+  var clientId = window._supportPlan.clientId;
+  var fd = new FormData();
+  fd.append("file", file);
+  fd.append("client_id", clientId || "unknown");
+  fd.append("fileType", "document");
+
+  showToast("Uploading document...", "info");
+  var headers = {};
+  if (token) headers["Authorization"] = "Bearer " + token;
+  fetch("/api/clients/full-support-plan/upload", { method: "POST", headers: headers, body: fd }).then(function (r) { return r.json(); }).then(function (data) {
+    if (data.error) { showToast("Upload failed: " + data.error, "error"); return; }
+
+    // Collect current data, then add new file entry
+    spCollectCurrentSectionData();
+    var plan = window._supportPlan.plan;
+    var currentArr = Array.isArray(plan[fieldKey]) ? plan[fieldKey] : [];
+    currentArr.push({
+      name: data.name || file.name || "Document",
+      url: data.url || "",
+      uploaded_at: new Date().toISOString()
+    });
+    plan[fieldKey] = currentArr;
+
+    // Re-render the section
+    var formArea = document.getElementById("spEditFormArea");
+    if (formArea) {
+      formArea.innerHTML = spRenderEditSection(window._supportPlan.editActiveSection, plan);
+    }
+    showToast("Document uploaded", "success");
+  }).catch(function (e) { showToast("Upload failed: " + e.message, "error"); });
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  DATA COLLECTION & SAVE
+// ═══════════════════════════════════════════════════════════════════════════════
+function spCollectCurrentSectionData() {
+  var plan = window._supportPlan.plan;
+  if (!plan) return;
+  var secIdx = window._supportPlan.editActiveSection;
+  var sec = SP_SECTIONS[secIdx];
+  if (!sec) return;
+
+  sec.fields.forEach(function (fieldKey) {
+    var meta = SP_FIELD_META[fieldKey] || { type: "text" };
+
+    if (meta.type === "tags") {
+      var hiddenInput = document.getElementById("spEdit_" + fieldKey);
+      if (hiddenInput) {
+        try { plan[fieldKey] = JSON.parse(hiddenInput.value || "[]"); } catch (e) { plan[fieldKey] = []; }
+      }
+      return;
+    }
+
+    if (meta.type === "boolean") {
+      var radios = document.querySelectorAll('input[name="spBool_' + fieldKey + '"]');
+      radios.forEach(function (r) {
+        if (r.checked) plan[fieldKey] = r.value === "true";
+      });
+      return;
+    }
+
+    if (meta.type === "jsonb_specialists") {
+      var container = document.getElementById("spJsonb_" + fieldKey);
+      if (!container) return;
+      var items = [];
+      var blocks = container.querySelectorAll('[id^="spJsonbItem_' + fieldKey + '_"]');
+      for (var i = 0; i < blocks.length; i++) {
+        var nameEl = document.getElementById("spJ_" + fieldKey + "_" + i + "_name");
+        var specEl = document.getElementById("spJ_" + fieldKey + "_" + i + "_specialty");
+        var phoneEl = document.getElementById("spJ_" + fieldKey + "_" + i + "_phone");
+        var notesEl = document.getElementById("spJ_" + fieldKey + "_" + i + "_notes");
+        items.push({
+          name: nameEl ? nameEl.value : "",
+          specialty: specEl ? specEl.value : "",
+          phone: phoneEl ? phoneEl.value : "",
+          notes: notesEl ? notesEl.value : ""
+        });
+      }
+      plan[fieldKey] = items;
+      return;
+    }
+
+    if (meta.type === "jsonb_network") {
+      var container = document.getElementById("spJsonb_" + fieldKey);
+      if (!container) return;
+      var items = [];
+      var blocks = container.querySelectorAll('[id^="spJsonbItem_' + fieldKey + '_"]');
+      for (var i = 0; i < blocks.length; i++) {
+        var nameEl = document.getElementById("spJ_" + fieldKey + "_" + i + "_name");
+        var relEl = document.getElementById("spJ_" + fieldKey + "_" + i + "_relationship");
+        var phoneEl = document.getElementById("spJ_" + fieldKey + "_" + i + "_phone");
+        var emailEl = document.getElementById("spJ_" + fieldKey + "_" + i + "_email");
+        var notesEl = document.getElementById("spJ_" + fieldKey + "_" + i + "_notes");
+        items.push({
+          name: nameEl ? nameEl.value : "",
+          relationship: relEl ? relEl.value : "",
+          phone: phoneEl ? phoneEl.value : "",
+          email: emailEl ? emailEl.value : "",
+          notes: notesEl ? notesEl.value : ""
+        });
+      }
+      plan[fieldKey] = items;
+      return;
+    }
+
+    if (meta.type === "jsonb_links") {
+      var container = document.getElementById("spJsonb_" + fieldKey);
+      if (!container) return;
+      var items = [];
+      var blocks = container.querySelectorAll('[id^="spJsonbItem_' + fieldKey + '_"]');
+      for (var i = 0; i < blocks.length; i++) {
+        var titleEl = document.getElementById("spJ_" + fieldKey + "_" + i + "_title");
+        var urlEl = document.getElementById("spJ_" + fieldKey + "_" + i + "_url");
+        items.push({
+          title: titleEl ? titleEl.value : "",
+          url: urlEl ? urlEl.value : ""
+        });
+      }
+      plan[fieldKey] = items;
+      return;
+    }
+
+    if (meta.type === "jsonb_files") {
+      var container = document.getElementById("spJsonb_" + fieldKey);
+      if (!container) return;
+      var items = [];
+      var blocks = container.querySelectorAll('[id^="spJsonbItem_' + fieldKey + '_"]');
+      for (var i = 0; i < blocks.length; i++) {
+        var nameEl = document.getElementById("spJ_" + fieldKey + "_" + i + "_name");
+        var urlEl = document.getElementById("spJ_" + fieldKey + "_" + i + "_url");
+        items.push({
+          name: nameEl ? nameEl.value : "",
+          url: urlEl ? urlEl.value : ""
+        });
+      }
+      plan[fieldKey] = items;
+      return;
+    }
+
+    // Default: text, textarea, select, url, date
+    var input = document.getElementById("spEdit_" + fieldKey);
+    if (input) {
+      plan[fieldKey] = input.value;
+    }
+  });
+}
+
+function spCollectAllData() {
+  // Collect current section first
+  spCollectCurrentSectionData();
+
+  var plan = window._supportPlan.plan;
+  var body = {};
+
+  // Collect meta fields from header
+  SP_META_FIELDS.forEach(function (mf) {
+    var el = document.getElementById("spMeta_" + mf);
+    if (el) body[mf] = el.value;
+  });
+
+  // Collect all section fields from plan state
+  SP_SECTIONS.forEach(function (sec) {
+    sec.fields.forEach(function (fieldKey) {
+      var val = plan[fieldKey];
+      if (val !== undefined && val !== null) {
+        body[fieldKey] = val;
+      }
+    });
+  });
+
+  return body;
+}
+
+function spSaveEditPlan() {
+  var plan = window._supportPlan.plan;
+  if (!plan || !plan.id) { showToast("No plan to save", "error"); return; }
+
+  var body = spCollectAllData();
+
+  // Show saving state
+  var saveBtn = document.querySelector('#spEditOverlay button[onclick="spSaveEditPlan()"]');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<div class="spin" style="width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:6px"></div> Saving...';
+  }
+
+  apiCall("PATCH", "/api/clients/full-support-plan/" + plan.id, body).then(function (data) {
+    if (data.error) {
+      showToast("Save failed: " + data.error, "error");
+      if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '💾 Save Changes'; }
+      return;
+    }
+    showToast("Support plan saved", "success");
+    spCloseEditModal();
+    // Reload the view
+    loadNDISClientSupportPlan(window._supportPlan.clientName);
+  }).catch(function (e) {
+    showToast("Save failed: " + e.message, "error");
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '💾 Save Changes'; }
+  });
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  5. SECTION COMPLETION
+// ═══════════════════════════════════════════════════════════════════════════════
+function spSectionHasData(plan, section) {
+  if (!plan || !section || !section.fields) return false;
+  for (var i = 0; i < section.fields.length; i++) {
+    var val = plan[section.fields[i]];
+    if (val === null || val === undefined || val === "" || val === false) continue;
+    if (Array.isArray(val) && val.length === 0) continue;
+    if (typeof val === "object" && !Array.isArray(val) && Object.keys(val).length === 0) continue;
+    return true;
+  }
+  return false;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════════════════════════════════════════
+function spEsc(str) {
+  if (str === null || str === undefined) return "";
+  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function spFieldLabel(fieldKey) {
+  return fieldKey.replace(/_/g, " ").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+}
 
 function loadNDISClientPlan(clientName){
 var el=document.getElementById("ndisPlanContent");if(!el)return;

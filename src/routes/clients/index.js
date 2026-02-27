@@ -3,6 +3,14 @@ const { authenticate } = require('../../middleware/auth');
 const { logAudit } = require('../../services/audit');
 const airtable = require('../../services/database');
 const env = require('../../config/env');
+var { createClient } = require('@supabase/supabase-js');
+var { uploadGeneral } = require('../../config/upload');
+
+var supabase = createClient(
+  (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, ''),
+  (process.env.SUPABASE_SERVICE_KEY || '').trim(),
+  { auth: { autoRefreshToken: false, persistSession: false } }
+);
 
 const router = express.Router();
 
@@ -324,6 +332,172 @@ router.get('/support-plan', function (req, res) {
     console.error('Support Plan error:', e.message);
     res.status(500).json({ error: e.message, records: [] });
   });
+});
+
+// ═══════════════════════════════════════════════════════════
+//  GET /api/clients/full-support-plan — Supabase support plan by client name
+// ═══════════════════════════════════════════════════════════
+router.get('/full-support-plan', function (req, res) {
+  var clientName = (req.query.name || '').trim();
+  if (!clientName) return res.status(400).json({ error: 'name query parameter is required' });
+
+  try {
+    supabase
+      .from('clients')
+      .select('id')
+      .ilike('client_name', clientName)
+      .limit(1)
+      .then(function (clientResult) {
+        if (clientResult.error) {
+          console.error('Full support plan - client lookup error:', clientResult.error.message);
+          return res.status(500).json({ error: clientResult.error.message });
+        }
+        if (!clientResult.data || clientResult.data.length === 0) {
+          console.log('Full support plan: no client found for "' + clientName + '"');
+          return res.json({ plan: null, client_id: null });
+        }
+
+        var clientId = clientResult.data[0].id;
+
+        supabase
+          .from('client_support_plans')
+          .select('*')
+          .eq('client_id', clientId)
+          .limit(1)
+          .then(function (planResult) {
+            if (planResult.error) {
+              console.error('Full support plan - plan lookup error:', planResult.error.message);
+              return res.status(500).json({ error: planResult.error.message });
+            }
+            var plan = (planResult.data && planResult.data.length > 0) ? planResult.data[0] : null;
+            console.log('Full support plan: ' + (plan ? 'found' : 'no plan') + ' for client "' + clientName + '" (id: ' + clientId + ')');
+            res.json({ plan: plan, client_id: clientId });
+          });
+      });
+  } catch (err) {
+    console.error('Full support plan GET error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+//  POST /api/clients/full-support-plan — create new Supabase support plan
+// ═══════════════════════════════════════════════════════════
+router.post('/full-support-plan', function (req, res) {
+  var body = req.body || {};
+  if (!body.client_id) return res.status(400).json({ error: 'client_id is required' });
+
+  try {
+    supabase
+      .from('client_support_plans')
+      .insert(body)
+      .select()
+      .then(function (result) {
+        if (result.error) {
+          console.error('Full support plan create error:', result.error.message);
+          return res.status(500).json({ error: result.error.message });
+        }
+        var created = (result.data && result.data.length > 0) ? result.data[0] : null;
+        console.log('Full support plan created for client_id: ' + body.client_id);
+        res.json({ success: true, data: created });
+      });
+  } catch (err) {
+    console.error('Full support plan POST error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+//  PATCH /api/clients/full-support-plan/:id — update Supabase support plan
+// ═══════════════════════════════════════════════════════════
+router.patch('/full-support-plan/:id', function (req, res) {
+  var planId = req.params.id;
+  var body = req.body || {};
+  if (!planId) return res.status(400).json({ error: 'Plan id is required' });
+
+  try {
+    supabase
+      .from('client_support_plans')
+      .update(body)
+      .eq('id', planId)
+      .select()
+      .then(function (result) {
+        if (result.error) {
+          console.error('Full support plan update error:', result.error.message);
+          return res.status(500).json({ error: result.error.message });
+        }
+        var updated = (result.data && result.data.length > 0) ? result.data[0] : null;
+        console.log('Full support plan updated: ' + planId);
+        res.json({ success: true, data: updated });
+      });
+  } catch (err) {
+    console.error('Full support plan PATCH error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+//  POST /api/clients/full-support-plan/upload — upload file to Supabase Storage
+// ═══════════════════════════════════════════════════════════
+router.post('/full-support-plan/upload', uploadGeneral.single('file'), function (req, res) {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file provided' });
+
+    var clientId = req.body.client_id || 'unknown';
+    var fileType = req.body.fileType || 'general';
+    var timestamp = Date.now();
+    var fileName = req.file.originalname || 'file';
+    var storagePath = clientId + '/' + fileType + '/' + timestamp + '_' + fileName;
+
+    supabase.storage
+      .from('support-plan-documents')
+      .upload(storagePath, req.file.buffer, {
+        contentType: req.file.mimetype || 'application/octet-stream',
+        upsert: false
+      })
+      .then(function (uploadResult) {
+        if (uploadResult.error) {
+          console.error('Support plan file upload error:', uploadResult.error.message);
+          return res.status(500).json({ error: uploadResult.error.message });
+        }
+
+        var publicUrlResult = supabase.storage
+          .from('support-plan-documents')
+          .getPublicUrl(storagePath);
+
+        var url = publicUrlResult.data ? publicUrlResult.data.publicUrl : '';
+        console.log('Support plan file uploaded: ' + storagePath);
+        res.json({ success: true, url: url, name: fileName });
+      });
+  } catch (err) {
+    console.error('Support plan file upload error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+//  DELETE /api/clients/full-support-plan/file — delete file from Supabase Storage
+// ═══════════════════════════════════════════════════════════
+router.delete('/full-support-plan/file', function (req, res) {
+  var filePath = (req.body && req.body.path) || '';
+  if (!filePath) return res.status(400).json({ error: 'path is required' });
+
+  try {
+    supabase.storage
+      .from('support-plan-documents')
+      .remove([filePath])
+      .then(function (result) {
+        if (result.error) {
+          console.error('Support plan file delete error:', result.error.message);
+          return res.status(500).json({ error: result.error.message });
+        }
+        console.log('Support plan file deleted: ' + filePath);
+        res.json({ success: true });
+      });
+  } catch (err) {
+    console.error('Support plan file DELETE error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ═══════════════════════════════════════════════════════════
