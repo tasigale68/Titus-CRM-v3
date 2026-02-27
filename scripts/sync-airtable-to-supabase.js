@@ -5,6 +5,7 @@
 // Run: node scripts/sync-airtable-to-supabase.js
 // ═══════════════════════════════════════════════════════════════
 require('dotenv').config();
+var { createClient } = require('@supabase/supabase-js');
 
 var SUPABASE_URL = (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, '');
 var SUPABASE_SERVICE_KEY = (process.env.SUPABASE_SERVICE_KEY || '').trim();
@@ -17,6 +18,10 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY || !AIRTABLE_API_KEY) {
   console.error('Missing required env vars: SUPABASE_URL, SUPABASE_SERVICE_KEY, AIRTABLE_API_KEY');
   process.exit(1);
 }
+
+var supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
+  auth: { autoRefreshToken: false, persistSession: false }
+});
 
 var AIRTABLE_BASE_URL = 'https://api.airtable.com/v0/' + AIRTABLE_BASE_ID;
 var RATE_LIMIT_MS = 260;
@@ -60,47 +65,15 @@ function fetchAllRecords(table, view) {
 
 // ─── Supabase helpers ────────────────────────────────────────
 
-function supabasePost(tableName, body) {
-  var url = SUPABASE_URL + '/rest/v1/' + tableName;
-  return fetch(url, {
-    method: 'POST',
-    headers: {
-      'apikey': SUPABASE_SERVICE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_SERVICE_KEY,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=minimal,resolution=merge-duplicates'
-    },
-    body: JSON.stringify(body)
-  }).then(function(r) {
-    if (!r.ok) return r.text().then(function(t) { throw new Error('Supabase ' + r.status + ': ' + t.substring(0, 200)); });
-    if (r.status === 204) return [];
-    return r.json().catch(function() { return []; });
-  });
-}
-
-function supabaseGet(path) {
-  var url = SUPABASE_URL + '/rest/v1/' + path;
-  return fetch(url, {
-    method: 'GET',
-    headers: {
-      'apikey': SUPABASE_SERVICE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_SERVICE_KEY,
-      'Content-Type': 'application/json'
-    }
-  }).then(function(r) {
-    if (!r.ok) return r.text().then(function(t) { throw new Error('Supabase GET ' + r.status + ': ' + t.substring(0, 200)); });
-    return r.json();
-  });
-}
-
-function upsertBatch(tableName, rows) {
-  if (!rows.length) return Promise.resolve();
-  var batches = [];
-  for (var i = 0; i < rows.length; i += 200) batches.push(rows.slice(i, i + 200));
-  // Use on_conflict=airtable_id so PostgREST knows which column to merge on
-  return batches.reduce(function(chain, batch) {
-    return chain.then(function() { return supabasePost(tableName + '?on_conflict=airtable_id', batch); });
-  }, Promise.resolve());
+async function upsertBatch(tableName, rows) {
+  if (!rows.length) return;
+  for (var i = 0; i < rows.length; i += 200) {
+    var batch = rows.slice(i, i + 200);
+    var { error } = await supabase
+      .from(tableName)
+      .upsert(batch, { onConflict: 'airtable_id', ignoreDuplicates: false });
+    if (error) throw new Error('Supabase upsert ' + tableName + ': ' + error.message);
+  }
 }
 
 // ─── Field mappers (matching migrate-airtable-to-supabase.js) ─
@@ -472,13 +445,17 @@ var SYNC_TABLES = [
 // ─── Resolve tenant_id on startup ────────────────────────────
 
 async function loadTenantId() {
-  var rows = await supabaseGet('tenants?slug=eq.' + encodeURIComponent(TENANT_SLUG) + '&select=id');
-  if (!rows || !rows.length) {
-    console.error('[SYNC] Tenant not found: ' + TENANT_SLUG);
-    console.error('[SYNC] Run saas-schema.sql first to seed the Delta tenant.');
+  var { data, error } = await supabase
+    .from('tenants')
+    .select('id')
+    .eq('slug', TENANT_SLUG)
+    .limit(1);
+  if (error || !data || !data.length) {
+    console.error('[SYNC] Tenant not found: ' + TENANT_SLUG + (error ? ' (' + error.message + ')' : ''));
+    console.error('[SYNC] Run backfill-delta-tenant.sql first to seed the Delta tenant.');
     process.exit(1);
   }
-  tenantId = rows[0].id;
+  tenantId = data[0].id;
   console.log('[SYNC] Tenant: ' + TENANT_SLUG + ' (' + tenantId + ')');
 }
 
@@ -514,23 +491,23 @@ async function syncCycle() {
       totalSynced += rows.length;
 
       // Update sync metadata
-      await supabasePost('sync_metadata', [{
+      await supabase.from('sync_metadata').upsert([{
         table_name: t.supabase,
         last_sync_at: new Date().toISOString(),
         records_synced: rows.length,
         status: 'synced'
-      }]).catch(function() {});
+      }], { onConflict: 'table_name' }).catch(function() {});
 
     } catch (e) {
       errors++;
       console.error('[SYNC] Error syncing ' + t.airtable + ':', e.message.substring(0, 80));
-      await supabasePost('sync_metadata', [{
+      await supabase.from('sync_metadata').upsert([{
         table_name: t.supabase,
         last_sync_at: new Date().toISOString(),
         records_synced: 0,
         status: 'error',
         error_message: e.message.substring(0, 500)
-      }]).catch(function() {});
+      }], { onConflict: 'table_name' }).catch(function() {});
     }
   }
 

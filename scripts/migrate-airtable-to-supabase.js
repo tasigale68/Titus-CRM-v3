@@ -4,6 +4,7 @@
 // Run: node scripts/migrate-airtable-to-supabase.js
 // ═══════════════════════════════════════════════════════════════
 require('dotenv').config();
+var { createClient } = require('@supabase/supabase-js');
 
 var SUPABASE_URL = (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, '');
 var SUPABASE_SERVICE_KEY = (process.env.SUPABASE_SERVICE_KEY || '').trim();
@@ -18,6 +19,10 @@ if (!AIRTABLE_API_KEY) {
   console.error('Missing AIRTABLE_API_KEY');
   process.exit(1);
 }
+
+var supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
+  auth: { autoRefreshToken: false, persistSession: false }
+});
 
 var AIRTABLE_BASE_URL = 'https://api.airtable.com/v0/' + AIRTABLE_BASE_ID;
 var RATE_LIMIT_MS = 260; // Airtable: 5 req/sec
@@ -61,37 +66,16 @@ function fetchAllRecords(table, view) {
 }
 
 // ─── Supabase helpers ────────────────────────────────────────
-function supabaseRequest(tableName, method, body) {
-  var url = SUPABASE_URL + '/rest/v1/' + tableName;
-  var headers = {
-    'apikey': SUPABASE_SERVICE_KEY,
-    'Authorization': 'Bearer ' + SUPABASE_SERVICE_KEY,
-    'Content-Type': 'application/json',
-    'Prefer': 'return=minimal'
-  };
-  if (method === 'POST') headers['Prefer'] = 'return=representation,resolution=merge-duplicates';
-  var opts = { method: method, headers: headers };
-  if (body) opts.body = JSON.stringify(body);
-  return fetch(url, opts).then(function(r) {
-    if (!r.ok) return r.text().then(function(t) { throw new Error('Supabase ' + r.status + ': ' + t.substring(0, 200)); });
-    if (r.status === 204) return [];
-    return r.json();
-  });
-}
-
-function upsertBatch(tableName, rows) {
-  if (!rows.length) return Promise.resolve();
-  // Supabase REST max ~1000 rows per request; batch at 200
-  var batches = [];
+async function upsertBatch(tableName, rows) {
+  if (!rows.length) return;
+  // Supabase JS client max ~1000 rows per request; batch at 200
   for (var i = 0; i < rows.length; i += 200) {
-    batches.push(rows.slice(i, i + 200));
+    var batch = rows.slice(i, i + 200);
+    var { error } = await supabase
+      .from(tableName)
+      .upsert(batch, { onConflict: 'airtable_id', ignoreDuplicates: false });
+    if (error) throw new Error('Supabase upsert ' + tableName + ': ' + error.message);
   }
-  // Use on_conflict=airtable_id so PostgREST knows which column to merge on
-  return batches.reduce(function(chain, batch) {
-    return chain.then(function() {
-      return supabaseRequest(tableName + '?on_conflict=airtable_id', 'POST', batch);
-    });
-  }, Promise.resolve());
 }
 
 // ─── Field mappers (Airtable record → Supabase row) ─────────
@@ -558,12 +542,12 @@ async function migrate() {
       console.log(' ' + rows.length + ' records migrated');
 
       // Update sync metadata
-      await supabaseRequest('sync_metadata', 'POST', [{
+      await supabase.from('sync_metadata').upsert([{
         table_name: t.supabase,
         last_sync_at: new Date().toISOString(),
         records_synced: rows.length,
         status: 'migrated'
-      }]).catch(function() {});
+      }], { onConflict: 'table_name' }).catch(function() {});
 
     } catch (e) {
       stats.failed++;
