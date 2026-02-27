@@ -9,9 +9,24 @@
 --
 -- Prerequisites:
 --   - tenants table must exist (from saas-schema.sql)
---   - Delta must be seeded (INSERT in saas-schema.sql)
 --   - tenant_id columns must exist (from alter-tables-for-saas.sql)
 -- ============================================================================
+
+-- Seed Delta Community Support as the first tenant (moved from saas-schema.sql)
+INSERT INTO tenants (org_name, slug, domain, admin_email, status, enabled_modules, base_tier, weekly_price_total, max_users, max_clients, trial_ends_at)
+VALUES (
+  'Delta Community Support',
+  'delta-community',
+  'deltacommunity.com.au',
+  'gus@deltacommunity.com.au',
+  'active',
+  '["recruiter","leads","voice_sms","ai_voice","client_management","billing","lms","ai_reports","employment_signing","stakeholder_portal"]',
+  '50+',
+  599.00,
+  100,
+  500,
+  NULL
+) ON CONFLICT (slug) DO NOTHING;
 
 DO $$
 DECLARE

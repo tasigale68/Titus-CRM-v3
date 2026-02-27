@@ -564,21 +564,6 @@ CREATE POLICY hunt_groups_isolation ON hunt_groups
 -- SEED DATA
 -- ═══════════════════════════════════════════════════════════════════════════
 
--- Seed Delta Community Support as the first tenant
-INSERT INTO tenants (org_name, slug, domain, admin_email, status, enabled_modules, base_tier, weekly_price_total, max_users, max_clients, trial_ends_at)
-VALUES (
-  'Delta Community Support',
-  'delta-community',
-  'deltacommunity.com.au',
-  'gus@deltacommunity.com.au',
-  'active',
-  '["recruiter","leads","voice_sms","ai_voice","client_management","billing","lms","ai_reports","employment_signing","stakeholder_portal"]',
-  '50+',
-  599.00,
-  100,
-  500,
-  NULL
-) ON CONFLICT (slug) DO NOTHING;
-
--- Seed SCHADS rates for Delta (or default tenant)
--- Default rates will be inserted via application code after tenant creation
+-- Delta Community Support seed moved to backfill-delta-tenant.sql (Step 5)
+-- which runs after alter-tables-for-saas.sql adds tenant_id columns.
+-- SCHADS default rates are inserted via application code after tenant creation.
