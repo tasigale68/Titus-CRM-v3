@@ -20,8 +20,8 @@ router.get('/', function(req, res) {
       return {
         id: r.id,
         taskName: av(f["Task Name"] || f["Name"] || f["Title"] || ""),
-        clientName: av(f["Client Name"] || f["Client"] || ""),
-        assignee: av(f["Assignee"] || f["Assigned To"] || f["Staff Member"] || ""),
+        clientName: av(f["Client Full Name (from Client Name)"] || f["Client Name"] || f["Client"] || ""),
+        assignee: av(f["Full Name (from Assigned to Email)"] || f["Assignee"] || f["Assigned To"] || f["Staff Member"] || ""),
         status: av(f["Status"] || f["Task Status"] || "Not Started"),
         priority: av(f["Priority"] || f["Task Priority"] || "Medium"),
         dueDate: f["Due Date"] || f["Due"] || "",

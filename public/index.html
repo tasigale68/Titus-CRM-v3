@@ -1485,7 +1485,7 @@ threadDiv.innerHTML=h;popup.appendChild(threadDiv);
 setTimeout(function(){var area=document.getElementById("msgThreadMsgs");if(area)area.scrollTop=area.scrollHeight},100);
 // Mark as read
 apiCall("POST","/api/chat/conversations/"+convId+"/read",{}).catch(function(){})
-}).catch(function(){showToast("Could not load thread","error")})}
+}).catch(function(){showToast("Could not load thread — conversation may not exist yet","error")})}
 function sendMsgFromPopup(convId){
 var input=document.getElementById("msgComposeInput");if(!input||!input.value.trim())return;
 var content=input.value.trim();input.value="";
@@ -12498,13 +12498,13 @@ function normalizeStage(s){
 }
 function loadRecruitData(cb){
   var qs=recruitShowArchived?"?showArchived=true":"";
-  apiCall("GET","/api/recruit"+qs).then(function(d){
+  apiCall("GET","/api/recruitment/candidates"+qs).then(function(d){
     recruitData=(d||[]).map(function(r){r.stage=normalizeStage(r.stage);return r});
     console.log("Recruit: loaded "+recruitData.length+" candidates");
     if(cb)cb();else renderRecruit();
   }).catch(function(e){console.error("Recruit load error:",e);recruitData=[];if(cb)cb();else renderRecruit()});
   // Also fetch automation status
-  apiCall("GET","/api/recruit/automation-status").then(function(d){recruitAutomationEnabled=d&&d.enabled===true}).catch(function(){});
+  apiCall("GET","/api/recruitment/automation-status").then(function(d){recruitAutomationEnabled=d&&d.enabled===true}).catch(function(){});
 }
 
 function renderRecruit(){
@@ -12548,7 +12548,7 @@ function recruitAutoToggleHtml(){
 function toggleRecruitAutomation(){
   var newState=!recruitAutomationEnabled;
   if(newState&&!confirm("Enable automations? This will send SMS and emails on stage changes."))return;
-  apiCall("POST","/api/recruit/automation-toggle",{enabled:newState}).then(function(d){
+  apiCall("POST","/api/recruitment/automation-toggle",{enabled:newState}).then(function(d){
     recruitAutomationEnabled=d.enabled;showToast(d.enabled?"Automations enabled":"Automations disabled",d.enabled?"success":"info");renderRecruit();
   }).catch(function(e){showToast("Failed to toggle: "+e.message,"error")});
 }
@@ -12668,7 +12668,7 @@ function applyBulkStage(){
   var ids=[];
   checks.forEach(function(cb){var id=cb.getAttribute("data-id");if(id)ids.push(id)});
   if(ids.length===0)return;
-  apiCall("POST","/api/recruit/bulk-stage",{ids:ids,stage:newStage}).then(function(){
+  apiCall("POST","/api/recruitment/bulk-stage",{ids:ids,stage:newStage}).then(function(){
     showToast(ids.length+" candidates moved to "+newStage,"success");
     window._recruitLoaded=false;renderRecruit();
   }).catch(function(e){showToast("Bulk stage error: "+e.message,"error")});
@@ -12678,7 +12678,7 @@ function updateRecruitStageOverview(idx,newStage){
   var r=recruitData[idx];if(!r)return;
   var oldStage=r.stage||"CV Received";r.stage=newStage;
   if(r.airtableId){
-    apiCall("POST","/api/recruit/stage-change",{candidateId:r.airtableId,fromStage:oldStage,toStage:newStage}).then(function(d){
+    apiCall("POST","/api/recruitment/stage-change",{candidateId:r.airtableId,fromStage:oldStage,toStage:newStage}).then(function(d){
       showToast("Stage updated to "+newStage,"success");
     }).catch(function(e){showToast("Stage update error","error")});
   }
@@ -12786,7 +12786,7 @@ function bulkArchiveSelected(){
   var ids=getSelectedBulkIds();
   if(ids.length===0){showToast("Select candidates first","error");return}
   if(!confirm("Archive "+ids.length+" candidate(s)? They will be hidden from the Kanban."))return;
-  apiCall("POST","/api/recruit/bulk-archive",{ids:ids}).then(function(){
+  apiCall("POST","/api/recruitment/bulk-archive",{ids:ids}).then(function(){
     showToast(ids.length+" archived","success");
     recruitBulkSelected={};window._recruitLoaded=false;renderRecruit();
   }).catch(function(e){showToast("Archive error: "+e.message,"error")});
@@ -12797,7 +12797,7 @@ function bulkMoveToStage(){
   if(!sel||!sel.value){showToast("Select a stage","error");return}
   var ids=getSelectedBulkIds();
   if(ids.length===0){showToast("Select candidates first","error");return}
-  apiCall("POST","/api/recruit/bulk-stage",{ids:ids,stage:sel.value}).then(function(){
+  apiCall("POST","/api/recruitment/bulk-stage",{ids:ids,stage:sel.value}).then(function(){
     showToast(ids.length+" moved to "+sel.value,"success");
     recruitBulkSelected={};window._recruitLoaded=false;renderRecruit();
   }).catch(function(e){showToast("Error: "+e.message,"error")});
@@ -12807,7 +12807,7 @@ function bulkMarkUnsuccessful(){
   var ids=getSelectedBulkIds();
   if(ids.length===0){showToast("Select candidates first","error");return}
   if(!confirm("Mark "+ids.length+" candidate(s) as Unsuccessful?"))return;
-  apiCall("POST","/api/recruit/bulk-stage",{ids:ids,stage:"Unsuccessful"}).then(function(){
+  apiCall("POST","/api/recruitment/bulk-stage",{ids:ids,stage:"Unsuccessful"}).then(function(){
     showToast(ids.length+" marked Unsuccessful","success");
     recruitBulkSelected={};window._recruitLoaded=false;renderRecruit();
   }).catch(function(e){showToast("Error: "+e.message,"error")});
@@ -12820,7 +12820,7 @@ function moveToNextStage(idx){
   var next=V8_STAGES[curIdx+1];
   var old=r.stage||"CV Received";
   r.stage=next;
-  apiCall("POST","/api/recruit/stage-change",{candidateId:r.airtableId,fromStage:old,toStage:next}).then(function(d){
+  apiCall("POST","/api/recruitment/stage-change",{candidateId:r.airtableId,fromStage:old,toStage:next}).then(function(d){
     showToast("Moved to "+next,"success");
     renderRecruitKanban(document.getElementById("rightPanel"));
   }).catch(function(e){showToast("Error: "+e.message,"error")});
@@ -12839,7 +12839,7 @@ function kanbanDrop(e,newStage){
   if(oldStage===newStage){_dragIdx=null;return}
   r.stage=newStage;
   if(r.airtableId){
-    apiCall("POST","/api/recruit/stage-change",{candidateId:r.airtableId,fromStage:oldStage,toStage:newStage}).then(function(d){
+    apiCall("POST","/api/recruitment/stage-change",{candidateId:r.airtableId,fromStage:oldStage,toStage:newStage}).then(function(d){
       showToast("Moved to "+newStage,"success");
     }).catch(function(e){showToast("Stage update error","error")});
   }
@@ -12851,7 +12851,7 @@ function updateRecruitStage(idx,newStage){
   var r=recruitData[idx];if(!r)return;
   var old=r.stage||"CV Received";r.stage=newStage;
   if(r.airtableId){
-    apiCall("POST","/api/recruit/stage-change",{candidateId:r.airtableId,fromStage:old,toStage:newStage}).then(function(){
+    apiCall("POST","/api/recruitment/stage-change",{candidateId:r.airtableId,fromStage:old,toStage:newStage}).then(function(){
       showToast("Stage updated","success");
     }).catch(function(){});
   }
@@ -13102,7 +13102,7 @@ function renderDetailProfile(r){
 function changeDetailStage(newStage){
   var r=recruitDetailCandidate;if(!r)return;
   var old=r.stage||"CV Received";r.stage=newStage;
-  apiCall("POST","/api/recruit/stage-change",{candidateId:r.airtableId,fromStage:old,toStage:newStage}).then(function(){
+  apiCall("POST","/api/recruitment/stage-change",{candidateId:r.airtableId,fromStage:old,toStage:newStage}).then(function(){
     showToast("Stage updated to "+newStage,"success");
     renderRecruitDetailPanel();
   }).catch(function(e){showToast("Error: "+e.message,"error")});
@@ -13111,7 +13111,7 @@ function changeDetailStage(newStage){
 function changeDetailField(fieldName,value){
   var r=recruitDetailCandidate;if(!r)return;
   var fields={};fields[fieldName]=value;
-  apiCall("PATCH","/api/recruit/"+r.airtableId,{fields:fields}).then(function(){
+  apiCall("PATCH","/api/recruitment/candidates/"+r.airtableId,{fields:fields}).then(function(){
     showToast("Updated","success");
     if(fieldName==="Type of Employment")r.employmentType=value;
   }).catch(function(e){showToast("Error: "+e.message,"error")});
@@ -13185,7 +13185,7 @@ function saveScores(){
   var r=recruitDetailCandidate;if(!r)return;
   var docTotal=0;for(var i=0;i<6;i++){var el=document.getElementById("docScore_"+i);if(el)docTotal+=parseInt(el.value)||0}
   var commTotal=0;for(var i=0;i<5;i++){var el=document.getElementById("commScore_"+i);if(el)commTotal+=parseInt(el.value)||0}
-  apiCall("POST","/api/recruit/score",{candidateId:r.airtableId,documentScore:docTotal,communicationScore:commTotal}).then(function(){
+  apiCall("POST","/api/recruitment/score",{candidateId:r.airtableId,documentScore:docTotal,communicationScore:commTotal}).then(function(){
     r.documentScore=docTotal;r.communicationScore=commTotal;r.totalScore=docTotal+commTotal;
     showToast("Scores saved","success");
   }).catch(function(e){showToast("Error: "+e.message,"error")});
@@ -13216,7 +13216,7 @@ function renderDetailVideo(r){
 
 function sendVideoLink(candidateId){
   if(!confirm("Send video interview link via SMS and email?"))return;
-  apiCall("POST","/api/recruit/send-video-link",{candidateId:candidateId}).then(function(){
+  apiCall("POST","/api/recruitment/send-video-link",{candidateId:candidateId}).then(function(){
     showToast("Video interview link sent","success");
   }).catch(function(e){showToast("Error: "+e.message,"error")});
 }
@@ -13259,7 +13259,7 @@ function saveReferee(n){
   var rel=(document.getElementById("ref"+n+"Rel")||{}).value||"";
   var phone=(document.getElementById("ref"+n+"Phone")||{}).value||"";
   var outcome=(document.getElementById("ref"+n+"Outcome")||{}).value||"";
-  apiCall("POST","/api/recruit/referee",{
+  apiCall("POST","/api/recruitment/referee",{
     candidateId:r.airtableId,refereeNumber:String(n),
     name:name,relationship:rel,phone:phone,outcome:outcome
   }).then(function(){showToast("Referee "+n+" saved","success")}).catch(function(e){showToast("Error: "+e.message,"error")});
@@ -13271,7 +13271,7 @@ function triggerRefereeCall(n){
   var name=(document.getElementById("ref"+n+"Name")||{}).value||"";
   if(!phone){showToast("Enter referee phone number first","error");return}
   if(!confirm("Call "+name+" at "+phone+" using Michael AI?"))return;
-  apiCall("POST","/api/recruit/trigger-referee-call",{
+  apiCall("POST","/api/recruitment/trigger-referee-call",{
     candidateId:r.airtableId,refereeNumber:phone,refereeName:name,
     candidateName:r.fullName||(r.firstName+" "+r.lastName)
   }).then(function(){showToast("Michael call initiated to "+name,"success")}).catch(function(e){showToast("Error: "+e.message,"error")});
@@ -13331,21 +13331,21 @@ function renderDetailOnboarding(r){
 
 function sendLmsInvite(candidateId){
   if(!confirm("Send LMS invitation via SMS and email?"))return;
-  apiCall("POST","/api/recruit/lms-invite",{candidateId:candidateId}).then(function(){
+  apiCall("POST","/api/recruitment/lms-invite",{candidateId:candidateId}).then(function(){
     showToast("LMS invitation sent","success");
   }).catch(function(e){showToast("Error: "+e.message,"error")});
 }
 
 function sendContract(candidateId){
   if(!confirm("Generate and send contract email?"))return;
-  apiCall("POST","/api/recruit/send-contract",{candidateId:candidateId}).then(function(){
+  apiCall("POST","/api/recruitment/send-contract",{candidateId:candidateId}).then(function(){
     showToast("Contract sent","success");
   }).catch(function(e){showToast("Error: "+e.message,"error")});
 }
 
 function markContractSigned(candidateId){
   if(!confirm("Mark contract as signed?"))return;
-  apiCall("POST","/api/recruit/mark-contract-signed",{candidateId:candidateId}).then(function(){
+  apiCall("POST","/api/recruitment/mark-contract-signed",{candidateId:candidateId}).then(function(){
     showToast("Contract marked as signed","success");
   }).catch(function(e){showToast("Error: "+e.message,"error")});
 }
@@ -13357,7 +13357,7 @@ function renderDetailConversations(r){
   h+='<div id="recruitInteractionsList" style="display:none"></div>';
   // Fetch interactions
   setTimeout(function(){
-    apiCall("GET","/api/recruit/"+r.airtableId+"/interactions").then(function(data){
+    apiCall("GET","/api/recruitment/candidates/"+r.airtableId+"/interactions").then(function(data){
       var loader=document.getElementById("recruitInteractionsLoader");
       var list=document.getElementById("recruitInteractionsList");
       if(loader)loader.style.display="none";
@@ -13432,7 +13432,7 @@ function confirmSendSms(candidateId){
   var tplKey=(document.getElementById("smsTemplate")||{}).value||"";
   if(!body&&!tplKey){showToast("Enter a message or select a template","error");return}
   var btn=document.getElementById("smsSendBtn");if(btn){btn.disabled=true;btn.textContent="Sending...";}
-  apiCall("POST","/api/recruit/send-sms",{candidateId:candidateId,templateKey:tplKey,customMessage:body}).then(function(){
+  apiCall("POST","/api/recruitment/send-sms",{candidateId:candidateId,templateKey:tplKey,customMessage:body}).then(function(){
     showToast("SMS sent","success");
     var ov=document.getElementById("smsModalOverlay");if(ov)ov.remove();
   }).catch(function(e){showToast("SMS failed: "+e.message,"error");if(btn){btn.disabled=false;btn.textContent="Send SMS";}});
@@ -13462,7 +13462,7 @@ function confirmSendEmail(candidateId){
   var tplKey=(document.getElementById("emailTemplate")||{}).value||"";
   if(!tplKey){showToast("Select a template","error");return}
   var btn=document.getElementById("emailSendBtn");if(btn){btn.disabled=true;btn.textContent="Sending...";}
-  apiCall("POST","/api/recruit/send-email",{candidateId:candidateId,templateKey:tplKey}).then(function(){
+  apiCall("POST","/api/recruitment/send-email",{candidateId:candidateId,templateKey:tplKey}).then(function(){
     showToast("Email sent","success");
     var ov=document.getElementById("emailModalOverlay");if(ov)ov.remove();
   }).catch(function(e){showToast("Email failed: "+e.message,"error");if(btn){btn.disabled=false;btn.textContent="Send Email";}});
@@ -13645,7 +13645,7 @@ if(!cf.text||cf.text.trim().length<20){cf.status="error";renderCVFileList();cont
 // Step 2: AI scan
 cf.status="scanning";renderCVFileList();
 try{
-var result=await apiCall("POST","/api/recruit/scan-cv",{text:cf.text.substring(0,8000),fileName:cf.name});
+var result=await apiCall("POST","/api/recruitment/scan-cv",{text:cf.text.substring(0,8000),fileName:cf.name});
 if(result&&result.parsed){cf.parsed=result.parsed;cf.status="done";result.parsed._fileIdx=i;cvScanned.push(result.parsed)}
 else{cf.status="error"}}catch(e){cf.status="error"}
 renderCVFileList()}
