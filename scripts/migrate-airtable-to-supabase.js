@@ -494,7 +494,7 @@ var MIGRATION_TABLES = [
 ];
 
 // ─── BUILD AIRTABLE ID MAP ───────────────────────────────────
-function buildIdMap(records, supabaseTable) {
+async function buildIdMap(records, supabaseTable) {
   var maps = records.map(function(r) {
     return {
       airtable_id: r.airtable_id || r.id,
@@ -503,12 +503,13 @@ function buildIdMap(records, supabaseTable) {
     };
   });
   if (maps.length > 0) {
-    return upsertBatch('airtable_id_map', maps).catch(function(e) {
+    try {
+      await upsertBatch('airtable_id_map', maps);
+    } catch (e) {
       // ID map is non-critical
       console.log('  (ID map upsert skipped: ' + e.message.substring(0, 60) + ')');
-    });
+    }
   }
-  return Promise.resolve();
 }
 
 // ─── MAIN MIGRATION ──────────────────────────────────────────
@@ -541,13 +542,14 @@ async function migrate() {
       stats.tables.push({ table: t.supabase, records: rows.length, status: 'ok' });
       console.log(' ' + rows.length + ' records migrated');
 
-      // Update sync metadata
-      await supabase.from('sync_metadata').upsert([{
+      // Update sync metadata (non-critical, ignore errors)
+      var metaResult = await supabase.from('sync_metadata').upsert([{
         table_name: t.supabase,
         last_sync_at: new Date().toISOString(),
         records_synced: rows.length,
         status: 'migrated'
-      }], { onConflict: 'table_name' }).catch(function() {});
+      }], { onConflict: 'table_name' });
+      if (metaResult.error) console.log('  (sync_metadata: ' + metaResult.error.message.substring(0, 50) + ')');
 
     } catch (e) {
       stats.failed++;

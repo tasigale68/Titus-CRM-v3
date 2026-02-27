@@ -490,13 +490,13 @@ async function syncCycle() {
       await upsertBatch(t.supabase, rows);
       totalSynced += rows.length;
 
-      // Update sync metadata
+      // Update sync metadata (non-critical, ignore errors)
       await supabase.from('sync_metadata').upsert([{
         table_name: t.supabase,
         last_sync_at: new Date().toISOString(),
         records_synced: rows.length,
         status: 'synced'
-      }], { onConflict: 'table_name' }).catch(function() {});
+      }], { onConflict: 'table_name' });
 
     } catch (e) {
       errors++;
@@ -507,7 +507,7 @@ async function syncCycle() {
         records_synced: 0,
         status: 'error',
         error_message: e.message.substring(0, 500)
-      }], { onConflict: 'table_name' }).catch(function() {});
+      }], { onConflict: 'table_name' });
     }
   }
 
