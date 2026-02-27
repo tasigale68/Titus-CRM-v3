@@ -3965,7 +3965,8 @@ loadLeaveRecords(c);
 function loadLeaveRecords(c){
 var el=document.getElementById("leaveRecordsList");if(!el)return;
 if(!c.email){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:11px">No email — cannot load leave records</div>';return}
-apiCall("GET","/api/contacts/staff-availability?email="+encodeURIComponent(c.email)).then(function(records){
+apiCall("GET","/api/contacts/staff-availability?email="+encodeURIComponent(c.email)).then(function(data){
+var records=Array.isArray(data)?data:(data&&data.records?data.records:[]);
 if(!records||records.length===0){
 el.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted)"><div style="font-size:24px;margin-bottom:6px">📅</div><div style="font-size:12px;font-weight:600">No leave requests yet</div><div style="font-size:10px;margin-top:4px">Click "Request Leave" to submit a new request</div></div>';
 return;
@@ -4828,7 +4829,7 @@ el.innerHTML=h}
 
 function loadNDISClientSupportPlan(clientName){
 var el=document.getElementById("supportPlanContent");if(!el)return;
-apiCall("GET","/api/client-support-plan?name="+encodeURIComponent(clientName)).then(function(data){
+apiCall("GET","/api/clients/support-plan?name="+encodeURIComponent(clientName)).then(function(data){
 var records=data.records||[];
 if(records.length===0){
 // Fallback to clientData overview
@@ -4891,7 +4892,7 @@ el.innerHTML=h}
 
 function loadNDISClientPlan(clientName){
 var el=document.getElementById("ndisPlanContent");if(!el)return;
-apiCall("GET","/api/client-support-plan?name="+encodeURIComponent(clientName)).then(function(spData){
+apiCall("GET","/api/clients/support-plan?name="+encodeURIComponent(clientName)).then(function(spData){
 var ndis=spData.stakeholders&&spData.stakeholders.ndisPlan||{};
 var d=selectedConv&&selectedConv._clientData;
 if(!d){return apiCall("GET","/api/client-details?name="+encodeURIComponent(clientName)).then(function(data){
@@ -5115,7 +5116,7 @@ overlay.innerHTML=h;document.body.appendChild(overlay);
 
 function loadNDISClientBudgets(clientName){
 var el=document.getElementById("budgetContent");if(!el)return;
-apiCall("GET","/api/client-budgets?name="+encodeURIComponent(clientName)).then(function(data){
+apiCall("GET","/api/clients/budgets?name="+encodeURIComponent(clientName)).then(function(data){
 var records=data.records||[];
 if(records.length===0){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">💰</div><div style="font-size:13px;font-weight:600">No budget records found</div><div style="font-size:11px;margin-top:4px">No entries in Client Core Budgets for '+clientName+'</div></div>';return}
 var h='<div style="margin-bottom:16px"><div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px">Core Budgets</div><div style="font-size:11px;color:var(--muted)">'+records.length+' budget line'+(records.length!==1?"s":"")+'</div></div>';
@@ -6195,7 +6196,7 @@ function _wizShowResult(success,msg){
 // ═══ STAKEHOLDERS TAB ═══
 function loadStakeholders(clientName,contact){
 var el=document.getElementById("stakeholdersContent");if(!el)return;
-apiCall("GET","/api/client-support-plan?name="+encodeURIComponent(clientName)).then(function(data){
+apiCall("GET","/api/clients/support-plan?name="+encodeURIComponent(clientName)).then(function(data){
 var sh=data.stakeholders||{};
 if(!data.clientFound){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">👥</div><div style="font-size:13px;font-weight:600">No client record found</div><div style="font-size:11px;margin-top:4px">Could not load stakeholders for '+clientName+'</div></div>';return}
 var stakeholders=[];
@@ -10478,7 +10479,7 @@ function renderClientBudget(){
 var rp=document.getElementById("rightPanel");
 if(!clientBudgetLoaded){clientBudgetLoaded=true;
 rp.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)"><div style="text-align:center"><div class="spin" style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 12px"></div><div style="font-size:13px;font-weight:600">Loading client budgets...</div></div></div>';
-apiCall("GET","/api/client-budgets").then(function(d){clientBudgetData=d||[];renderClientBudgetContent(rp)}).catch(function(){clientBudgetData=[];renderClientBudgetContent(rp)});return}
+apiCall("GET","/api/clients/budgets").then(function(d){clientBudgetData=d||[];renderClientBudgetContent(rp)}).catch(function(){clientBudgetData=[];renderClientBudgetContent(rp)});return}
 renderClientBudgetContent(rp)}
 
 function renderClientBudgetContent(rp){
@@ -10747,7 +10748,7 @@ if((parseInt(r.shiftCount)||0)>0&&r.clientName){loadBudgetShiftDetail(r.clientNa
 
 function loadBudgetShiftDetail(clientName){
 var el=document.getElementById("cbShiftDetail");if(!el)return;
-apiCall("GET","/api/client-budgets/shifts?name="+encodeURIComponent(clientName)).then(function(d){
+apiCall("GET","/api/clients/budgets/shifts?name="+encodeURIComponent(clientName)).then(function(d){
 if(!d||(!d.shifts||d.shifts.length===0)){el.innerHTML='<div style="padding:10px;text-align:center;color:var(--dim);font-size:11px">No individual shift data available</div>';return}
 var sh='';
 // Weekly burn rate chart
@@ -10869,7 +10870,7 @@ fromWhichBudget:document.getElementById("cbAddFromBudget").value,
 lineItems:document.getElementById("cbAddLineItems").value
 };
 
-apiCall("POST","/api/client-budgets",body).then(function(d){
+apiCall("POST","/api/clients/budgets",body).then(function(d){
 var ov=document.getElementById("cbAddOverlay");if(ov)ov.remove();
 clientBudgetLoaded=false;
 renderClientBudget()}).catch(function(e){
@@ -10979,7 +10980,7 @@ if(!cf.text||cf.text.trim().length<20){cf.status="error";renderCBFileList();cont
 // Step 2: AI scan for budget data
 cf.status="scanning";renderCBFileList();
 try{
-var result=await apiCall("POST","/api/client-budgets/scan-sos",{text:cf.text.substring(0,12000),fileName:cf.name});
+var result=await apiCall("POST","/api/clients/budgets/scan-sos",{text:cf.text.substring(0,12000),fileName:cf.name});
 if(result&&result.parsed){cf.parsed=result.parsed;cf.status="done";cbScanned.push(result.parsed)}
 else{cf.status="error"}}catch(e){cf.status="error"}
 renderCBFileList()}
@@ -11032,7 +11033,7 @@ var silVal=parseFloat(p.coreBudgetSIL)||0;
 var caVal=parseFloat(p.coreBudgetCA)||0;
 var trVal=parseFloat(p.coreBudgetTransport)||0;
 try{
-await apiCall("POST","/api/client-budgets",{
+await apiCall("POST","/api/clients/budgets",{
 clientName:p.clientName||"",
 ndisRef:p.ndisRef||"",
 planType:p.planType||"",
@@ -11237,9 +11238,9 @@ var rp=document.getElementById("rightPanel");
 if(!schedulerLoaded){schedulerLoaded=true;
 rp.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)"><div style="text-align:center"><div class="spin" style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 12px"></div><div style="font-size:13px;font-weight:600">Loading roster...</div></div></div>';
 Promise.all([
-apiCall("GET","/api/scheduler").then(function(d){return d||[]}).catch(function(){return[]}),
-apiCall("GET","/api/scheduler/people").then(function(d){return d||{clients:[],staff:[]}}).catch(function(){return{clients:[],staff:[]}}),
-apiCall("GET","/api/scheduler/budget-summary").then(function(d){return d||{}}).catch(function(){return{}}),
+apiCall("GET","/api/scheduling/rosters").then(function(d){return d||[]}).catch(function(){return[]}),
+apiCall("GET","/api/scheduling/people").then(function(d){return d||{clients:[],staff:[]}}).catch(function(){return{clients:[],staff:[]}}),
+apiCall("GET","/api/scheduling/budget-summary").then(function(d){return d||{}}).catch(function(){return{}}),
 apiCall("GET","/api/accommodation").then(function(d){return d||[]}).catch(function(){return[]})
 ]).then(function(results){schedulerData=results[0];schedPeople=results[1];schedBudgetSummary=results[2];schedAccommodation=results[3];renderSchedulerContent(rp)});return}
 renderSchedulerContent(rp)}
@@ -11815,7 +11816,7 @@ if(s.airtableId&&s.airtableId.indexOf("local")!==0){
 var dropBody={startShift:s.startShift,endShift:s.endShift||s.startShift};
 if(schedGroupBy==="staff"){dropBody.staffName=s.staffName}else{dropBody.clientName=s.clientName}
 showSchedToast("⏳ Moving shift...","#6366F1",8000);
-fetch("/api/scheduler/shift/"+encodeURIComponent(s.airtableId),{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify(dropBody)}).then(function(resp){return resp.json().then(function(d){if(resp.status>=400||d.error)throw new Error(d.error||"HTTP "+resp.status);return d})}).then(function(){showSchedToast("✅ Shift moved","var(--teal)",2000)}).catch(function(e){showSchedToast("❌ Move failed: "+e.message,"#EF4444",4000)})}}
+fetch("/api/scheduling/shift/"+encodeURIComponent(s.airtableId),{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify(dropBody)}).then(function(resp){return resp.json().then(function(d){if(resp.status>=400||d.error)throw new Error(d.error||"HTTP "+resp.status);return d})}).then(function(){showSchedToast("✅ Shift moved","var(--teal)",2000)}).catch(function(e){showSchedToast("❌ Move failed: "+e.message,"#EF4444",4000)})}}
 
 
 function filterJobBoard(){
@@ -12148,7 +12149,7 @@ overlay.id="clearOverlay";
 overlay.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:10000;display:flex;align-items:center;justify-content:center";
 overlay.innerHTML='<div style="background:var(--surface);border-radius:12px;padding:32px 40px;text-align:center;box-shadow:var(--shadow-lg)"><div style="font-size:24px;margin-bottom:12px">⏳</div><div id="clearStatus" style="font-size:14px;font-weight:600;color:var(--text)">Deleting imported shifts...</div></div>';
 document.body.appendChild(overlay);
-apiCall("DELETE","/api/scheduler/clear-imported").then(function(r){
+apiCall("DELETE","/api/scheduling/clear-imported").then(function(r){
 var el=document.getElementById("clearStatus");
 if(r.error&&!r.deleted){if(el)el.textContent="❌ "+r.error;setTimeout(function(){overlay.remove()},2000);return}
 var msg="✅ Deleted "+r.deleted+" shifts";
@@ -12193,7 +12194,7 @@ schedulerData.push(newShift);
 var ov=document.getElementById("newShiftOverlay");if(ov)ov.remove();
 schedRefresh();
 showSchedToast("⏳ Saving shift...","#6366F1",8000);
-fetch("/api/scheduler/shift",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({clientName:client,staffName:staff,staffEmail:staffEmail,startShift:startDt.toISOString(),endShift:endDt.toISOString(),silOrCas:silCas,dayType:dayType,sleepover:isSleepover})}).then(function(r){return r.json().then(function(d){if(r.status>=400||d.error)throw new Error(d.error||"HTTP "+r.status);return d})}).then(function(d){
+fetch("/api/scheduling/shift",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({clientName:client,staffName:staff,staffEmail:staffEmail,startShift:startDt.toISOString(),endShift:endDt.toISOString(),silOrCas:silCas,dayType:dayType,sleepover:isSleepover})}).then(function(r){return r.json().then(function(d){if(r.status>=400||d.error)throw new Error(d.error||"HTTP "+r.status);return d})}).then(function(d){
 newShift.airtableId=d.id||d.airtableId||newShift.airtableId;
 showSchedToast("✅ Shift saved","var(--teal)",2000)}).catch(function(e){showSchedToast("❌ Save failed: "+e.message,"#EF4444",4000)})}
 
@@ -12408,7 +12409,7 @@ var ov=document.getElementById("schedModalOverlay");if(ov)ov.remove();
 schedRefresh();
 if(r.airtableId&&r.airtableId.indexOf("local")!==0){
 showSchedToast("⏳ Saving changes...","#6366F1",8000);
-fetch("/api/scheduler/shift/"+encodeURIComponent(r.airtableId),{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({clientName:client,staffName:staff,startShift:startDt.toISOString(),endShift:endDt.toISOString(),silOrCas:silCas,dayType:dayType,sleepover:r.sleepover})}).then(function(resp){return resp.json().then(function(d){if(resp.status>=400||d.error)throw new Error(d.error||"HTTP "+resp.status);return d})}).then(function(){showSchedToast("✅ Shift updated","var(--teal)",2000)}).catch(function(e){showSchedToast("❌ Update failed: "+e.message,"#EF4444",4000)})}}
+fetch("/api/scheduling/shift/"+encodeURIComponent(r.airtableId),{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({clientName:client,staffName:staff,startShift:startDt.toISOString(),endShift:endDt.toISOString(),silOrCas:silCas,dayType:dayType,sleepover:r.sleepover})}).then(function(resp){return resp.json().then(function(d){if(resp.status>=400||d.error)throw new Error(d.error||"HTTP "+resp.status);return d})}).then(function(){showSchedToast("✅ Shift updated","var(--teal)",2000)}).catch(function(e){showSchedToast("❌ Update failed: "+e.message,"#EF4444",4000)})}}
 
 
 function duplicateShift(idx){
@@ -12451,7 +12452,7 @@ schedulerData.push(dup);
 var ov=document.getElementById("dupShiftOverlay");if(ov)ov.remove();
 schedRefresh();
 showSchedToast("⏳ Creating copy...","#6366F1",8000);
-fetch("/api/scheduler/shift",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({clientName:r.clientName,startShift:ns.toISOString(),endShift:ne.toISOString(),silOrCas:r.silOrCas,dayType:dupDayType})}).then(function(resp){return resp.json().then(function(d){if(resp.status>=400||d.error)throw new Error(d.error||"HTTP "+resp.status);return d})}).then(function(d){
+fetch("/api/scheduling/shift",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({clientName:r.clientName,startShift:ns.toISOString(),endShift:ne.toISOString(),silOrCas:r.silOrCas,dayType:dupDayType})}).then(function(resp){return resp.json().then(function(d){if(resp.status>=400||d.error)throw new Error(d.error||"HTTP "+resp.status);return d})}).then(function(d){
 dup.airtableId=d.id||d.airtableId||dup.airtableId;
 showSchedToast("✅ Copy created","var(--teal)",2000)}).catch(function(e){showSchedToast("❌ Duplicate failed: "+e.message,"#EF4444",4000)})}
 
@@ -12465,7 +12466,7 @@ var ov=document.getElementById("schedModalOverlay");if(ov)ov.remove();
 schedRefresh();
 if(aid&&aid.indexOf("local")!==0){
 showSchedToast("⏳ Deleting shift...","#6366F1",8000);
-fetch("/api/scheduler/shift/"+encodeURIComponent(aid),{method:"DELETE",headers:{"Authorization":"Bearer "+token}}).then(function(resp){return resp.json().then(function(d){if(resp.status>=400||d.error)throw new Error(d.error||"HTTP "+resp.status);return d})}).then(function(){showSchedToast("✅ Shift deleted","var(--teal)",2000)}).catch(function(e){showSchedToast("❌ Delete failed: "+e.message,"#EF4444",4000)})}}
+fetch("/api/scheduling/shift/"+encodeURIComponent(aid),{method:"DELETE",headers:{"Authorization":"Bearer "+token}}).then(function(resp){return resp.json().then(function(d){if(resp.status>=400||d.error)throw new Error(d.error||"HTTP "+resp.status);return d})}).then(function(){showSchedToast("✅ Shift deleted","var(--teal)",2000)}).catch(function(e){showSchedToast("❌ Delete failed: "+e.message,"#EF4444",4000)})}}
 
 
 // ═══════════════════════════════════════════════════════
@@ -16320,7 +16321,7 @@ el.innerHTML='<div style="text-align:center;padding:24px;color:var(--muted)"><di
 
 // Fetch from the real Client Docs Airtable table by client name
 var name=clientName||"";
-apiCall("GET","/api/client-docs?clientName="+encodeURIComponent(name)).then(function(docs){
+apiCall("GET","/api/clients/docs?clientName="+encodeURIComponent(name)).then(function(docs){
 var h="";
 if(!docs||docs.length===0){
 h='<div style="text-align:center;padding:40px;color:var(--muted)">';
@@ -16530,7 +16531,7 @@ var reader=new FileReader();
 reader.onload=function(ev){
 var b64=ev.target.result.split(",")[1];
 if(statusEl)statusEl.innerHTML='<span style="color:#F59E0B">⏳ Uploading...</span>';
-apiCall("POST","/api/client-docs/upload",{
+apiCall("POST","/api/clients/docs/upload",{
 contactId:contactId,clientName:clientName,docType:docType,
 expiryDate:expiryDate,fileName:file[0].name,fileData:b64,fileType:file[0].type
 }).then(function(d){
@@ -20276,7 +20277,7 @@ function openClientDocInlineEdit(docId, clientName, currentData){
       "_old_expiryDate":displayExpiry,
       "_old_statusOfDoc":currentData.statusOfDoc
     };
-    apiCall("PATCH","/api/client-docs/"+docId,payload).then(function(d){
+    apiCall("PATCH","/api/clients/docs/"+docId,payload).then(function(d){
       if(d.error){statusMsg.innerHTML='<span style="color:var(--red)">❌ '+d.error+'</span>';saveBtn.disabled=false;saveBtn.textContent="💾 Save Changes";return;}
       statusMsg.innerHTML='<span style="color:#059669;font-weight:700">✅ Saved!</span>';
       setTimeout(function(){
