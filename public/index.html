@@ -5484,7 +5484,7 @@ function spOpenEditModal(startSection) {
 
   // ── Meta fields row ──
   h += '<div style="padding:10px 20px;border-bottom:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;flex-shrink:0;background:var(--surface2)">';
-  h += '<div style="flex:1;min-width:150px"><label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">Completed By</label><input id="spMeta_completed_by" value="' + spEsc(plan.completed_by || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box"></div>';
+  h += '<div style="flex:1;min-width:150px"><label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">Completed By</label><div id="spMeta_completed_by_wrap"><input id="spMeta_completed_by" value="' + spEsc(plan.completed_by || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box"></div></div>';
   h += '<div style="min-width:140px"><label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">Completed Date</label><input id="spMeta_completed_date" type="date" value="' + spEsc(plan.completed_date || "") + '" onchange="spAutoCalcReviewDate()" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box"></div>';
   h += '<div style="flex:1;min-width:150px"><label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">Last Reviewed By</label><input id="spMeta_last_reviewed_by" value="' + spEsc(plan.last_reviewed_by || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box"></div>';
   h += '<div style="min-width:140px"><label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">Last Reviewed Date</label><input id="spMeta_last_reviewed_date" type="date" value="' + spEsc(plan.last_reviewed_date || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box"></div>';
@@ -5522,6 +5522,9 @@ function spOpenEditModal(startSection) {
   if (cdEl && rdEl && cdEl.value && !rdEl.value) {
     spAutoCalcReviewDate();
   }
+
+  // Fetch staff list and replace Completed By text input with dropdown
+  spLoadStaffDropdown(plan.completed_by || "");
 }
 
 function spAutoCalcReviewDate() {
@@ -5535,6 +5538,36 @@ function spAutoCalcReviewDate() {
   var mm = String(d.getMonth() + 1).padStart(2, "0");
   var dd = String(d.getDate()).padStart(2, "0");
   rdEl.value = yyyy + "-" + mm + "-" + dd;
+}
+
+function spLoadStaffDropdown(currentValue) {
+  var wrap = document.getElementById("spMeta_completed_by_wrap");
+  if (!wrap) return;
+  apiCall("GET", "/api/clients/staff-for-dropdown").then(function (staff) {
+    if (!staff || !Array.isArray(staff) || staff.length === 0) {
+      // Fallback: keep text input with warning
+      wrap.innerHTML = '<input id="spMeta_completed_by" value="' + spEsc(currentValue) + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box">' +
+        '<div style="font-size:9px;color:var(--orange);margin-top:3px;font-weight:600">Could not load staff list</div>';
+      return;
+    }
+    var sel = '<select id="spMeta_completed_by" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box">';
+    sel += '<option value="">\u2014 Select Staff Member \u2014</option>';
+    var matched = false;
+    staff.forEach(function (u) {
+      var isSelected = currentValue && u.name && u.name.toLowerCase() === currentValue.toLowerCase();
+      if (isSelected) matched = true;
+      sel += '<option value="' + spEsc(u.name) + '"' + (isSelected ? ' selected' : '') + '>' + spEsc(u.name) + ' \u2014 ' + spEsc(u.role) + '</option>';
+    });
+    // If current value exists but didn't match any user, add it as a custom option
+    if (currentValue && !matched) {
+      sel += '<option value="' + spEsc(currentValue) + '" selected>' + spEsc(currentValue) + ' (custom)</option>';
+    }
+    sel += '</select>';
+    wrap.innerHTML = sel;
+  }).catch(function () {
+    wrap.innerHTML = '<input id="spMeta_completed_by" value="' + spEsc(currentValue) + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box">' +
+      '<div style="font-size:9px;color:var(--orange);margin-top:3px;font-weight:600">Could not load staff list</div>';
+  });
 }
 
 function spCloseEditModal() {

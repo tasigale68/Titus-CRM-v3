@@ -3,6 +3,7 @@ const { authenticate } = require('../../middleware/auth');
 const { logAudit } = require('../../services/audit');
 const airtable = require('../../services/database');
 const env = require('../../config/env');
+const { db } = require('../../db/sqlite');
 var { createClient } = require('@supabase/supabase-js');
 var { uploadGeneral } = require('../../config/upload');
 
@@ -332,6 +333,25 @@ router.get('/support-plan', function (req, res) {
     console.error('Support Plan error:', e.message);
     res.status(500).json({ error: e.message, records: [] });
   });
+});
+
+// ═══════════════════════════════════════════════════════════
+//  GET /api/clients/staff-for-dropdown — office staff for Support Plan dropdown
+// ═══════════════════════════════════════════════════════════
+router.get('/staff-for-dropdown', function (req, res) {
+  try {
+    var rows = db.prepare(
+      "SELECT id, name, role FROM users WHERE role IN ('director','ceo','manager','team_leader','roster_officer','admin','superadmin','office_staff') ORDER BY name ASC"
+    ).all();
+    var result = (rows || []).map(function (u) {
+      var displayRole = (u.role || '').replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+      return { id: u.id, name: u.name || '', role: displayRole };
+    });
+    res.json(result);
+  } catch (err) {
+    console.error('Staff dropdown error:', err.message);
+    res.json([]);
+  }
 });
 
 // ═══════════════════════════════════════════════════════════
