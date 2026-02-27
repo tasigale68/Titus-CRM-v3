@@ -355,6 +355,35 @@ router.get('/staff-for-dropdown', function (req, res) {
 });
 
 // ═══════════════════════════════════════════════════════════
+//  GET /api/clients/legacy-support-data/:clientId — fetch client record for pre-population
+// ═══════════════════════════════════════════════════════════
+router.get('/legacy-support-data/:clientId', function (req, res) {
+  var clientId = req.params.clientId;
+  if (!clientId) return res.json({ client: null });
+
+  supabase
+    .from('clients')
+    .select('*')
+    .eq('id', clientId)
+    .limit(1)
+    .then(function (result) {
+      if (result.error) {
+        console.error('Legacy support data - client lookup error:', result.error.message);
+        return res.json({ client: null, error: result.error.message });
+      }
+      var client = (result.data && result.data.length > 0) ? result.data[0] : null;
+      if (client) {
+        console.log('Legacy support data: columns available:', Object.keys(client).filter(function (k) { return client[k] !== null && client[k] !== ''; }).sort().join(', '));
+      }
+      res.json({ client: client });
+    })
+    .catch(function (err) {
+      console.error('Legacy support data error:', err.message || err);
+      res.json({ client: null, error: String(err.message || err) });
+    });
+});
+
+// ═══════════════════════════════════════════════════════════
 //  GET /api/clients/full-support-plan — Supabase support plan by client name
 // ═══════════════════════════════════════════════════════════
 router.get('/full-support-plan', function (req, res) {

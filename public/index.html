@@ -4838,7 +4838,8 @@ window._supportPlan = {
   clientId: null,
   clientName: "",
   activeSection: 0,
-  editActiveSection: 0
+  editActiveSection: 0,
+  _preFilledKeys: []
 };
 
 // ── Section definitions ──────────────────────────────────────────────────────
@@ -5026,6 +5027,8 @@ function loadNDISClientSupportPlan(clientName) {
   el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted)"><div class="spin" style="width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 8px"></div>Loading support plan...</div>';
   window._supportPlan.clientName = clientName;
   window._supportPlan.activeSection = 0;
+  // Only keep pre-filled keys if plan was just created (set by spCreateNewPlan)
+  // They will be cleared after first save or dismiss
 
   apiCall("GET", "/api/clients/full-support-plan?name=" + encodeURIComponent(clientName)).then(function (data) {
     if (data && data.error) {
@@ -5096,23 +5099,185 @@ function renderSPEmptyState(el, clientName, clientId) {
   spLoadAirtableFallback(clientName);
 }
 
+// ── Map legacy client data to support plan columns ──
+function spMapLegacyToSupportPlan(c) {
+  if (!c) return { mapped: {}, preFilled: [] };
+  var mapped = {};
+  var preFilled = [];
+
+  function set(spKey, val) {
+    if (!val || (typeof val === "string" && !val.trim())) return;
+    mapped[spKey] = val;
+    preFilled.push(spKey);
+  }
+
+  // Tab 1: Quick Reference
+  set("preferred_name", c.full_name || c.client_name || c.first_name || "");
+  var summaryParts = [];
+  if (c.type_of_disability) summaryParts.push("Disability: " + c.type_of_disability);
+  if (c.ndis_number) summaryParts.push("NDIS #: " + c.ndis_number);
+  if (c.support_ratio) summaryParts.push("Support Ratio: " + c.support_ratio);
+  if (c.sil_or_cas) summaryParts.push("Service: " + c.sil_or_cas);
+  if (summaryParts.length > 0) set("summary_key_info", summaryParts.join("\n"));
+
+  // Tab 2: About Me
+  if (c.gender) set("gender_identity", c.gender);
+  if (c.sil_or_cas) set("lives_at_type", c.sil_or_cas.toLowerCase().indexOf("sil") >= 0 ? "SIL House" : "");
+  if (c.general_background) set("what_makes_my_day", c.general_background);
+
+  // Tab 3: Communication
+  if (c.communication_aids) {
+    var aids = String(c.communication_aids).split(",").map(function(s) { return s.trim(); }).filter(Boolean);
+    if (aids.length > 0) set("communication_aids", aids);
+  }
+  if (c.communication_details) set("communication_aids_notes", c.communication_details);
+
+  // Tab 4: Disability & Support
+  if (c.type_of_disability) {
+    var disab = String(c.type_of_disability).split(",").map(function(s) { return s.trim(); }).filter(Boolean);
+    set("identified_disabilities", disab);
+  }
+  if (c.own_decision_maker) set("decision_making_type", c.own_decision_maker === "Yes" ? "Independent" : "Supported");
+  var decisionParts = [];
+  if (c.medical_decisions) decisionParts.push("Medical: " + c.medical_decisions);
+  if (c.financial_decisions) decisionParts.push("Financial: " + c.financial_decisions);
+  if (c.ndis_accommodation_decisions) decisionParts.push("Accommodation: " + c.ndis_accommodation_decisions);
+  if (c.living_arrangements_decisions) decisionParts.push("Living: " + c.living_arrangements_decisions);
+  if (c.legal_decisions) decisionParts.push("Legal: " + c.legal_decisions);
+  if (decisionParts.length > 0) set("decision_making_supporters", decisionParts.join("\n"));
+  var legalDocs = [];
+  if (c.opg_officer) legalDocs.push("Guardianship Order");
+  if (c.pbsp_yes_no && c.pbsp_yes_no.toLowerCase() === "yes") legalDocs.push("Behaviour Support Plan");
+  if (legalDocs.length > 0) set("legal_documents", legalDocs);
+
+  // Tab 5: Behavioural & Emotional
+  if (c.known_triggers) set("known_triggers", c.known_triggers);
+  if (c.pbsp_strategies) set("calm_strategies", c.pbsp_strategies);
+
+  // Tab 6: Health & Medical
+  if (c.has_allergies) set("allergies_present", c.has_allergies);
+  if (c.allergies) set("allergies_detail", c.allergies);
+
+  // Tab 7: Daily Living
+  if (c.personal_care) set("personal_care_notes", c.personal_care);
+
+  // Tab 8: Community Access
+  if (c.support_ratio) set("support_ratio", c.support_ratio);
+
+  // Tab 10: Support Network & Professionals
+  var network = [];
+  if (c.emergency_contact) {
+    network.push({
+      name: c.emergency_contact || "",
+      relationship: c.emergency_relationship || "Emergency Contact",
+      phone: c.emergency_phone || "",
+      email: c.emergency_email || "",
+      notes: "Emergency contact"
+    });
+    set("next_of_kin_name", c.emergency_contact);
+    set("next_of_kin_relationship", c.emergency_relationship || "Emergency Contact");
+    set("next_of_kin_phone", c.emergency_phone || "");
+  }
+  if (c.nominee) {
+    network.push({
+      name: c.nominee || "",
+      relationship: c.nominee_relationship || "Nominee/Guardian",
+      phone: c.nominee_phone || "",
+      email: c.nominee_email || "",
+      notes: "Nominee/Guardian"
+    });
+  }
+  if (c.support_coordinator) {
+    network.push({
+      name: c.support_coordinator || "",
+      relationship: "Support Coordinator",
+      phone: c.support_coordinator_phone || "",
+      email: c.support_coordinator_email || "",
+      notes: c.support_coordinator_company || ""
+    });
+  }
+  if (c.plan_manager) {
+    network.push({
+      name: c.plan_manager || "",
+      relationship: "Plan Manager",
+      phone: c.plan_manager_phone || "",
+      email: c.plan_manager_email || "",
+      notes: c.plan_manager_company || ""
+    });
+  }
+  if (c.opg_officer) {
+    network.push({
+      name: c.opg_officer || "",
+      relationship: "OPG Officer",
+      phone: c.opg_phone || "",
+      email: c.opg_email || "",
+      notes: "Office of the Public Guardian"
+    });
+  }
+  if (network.length > 0) set("support_network", network);
+
+  // PBSP practitioner as specialist
+  if (c.pbsp_prac_name) {
+    set("specialists", [{
+      name: c.pbsp_prac_name || "",
+      specialty: "Behaviour Support Practitioner",
+      phone: c.pbsp_phone || "",
+      notes: c.pbsp_prac_email || ""
+    }]);
+  }
+
+  return { mapped: mapped, preFilled: preFilled };
+}
+
 function spCreateNewPlan() {
   var clientId = window._supportPlan.clientId;
   var clientName = window._supportPlan.clientName;
   if (!clientId) { showToast("Client ID not found", "error"); return; }
 
-  var user = JSON.parse(localStorage.getItem("titus_user") || "{}");
-  var body = {
-    client_id: clientId,
-    completed_by: user.name || user.username || "",
-    completed_date: new Date().toISOString().split("T")[0]
-  };
+  // Show loading state on the button
+  var createBtn = document.querySelector('button[onclick="spCreateNewPlan()"]');
+  if (createBtn) {
+    createBtn.disabled = true;
+    createBtn.innerHTML = '<div class="spin" style="width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:6px"></div> Creating plan...';
+  }
 
-  apiCall("POST", "/api/clients/full-support-plan", body).then(function (data) {
-    if (data.error) { showToast("Error: " + data.error, "error"); return; }
-    showToast("Support plan created", "success");
+  var user = JSON.parse(localStorage.getItem("titus_user") || "{}");
+  var today = new Date().toISOString().split("T")[0];
+
+  // Fetch legacy client data first to pre-populate
+  apiCall("GET", "/api/clients/legacy-support-data/" + clientId).then(function (legacyData) {
+    var client = (legacyData && legacyData.client) || null;
+    var result = spMapLegacyToSupportPlan(client);
+    var mapped = result.mapped || {};
+    var preFilled = result.preFilled || [];
+
+    // Build the plan body
+    var body = mapped;
+    body.client_id = clientId;
+    body.completed_by = user.name || user.username || "";
+    body.completed_date = today;
+
+    // Store pre-filled keys for highlighting later
+    window._supportPlan._preFilledKeys = preFilled;
+
+    return apiCall("POST", "/api/clients/full-support-plan", body);
+  }).then(function (data) {
+    if (data.error) {
+      showToast("Error: " + data.error, "error");
+      if (createBtn) { createBtn.disabled = false; createBtn.innerHTML = '🛡️ Create Support Plan'; }
+      return;
+    }
+    var preFilled = window._supportPlan._preFilledKeys || [];
+    if (preFilled.length > 0) {
+      showToast("Plan created with " + preFilled.length + " pre-populated fields", "success");
+    } else {
+      showToast("Support plan created", "success");
+    }
     loadNDISClientSupportPlan(clientName);
-  }).catch(function (e) { showToast("Failed: " + e.message, "error"); });
+  }).catch(function (e) {
+    showToast("Failed: " + e.message, "error");
+    if (createBtn) { createBtn.disabled = false; createBtn.innerHTML = '🛡️ Create Support Plan'; }
+  });
 }
 
 function spToggleAirtableFallback() {
@@ -5505,6 +5670,17 @@ function spOpenEditModal(startSection) {
   h += '<button onclick="spCloseEditModal()" style="padding:8px 14px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit">Cancel</button>';
   h += '</div></div>';
 
+  // ── Pre-populated banner ──
+  var preKeys = window._supportPlan._preFilledKeys || [];
+  if (preKeys.length > 0) {
+    h += '<div id="spPrePopBanner" style="padding:10px 20px;border-bottom:1px solid rgba(10,147,150,.2);background:rgba(10,147,150,.04);display:flex;align-items:center;gap:10px;flex-shrink:0">';
+    h += '<span style="font-size:16px">📋</span>';
+    h += '<div style="flex:1"><div style="font-size:11px;font-weight:700;color:var(--teal)">Pre-populated from Client Record</div>';
+    h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">' + preKeys.length + ' fields were automatically filled from existing client data. Fields with a <span style="color:var(--teal);font-weight:700">teal left border</span> were pre-populated — review and update as needed.</div></div>';
+    h += '<button onclick="spClearLegacyHighlights()" style="padding:5px 12px;font-size:10px;font-weight:600;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit;white-space:nowrap">Dismiss</button>';
+    h += '</div>';
+  }
+
   // ── Meta fields row ──
   h += '<div style="padding:10px 20px;border-bottom:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;flex-shrink:0;background:var(--surface2)">';
   h += '<div style="flex:1;min-width:150px"><label style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">Completed By</label><div id="spMeta_completed_by_wrap"><input id="spMeta_completed_by" value="' + spEsc(plan.completed_by || "") + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box"></div></div>';
@@ -5668,6 +5844,11 @@ function spRenderEditSection(idx, plan) {
 
 // ── Render individual edit field ──
 function spRenderEditField(fieldKey, val, meta) {
+  var preKeys = window._supportPlan._preFilledKeys || [];
+  var isPrefilled = preKeys.indexOf(fieldKey) >= 0;
+  var pfOpen = isPrefilled ? '<div class="sp-prefilled" style="border-left:3px solid var(--teal);padding-left:10px;margin-left:-2px">' : '';
+  var pfClose = isPrefilled ? '</div>' : '';
+
   var h = '';
   var label = meta.label || spFieldLabel(fieldKey);
   var lStyle = 'style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px"';
@@ -5679,13 +5860,13 @@ function spRenderEditField(fieldKey, val, meta) {
     h += '<textarea id="spEdit_' + fieldKey + '" rows="4" ' + iStyle + ' style="width:100%;padding:8px 10px;padding-right:90px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none;box-sizing:border-box;resize:vertical">' + spEsc(textVal) + '</textarea>';
     h += '<button onclick="startVoiceToText(\'spEdit_' + fieldKey + '\')" style="position:absolute;right:8px;bottom:8px;padding:4px 10px;font-size:11px;font-weight:600;background:rgba(239,68,68,.08);color:#EF4444;border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);cursor:pointer;font-family:inherit" title="Voice to text">🎤 Voice</button>';
     h += '</div>';
-    return h;
+    return pfOpen + h + pfClose;
   }
 
   if (meta.type === "text") {
     h += '<div style="margin-bottom:14px"><label ' + lStyle + '>' + label + '</label>';
     h += '<input id="spEdit_' + fieldKey + '" type="text" value="' + spEsc(val || "") + '" ' + iStyle + '></div>';
-    return h;
+    return pfOpen + h + pfClose;
   }
 
   if (meta.type === "select") {
@@ -5696,7 +5877,7 @@ function spRenderEditField(fieldKey, val, meta) {
       h += '<option value="' + spEsc(opt) + '"' + (val === opt ? ' selected' : '') + '>' + spEsc(opt) + '</option>';
     });
     h += '</select></div>';
-    return h;
+    return pfOpen + h + pfClose;
   }
 
   if (meta.type === "boolean") {
@@ -5708,7 +5889,7 @@ function spRenderEditField(fieldKey, val, meta) {
     h += '<label style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--rs);border:1px solid ' + (!boolVal ? "rgba(239,68,68,.3)" : "var(--border)") + ';background:' + (!boolVal ? "rgba(239,68,68,.06)" : "var(--surface2)") + ';cursor:pointer;font-size:12px;font-weight:600;color:' + (!boolVal ? "var(--red)" : "var(--muted)") + '">';
     h += '<input type="radio" name="spBool_' + fieldKey + '" value="false"' + (!boolVal ? ' checked' : '') + ' onchange="spBoolToggle(\'' + fieldKey + '\',false)" style="display:none"> No</label>';
     h += '</div></div>';
-    return h;
+    return pfOpen + h + pfClose;
   }
 
   if (meta.type === "tags") {
@@ -5723,7 +5904,7 @@ function spRenderEditField(fieldKey, val, meta) {
     // Hidden input to store selected tags as JSON
     h += '<input type="hidden" id="spEdit_' + fieldKey + '" value="' + spEsc(JSON.stringify(currentTags)) + '">';
     h += '</div>';
-    return h;
+    return pfOpen + h + pfClose;
   }
 
   if (meta.type === "url") {
@@ -5735,7 +5916,7 @@ function spRenderEditField(fieldKey, val, meta) {
       h += '</div>';
     }
     h += '</div>';
-    return h;
+    return pfOpen + h + pfClose;
   }
 
   if (meta.type === "jsonb_specialists") {
@@ -5748,7 +5929,7 @@ function spRenderEditField(fieldKey, val, meta) {
     h += '</div>';
     h += '<button onclick="spAddJsonbBlock(\'' + fieldKey + '\',\'specialist\')" style="margin-top:6px;padding:6px 14px;font-size:11px;font-weight:600;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">+ Add Specialist</button>';
     h += '</div>';
-    return h;
+    return pfOpen + h + pfClose;
   }
 
   if (meta.type === "jsonb_network") {
@@ -5761,7 +5942,7 @@ function spRenderEditField(fieldKey, val, meta) {
     h += '</div>';
     h += '<button onclick="spAddJsonbBlock(\'' + fieldKey + '\',\'network\')" style="margin-top:6px;padding:6px 14px;font-size:11px;font-weight:600;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">+ Add Contact</button>';
     h += '</div>';
-    return h;
+    return pfOpen + h + pfClose;
   }
 
   if (meta.type === "jsonb_links") {
@@ -5774,7 +5955,7 @@ function spRenderEditField(fieldKey, val, meta) {
     h += '</div>';
     h += '<button onclick="spAddJsonbBlock(\'' + fieldKey + '\',\'link\')" style="margin-top:6px;padding:6px 14px;font-size:11px;font-weight:600;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">+ Add Link</button>';
     h += '</div>';
-    return h;
+    return pfOpen + h + pfClose;
   }
 
   if (meta.type === "jsonb_files") {
@@ -5789,13 +5970,13 @@ function spRenderEditField(fieldKey, val, meta) {
     h += '<button onclick="spTriggerJsonbFileUpload(\'' + fieldKey + '\')" style="padding:6px 14px;font-size:11px;font-weight:600;background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">📤 Upload Document</button>';
     h += '<input type="file" id="spJsonbFileInput_' + fieldKey + '" style="display:none" onchange="spHandleJsonbFileUpload(\'' + fieldKey + '\',this)">';
     h += '</div></div>';
-    return h;
+    return pfOpen + h + pfClose;
   }
 
   // Fallback: text input
   h += '<div style="margin-bottom:14px"><label ' + lStyle + '>' + label + '</label>';
   h += '<input id="spEdit_' + fieldKey + '" type="text" value="' + spEsc(val || "") + '" ' + iStyle + '></div>';
-  return h;
+  return pfOpen + h + pfClose;
 }
 
 // ── JSONB block renderers ──
@@ -5866,6 +6047,19 @@ function spToggleStandards(el) {
   } else {
     body.style.display = "none";
     if (arrow) arrow.style.transform = "rotate(0deg)";
+  }
+}
+
+function spClearLegacyHighlights() {
+  window._supportPlan._preFilledKeys = [];
+  var banner = document.getElementById("spPrePopBanner");
+  if (banner) banner.remove();
+  // Remove teal left borders from pre-populated fields
+  var highlighted = document.querySelectorAll(".sp-prefilled");
+  for (var i = 0; i < highlighted.length; i++) {
+    highlighted[i].style.borderLeft = "none";
+    highlighted[i].style.paddingLeft = "0";
+    highlighted[i].classList.remove("sp-prefilled");
   }
 }
 
@@ -6185,6 +6379,7 @@ function spSaveEditPlan() {
       return;
     }
     showToast("Support plan saved", "success");
+    window._supportPlan._preFilledKeys = []; // Clear highlights after save
     spCloseEditModal();
     // Reload the view
     loadNDISClientSupportPlan(window._supportPlan.clientName);
