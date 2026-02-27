@@ -403,10 +403,7 @@ CREATE TABLE IF NOT EXISTS hunt_groups (
 
 CREATE INDEX IF NOT EXISTS idx_tenants_slug ON tenants(slug);
 CREATE INDEX IF NOT EXISTS idx_tenant_modules_tenant ON tenant_modules(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_rosters_tenant ON rosters(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_rosters_client ON rosters(tenant_id, client_id);
-CREATE INDEX IF NOT EXISTS idx_rosters_worker ON rosters(tenant_id, worker_email);
-CREATE INDEX IF NOT EXISTS idx_rosters_dates ON rosters(start_shift, end_shift);
+-- rosters indexes moved to alter-tables-for-saas.sql (overlapping table)
 CREATE INDEX IF NOT EXISTS idx_client_budgets_tenant ON client_budgets(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_client_budgets_client ON client_budgets(tenant_id, client_id);
 CREATE INDEX IF NOT EXISTS idx_budget_tx_tenant ON budget_transactions(tenant_id);
@@ -416,11 +413,10 @@ CREATE INDEX IF NOT EXISTS idx_payroll_lines_run ON payroll_lines(payroll_run_id
 CREATE INDEX IF NOT EXISTS idx_signing_docs_tenant ON signing_documents(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_signing_requests_token ON signing_requests(token);
 CREATE INDEX IF NOT EXISTS idx_signing_requests_doc ON signing_requests(document_id);
-CREATE INDEX IF NOT EXISTS idx_chat_conversations_tenant ON chat_conversations(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_chat_messages_conv ON chat_messages(conversation_id);
+-- chat indexes moved to alter-tables-for-saas.sql (overlapping tables)
 CREATE INDEX IF NOT EXISTS idx_weekly_reports_tenant ON weekly_reports(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_weekly_reports_client ON weekly_reports(tenant_id, client_id);
-CREATE INDEX IF NOT EXISTS idx_knowledge_base_tenant ON knowledge_base(tenant_id);
+-- knowledge_base index moved to alter-tables-for-saas.sql (overlapping table)
 CREATE INDEX IF NOT EXISTS idx_chatbot_sessions_tenant ON chatbot_sessions(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_portal_users_tenant ON portal_users(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_portal_users_email ON portal_users(email);
@@ -440,7 +436,7 @@ ALTER TABLE tenants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tenant_modules ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tenant_usage ENABLE ROW LEVEL SECURITY;
 ALTER TABLE weekly_reports ENABLE ROW LEVEL SECURITY;
-ALTER TABLE rosters ENABLE ROW LEVEL SECURITY;
+-- rosters RLS moved to alter-tables-for-saas.sql (overlapping table)
 ALTER TABLE client_budgets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE budget_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE payroll_runs ENABLE ROW LEVEL SECURITY;
@@ -448,9 +444,7 @@ ALTER TABLE payroll_lines ENABLE ROW LEVEL SECURITY;
 ALTER TABLE schads_rates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE signing_documents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE signing_requests ENABLE ROW LEVEL SECURITY;
-ALTER TABLE chat_conversations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE knowledge_base ENABLE ROW LEVEL SECURITY;
+-- chat_conversations, chat_messages, knowledge_base RLS moved to alter-tables-for-saas.sql (overlapping tables)
 ALTER TABLE chatbot_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE portal_users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE portal_sessions ENABLE ROW LEVEL SECURITY;
@@ -480,9 +474,7 @@ CREATE POLICY tenant_usage_isolation ON tenant_usage
 CREATE POLICY weekly_reports_isolation ON weekly_reports
   FOR ALL USING (tenant_id::text = auth.jwt() ->> 'tenant_id');
 
--- Rosters
-CREATE POLICY rosters_isolation ON rosters
-  FOR ALL USING (tenant_id::text = auth.jwt() ->> 'tenant_id');
+-- Rosters: policy moved to alter-tables-for-saas.sql (overlapping table)
 
 -- Client budgets
 CREATE POLICY client_budgets_isolation ON client_budgets
@@ -512,17 +504,7 @@ CREATE POLICY signing_documents_isolation ON signing_documents
 CREATE POLICY signing_requests_isolation ON signing_requests
   FOR ALL USING (tenant_id::text = auth.jwt() ->> 'tenant_id');
 
--- Chat conversations
-CREATE POLICY chat_conversations_isolation ON chat_conversations
-  FOR ALL USING (tenant_id::text = auth.jwt() ->> 'tenant_id');
-
--- Chat messages
-CREATE POLICY chat_messages_isolation ON chat_messages
-  FOR ALL USING (tenant_id::text = auth.jwt() ->> 'tenant_id');
-
--- Knowledge base
-CREATE POLICY knowledge_base_isolation ON knowledge_base
-  FOR ALL USING (tenant_id::text = auth.jwt() ->> 'tenant_id');
+-- chat_conversations, chat_messages, knowledge_base: policies moved to alter-tables-for-saas.sql
 
 -- Chatbot sessions
 CREATE POLICY chatbot_sessions_isolation ON chatbot_sessions
