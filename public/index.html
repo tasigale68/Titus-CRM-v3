@@ -202,45 +202,45 @@ button:not(.sb-item):not(.sb-sub-item):not(.sb-collapse-btn){cursor:pointer}
 .btn:focus-visible{outline:none;box-shadow:var(--focus-ring)}
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--dim);font-size:13px;gap:6px;padding:20px;text-align:center}
 /* DIALER MODAL */
-.dialer-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.dialer-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
 .dialer-overlay.show{display:flex}
-.dialer-modal{background:#0B1D3A;border-radius:24px;width:380px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.45);animation:dialIn .25s ease}
+.dialer-modal{background:var(--surface);border-radius:16px;width:380px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:dialIn .2s ease}
 @keyframes dialIn{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-.dialer-modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid rgba(255,255,255,.08)}
-.dialer-modal-hdr h3{font-size:16px;font-weight:700;color:#E2E8F0;letter-spacing:.3px}
-.dialer-modal-close{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#94A3B8;font-size:18px;transition:all .15s}
-.dialer-modal-close:hover{background:#EF4444;color:#fff;border-color:#EF4444}
-.dialer-wrap{display:flex;flex-direction:column;align-items:center;padding:18px 22px;gap:14px}
+.dialer-modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border)}
+.dialer-modal-hdr h3{font-size:15px;font-weight:700;color:var(--text)}
+.dialer-modal-close{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:16px;transition:all .12s}
+.dialer-modal-close:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.dialer-wrap{display:flex;flex-direction:column;align-items:center;padding:16px 20px;gap:12px}
 .dialer-search{width:100%;position:relative}
-.dialer-search input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:13px;color:#E2E8F0;font-family:inherit;outline:none;transition:border-color .15s}
-.dialer-search input:focus{border-color:#00B4D8;box-shadow:0 0 0 2px rgba(0,180,216,.15)}
-.dialer-search input::placeholder{color:#64748B}
-.dialer-search label{display:block;font-size:10px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
-.dialer-results{position:absolute;top:100%;left:0;right:0;background:#0F2847;border:1px solid rgba(255,255,255,.1);border-radius:12px;max-height:200px;overflow-y:auto;z-index:10;display:none;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.dialer-search input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px;font-size:13px;color:var(--text);font-family:inherit;outline:none}
+.dialer-search input:focus{border-color:var(--teal)}
+.dialer-search input::placeholder{color:var(--dim)}
+.dialer-search label{display:block;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.dialer-results{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);max-height:200px;overflow-y:auto;z-index:10;display:none;box-shadow:0 4px 12px rgba(0,0,0,.1)}
 .dialer-results.show{display:block}
-.dialer-result-item{padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.05);transition:background .12s}
-.dialer-result-item:hover{background:rgba(0,180,216,.1)}
+.dialer-result-item{padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);transition:background .1s}
+.dialer-result-item:hover{background:var(--tealLight)}
 .dialer-result-item:last-child{border-bottom:none}
-.dialer-result-name{font-size:13px;font-weight:600;color:#E2E8F0}
-.dialer-result-phone{font-size:11px;color:#64748B;font-family:'JetBrains Mono',monospace}
-.dialer-display{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:600;color:#F1F5F9;min-height:58px;display:flex;align-items:center;justify-content:center;letter-spacing:2px;flex-direction:column;gap:4px}
-.dialer-display .contact-label{font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:#00B4D8;letter-spacing:0}
-.dialer-pad{display:grid;grid-template-columns:repeat(3,80px);gap:10px}
-.dial-key{width:80px;height:56px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05);font-size:22px;font-weight:600;color:#E2E8F0;cursor:pointer;font-family:inherit;transition:all .12s;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.dial-key:hover{background:rgba(0,180,216,.12);border-color:rgba(0,180,216,.3);box-shadow:0 0 12px rgba(0,180,216,.15)}
-.dial-key:active{background:rgba(0,180,216,.2);transform:scale(.96)}
-.dial-key .sub{font-size:8px;color:#64748B;font-weight:400;letter-spacing:2px}
-.dialer-actions{display:flex;gap:12px;align-items:center}
-.dial-call{width:58px;height:58px;border-radius:50%;border:none;color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;box-shadow:0 4px 16px rgba(0,0,0,.2)}
-.dial-call:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(0,0,0,.3)}
-.dial-call.del-btn{background:rgba(255,255,255,.08);color:#94A3B8;width:42px;height:42px;font-size:18px;border:1px solid rgba(255,255,255,.1);box-shadow:none}
-.dial-call.del-btn:hover{background:rgba(255,255,255,.12);transform:none;box-shadow:none}
+.dialer-result-name{font-size:13px;font-weight:600;color:var(--text)}
+.dialer-result-phone{font-size:11px;color:var(--dim);font-family:'JetBrains Mono',monospace}
+.dialer-display{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:12px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:var(--text);min-height:52px;display:flex;align-items:center;justify-content:center;letter-spacing:1px;flex-direction:column;gap:4px}
+.dialer-display .contact-label{font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:var(--teal);letter-spacing:0}
+.dialer-pad{display:grid;grid-template-columns:repeat(3,80px);gap:8px}
+.dial-key{width:80px;height:52px;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface);font-size:20px;font-weight:600;color:var(--text);cursor:pointer;font-family:inherit;transition:all .1s;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dial-key:hover{background:var(--surface2);border-color:var(--teal)}
+.dial-key:active{background:var(--tealLight)}
+.dial-key .sub{font-size:8px;color:var(--dim);font-weight:400;letter-spacing:2px}
+.dialer-actions{display:flex;gap:10px;align-items:center}
+.dial-call{width:56px;height:56px;border-radius:50%;border:none;color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.dial-call:hover{transform:scale(1.05)}
+.dial-call.del-btn{background:var(--surface2);color:var(--muted);width:40px;height:40px;font-size:16px;border:1px solid var(--border)}
+.dial-call.del-btn:hover{background:var(--border);transform:none}
 .dialer-sms-area{width:100%;display:none}
 .dialer-sms-area.show{display:block}
-.dialer-sms-area textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px;font-size:13px;color:#E2E8F0;font-family:inherit;outline:none;resize:vertical;min-height:60px}
-.dialer-sms-area textarea:focus{border-color:#00B4D8;box-shadow:0 0 0 2px rgba(0,180,216,.15)}
+.dialer-sms-area textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:10px;font-size:13px;color:var(--text);font-family:inherit;outline:none;resize:vertical;min-height:60px}
+.dialer-sms-area textarea:focus{border-color:var(--teal)}
 .dialer-sms-area button{margin-top:8px;width:100%}
-.dialer-status{font-size:12px;color:#64748B;min-height:18px;text-align:center}
+.dialer-status{font-size:12px;color:var(--muted);min-height:18px;text-align:center}
 /* INLINE TRANSCRIPT */
 .call-transcript-btn{font-size:10px;font-weight:600;color:var(--teal);cursor:pointer;margin-top:6px;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--tealLight);border:1px solid var(--tealBorder);border-radius:4px;transition:all .12s}
 .call-transcript-btn:hover{background:var(--teal);color:#fff}
@@ -567,7 +567,7 @@ button:not(.sb-item):not(.sb-sub-item):not(.sb-collapse-btn){cursor:pointer}
 <button class="sb-sub-item" data-view="recruit" data-subview="list" onclick="setRecruitView('list')"><span class="sb-item-label">📋 List</span></button>
 <button class="sb-sub-item" data-view="recruit" data-subview="kanban" onclick="setRecruitView('kanban')"><span class="sb-item-label">📌 Kanban</span></button>
 <button class="sb-sub-item" id="navLms" data-view="recruit" data-subview="lms" onclick="setRecruitView('lms')" style="display:none"><span class="sb-item-label">🎓 LMS</span></button>
-<button class="sb-sub-item sb-admin-contacts" id="navCourseLib" onclick="setRecruitView('courseLibrary')" style="display:none!important"><span class="sb-item-label">📚 Course Library</span></button>
+<button class="sb-sub-item sb-admin-contacts" id="navCourseLib" onclick="setRecruitView('courseLibrary')"><span class="sb-item-label">📚 Course Library</span></button>
 </div>
 <button class="sb-item" data-view="rosters" onclick="toggleRostersMenu(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="sb-item-label">Rosters</span><span class="sb-arrow sb-item-label">▾</span></button>
 <div class="sb-sub" id="rostersSub">
@@ -596,8 +596,8 @@ button:not(.sb-item):not(.sb-sub-item):not(.sb-collapse-btn){cursor:pointer}
 <button class="sb-sub-item" id="navSleepReport" data-view="reports" data-subview="sleepReport" onclick="setReportsMenuView('sleepReport')" style="display:none"><span class="sb-item-label">🌙 Sleep</span></button>
 </div>
 
-<button class="sb-item phase2-nav" id="navIntelligence" data-view="intelligence" onclick="toggleIntelMenu(event)" style="display:none!important"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.58-3.25 3.93L12 22"/><path d="M8 6a4 4 0 0 1 8 0"/><circle cx="12" cy="6" r="1"/></svg><span class="sb-item-label">Intelligence</span><span class="sb-arrow sb-item-label">▾</span></button>
-<div class="sb-sub" id="intelSub" style="display:none!important">
+<button class="sb-item phase2-nav" id="navIntelligence" data-view="intelligence" onclick="toggleIntelMenu(event)" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.58-3.25 3.93L12 22"/><path d="M8 6a4 4 0 0 1 8 0"/><circle cx="12" cy="6" r="1"/></svg><span class="sb-item-label">Intelligence</span><span class="sb-arrow sb-item-label">▾</span></button>
+<div class="sb-sub" id="intelSub" style="display:none">
 <button class="sb-sub-item phase2-nav" id="navAiRoster" data-view="intelligence" data-subview="aiRoster" onclick="setIntelView('aiRoster')" style="display:none"><span class="sb-item-label">🤖 AI Roster Agent</span></button>
 <button class="sb-sub-item phase2-nav" data-view="intelligence" data-subview="cancellations" onclick="setIntelView('cancellations')"><span class="sb-item-label">❌ Cancellation Engine</span></button>
 <button class="sb-sub-item phase2-nav" data-view="intelligence" data-subview="handover" onclick="setIntelView('handover')"><span class="sb-item-label">📋 Shift Handover</span></button>
@@ -642,14 +642,14 @@ Or: "What does our SOP say about incident reporting?"</div></div>
 <div class="dialer-modal">
 <div class="dialer-modal-hdr"><h3>Dialer</h3><div class="dialer-modal-close" onclick="closeDialer()">&times;</div></div>
 <div class="dialer-wrap">
-<div id="dialerSoftphoneStatus" style="width:100%;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);font-size:11px;font-weight:600;color:#94A3B8"><span id="dialerSoftphoneDot" style="width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0;display:inline-block"></span><span id="dialerSoftphoneLabel">Checking softphone...</span></div>
-<div class="dialer-search"><label>Destination Number or Contact Name</label><div style="display:flex;gap:6px;align-items:center"><input id="dialSearch" placeholder="Type number or search contacts..." oninput="dialSearchOrNumber(this.value)" onfocus="dialSearchContacts(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();dialCall()}" style="flex:1"><button id="dialMicBtn" onclick="toggleVoiceInput('dialSearch','dialMicBtn')" title="Voice input" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#94A3B8;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button></div><div class="dialer-results" id="dialResults"></div></div>
-<div class="dialer-display" id="dialDisplay"><span style="color:#64748B">Enter number</span></div>
+<div id="dialerSoftphoneStatus" style="width:100%;display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--muted)"><span id="dialerSoftphoneDot" style="width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0;display:inline-block"></span><span id="dialerSoftphoneLabel">Checking softphone...</span></div>
+<div class="dialer-search"><label>Destination Number or Contact Name</label><div style="display:flex;gap:6px;align-items:center"><input id="dialSearch" placeholder="Type number or search contacts..." oninput="dialSearchOrNumber(this.value)" onfocus="dialSearchContacts(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();dialCall()}" style="flex:1"><button id="dialMicBtn" onclick="toggleVoiceInput('dialSearch','dialMicBtn')" title="Voice input" style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button></div><div class="dialer-results" id="dialResults"></div></div>
+<div class="dialer-display" id="dialDisplay"><span>Enter number</span></div>
 <div class="dialer-pad" id="dialPad"></div>
 <div class="dialer-actions">
 <button class="dial-call del-btn" onclick="dialDelete()" title="Delete">&#9003;</button>
-<button id="dialCallBtn" class="dial-call" style="background:#10B981;box-shadow:0 4px 20px rgba(16,185,129,.35)" onclick="dialCall()" title="Call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="26" height="26"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
-<button class="dial-call" style="background:#00B4D8;width:48px;height:48px;border-radius:14px;box-shadow:0 4px 16px rgba(0,180,216,.3)" onclick="dialToggleSms()" title="SMS"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+<button id="dialCallBtn" class="dial-call" style="background:var(--green)" onclick="dialCall()" title="Call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="26" height="26"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
+<button class="dial-call" style="background:var(--teal);width:46px;height:46px" onclick="dialToggleSms()" title="SMS"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
 </div>
 <div class="dialer-status" id="dialStatus"></div>
 <div class="dialer-sms-area" id="dialSmsArea" style="display:none"></div>
@@ -1298,7 +1298,7 @@ midPanel.style.display="flex";midPanel.style.flexDirection="column";midPanel.sty
 // Gender filter
 var genderSet={};contacts.forEach(function(c){var g=c.gender||"";if(g)genderSet[g]=(genderSet[g]||0)+1});
 var genderKeys=Object.keys(genderSet).sort();
-ddHtml+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">';
+ddHtml+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px">';
 ddHtml+='<div><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Gender</div>';
 ddHtml+='<select onchange="contactGenderFilter=this.value;renderContactsList()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:7px 10px;font-size:12px;color:var(--text);font-family:inherit;outline:none;cursor:pointer;box-sizing:border-box">';
 ddHtml+='<option value=""'+(contactGenderFilter===""?" selected":"")+'>All Genders</option>';
@@ -1310,9 +1310,18 @@ ddHtml+='<select onchange="contactStatusFilter=this.value;renderContactsList()" 
 var statusOpts=["Active Contact","Draft","Inactive Contact","Archive (Gus only)"];
 ddHtml+='<option value=""'+(contactStatusFilter===""?" selected":"")+'>All Statuses</option>';
 statusOpts.forEach(function(so){ddHtml+='<option value="'+so+'"'+(contactStatusFilter===so?" selected":"")+'>'+so+'</option>'});
-ddHtml+='</select></div></div>';
+ddHtml+='</select></div>';
+// Suburb filter
+var suburbSet={};contacts.forEach(function(c){var s=c.suburb||"";if(s)suburbSet[s]=(suburbSet[s]||0)+1});
+var suburbKeys=Object.keys(suburbSet).sort(function(a,b){return a.toLowerCase().localeCompare(b.toLowerCase())});
+ddHtml+='<div><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Suburb</div>';
+ddHtml+='<div style="position:relative"><input id="suburbFilterInput" type="text" placeholder="Type to filter..." value="'+contactSuburbFilter+'" oninput="filterSuburbDD(this.value)" onfocus="document.getElementById(\'suburbFilterDD\').style.display=\'block\'" autocomplete="off" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:7px 10px;font-size:12px;color:var(--text);font-family:inherit;outline:none;box-sizing:border-box">';
+ddHtml+='<div id="suburbFilterDD" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:50;max-height:200px;overflow-y:auto;margin-top:2px">';
+ddHtml+='<div class="suburb-opt" onclick="setSuburbFilter(\'\')" style="padding:6px 10px;cursor:pointer;font-size:11px;font-weight:600;border-bottom:1px solid var(--border)">All Suburbs</div>';
+suburbKeys.forEach(function(s){ddHtml+='<div class="suburb-opt" onclick="setSuburbFilter(\''+s.replace(/'/g,"\\\\'")+'\')" style="padding:6px 10px;cursor:pointer;font-size:11px;'+(contactSuburbFilter===s?"background:rgba(10,175,171,.06);font-weight:600":"")+'" data-suburb="'+s.toLowerCase()+'">'+s+' <span style="opacity:.5">('+suburbSet[s]+')</span></div>'});
+ddHtml+='</div></div></div></div>';
 // Clear all filters button
-if(contactFilter.length>0||contactGenderFilter||contactStatusFilter!=="Active Contact"){
+if(contactFilter.length>0||contactGenderFilter||contactSuburbFilter||contactStatusFilter!=="Active Contact"){
 ddHtml+='<div style="margin-top:8px"><button onclick="contactFilter=[];contactGenderFilter=\'\';contactSuburbFilter=\'\';contactStatusFilter=\'Active Contact\';render()" style="width:100%;padding:6px;font-size:11px;font-weight:600;color:var(--red);background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">✕ Clear All Filters</button></div>';
 }
 document.getElementById("midTabs").innerHTML=ddHtml;renderContactsList();renderContactDetail()}}else if(currentView==="dialer"){openDialer();currentView="conversations";render()}else if(currentView==="agent"){toggleAiChatbot();currentView="conversations";render()}else if(currentView==="tasks"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderTasks()}else if(currentView==="callWorkflow"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderCallWorkflow()}else if(currentView==="reports"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderReportsMenu()}else if(currentView==="dashboard"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderDashboardOverhaul()}else if(currentView==="admin"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAdmin()}else if(currentView==="recruit"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderRecruit()}else if(currentView==="leadsOverview"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderLeadsOverview()}else if(currentView==="leads"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderLeads()}else if(currentView==="accommodation"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAccommodation()}else if(currentView==="scheduler"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderScheduler()}else if(currentView==="clientBudget"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderClientBudget()}else if(currentView==="roc"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderRoC()}else if(currentView==="timeAttendance"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderTimeAttendance()}else if(currentView==="registers"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderPlaceholder("Registers","📋","Document registers and compliance tracking coming soon.")}else if(currentView==="files"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderCompanyFiles()}else if(currentView==="auditLog"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAuditLog()}else if(currentView==="supportTickets"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSupportTickets()}else if(currentView==="incidentRegister"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderIncidentRegister()}else if(currentView==="continuousImprovement"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderContinuousImprovement()}else if(currentView==="progressNotes"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderProgressNotesEnhanced()}else if(currentView==="sendClientAgreement"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSendDocPage("client")}else if(currentView==="sendEmploymentContract"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSendDocPage("employment")}else if(currentView==="sendContractorAgreement"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSendDocPage("contractor")}else if(currentView==="aiRoster"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAIRoster()}else if(currentView==="cancellations"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderCancellations()}else if(currentView==="handover"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderHandover()}else if(currentView==="payroll"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderPayroll()}else if(currentView==="sleepReport"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSleepReport()}else if(currentView==="reconciliation"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderReconciliation()}else if(currentView==="kmReport"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderKmReport()}else if(currentView==="newsletters"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderNewsletters()}else if(currentView==="loginActivity"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderLoginActivity()}else if(currentView==="automations"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAutomations()}else if(currentView==="complianceReports"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderComplianceReports()}else if(currentView==="shiftcareComparison"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderShiftCareComparison()}}
@@ -2718,24 +2727,17 @@ html+='</div>';
 // ── TAB CONTENT ──
 html+='<div style="flex:1;overflow-y:auto;padding:20px">';
 if(activeTab==="details"){
-// Staff profile header — rectangle photo on left, links on right
+// Photo above fields if staff
+if(isStaff&&!isNDISClient&&c.photo&&c.photo.length>0){var photoUrl=c.photo[0].thumbnailUrl||c.photo[0].url;html+='<div style="text-align:center;margin-bottom:12px"><img src="'+photoUrl+'" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--teal);box-shadow:0 2px 8px rgba(0,0,0,.15)" alt="Photo"></div>'}
+// CV/Resume, SW Profile, AI CV Summary links (below photo)
 if(isStaff&&!isNDISClient){
-var _profPhotoUrl=(c.photo&&c.photo.length>0)?(c.photo[0].thumbnailUrl||c.photo[0].url):"";
-html+='<div style="display:flex;gap:16px;margin-bottom:16px;align-items:flex-start">';
-html+='<div style="flex-shrink:0">';
-if(_profPhotoUrl){html+='<img src="'+_profPhotoUrl+'" style="width:160px;height:200px;object-fit:cover;border-radius:var(--r);border:3px solid var(--teal);box-shadow:0 2px 8px rgba(0,0,0,.15)" alt="Photo">'}
-else{html+='<div style="width:160px;height:200px;border-radius:var(--r);border:3px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:48px;color:var(--dim)">'+getInitials(c.name)+'</div>'}
-html+='</div>';
-html+='<div style="display:flex;flex-direction:column;gap:8px;flex:1;padding-top:4px">';
-html+='<div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:2px">'+(c.name||"Unnamed")+'</div>';
-if(c.jobTitle)html+='<div style="font-size:12px;color:var(--muted);margin-bottom:4px">'+c.jobTitle+'</div>';
-if(c.cvResume&&c.cvResume.length>0){var _pCv=c.cvResume[0];html+='<a href="'+_pCv.url+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(30,75,160,.04);border:1px solid rgba(30,75,160,.15);border-radius:var(--rs);text-decoration:none;transition:all .12s" onmouseover="this.style.background=\'rgba(30,75,160,.1)\'" onmouseout="this.style.background=\'rgba(30,75,160,.04)\'"><span style="font-size:16px">📋</span><div><div style="font-size:11px;font-weight:700;color:var(--royal)">CV / Resume</div><div style="font-size:9px;color:var(--muted)">'+(_pCv.name||"View")+'</div></div></a>'}
-else{html+='<div style="padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:11px;font-weight:700;color:var(--dim)">📋 No CV uploaded</div></div>'}
-if(c.swProfile&&c.swProfile.length>0){var _pSw=c.swProfile[0];html+='<a href="'+_pSw.url+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(10,147,150,.04);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);text-decoration:none;transition:all .12s" onmouseover="this.style.background=\'rgba(10,147,150,.1)\'" onmouseout="this.style.background=\'rgba(10,147,150,.04)\'"><span style="font-size:16px">📄</span><div><div style="font-size:11px;font-weight:700;color:var(--teal)">SW Profile</div><div style="font-size:9px;color:var(--muted)">'+(_pSw.name||"View")+'</div></div></a>'}
-else{html+='<div style="padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:11px;font-weight:700;color:var(--dim)">📄 No SW Profile</div></div>'}
 var _profHasCv=c.cvResume&&c.cvResume.length>0;var _profSaved=c.cvAiSummary||"";
-html+='<button onclick="'+(_profSaved?'showCvSummaryModal()':'generateCVSummary()')+'" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(59,130,246,.06));border:1px solid rgba(124,58,237,.15);border-radius:var(--rs);cursor:'+(_profHasCv?'pointer':'default')+';font-family:inherit;text-align:left;transition:all .12s;width:100%"'+(!_profHasCv?' disabled':'')+'><span style="font-size:16px">🤖</span><div><div style="font-size:11px;font-weight:700;color:#7C3AED">'+(_profSaved?"View AI CV Summary":"Generate AI CV Summary")+'</div><div style="font-size:9px;color:var(--muted)">'+(_profHasCv?(_profSaved?"Click to view summary":"Analyse CV with Claude AI"):"Upload CV first")+'</div></div></button>';
-html+='</div></div>';
+var hasDocs=(c.swProfile&&c.swProfile.length>0)||(c.cvResume&&c.cvResume.length>0);
+if(hasDocs){html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">';
+if(c.cvResume&&c.cvResume.length>0){var _pCv=c.cvResume[0];html+='<a href="'+_pCv.url+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(30,75,160,.04);border:1px solid rgba(30,75,160,.15);border-radius:var(--rs);text-decoration:none;transition:all .12s" onmouseover="this.style.background=\'rgba(30,75,160,.1)\'" onmouseout="this.style.background=\'rgba(30,75,160,.04)\'"><span style="font-size:16px">📋</span><div><div style="font-size:11px;font-weight:700;color:var(--royal)">CV / Resume</div><div style="font-size:9px;color:var(--muted)">'+(_pCv.name||"View")+'</div></div></a>'}
+if(c.swProfile&&c.swProfile.length>0){var _pSw=c.swProfile[0];html+='<a href="'+_pSw.url+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(10,147,150,.04);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);text-decoration:none;transition:all .12s" onmouseover="this.style.background=\'rgba(10,147,150,.1)\'" onmouseout="this.style.background=\'rgba(10,147,150,.04)\'"><span style="font-size:16px">📄</span><div><div style="font-size:11px;font-weight:700;color:var(--teal)">SW Profile</div><div style="font-size:9px;color:var(--muted)">'+(_pSw.name||"View")+'</div></div></a>'}
+html+='</div>'}
+html+='<button onclick="'+(_profSaved?'showCvSummaryModal()':'generateCVSummary()')+'" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(59,130,246,.06));border:1px solid rgba(124,58,237,.15);border-radius:var(--rs);cursor:'+(_profHasCv?'pointer':'default')+';font-family:inherit;text-align:left;transition:all .12s;width:100%;margin-bottom:12px"'+(!_profHasCv?' disabled':'')+'><span style="font-size:16px">🤖</span><div><div style="font-size:11px;font-weight:700;color:#7C3AED">'+(_profSaved?"View AI CV Summary":"Generate AI CV Summary")+'</div><div style="font-size:9px;color:var(--muted)">'+(_profHasCv?(_profSaved?"Click to view summary":"Analyse CV with Claude AI"):"Upload CV first")+'</div></div></button>';
 }
 if(isNDISClient){
 // ── NDIS CLIENT DETAILS — loads from Clients table ──
@@ -2852,17 +2854,12 @@ html+='<div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-p
 var _hasFullContactAccess=canEdit("contacts")||canEdit("contacts_all");
 if(!_hasFullContactAccess){
 // RESTRICTED VIEW — non-superadmin sees name, job title, compliance docs & certs
-var _rPhotoUrl=(c.photo&&c.photo.length>0)?(c.photo[0].thumbnailUrl||c.photo[0].url):"";
-html+='<div style="display:flex;gap:16px;margin-bottom:16px;align-items:flex-start">';
-html+='<div style="flex-shrink:0">';
-if(_rPhotoUrl){html+='<img src="'+_rPhotoUrl+'" style="width:160px;height:200px;object-fit:cover;border-radius:var(--r);border:3px solid var(--teal);box-shadow:0 2px 8px rgba(0,0,0,.15)" alt="Photo">'}
-else{html+='<div style="width:160px;height:200px;border-radius:var(--r);border:3px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:48px;color:var(--dim)">'+getInitials(c.name)+'</div>'}
-html+='</div>';
-html+='<div style="display:flex;flex-direction:column;gap:6px;flex:1;padding-top:4px">';
+html+='<div style="text-align:center;margin-bottom:16px">';
+if(c.photo&&c.photo.length>0){html+='<img src="'+(c.photo[0].thumbnailUrl||c.photo[0].url)+'" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--teal);box-shadow:0 2px 8px rgba(0,0,0,.15);margin-bottom:8px" alt="Photo">'}
 html+='<div style="font-size:18px;font-weight:800;color:var(--text)">'+(c.name||"Unnamed")+'</div>';
-if(c.jobTitle)html+='<div style="font-size:13px;color:var(--muted)">'+c.jobTitle+'</div>';
-if(c.contactType)html+='<div><span class="contact-type-badge '+getContactTypeCss(c.contactType)+'">'+c.contactType+'</span></div>';
-html+='</div></div>';
+if(c.jobTitle)html+='<div style="font-size:13px;color:var(--muted);margin-top:4px">'+c.jobTitle+'</div>';
+if(c.contactType)html+='<div style="margin-top:6px"><span class="contact-type-badge '+getContactTypeCss(c.contactType)+'">'+c.contactType+'</span></div>';
+html+='</div>';
 // Compliance Documents — SW Profile + CV/Resume (read-only download)
 var _hasDocsSW=(c.swProfile&&c.swProfile.length>0)||(c.cvResume&&c.cvResume.length>0);
 if(_hasDocsSW){html+='<div style="padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📁 My Documents</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
@@ -2878,8 +2875,6 @@ html+='<div style="padding:10px;background:rgba(36,84,160,.04);border:1px solid 
 // CV/SW Profile/AI Summary now in profile header above
 // Item 27: autosave indicator
 html+='<div id="staffAutoSaveStatus" style="font-size:10px;color:var(--green);font-weight:600;margin-bottom:6px;min-height:14px"></div>';
-// ── PERSONAL DETAILS heading ──
-html+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:4px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">PERSONAL DETAILS</div>';
 // First Name + Last Name + Cultural Ethnicity (3 columns)
 html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>First Name</label><input id="editFirstName" value="'+(c.firstName||"")+'" onblur="_staffAutoSave(\'firstName\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div><div class="fg" style="margin:0"><label>Last Name</label><input id="editLastName" value="'+(c.lastName||"")+'" onblur="_staffAutoSave(\'lastName\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div><div class="fg" style="margin:0"><label>Cultural Ethnicity</label><input value="'+(c.cultureEthnicity||"")+'" disabled style="opacity:.7"></div></div>';
 // Item 29: Address directly under First/Last Name
@@ -2897,16 +2892,10 @@ if(isContractor){html+='<div style="display:grid;grid-template-columns:1fr 1fr;g
 html+='<input type="hidden" id="editSigningEmail" value="'+(c.signingEmail||c.email||"")+'">';
 // Item 28: Type/Job Title/Status moved to 3rd column at top
 html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Type of Contact</label>'+contactTypeSelect(c.contactType||"")+'</div><div class="fg" style="margin:0"><label>Job Title</label><input value="'+(c.jobTitle||"")+'" disabled style="opacity:.7"></div><div class="fg" style="margin:0"><label>Status of Contact</label>'+statusOfContactSelect(c.statusOfContact||"")+'</div></div>';
-// ── CONTACT DETAILS heading — Items 30 ──
-html+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">CONTACT DETAILS</div>';
 // Phone + Email
 html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Phone</label><input id="editPhone" type="tel" value="'+(c.phone||"")+'" placeholder="+61400000000" onblur="_staffAutoSave(\'phone\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div><div class="fg" style="margin:0"><label>Email</label><input id="editEmail" type="email" value="'+(c.email||"")+'" onblur="_staffAutoSave(\'email\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div></div>';
-// ── EMERGENCY CONTACT heading ──
-html+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">EMERGENCY CONTACT</div>';
+// Emergency contact
 if(c.emergencyContact||c.emergencyPhone)html+='<div style="padding:10px;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🚨 Emergency Contact</div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span style="font-size:13px;font-weight:600;color:var(--text)">'+(c.emergencyContact||"Not set")+'</span>'+(c.emergencyRelationship?'<span style="font-size:11px;color:var(--muted)">('+c.emergencyRelationship+')</span>':'')+(c.emergencyPhone?'<a href="tel:'+c.emergencyPhone+'" style="font-size:12px;color:var(--teal);font-family:JetBrains Mono,monospace;font-weight:600;text-decoration:none">📞 '+c.emergencyPhone+'</a>':'')+(c.emergencyEmail?'<a href="mailto:'+c.emergencyEmail+'" style="font-size:11px;color:var(--muted);text-decoration:none">✉️ '+c.emergencyEmail+'</a>':'')+'</div></div>';
-else html+='<div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px;font-size:11px;color:var(--dim);font-style:italic">No emergency contact set</div>';
-// ── COMPLIANCE heading ──
-html+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">COMPLIANCE</div>';
 // Compliance — superadmin view with upload buttons
 var compFields=[{label:"First Aid",val:c.firstAidExpiry},{label:"CPR",val:c.cprExpiry},{label:"Car Insurance",val:c.insuranceExpiry},{label:"Driver Licence",val:c.driversLicenseExpiry},{label:"NDIS Worker Screening",val:c.ndisExpiry},{label:"WWCC Blue Card",val:c.wwccExpiry}];
 html+=renderComplianceSection(compFields,c.airtable_id||c.id);
@@ -2963,34 +2952,33 @@ html+='</div></div>';
 html+='<style>.srTabShort{display:none}@media(max-width:768px){.srTabFull{display:none}.srTabShort{display:inline}}#srTabBar::-webkit-scrollbar{display:none}</style>';
 
 if(srSubTab==="overview"){
-// Table view
+// Cards view
 html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">';
 html+='<div><div style="font-size:16px;font-weight:700;color:var(--text)">📂 Service Records</div><div style="font-size:11px;color:var(--muted)">View progress notes, incidents and KM records for '+(c.name||"this contact")+'</div></div></div>';
 var srCards=[
-{id:"progress",icon:"📓",title:"Progress Notes",desc:"Shift notes, observations and service delivery records",color:"var(--teal)"},
-{id:"incidents",icon:"⚠️",title:"Incident Reports",desc:"Incident records, injuries, near-misses and behavioural events",color:"var(--red)"},
-{id:"kms",icon:"🚗",title:"KM Records",desc:"Travel and mileage claims for client support trips",color:"#F59E0B"}
+{id:"progress",icon:"📓",title:"Progress Notes",desc:"Shift notes, observations and service delivery records",color:"var(--teal)",bg:"rgba(10,175,171,.06)"},
+{id:"incidents",icon:"⚠️",title:"Incident Reports",desc:"Incident records, injuries, near-misses and behavioural events",color:"var(--red)",bg:"rgba(239,68,68,.04)"},
+{id:"kms",icon:"🚗",title:"KM Records",desc:"Travel and mileage claims for client support trips",color:"#F59E0B",bg:"rgba(245,158,11,.06)"}
 ];
 if(isNDISClient){
-srCards.push({id:"behaviours",icon:"🧠",title:"Behaviours",desc:"QR behaviour observations — triggers, verbal/physical, de-escalation",color:"#7c3aed"});
-srCards.push({id:"sleepChart",icon:"😴",title:"Sleep Chart",desc:"Sleep patterns, bed/wake times and quality tracking",color:"#6366F1"});
-srCards.push({id:"bowelChart",icon:"💊",title:"Bowel Chart",desc:"Bowel movement tracking — type, size and frequency",color:"#EC4899"});
-srCards.push({id:"fluidChart",icon:"💧",title:"Fluid Intake",desc:"Daily fluid intake diary — volumes and fluid types",color:"#0EA5E9"});
-srCards.push({id:"consumables",icon:"📦",title:"Consumables",desc:"Client supplies — ordering, delivery and sign-off tracking",color:"#F97316"});
-srCards.push({id:"calendar",icon:"📅",title:"Client Calendar",desc:"Appointments, inspections and scheduled events",color:"#3B82F6"});
-srCards.push({id:"weeklyreports",icon:"📊",title:"Weekly Reports",desc:"NDIS stakeholder reports generated for this participant",color:"#7c3aed"});
+srCards.push({id:"behaviours",icon:"🧠",title:"Behaviours",desc:"QR behaviour observations — triggers, verbal/physical, de-escalation",color:"#7c3aed",bg:"rgba(124,58,237,.04)"});
+srCards.push({id:"sleepChart",icon:"😴",title:"Sleep Chart",desc:"Sleep patterns, bed/wake times and quality tracking",color:"#6366F1",bg:"rgba(99,102,241,.04)"});
+srCards.push({id:"bowelChart",icon:"💊",title:"Bowel Chart",desc:"Bowel movement tracking — type, size and frequency",color:"#EC4899",bg:"rgba(236,72,153,.04)"});
+srCards.push({id:"fluidChart",icon:"💧",title:"Fluid Intake",desc:"Daily fluid intake diary — volumes and fluid types",color:"#0EA5E9",bg:"rgba(14,165,233,.04)"});
+srCards.push({id:"consumables",icon:"📦",title:"Consumables",desc:"Client supplies — ordering, delivery and sign-off tracking",color:"#F97316",bg:"rgba(249,115,22,.04)"});
+srCards.push({id:"calendar",icon:"📅",title:"Client Calendar",desc:"Appointments, inspections and scheduled events",color:"#3B82F6",bg:"rgba(59,130,246,.04)"});
+srCards.push({id:"weeklyreports",icon:"📊",title:"Weekly Reports",desc:"NDIS stakeholder reports generated for this participant",color:"#7c3aed",bg:"rgba(124,58,237,.04)"});
 }
-// Sort alphabetically by title
-srCards.sort(function(a,b){return a.title.localeCompare(b.title)});
-html+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
-html+='<thead><tr><th style="padding:10px 12px;text-align:left;font-weight:700;color:var(--muted);border-bottom:2px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.4px">Name</th><th style="padding:10px 12px;text-align:left;font-weight:700;color:var(--muted);border-bottom:2px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.4px">Description</th></tr></thead><tbody>';
+html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">';
 srCards.forEach(function(sr){
-html+='<tr onclick="switchContactTab(\''+sr.id+'\')" style="cursor:pointer;border-bottom:1px solid var(--border);transition:background .12s" onmouseover="this.style.background=\'var(--surface2)\'" onmouseout="this.style.background=\'transparent\'">';
-html+='<td style="padding:10px 12px;white-space:nowrap"><span style="margin-right:6px">'+sr.icon+'</span><span style="font-weight:700;color:var(--text)">'+sr.title+'</span></td>';
-html+='<td style="padding:10px 12px;color:var(--muted)">'+sr.desc+'</td>';
-html+='</tr>';
+html+='<div onclick="switchContactTab(\''+sr.id+'\')" style="padding:20px;background:'+sr.bg+';border:1px solid '+sr.color+'20;border-radius:var(--r);cursor:pointer;transition:all .15s;border-left:4px solid '+sr.color+'" onmouseover="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,.08)\';this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.boxShadow=\'none\';this.style.transform=\'none\'">';
+html+='<div style="font-size:28px;margin-bottom:8px">'+sr.icon+'</div>';
+html+='<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">'+sr.title+'</div>';
+html+='<div style="font-size:11px;color:var(--muted);line-height:1.4">'+sr.desc+'</div>';
+html+='<div style="margin-top:12px;font-size:11px;font-weight:700;color:'+sr.color+'">Open →</div>';
+html+='</div>';
 });
-html+='</tbody></table></div>';
+html+='</div>';
 }else if(srSubTab==="progress"){
 html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div style="font-size:16px;font-weight:700;color:var(--text)">📓 Progress Notes</div><div style="display:flex;gap:8px"><button onclick="loadProgressDrafts()" style="padding:6px 14px;font-size:11px;font-weight:600;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;font-family:inherit" title="View saved drafts">📋 Drafts</button><button onclick="openNewProgressNote()" style="padding:6px 14px;font-size:11px;font-weight:700;border-radius:var(--rs);border:none;background:var(--teal);color:#fff;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px">＋ Add New</button></div></div>';
 html+='<div id="progressNotesContent"><div style="text-align:center;padding:20px;color:var(--muted)"><div class="spin" style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 8px"></div>Loading progress notes...</div></div>';
@@ -4934,7 +4922,6 @@ h+='<div class="fg" style="margin:0"><label>NDIS Number</label>'+spInlineEdit("N
 h+='<div class="fg" style="margin:0"><label>Support Ratio</label><input value="'+(d.supportRatio||"—")+'" disabled style="opacity:.7"></div>';
 h+='<div class="fg" style="margin:0"><label>Age</label><input id="clientAgeDisp" value="'+(d.age?d.age+" yrs":"—")+'" disabled style="opacity:.7"></div>';
 h+='</div>';
-h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">PERSONAL DETAILS</div>';
 h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
 var dobDisp=d.dateOfBirth||"";
 if(dobDisp){try{var dp=new Date(dobDisp);if(!isNaN(dp))dobDisp=("0"+dp.getDate()).slice(-2)+"/"+("0"+(dp.getMonth()+1)).slice(-2)+"/"+dp.getFullYear()}catch(e){}}
@@ -4951,14 +4938,12 @@ h+='</div>';
 var addrParts=[d.address,d.suburb,d.state,d.postcode].filter(function(v){return v});
 var addrFull=addrParts.length>0?addrParts.join(", "):"";
 h+='<div class="fg" style="margin:0 0 10px"><label>Address</label>'+spInlineEdit("Address",addrFull,"address")+'</div>';
-h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">SUPPORT REQUIREMENTS</div>';
 h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
 h+='<div class="fg" style="margin:0"><label>Gender of Support Workers</label>'+spInlineEdit("Gender of Support Workers",d.genderOfWorkers||"","genderOfWorkers","select",["","Male","Female","No Preference","Same Gender as Client"])+'</div>';
 h+='<div class="fg" style="margin:0"><label>Personal Care</label><input value="'+(d.personalCare||"—")+'" disabled style="opacity:.7"></div>';
 h+='<div class="fg" style="margin:0"><label>Communication Aids</label><input value="'+(d.communicationAids||"—")+'" disabled style="opacity:.7"></div>';
 h+='</div>';
 // Type of Disability
-h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">TYPE OF DISABILITY</div>';
 if(d.typeOfDisability||canEdit){
 h+='<div style="padding:10px;background:rgba(124,58,237,.04);border:1px solid rgba(124,58,237,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:#7C3AED;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">\uD83E\uDDE9 Type of Disability</div>';
 if(canEdit){h+='<div style="display:flex;align-items:flex-start;gap:4px"><textarea id="cEdit_typeOfDisability" style="flex:1;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box;min-height:40px;resize:vertical">'+(d.typeOfDisability||"").replace(/</g,"&lt;")+'</textarea><button onclick="saveClientField(\'typeOfDisability\',document.getElementById(\'cEdit_typeOfDisability\').value)" style="padding:3px 6px;font-size:10px;background:var(--teal);color:#fff;border:none;border-radius:4px;cursor:pointer;margin-top:2px" title="Save">\uD83D\uDCBE</button></div>'}
@@ -4994,7 +4979,16 @@ if(d.emergencyRelationship)h+='<span style="font-size:11px;color:var(--muted)">(
 if(d.emergencyPhone)h+='<a href="tel:'+d.emergencyPhone+'" style="font-size:12px;color:var(--teal);font-family:JetBrains Mono,monospace;font-weight:600;text-decoration:none">📞 '+d.emergencyPhone+'</a>';
 if(d.emergencyEmail)h+='<a href="mailto:'+d.emergencyEmail+'" style="font-size:12px;color:var(--teal);font-weight:600;text-decoration:none">📧 '+d.emergencyEmail+'</a>';
 h+='</div></div>'}
-// Plan Expiry — HIDDEN (Item #6)
+// Plan Expiry
+if(d.planExpiry){
+var expDate;try{expDate=new Date(d.planExpiry)}catch(e){}
+var daysLeft=expDate?Math.ceil((expDate-new Date())/(1000*60*60*24)):999;
+var expColor=daysLeft<0?"var(--red)":daysLeft<90?"var(--orange)":"var(--green)";
+var expBg=daysLeft<0?"rgba(239,68,68,.06)":daysLeft<90?"rgba(245,158,11,.06)":"rgba(16,185,129,.06)";
+var expBorder=daysLeft<0?"rgba(239,68,68,.15)":daysLeft<90?"rgba(245,158,11,.15)":"rgba(16,185,129,.15)";
+var expDisp=TitusDate.format(d.planExpiry)
+var expStatus=daysLeft<0?"EXPIRED — "+Math.abs(daysLeft)+" days ago":daysLeft<90?"⚠️ "+daysLeft+" days remaining":"✅ "+daysLeft+" days remaining";
+h+='<div style="padding:10px;background:'+expBg+';border:1px solid '+expBorder+';border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:'+expColor+';text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">📅 NDIS Plan Expiry</div><div style="display:flex;align-items:center;gap:12px"><span style="font-size:14px;font-weight:700;color:'+expColor+'">'+expDisp+'</span><span style="font-size:11px;color:'+expColor+';font-weight:600">'+expStatus+'</span></div></div>'}
 // Photo Gallery — Item 10
 h+='<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">';
 h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">📸 Photo Gallery</div>';
@@ -8102,16 +8096,7 @@ var bp=sh.behaviourPractitioner||{};if(bp.name)stakeholders.push({role:"Behaviou
 var ec=sh.emergency||{};if(ec.name)stakeholders.push({role:"Emergency Contact",name:ec.name,email:ec.email,phone:ec.phone,relationship:ec.relationship,icon:"🚨",color:"#EF4444",bg:"rgba(239,68,68,.04)"});
 // Decisions section
 var dec=sh.decisions||{};
-var h='';
-if(dec.ownDecisionMaker){
-h+='<div style="margin-bottom:16px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r)">';
-h+='<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px">\u2696\uFE0F Decision Making</div>';
-h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
-var decFields=[{l:"Own Decision Maker?",v:dec.ownDecisionMaker},{l:"Medical",v:dec.medical},{l:"Financial",v:dec.financial},{l:"NDIS & Accommodation",v:dec.ndisAccommodation},{l:"Living Arrangements",v:dec.livingArrangements},{l:"Legal",v:dec.legal}];
-decFields.forEach(function(df){if(!df.v)return;
-h+='<div style="padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase">'+df.l+'</div><div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px">'+df.v+'</div></div>'});
-h+='</div></div>'}
-h+='<div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px">\uD83D\uDC65 Key Stakeholders</div>';
+var h='<div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px">👥 Key Stakeholders</div>';
 h+='<div style="font-size:11px;color:var(--muted);margin-bottom:16px">Support team contacts for '+clientName+'</div>';
 if(stakeholders.length===0){
 h+='<div style="text-align:center;padding:30px;color:var(--muted);background:var(--surface2);border:1px dashed var(--border);border-radius:var(--r)"><div style="font-size:28px;margin-bottom:8px">👥</div><div style="font-size:12px;font-weight:600">No stakeholders assigned</div><div style="font-size:11px;margin-top:4px">Assign a Support Coordinator, Plan Manager, or Guardian in the Clients table</div></div>';
@@ -8136,14 +8121,23 @@ if(s.email)h+='<a href="mailto:'+s.email+'" style="flex:1;padding:6px;background
 h+='</div>';
 h+='</div></div>'});
 h+='</div>'}
-// Stakeholder Portal link section — HIDDEN (Item #10)
-// if(canEdit("contacts")||canEdit("contacts_all")){
-// h+='<div style="margin-top:16px;padding:14px;background:rgba(0,180,216,.04);border:1px solid rgba(0,180,216,.15);border-radius:var(--r)">';
-// h+='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">';
-// h+='<div><div style="font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.5px">🔗 Stakeholder Portal</div>';
-// h+='<div style="font-size:11px;color:var(--muted);margin-top:2px">Generate a secure link for family/stakeholders to view this client\'s information</div></div>';
-// h+='<button onclick="generatePortalLink(\''+contact.id+'\',\''+clientName.replace(/'/g,"\\'")+'\')" style="padding:8px 16px;background:linear-gradient(135deg,var(--teal),#0E9AA7);color:#fff;border:none;border-radius:var(--rs);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🔗 Generate Portal Link</button>';
-// h+='</div><div id="portalLinkResult_'+contact.id+'" style="margin-top:8px"></div></div>'}
+// Stakeholder Portal link section
+if(canEdit("contacts")||canEdit("contacts_all")){
+h+='<div style="margin-top:16px;padding:14px;background:rgba(0,180,216,.04);border:1px solid rgba(0,180,216,.15);border-radius:var(--r)">';
+h+='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">';
+h+='<div><div style="font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.5px">🔗 Stakeholder Portal</div>';
+h+='<div style="font-size:11px;color:var(--muted);margin-top:2px">Generate a secure link for family/stakeholders to view this client\'s information</div></div>';
+h+='<button onclick="generatePortalLink(\''+contact.id+'\',\''+clientName.replace(/'/g,"\\'")+'\')" style="padding:8px 16px;background:linear-gradient(135deg,var(--teal),#0E9AA7);color:#fff;border:none;border-radius:var(--rs);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🔗 Generate Portal Link</button>';
+h+='</div><div id="portalLinkResult_'+contact.id+'" style="margin-top:8px"></div></div>'}
+// Decisions section
+if(dec.ownDecisionMaker){
+h+='<div style="margin-top:16px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r)">';
+h+='<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">⚖️ Decision Making</div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+var decFields=[{l:"Own Decision Maker?",v:dec.ownDecisionMaker},{l:"Medical",v:dec.medical},{l:"Financial",v:dec.financial},{l:"NDIS & Accommodation",v:dec.ndisAccommodation},{l:"Living Arrangements",v:dec.livingArrangements},{l:"Legal",v:dec.legal}];
+decFields.forEach(function(df){if(!df.v)return;
+h+='<div style="padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase">'+df.l+'</div><div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px">'+df.v+'</div></div>'});
+h+='</div></div>'}
 el.innerHTML=h;
 }).catch(function(e){
 el.innerHTML='<div style="text-align:center;padding:30px;color:var(--red)">Failed to load: '+e.message+'</div>';
@@ -8398,9 +8392,9 @@ function dialSelectContact(phone,name){dialerNumber=phone;dialerContactName=name
 function dialPress(key){dialerNumber+=key;dialerContactName=findContactName(dialerNumber);if(dialerContactName==="Unknown")dialerContactName="";updateDialDisplay()}
 function dialDelete(){dialerNumber=dialerNumber.slice(0,-1);if(!dialerNumber)dialerContactName="";else{dialerContactName=findContactName(dialerNumber);if(dialerContactName==="Unknown")dialerContactName="";}updateDialDisplay()}
 function updateDialDisplay(){var display=document.getElementById("dialDisplay");if(!display)return;var html="";if(dialerContactName)html+='<span class="contact-label">'+dialerContactName+'</span>';html+='<span>'+(dialerNumber||"Enter number")+'</span>';display.innerHTML=html}
-function dialCall(){if(!dialerNumber||dialerNumber.length<4){document.getElementById("dialStatus").textContent="Enter a valid number";return}if(!twilioDevice){document.getElementById("dialStatus").textContent="⚠️ Softphone not ready — please wait a moment";return}document.getElementById("dialStatus").textContent="Connecting...";twilioDevice.connect({params:{To:dialerNumber,ContactName:dialerContactName||""}}).then(function(call){twilioConnection=call;updateSoftphoneStatus("active");document.getElementById("dialStatus").textContent="📞 On call with "+(dialerContactName||dialerNumber);var btn=document.getElementById("dialCallBtn");if(btn){btn.style.background="#EF4444";btn.style.boxShadow="0 4px 20px rgba(239,68,68,.35)";btn.title="Hang up";btn.onclick=function(){dialHangup()}}if(dialerContactName){var _mc=contacts.find(function(c){var cp=(c.phone||"").replace(/\D/g,"");var dn=(dialerNumber||"").replace(/\D/g,"");return cp&&dn&&(cp===dn||cp.slice(-9)===dn.slice(-9))});if(_mc){selectedConv=_mc;currentView="contacts";render()}}call.on("disconnect",function(){twilioConnection=null;updateSoftphoneStatus("ready");document.getElementById("dialStatus").textContent="Call ended";resetDialCallBtn();setTimeout(function(){loadData()},2000)});call.on("cancel",function(){twilioConnection=null;updateSoftphoneStatus("ready");document.getElementById("dialStatus").textContent="Call cancelled";resetDialCallBtn()});call.on("reject",function(){twilioConnection=null;updateSoftphoneStatus("ready");document.getElementById("dialStatus").textContent="Call rejected";resetDialCallBtn()})}).catch(function(e){document.getElementById("dialStatus").textContent="Call failed: "+e.message})}
+function dialCall(){if(!dialerNumber||dialerNumber.length<4){document.getElementById("dialStatus").textContent="Enter a valid number";return}if(!twilioDevice){document.getElementById("dialStatus").textContent="⚠️ Softphone not ready — please wait a moment";return}document.getElementById("dialStatus").textContent="Connecting...";twilioDevice.connect({params:{To:dialerNumber,ContactName:dialerContactName||""}}).then(function(call){twilioConnection=call;updateSoftphoneStatus("active");document.getElementById("dialStatus").textContent="📞 On call with "+(dialerContactName||dialerNumber);var btn=document.getElementById("dialCallBtn");if(btn){btn.style.background="var(--red)";btn.title="Hang up";btn.onclick=function(){dialHangup()}}if(dialerContactName){var _mc=contacts.find(function(c){var cp=(c.phone||"").replace(/\D/g,"");var dn=(dialerNumber||"").replace(/\D/g,"");return cp&&dn&&(cp===dn||cp.slice(-9)===dn.slice(-9))});if(_mc){selectedConv=_mc;currentView="contacts";render()}}call.on("disconnect",function(){twilioConnection=null;updateSoftphoneStatus("ready");document.getElementById("dialStatus").textContent="Call ended";resetDialCallBtn();setTimeout(function(){loadData()},2000)});call.on("cancel",function(){twilioConnection=null;updateSoftphoneStatus("ready");document.getElementById("dialStatus").textContent="Call cancelled";resetDialCallBtn()});call.on("reject",function(){twilioConnection=null;updateSoftphoneStatus("ready");document.getElementById("dialStatus").textContent="Call rejected";resetDialCallBtn()})}).catch(function(e){document.getElementById("dialStatus").textContent="Call failed: "+e.message})}
 function dialHangup(){if(twilioConnection){twilioConnection.disconnect()}else if(twilioDevice){twilioDevice.disconnectAll()}twilioConnection=null;updateSoftphoneStatus("ready");document.getElementById("dialStatus").textContent="Call ended";resetDialCallBtn()}
-function resetDialCallBtn(){var btn=document.getElementById("dialCallBtn");if(!btn)return;btn.style.background="#10B981";btn.style.boxShadow="0 4px 20px rgba(16,185,129,.35)";btn.title="Call";btn.onclick=function(){dialCall()}}
+function resetDialCallBtn(){var btn=document.getElementById("dialCallBtn");if(!btn)return;btn.style.background="var(--green)";btn.title="Call";btn.onclick=function(){dialCall()}}
 function dialToggleSms(){closeDialer();openSmsComposer(dialerNumber||"",dialerContactName||"")}
 function dialSendSms(){if(!dialerNumber||dialerNumber.length<4){document.getElementById("dialStatus").textContent="Enter a valid number";return}var body=(document.getElementById("dialSmsBody").value||"").trim();if(!body){document.getElementById("dialStatus").textContent="Type a message first";return}document.getElementById("dialStatus").textContent="Sending SMS...";apiCall("POST","/api/sms/send",{to:dialerNumber,body:body,participant:dialerContactName}).then(function(d){if(d.error){document.getElementById("dialStatus").textContent="Error: "+d.error}else{document.getElementById("dialStatus").textContent="SMS sent!";document.getElementById("dialSmsBody").value="";document.getElementById("dialSmsArea").classList.remove("show");setTimeout(function(){loadData()},1500)}}).catch(function(e){document.getElementById("dialStatus").textContent="SMS failed: "+e.message})}
 document.addEventListener("click",function(e){var results=document.getElementById("dialResults");if(results&&!e.target.closest(".dialer-search"))results.classList.remove("show");var cfw=document.getElementById("contactFilterWrap");var cfd=document.getElementById("contactFilterDD");if(cfd&&cfw&&!cfw.contains(e.target))cfd.style.display="none";var sdd=document.getElementById("suburbFilterDD");var sinp=document.getElementById("suburbFilterInput");if(sdd&&sinp&&e.target!==sinp&&!sdd.contains(e.target))sdd.style.display="none"});
