@@ -191,6 +191,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .contact-type-badge.staff{background:rgba(10,147,150,.08);color:var(--teal);border:1px solid rgba(10,147,150,.2)}
 .contact-type-badge.participant{background:rgba(30,75,160,.08);color:var(--royal);border:1px solid rgba(30,75,160,.2)}
 .contact-type-badge.stakeholder{background:rgba(245,158,11,.08);color:var(--orange);border:1px solid rgba(245,158,11,.2)}
+.contact-type-badge.contractor{background:rgba(245,158,11,.12);color:#B45309;border:1px solid rgba(245,158,11,.3);font-weight:700}
 .contact-type-badge.other{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
 .contact-type-badge.allied{background:rgba(124,58,237,.08);color:#7C3AED;border:1px solid rgba(124,58,237,.2)}
 .contact-type-badge.personal{background:rgba(236,72,153,.08);color:#EC4899;border:1px solid rgba(236,72,153,.2)}
@@ -617,6 +618,7 @@ button:not(.sb-item):not(.sb-sub-item):not(.sb-collapse-btn){cursor:pointer}
 <div class="mid-tabs" id="midTabs"><button class="mid-tab on" data-filter="all">All</button><button class="mid-tab" data-filter="calls">📞 Calls</button><button class="mid-tab" data-filter="sms">💬 SMS</button><button class="mid-tab" data-filter="chats">💬 Chats</button></div>
 <div class="conv-list" id="midList"></div>
 </div>
+<div id="panelResizer" style="width:5px;cursor:col-resize;background:transparent;flex-shrink:0;position:relative;z-index:10" onmousedown="_startPanelResize(event)"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:3px;height:32px;border-radius:2px;background:var(--border);opacity:.5;transition:opacity .15s"></div></div>
 <div class="right-panel" id="rightPanel">
 <div class="rp-empty" id="rpEmpty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--light)"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Select a conversation to view details</div>
 </div>
@@ -1333,7 +1335,7 @@ var _msgTab="chats";
 // Name resolution cache: email → full name
 window._chatNameMap=window._chatNameMap||{};
 
-// Messenger unread badge check (polls every 15s)
+// Messenger unread badge check (polls every 10s)
 function _checkMsgUnread(){
 apiCall("GET","/api/chat/unread-count").then(function(d){
 var count=d&&d.count||0;
@@ -1347,7 +1349,7 @@ else if(badge){badge.remove()}}
 // Toast for new messages
 if(count>prev&&prev>=0&&!_messengerOpen){showToast("You have "+count+" unread message"+(count!==1?"s":""),"info")}
 }).catch(function(){})}
-function _startMsgPoll(){if(_msgPollTimer)return;_checkMsgUnread();_msgPollTimer=setInterval(_checkMsgUnread,15000)}
+function _startMsgPoll(){if(_msgPollTimer)return;_checkMsgUnread();_msgPollTimer=setInterval(_checkMsgUnread,10000)}
 function _stopMsgPoll(){if(_msgPollTimer){clearInterval(_msgPollTimer);_msgPollTimer=null}}
 
 // Resolve email→name map on load
@@ -2874,32 +2876,31 @@ html+='<div style="padding:10px;background:rgba(36,84,160,.04);border:1px solid 
 }else{
 // FULL VIEW — superadmin sees everything
 // CV/SW Profile/AI Summary now in profile header above
+// Item 27: autosave indicator
+html+='<div id="staffAutoSaveStatus" style="font-size:10px;color:var(--green);font-weight:600;margin-bottom:6px;min-height:14px"></div>';
 // ── PERSONAL DETAILS heading ──
-html+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">PERSONAL DETAILS</div>';
+html+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:4px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">PERSONAL DETAILS</div>';
 // First Name + Last Name + Cultural Ethnicity (3 columns)
-html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>First Name</label><input id="editFirstName" value="'+(c.firstName||"")+'"></div><div class="fg" style="margin:0"><label>Last Name</label><input id="editLastName" value="'+(c.lastName||"")+'"></div><div class="fg" style="margin:0"><label>Cultural Ethnicity</label><input value="'+(c.cultureEthnicity||"")+'" disabled style="opacity:.7"></div></div>';
-// Type of Contact + Job Title + Status of Contact (3 columns)
-html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Type of Contact</label>'+contactTypeSelect(c.contactType||"")+'</div><div class="fg" style="margin:0"><label>Job Title</label><input value="'+(c.jobTitle||"")+'" disabled style="opacity:.7"></div><div class="fg" style="margin:0"><label>Status of Contact</label>'+statusOfContactSelect(c.statusOfContact||"")+'</div></div>';
-// Phone + Email + Signing Email
-html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Phone</label><input id="editPhone" type="tel" value="'+(c.phone||"")+'" placeholder="+61400000000"></div><div class="fg" style="margin:0"><label>Email</label><input id="editEmail" type="email" value="'+(c.email||"")+'"></div></div>';
-html+='<div style="margin-bottom:8px;padding:10px 12px;background:rgba(30,75,160,.04);border:1px solid rgba(30,75,160,.15);border-radius:var(--rs)">';
-html+='<div style="font-size:9px;font-weight:700;color:var(--royal);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:6px">✍️ Document Signing Email <span style="font-size:9px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">(used when sending agreements for e-signature)</span></div>';
-html+='<input id="editSigningEmail" type="email" value="'+(c.signingEmail||c.email||"")+'" placeholder="Leave blank to use main email above" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:13px;font-family:inherit;background:var(--surface);color:var(--text);box-sizing:border-box">';
-html+='</div>';
+html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>First Name</label><input id="editFirstName" value="'+(c.firstName||"")+'" onblur="_staffAutoSave(\'firstName\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div><div class="fg" style="margin:0"><label>Last Name</label><input id="editLastName" value="'+(c.lastName||"")+'" onblur="_staffAutoSave(\'lastName\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div><div class="fg" style="margin:0"><label>Cultural Ethnicity</label><input value="'+(c.cultureEthnicity||"")+'" disabled style="opacity:.7"></div></div>';
+// Item 29: Address directly under First/Last Name
+html+='<div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📍 Address</div>';
+html+='<div class="fg" style="margin:0 0 6px"><input id="editAddress" value="'+(c.homeAddress||"")+'" placeholder="Street Address" style="font-size:12px;padding:6px 8px" onblur="_staffAutoSave(\'homeAddress\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div>';
+html+='<div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px"><input id="editSuburb" value="'+(c.suburb||"")+'" placeholder="Suburb" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit" onblur="_staffAutoSave(\'suburb\',this.value,\''+(c.id||c.airtable_id||"")+'\')"><input id="editState" value="'+(c.state||"")+'" placeholder="State" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit" onblur="_staffAutoSave(\'state\',this.value,\''+(c.id||c.airtable_id||"")+'\')"><input id="editPostcode" value="'+(c.postcode||"")+'" placeholder="Postcode" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit" onblur="_staffAutoSave(\'postcode\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div></div>';
+// Gender + DOB (date picker) + Age (auto-calc) — Items 8, 26
+var dobVal=c.dob||"";var dobIso="";var ageDisplay="";if(dobVal){try{var dp;if(dobVal.indexOf("/")>=0){var pts=dobVal.split("/");if(pts.length===3){var yr=pts[2];if(yr.length===2)yr=(parseInt(yr)>50?"19":"20")+yr;dp=new Date(yr+"-"+pts[1]+"-"+pts[0])}}else{dp=new Date(dobVal)}if(dp&&!isNaN(dp)){dobIso=dp.toISOString().split("T")[0];var ageDiff=Date.now()-dp.getTime();var ageDate=new Date(ageDiff);ageDisplay=Math.abs(ageDate.getUTCFullYear()-1970)+" yrs"}}catch(e){}}
+var genderOpts=["","Male","Female","Non-Binary","Other","Prefer not to say"];var genderSelect='<select id="editGender" onchange="_staffAutoSave(\'gender\',this.value,\''+(c.id||c.airtable_id||"")+'\')" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);color:var(--text);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">';genderOpts.forEach(function(g){genderSelect+='<option value="'+g+'"'+(c.gender===g?" selected":"")+'>'+( g||"— Select —")+'</option>'});genderSelect+='</select>';
+html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Gender</label>'+genderSelect+'</div><div class="fg" style="margin:0"><label>Date of Birth</label><input id="editDob" type="date" value="'+dobIso+'" onchange="_staffAutoSave(\'dob\',this.value,\''+(c.id||c.airtable_id||"")+'\');_staffUpdateAge(this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:13px;font-family:inherit;background:var(--surface);color:var(--text)"></div><div class="fg" style="margin:0"><label>Age</label><input id="staffAgeDisp" value="'+ageDisplay+'" disabled style="opacity:.7;font-weight:700"></div></div>';
 // Organisation + ABN for contractors
-if(isContractor){html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Organisation</label><input id="editOrg" value="'+(c.organisation||"")+'"></div><div class="fg" style="margin:0"><label>ABN <span id="abnStatusBadge"></span></label><div style="display:flex;gap:4px"><input id="editAbn" value="'+(c.abn||"")+'" placeholder="11-digit ABN" style="font-family:JetBrains Mono,monospace;flex:1" oninput="formatABNInput(this)"><button onclick="lookupABN()" style="padding:6px 10px;font-size:10px;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit;white-space:nowrap" title="Verify ABN with Australian Business Register">🔍 Verify</button></div></div></div>';html+='<div id="abnLookupResult" style="display:none;margin-bottom:8px;padding:10px 12px;border-radius:var(--rs);font-size:12px"></div>'}else{html+='<input type="hidden" id="editOrg" value="'+(c.organisation||"")+'"><input type="hidden" id="editAbn" value="'+(c.abn||"")+'">'}
-// Gender + DOB + Age
-var dobVal=c.dob||"";var dobDisplay="";var ageDisplay="";if(dobVal){try{var dp;if(dobVal.indexOf("/")>=0){var pts=dobVal.split("/");if(pts.length===3){var yr=pts[2];if(yr.length===2)yr="20"+yr;dp=new Date(yr+"-"+pts[1]+"-"+pts[0])}}else{dp=new Date(dobVal)}if(dp&&!isNaN(dp)){dobDisplay=("0"+dp.getDate()).slice(-2)+"/"+("0"+(dp.getMonth()+1)).slice(-2)+"/"+String(dp.getFullYear()).slice(-2);var ageDiff=Date.now()-dp.getTime();var ageDate=new Date(ageDiff);ageDisplay=Math.abs(ageDate.getUTCFullYear()-1970)+" yrs"}}catch(e){dobDisplay=dobVal}}
-var genderOpts=["","Male","Female","Non-Binary","Other","Prefer not to say"];var genderSelect='<select id="editGender" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);color:var(--text);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">';genderOpts.forEach(function(g){genderSelect+='<option value="'+g+'"'+(c.gender===g?" selected":"")+'>'+( g||"— Select —")+'</option>'});genderSelect+='</select>';
-html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Gender</label>'+genderSelect+'</div><div class="fg" style="margin:0"><label>Date of Birth</label><input value="'+dobDisplay+'" disabled style="opacity:.7"></div><div class="fg" style="margin:0"><label>Age</label><input value="'+ageDisplay+'" disabled style="opacity:.7"></div></div>';
-// Save button
-html+='<div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn btn-p" style="width:auto;padding:6px 14px;font-size:12px" onclick="saveContact(\''+(c.id||c.airtable_id||"")+'\')">'+(c.id==="new"?"Create Contact":"Save Changes")+'</button></div>';
-// ── CONTACT DETAILS heading ──
+if(isContractor){html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Organisation</label><input id="editOrg" value="'+(c.organisation||"")+'" onblur="_staffAutoSave(\'organisation\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div><div class="fg" style="margin:0"><label>ABN <span id="abnStatusBadge"></span></label><div style="display:flex;gap:4px"><input id="editAbn" value="'+(c.abn||"")+'" placeholder="11-digit ABN" style="font-family:JetBrains Mono,monospace;flex:1" oninput="formatABNInput(this)" onblur="_staffAutoSave(\'abn\',this.value,\''+(c.id||c.airtable_id||"")+'\')"><button onclick="lookupABN()" style="padding:6px 10px;font-size:10px;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit;white-space:nowrap" title="Verify ABN with Australian Business Register">🔍 Verify</button></div></div></div>';html+='<div id="abnLookupResult" style="display:none;margin-bottom:8px;padding:10px 12px;border-radius:var(--rs);font-size:12px"></div>'}else{html+='<input type="hidden" id="editOrg" value="'+(c.organisation||"")+'"><input type="hidden" id="editAbn" value="'+(c.abn||"")+'">'}
+// Item 27: no SAVE button — autosave handles everything
+// Item 25: hiding document signing email
+html+='<input type="hidden" id="editSigningEmail" value="'+(c.signingEmail||c.email||"")+'">';
+// Item 28: Type/Job Title/Status moved to 3rd column at top
+html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Type of Contact</label>'+contactTypeSelect(c.contactType||"")+'</div><div class="fg" style="margin:0"><label>Job Title</label><input value="'+(c.jobTitle||"")+'" disabled style="opacity:.7"></div><div class="fg" style="margin:0"><label>Status of Contact</label>'+statusOfContactSelect(c.statusOfContact||"")+'</div></div>';
+// ── CONTACT DETAILS heading — Items 30 ──
 html+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">CONTACT DETAILS</div>';
-// Address
-html+='<div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📍 Address</div>';
-html+='<div class="fg" style="margin:0 0 6px"><input id="editAddress" value="'+(c.homeAddress||"")+'" placeholder="Street Address" style="font-size:12px;padding:6px 8px"></div>';
-html+='<div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px"><input id="editSuburb" value="'+(c.suburb||"")+'" placeholder="Suburb" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit"><input id="editState" value="'+(c.state||"")+'" placeholder="State" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit"><input id="editPostcode" value="'+(c.postcode||"")+'" placeholder="Postcode" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit"></div></div>';
+// Phone + Email
+html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Phone</label><input id="editPhone" type="tel" value="'+(c.phone||"")+'" placeholder="+61400000000" onblur="_staffAutoSave(\'phone\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div><div class="fg" style="margin:0"><label>Email</label><input id="editEmail" type="email" value="'+(c.email||"")+'" onblur="_staffAutoSave(\'email\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div></div>';
 // ── EMERGENCY CONTACT heading ──
 html+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">EMERGENCY CONTACT</div>';
 if(c.emergencyContact||c.emergencyPhone)html+='<div style="padding:10px;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🚨 Emergency Contact</div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span style="font-size:13px;font-weight:600;color:var(--text)">'+(c.emergencyContact||"Not set")+'</span>'+(c.emergencyRelationship?'<span style="font-size:11px;color:var(--muted)">('+c.emergencyRelationship+')</span>':'')+(c.emergencyPhone?'<a href="tel:'+c.emergencyPhone+'" style="font-size:12px;color:var(--teal);font-family:JetBrains Mono,monospace;font-weight:600;text-decoration:none">📞 '+c.emergencyPhone+'</a>':'')+(c.emergencyEmail?'<a href="mailto:'+c.emergencyEmail+'" style="font-size:11px;color:var(--muted);text-decoration:none">✉️ '+c.emergencyEmail+'</a>':'')+'</div></div>';
@@ -8239,18 +8240,22 @@ function showCvSummaryModal(){
   var c=selectedConv;if(!c||!c.cvAiSummary)return;
   var summary=c.cvAiSummary;
   var sHtml=summary.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/^### (.+)$/gm,'<div style="font-size:13px;font-weight:800;color:#7C3AED;margin-top:12px;margin-bottom:4px">$1</div>').replace(/^## (.+)$/gm,'<div style="font-size:13px;font-weight:800;color:#7C3AED;margin-top:12px;margin-bottom:4px">$1</div>').replace(/^# (.+)$/gm,'<div style="font-size:14px;font-weight:800;color:#7C3AED;margin-top:12px;margin-bottom:4px">$1</div>').replace(/^- (.+)$/gm,'<div style="padding-left:14px;position:relative;margin:3px 0"><span style="position:absolute;left:0">•</span> $1</div>').replace(/\n{2,}/g,'<div style="height:8px"></div>').replace(/\n/g,'<br>');
+  // Item 23: slide-over panel instead of centered modal
   var ov=document.createElement("div");ov.id="cvSummaryOverlay";
-  ov.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px";
-  ov.onclick=function(e){if(e.target===ov)ov.remove()};
-  var h='<div style="background:var(--surface);border-radius:16px;max-width:600px;width:100%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3)">';
-  h+='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">🤖</span><span style="font-size:15px;font-weight:700;color:var(--text)">AI CV Summary — '+(c.name||"")+'</span></div>';
-  h+='<button onclick="document.getElementById(\'cvSummaryOverlay\').remove()" style="padding:4px 10px;font-size:16px;background:transparent;border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--muted)">&times;</button></div>';
-  h+='<div style="padding:20px;overflow-y:auto;flex:1"><div style="font-size:12px;line-height:1.7;color:var(--text)">'+sHtml+'</div></div>';
-  h+='<div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px">';
+  ov.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:9999;display:flex;justify-content:flex-end";
+  ov.onclick=function(e){if(e.target===ov){panel.style.transform='translateX(100%)';setTimeout(function(){ov.remove()},200)}};
+  var panel=document.createElement("div");
+  panel.style.cssText="width:480px;max-width:90vw;height:100%;background:var(--surface);box-shadow:-4px 0 24px rgba(0,0,0,.15);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease";
+  var h='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">🤖</span><span style="font-size:15px;font-weight:700;color:var(--text)">AI CV Summary</span></div>';
+  h+='<button onclick="var o=document.getElementById(\'cvSummaryOverlay\');if(o){o.querySelector(\'div\').style.transform=\'translateX(100%)\';setTimeout(function(){o.remove()},200)}" style="padding:4px 10px;font-size:16px;background:transparent;border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--muted)">&times;</button></div>';
+  h+='<div style="font-size:12px;font-weight:600;color:var(--muted);padding:12px 20px 0;flex-shrink:0">'+(c.name||"")+'</div>';
+  h+='<div style="padding:12px 20px;overflow-y:auto;flex:1"><div style="font-size:12px;line-height:1.7;color:var(--text)">'+sHtml+'</div></div>';
+  h+='<div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0">';
   h+='<button onclick="document.getElementById(\'cvSummaryOverlay\').remove();generateCVSummary()" style="padding:6px 14px;font-size:11px;font-weight:700;background:rgba(124,58,237,.08);color:#7C3AED;border:1px solid rgba(124,58,237,.2);border-radius:var(--rs);cursor:pointer;font-family:inherit">🔄 Regenerate</button>';
-  h+='<button onclick="document.getElementById(\'cvSummaryOverlay\').remove()" style="padding:6px 14px;font-size:11px;font-weight:600;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit">Close</button>';
-  h+='</div></div>';
-  ov.innerHTML=h;document.body.appendChild(ov);
+  h+='<button onclick="var o=document.getElementById(\'cvSummaryOverlay\');if(o){o.querySelector(\'div\').style.transform=\'translateX(100%)\';setTimeout(function(){o.remove()},200)}" style="padding:6px 14px;font-size:11px;font-weight:600;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit">Close</button>';
+  h+='</div>';
+  panel.innerHTML=h;ov.appendChild(panel);document.body.appendChild(ov);
+  setTimeout(function(){panel.style.transform='translateX(0)'},10);
 }
 
 // ── ABN Validation & Lookup ──
@@ -8297,6 +8302,45 @@ h+='<button onclick="document.getElementById(\'editOrg\').value=\''+escapeHTML(d
 h+='<span style="font-size:9px;color:var(--muted);padding:4px 0">ABN details saved with Save Changes</span>';
 h+='</div>'}
 resEl.innerHTML=h}).catch(function(e){abnLookupData=null;if(resEl){resEl.style.background="rgba(239,68,68,.04)";resEl.style.border="1px solid rgba(239,68,68,.2)";resEl.innerHTML='<span style="font-weight:700;color:#EF4444">❌ Lookup failed: '+escapeHTML(e.message)+'</span>'}})}
+// Item 27: Staff autosave on blur
+function _staffAutoSave(field,value,contactId){
+if(!contactId||contactId==="new")return;
+var el=document.getElementById("staffAutoSaveStatus");
+if(el)el.innerHTML='<span style="color:var(--orange)">Saving...</span>';
+var data={};data[field]=value;
+// Also update name if first/last changed
+if(field==="firstName"||field==="lastName"){
+var fn=(document.getElementById("editFirstName")||{}).value||"";
+var ln=(document.getElementById("editLastName")||{}).value||"";
+data.name=(fn+" "+ln).trim()}
+apiCall("PUT","/api/contacts/"+contactId,data).then(function(r){
+if(r&&r.error){if(el)el.innerHTML='<span style="color:var(--red)">Save failed — retry?</span>';return}
+if(el){el.innerHTML='<span style="color:var(--green)">Saved</span>';setTimeout(function(){if(el)el.innerHTML=""},2000)}
+// Update local contact data
+if(selectedConv){for(var k in data){selectedConv[k]=data[k]}}
+}).catch(function(e){if(el)el.innerHTML='<span style="color:var(--red)">Save failed</span>'})}
+// Item 26: Staff age calculator
+function _staffUpdateAge(isoDate){
+if(!isoDate)return;var dp=new Date(isoDate);if(isNaN(dp))return;
+var ageDiff=Date.now()-dp.getTime();var ageDate=new Date(ageDiff);
+var age=Math.abs(ageDate.getUTCFullYear()-1970);
+var el=document.getElementById("staffAgeDisp");if(el)el.value=age+" yrs"}
+// Item 21: Resizable panel drag handle
+function _startPanelResize(e){
+e.preventDefault();
+var mid=document.getElementById("midPanel");var right=document.getElementById("rightPanel");var resizer=document.getElementById("panelResizer");
+if(!mid||!right)return;
+var container=mid.parentElement;var startX=e.clientX;var startMidW=mid.offsetWidth;
+resizer.querySelector("div").style.opacity="1";resizer.querySelector("div").style.background="var(--teal)";
+document.body.style.cursor="col-resize";document.body.style.userSelect="none";
+function onMove(ev){
+var dx=ev.clientX-startX;var newW=Math.max(200,Math.min(startMidW+dx,container.offsetWidth-300));
+mid.style.width=newW+"px";mid.style.minWidth=newW+"px";mid.style.maxWidth=newW+"px";mid.style.flex="none";
+right.style.flex="1"}
+function onUp(){document.removeEventListener("mousemove",onMove);document.removeEventListener("mouseup",onUp);
+document.body.style.cursor="";document.body.style.userSelect="";
+resizer.querySelector("div").style.opacity=".5";resizer.querySelector("div").style.background="var(--border)"}
+document.addEventListener("mousemove",onMove);document.addEventListener("mouseup",onUp)}
 function saveContact(id){var firstName=(document.getElementById("editFirstName")||{}).value||"";var lastName=(document.getElementById("editLastName")||{}).value||"";var data={firstName:firstName,lastName:lastName,name:(firstName+" "+lastName).trim()||(document.getElementById("editName")||{}).value||"",phone:document.getElementById("editPhone").value.replace(/[^+0-9]/g,""),email:(document.getElementById("editEmail")||{}).value||"",signingEmail:(document.getElementById("editSigningEmail")||{}).value||"",organisation:(document.getElementById("editOrg")||{}).value||"",homeAddress:(document.getElementById("editAddress")||{}).value||"",suburb:(document.getElementById("editSuburb")||{}).value||"",state:(document.getElementById("editState")||{}).value||"",postcode:(document.getElementById("editPostcode")||{}).value||"",abn:((document.getElementById("editAbn")||{}).value||"").replace(/\s/g,""),notes:(document.getElementById("editNotes")||{}).value||"",statusOfContact:(document.getElementById("editStatus")||{}).value||"",gender:(document.getElementById("editGender")||{}).value||""};if(selectedConv&&selectedConv.contactType)data.contactType=selectedConv.contactType;var editCT=(document.getElementById("editContactType")||{}).value;if(editCT)data.contactType=editCT;if(abnLookupData&&abnLookupData.valid&&data.abn&&data.abn===abnLookupData.abn){var _af=buildABNAirtableFields(abnLookupData);if(_af.abnEntityName)data.abnEntityName=_af.abnEntityName;if(_af.abnStatus)data.abnStatus=_af.abnStatus;data.gstRegistered=_af.gstRegistered;data.abnLastVerified=_af.abnLastVerified}
 // Duplicate email check — block saves with duplicate email addresses
 if(data.email){var _dupEmail=contacts.find(function(c){return c.email&&c.email.toLowerCase()===data.email.toLowerCase()&&(c.id||c.airtable_id)!=id});if(_dupEmail){alert("Duplicate email detected: \""+data.email+"\" is already assigned to "+(_dupEmail.name||"another contact")+" ("+((_dupEmail.contactType||"Unknown type"))+"). Please use a unique email address.");return}}
@@ -11086,16 +11130,20 @@ function loadStaffRosters(staffId) {
       return;
     }
     var h = '<table style="width:100%;border-collapse:collapse;font-size:12px">';
-    h += '<thead><tr style="background:var(--surface2);border-bottom:2px solid var(--border)"><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Date</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Client</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Start</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">End</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Duration</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Status</th></tr></thead><tbody>';
+    h += '<thead><tr style="background:var(--surface2);border-bottom:2px solid var(--border)"><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Date</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Client</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Start</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">End</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Duration</th><th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">KM</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Status</th></tr></thead><tbody>';
     shifts.forEach(function(s) {
       var startD = s.startShift || s.start_shift || "";
       var endD = s.endShift || s.end_shift || "";
-      var date = startD ? startD.split("T")[0] : "\u2014";
+      // Item 20: DD/MM/YYYY date format
+      var date = "\u2014";
+      if(startD){try{var dp=new Date(startD);if(!isNaN(dp))date=("0"+dp.getDate()).slice(-2)+"/"+("0"+(dp.getMonth()+1)).slice(-2)+"/"+dp.getFullYear()}catch(e){date=startD.split("T")[0]}}
       var startT = startD ? (startD.split("T")[1] || "").substring(0,5) || "" : "\u2014";
       var endT = endD ? (endD.split("T")[1] || "").substring(0,5) || "" : "\u2014";
       var dur = s.totalHoursDecimal || s.total_hours || "\u2014";
+      var km = s.kmAllowance || s.km_allowance || s.totalKm || "";
+      var kmDisp = km ? parseFloat(km).toFixed(1) : "\u2014";
       var status = s.status || s.shiftStatus || "\u2014";
-      h += '<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px">' + date + '</td><td style="padding:8px 10px;font-weight:600">' + (s.clientName||s.client_name||"\u2014") + '</td><td style="padding:8px 10px">' + startT + '</td><td style="padding:8px 10px">' + endT + '</td><td style="padding:8px 10px">' + dur + '</td><td style="padding:8px 10px">' + status + '</td></tr>';
+      h += '<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px">' + date + '</td><td style="padding:8px 10px;font-weight:600">' + (s.clientName||s.client_name||"\u2014") + '</td><td style="padding:8px 10px">' + startT + '</td><td style="padding:8px 10px">' + endT + '</td><td style="padding:8px 10px">' + dur + '</td><td style="padding:8px 10px;text-align:right;font-family:JetBrains Mono,monospace;font-size:10px">' + kmDisp + '</td><td style="padding:8px 10px">' + status + '</td></tr>';
     });
     h += '</tbody></table>';
     el.innerHTML = h;
@@ -22278,15 +22326,15 @@ function openClientDocInlineEdit(docId, clientName, currentData){
   // Expiry Date
   var expRow=document.createElement("div");
   expRow.style.marginBottom="14px";
-  expRow.innerHTML='<label style="display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Expiry Date <span style="font-weight:400;text-transform:none">(dd/mm/yyyy or blank)</span></label>';
+  expRow.innerHTML='<label style="display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Expiry Date</label>';
   var expInput=document.createElement("input");
-  expInput.type="text";expInput.placeholder="dd/mm/yyyy";
-  // Format existing date for display
+  expInput.type="date";
+  // Format existing date for date picker (YYYY-MM-DD)
   var displayExpiry="";
   if(currentData.expiryDate){
     try{
       var ep=new Date(currentData.expiryDate);
-      displayExpiry=("0"+ep.getDate()).slice(-2)+"/"+("0"+(ep.getMonth()+1)).slice(-2)+"/"+ep.getFullYear();
+      if(!isNaN(ep))displayExpiry=ep.toISOString().split("T")[0];
     }catch(ex){displayExpiry=currentData.expiryDate;}
   }
   expInput.value=displayExpiry;

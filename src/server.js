@@ -108,53 +108,79 @@ app.use('/api/messenger', messengerRoutes);
 // ═══════════════════════════════════════════════════════
 const { authenticate: invoiceAuth } = require('./middleware/auth');
 const invoiceDb = require('./services/database');
+const sbInvoice = require('./services/supabaseClient');
 
 // GET /api/invoices/by-contact/:id — invoices for a specific contractor
 app.get('/api/invoices/by-contact/:id', invoiceAuth, function (req, res) {
   var contactId = req.params.id;
   if (!contactId) return res.json({ success: false, error: 'Missing contact ID' });
 
-  invoiceDb.fetchAllFromTable('Contractor Invoices').then(function (records) {
-    var invoices = (records || []).filter(function (r) {
-      var f = r.fields || {};
-      // Match by linked contact record ID or by contractor name
-      var linked = f['Contractor'] || f['Contact'] || f['Staff Name'] || [];
-      if (Array.isArray(linked) && linked.indexOf(contactId) >= 0) return true;
-      if (linked === contactId) return true;
-      var linkedRecord = f['Contact Record'] || [];
-      if (Array.isArray(linkedRecord) && linkedRecord.indexOf(contactId) >= 0) return true;
-      return false;
-    }).map(function (r) {
-      var f = r.fields || {};
+  // Try Supabase first
+  var sbQuery = contactId.length > 30
+    ? sbInvoice.query('independent_contractor_invoices', 'GET', { eq: { contractor_id: contactId }, order: 'submitted_date.desc' })
+    : sbInvoice.query('independent_contractor_invoices', 'GET', { eq: { airtable_id: contactId }, order: 'submitted_date.desc' });
+
+  sbQuery.then(function (rows) {
+    if (!rows || rows.length === 0) throw new Error('empty');
+    var invoices = rows.map(function (r) {
       var shifts = [];
-      try { if (f['Shifts']) shifts = typeof f['Shifts'] === 'string' ? JSON.parse(f['Shifts']) : f['Shifts']; } catch (e) {}
+      try { if (r.shifts) shifts = typeof r.shifts === 'string' ? JSON.parse(r.shifts) : r.shifts; } catch (e) {}
       return {
         id: r.id,
-        invoiceNumber: f['Invoice Number'] || f['Invoice #'] || f['Name'] || '',
-        status: f['Status'] || 'Draft',
-        dateSubmitted: f['Date Submitted'] || f['Submitted Date'] || '',
-        periodStart: f['Period Start'] || f['From'] || '',
-        periodEnd: f['Period End'] || f['To'] || '',
-        totalHours: parseFloat(f['Total Hours'] || 0),
-        totalKilometres: parseFloat(f['Total KMs'] || f['Total Kilometres'] || 0),
-        amountExGst: parseFloat(f['Amount Ex GST'] || f['Amount'] || 0),
-        gstAmount: parseFloat(f['GST Amount'] || f['GST'] || 0),
-        totalIncGst: parseFloat(f['Total Inc GST'] || f['Total'] || 0),
+        invoiceNumber: r.invoice_number || '',
+        status: r.status || 'Draft',
+        dateSubmitted: r.submitted_date || '',
+        periodStart: r.period_start || '',
+        periodEnd: r.period_end || '',
+        totalHours: parseFloat(r.hours_worked || 0),
+        totalKilometres: parseFloat(r.total_kilometres || 0),
+        amountExGst: parseFloat(r.amount_ex_gst || r.amount || 0),
+        gstAmount: parseFloat(r.gst || 0),
+        totalIncGst: parseFloat(r.total || 0),
         shifts: shifts,
-        staffName: f['Contractor Name'] || ''
+        staffName: r.contractor_name || ''
       };
     });
-
-    // Sort newest first
-    invoices.sort(function (a, b) {
-      return (b.dateSubmitted || '').localeCompare(a.dateSubmitted || '');
-    });
-
+    console.log('[INVOICES] Supabase: ' + invoices.length + ' invoices for ' + contactId);
     res.json({ success: true, invoices: invoices });
-  }).catch(function (e) {
-    console.error('Invoice fetch error:', e.message);
-    // Return empty list instead of error so UI shows gracefully
-    res.json({ success: true, invoices: [] });
+  }).catch(function (sbErr) {
+    if (sbErr.message !== 'empty') console.warn('[INVOICES] Supabase error, falling back:', sbErr.message);
+    // Airtable fallback
+    invoiceDb.fetchAllFromTable('Contractor Invoices').then(function (records) {
+      var invoices = (records || []).filter(function (r) {
+        var f = r.fields || {};
+        var linked = f['Contractor'] || f['Contact'] || f['Staff Name'] || [];
+        if (Array.isArray(linked) && linked.indexOf(contactId) >= 0) return true;
+        if (linked === contactId) return true;
+        var linkedRecord = f['Contact Record'] || [];
+        if (Array.isArray(linkedRecord) && linkedRecord.indexOf(contactId) >= 0) return true;
+        return false;
+      }).map(function (r) {
+        var f = r.fields || {};
+        var shifts = [];
+        try { if (f['Shifts']) shifts = typeof f['Shifts'] === 'string' ? JSON.parse(f['Shifts']) : f['Shifts']; } catch (e) {}
+        return {
+          id: r.id,
+          invoiceNumber: f['Invoice Number'] || f['Invoice #'] || f['Name'] || '',
+          status: f['Status'] || 'Draft',
+          dateSubmitted: f['Date Submitted'] || f['Submitted Date'] || '',
+          periodStart: f['Period Start'] || f['From'] || '',
+          periodEnd: f['Period End'] || f['To'] || '',
+          totalHours: parseFloat(f['Total Hours'] || 0),
+          totalKilometres: parseFloat(f['Total KMs'] || f['Total Kilometres'] || 0),
+          amountExGst: parseFloat(f['Amount Ex GST'] || f['Amount'] || 0),
+          gstAmount: parseFloat(f['GST Amount'] || f['GST'] || 0),
+          totalIncGst: parseFloat(f['Total Inc GST'] || f['Total'] || 0),
+          shifts: shifts,
+          staffName: f['Contractor Name'] || ''
+        };
+      });
+      invoices.sort(function (a, b) { return (b.dateSubmitted || '').localeCompare(a.dateSubmitted || ''); });
+      res.json({ success: true, invoices: invoices });
+    }).catch(function (e) {
+      console.error('Invoice fetch error:', e.message);
+      res.json({ success: true, invoices: [] });
+    });
   });
 });
 

@@ -4,6 +4,7 @@ var { db } = require('../../db/sqlite');
 var airtable = require('../../services/database');
 var env = require('../../config/env');
 var { msGraphFetch, getMsGraphToken } = require('../../services/email');
+var sb = require('../../services/supabaseClient');
 
 var router = express.Router();
 
@@ -173,11 +174,44 @@ router.post('/enroll', function (req, res) {
 //  LMS — Get Enrollments (v1, from /api/lms/enrollments)
 // ═══════════════════════════════════════════════════════════
 router.get('/enrollments', function (req, res) {
-  if (!env.airtable.apiKey || !env.airtable.baseId) return res.json([]);
   var name = req.query.name || '';
   var email = req.query.email || '';
   var staffId = req.query.staffId || '';
   if (!name && !email && !staffId) return res.json([]);
+
+  // Try Supabase first — look up contact, then enrollments
+  var sbLookup = email
+    ? sb.query('contacts', 'GET', { select: 'id', eq: { email: email }, limit: 1 })
+    : (staffId && staffId.length > 30
+      ? Promise.resolve([{ id: staffId }])
+      : Promise.resolve([]));
+
+  sbLookup.then(function (contacts) {
+    var contactId = (contacts && contacts.length > 0) ? contacts[0].id : null;
+    if (!contactId) throw new Error('no_contact');
+    return sb.query('course_enrollments', 'GET', { eq: { contact_id: contactId }, order: 'enrolled_date.desc' });
+  }).then(function (rows) {
+    if (!rows || rows.length === 0) throw new Error('empty');
+    var result = rows.map(function (r) {
+      return {
+        enrollmentId: r.id,
+        courseId: r.course_id || '',
+        courseName: r.course_name || '',
+        category: '',
+        status: r.status || 'Enrolled',
+        progress: r.progress || 0,
+        enrollDate: r.enrolled_date || '',
+        completionDate: r.completed_date || '',
+        duration: '',
+        frequency: ''
+      };
+    });
+    console.log('[LMS] Supabase: ' + result.length + ' enrollments');
+    return res.json(result);
+  }).catch(function (sbErr) {
+    if (sbErr.message !== 'empty' && sbErr.message !== 'no_contact') console.warn('[LMS] Supabase error, falling back:', sbErr.message);
+    // Airtable fallback
+    if (!env.airtable.apiKey || !env.airtable.baseId) return res.json([]);
 
   // Fetch enrollments and course list in parallel for richer data
   Promise.all([
@@ -270,6 +304,7 @@ router.get('/enrollments', function (req, res) {
     console.error('Enrollments error:', e.message);
     res.json([]);
   });
+  }); // end Supabase fallback catch
 });
 
 // ═══════════════════════════════════════════════════════════

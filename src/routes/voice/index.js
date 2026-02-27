@@ -956,6 +956,7 @@ router.post('/elevenlabs/post-call', function(req, res) {
       conversation_id: convId,
       caller_phone: callerPhone || "Unknown",
       transcript: transcriptText,
+      transcript_text: transcriptText,
       summary: aiSummary || null,
       duration_secs: Math.round(callDuration),
       source: "elevenlabs",
@@ -967,6 +968,44 @@ router.post('/elevenlabs/post-call', function(req, res) {
         if (res.error) console.error("EL→Supabase transcript error:", res.error.message);
         else console.log("EL→Supabase transcript saved for", convId);
       }).catch(function(e) { console.error("EL→Supabase transcript catch:", e.message); });
+
+    // Item 1: Match caller phone to contact and link transcript
+    if (callerPhone) {
+      var cleanPhone = callerPhone.replace(/[^0-9+]/g, '');
+      var phoneVariants = [cleanPhone];
+      if (cleanPhone.match(/^04/)) phoneVariants.push('+61' + cleanPhone.substring(1));
+      if (cleanPhone.match(/^\+614/)) phoneVariants.push('0' + cleanPhone.substring(3));
+      if (cleanPhone.match(/^614/)) phoneVariants.push('0' + cleanPhone.substring(2), '+' + cleanPhone);
+
+      // Search contacts by phone number
+      var phoneQuery = phoneVariants.map(function(p) { return "phone.ilike.%" + p.slice(-8) + "%"; }).join(",");
+      _sbVoice.from("contacts").select("id,full_name,email,phone").or(phoneQuery)
+        .then(function(contactRes) {
+          if (contactRes.error || !contactRes.data || contactRes.data.length === 0) return;
+          var contact = contactRes.data[0];
+          console.log("EL→Supabase: matched caller " + callerPhone + " to contact: " + (contact.full_name || contact.email));
+
+          // Update transcript with contact_id
+          _sbVoice.from("transcripts").update({ contact_id: contact.id })
+            .eq("conversation_id", convId)
+            .then(function() {}).catch(function() {});
+
+          // Write to contact_history linked to this contact
+          _sbVoice.from("contact_history").insert({
+            contact_id: contact.id,
+            contact_name: contact.full_name || callerPhone,
+            type: "ai_call",
+            source: "elevenlabs",
+            direction: "inbound",
+            related_id: null,
+            tag: "AI Call Transcript",
+            notes: (aiSummary ? "AI Summary: " + aiSummary + "\n\n" : "") + "Transcript:\n" + transcriptText.substring(0, 2000),
+            duration: Math.round(callDuration),
+            created_at: startTime
+          }).then(function() { console.log("EL→Supabase: contact_history linked for", contact.full_name); })
+            .catch(function(e) { console.error("EL→Supabase contact_history error:", e.message); });
+        }).catch(function(e) { console.error("EL→Supabase contact lookup error:", e.message); });
+    }
 
     // Also write to contact_history for timeline view
     _sbVoice.from("contact_history").insert({

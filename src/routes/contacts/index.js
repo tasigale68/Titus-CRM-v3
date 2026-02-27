@@ -778,70 +778,128 @@ router.get('/pay-rates/contractor', function (req, res) {
 
 // GET /api/contacts/pay-rates/tfn — TFN employee rate table
 router.get('/pay-rates/tfn', function (req, res) {
-  if (!env.airtable.apiKey) return res.json([]);
-  airtable.fetchAllFromTable('TFN Pay Rates').then(function (records) {
-    if (!records || records.length === 0) {
-      return res.json([{
-        level: "Home Care Stream",
-        rates: {
-          "Level 1 Casual": "$32.27/hr",
-          "Level 2 Casual": "$34.19/hr",
-          "Level 3 Casual": "$36.24/hr",
-          "Level 4 Casual": "$38.49/hr",
-          "Saturday Loading": "150%",
-          "Sunday Loading": "200%",
-          "Public Holiday": "250%"
-        },
-        source: "SCHADS Award 2025-26 (fallback)"
-      }]);
-    }
-    var result = (records || []).map(function (r) {
-      var f = r.fields || {};
+  // Try Supabase first
+  sb.query('tfn_pay_rates', 'GET', { select: '*', order: 'pay_level' }).then(function (rows) {
+    if (!rows || rows.length === 0) throw new Error('empty');
+    var result = rows.map(function (r) {
       return {
         id: r.id,
-        payLevel: f['Pay Level'] || f['Name'] || f['Level'] || '',
-        dayRate: f['Day Rate'] || f['Weekday'] || '',
-        afternoon: f['Afternoon'] || f['Afternoon Rate'] || '',
-        night: f['Night'] || f['Night Rate'] || '',
-        saturday: f['Saturday'] || '',
-        sunday: f['Sunday'] || '',
-        pubHolidays: f['Public Holidays'] || f['Public Holiday'] || '',
-        sleepover: f['Sleepover'] || f['Sleepover (per sleep)'] || '',
-        lastUpdated: f['Last Modified'] || f['Last Updated'] || ''
+        payLevel: r.pay_level || '',
+        dayRate: r.hourly_rate ? '$' + r.hourly_rate + '/hr' : '',
+        afternoon: r.afternoon_rate ? '$' + r.afternoon_rate + '/hr' : '',
+        night: r.night_rate ? '$' + r.night_rate + '/hr' : '',
+        saturday: r.saturday_rate ? '$' + r.saturday_rate + '/hr' : '',
+        sunday: r.sunday_rate ? '$' + r.sunday_rate + '/hr' : '',
+        pubHolidays: r.public_holiday_rate ? '$' + r.public_holiday_rate + '/hr' : '',
+        sleepover: r.sleepover_rate ? '$' + r.sleepover_rate + '/per sleep' : '',
+        lastUpdated: r.effective_date || ''
       };
     });
-    res.json(result);
-  }).catch(function (e) { console.error('TFN pay rates error:', e.message); res.json([]); });
+    console.log('[TFN] Supabase: ' + result.length + ' rate records');
+    return res.json(result);
+  }).catch(function (sbErr) {
+    if (sbErr.message !== 'empty') console.warn('[TFN] Supabase error, falling back to Airtable:', sbErr.message);
+    // Airtable fallback
+    if (!env.airtable.apiKey) return res.json([]);
+    airtable.fetchAllFromTable('TFN Pay Rates').then(function (records) {
+      if (!records || records.length === 0) {
+        return res.json([{
+          level: "Home Care Stream",
+          rates: {
+            "Level 1 Casual": "$32.27/hr",
+            "Level 2 Casual": "$34.19/hr",
+            "Level 3 Casual": "$36.24/hr",
+            "Level 4 Casual": "$38.49/hr",
+            "Saturday Loading": "150%",
+            "Sunday Loading": "200%",
+            "Public Holiday": "250%"
+          },
+          source: "SCHADS Award 2025-26 (fallback)"
+        }]);
+      }
+      var result = (records || []).map(function (r) {
+        var f = r.fields || {};
+        return {
+          id: r.id,
+          payLevel: f['Pay Level'] || f['Name'] || f['Level'] || '',
+          dayRate: f['Day Rate'] || f['Weekday'] || '',
+          afternoon: f['Afternoon'] || f['Afternoon Rate'] || '',
+          night: f['Night'] || f['Night Rate'] || '',
+          saturday: f['Saturday'] || '',
+          sunday: f['Sunday'] || '',
+          pubHolidays: f['Public Holidays'] || f['Public Holiday'] || '',
+          sleepover: f['Sleepover'] || f['Sleepover (per sleep)'] || '',
+          lastUpdated: f['Last Modified'] || f['Last Updated'] || ''
+        };
+      });
+      res.json(result);
+    }).catch(function (e) { console.error('TFN pay rates error:', e.message); res.json([]); });
+  });
 });
 
 // ═══ STAFF AVAILABILITY / LEAVE ═══
 
 // GET /api/contacts/staff-availability — get leave records for a staff member
 router.get('/staff-availability', function (req, res) {
-  if (!env.airtable.apiKey) return res.json([]);
   var email = req.query.email || '';
   if (!email) return res.json([]);
-  var formula = "FIND('" + email.replace(/'/g, "\\'") + "', {Email})";
-  airtable.fetchAllFromTable(airtable.TABLES.STAFF_AVAILABILITY, formula).then(function (records) {
-    var result = (records || []).map(function (r) {
-      var f = r.fields || {};
+
+  // Try Supabase first — look up contact by email, then fetch staff_availability records
+  sb.query('contacts', 'GET', { select: 'id', eq: { email: email }, limit: 1 }).then(function (contacts) {
+    if (!contacts || contacts.length === 0) throw new Error('no_contact');
+    var contactId = contacts[0].id;
+    return sb.query('staff_availability', 'GET', {
+      select: '*',
+      eq: { contact_id: contactId },
+      order: 'start_date.desc'
+    });
+  }).then(function (rows) {
+    if (!rows || rows.length === 0) throw new Error('empty');
+    var result = rows.map(function (r) {
       return {
         id: r.id,
-        startDate: f['Start Date'] || f['From'] || '',
-        endDate: f['End Date'] || f['To'] || '',
-        leaveType: f['Leave Type'] || f['Type'] || f['Reason'] || '',
-        status: f['Status'] || f['Approval Status'] || 'Pending',
-        reason: f['Reason'] || f['Notes'] || f['Comments'] || '',
-        totalDays: f['Total Days'] || f['Days'] || 0,
-        employmentType: f['Employment Type'] || '',
-        approvedBy: f['Approved By'] || '',
-        approvedDate: f['Approved Date'] || '',
-        statusComments: f['Status Comments'] || f['Decline Reason'] || ''
+        startDate: r.start_date || '',
+        endDate: r.end_date || '',
+        leaveType: r.leave_type || '',
+        status: r.status || 'Pending',
+        reason: r.reason || '',
+        totalDays: r.total_days || 0,
+        employmentType: r.employment_type || '',
+        approvedBy: r.approved_by || '',
+        approvedDate: r.approved_date || '',
+        statusComments: r.status_comments || ''
       };
     });
-    result.sort(function (a, b) { return (b.startDate || '').localeCompare(a.startDate || ''); });
-    res.json(result);
-  }).catch(function (e) { console.error('Staff availability error:', e.message); res.json([]); });
+    console.log('[Staff Availability] Supabase: ' + result.length + ' records for ' + email);
+    return res.json(result);
+  }).catch(function (sbErr) {
+    if (sbErr.message !== 'empty' && sbErr.message !== 'no_contact') {
+      console.warn('[Staff Availability] Supabase error, falling back to Airtable:', sbErr.message);
+    }
+    // Airtable fallback
+    if (!env.airtable.apiKey) return res.json([]);
+    var formula = "FIND('" + email.replace(/'/g, "\\'") + "', {Email})";
+    airtable.fetchAllFromTable(airtable.TABLES.STAFF_AVAILABILITY, formula).then(function (records) {
+      var result = (records || []).map(function (r) {
+        var f = r.fields || {};
+        return {
+          id: r.id,
+          startDate: f['Start Date'] || f['From'] || '',
+          endDate: f['End Date'] || f['To'] || '',
+          leaveType: f['Leave Type'] || f['Type'] || f['Reason'] || '',
+          status: f['Status'] || f['Approval Status'] || 'Pending',
+          reason: f['Reason'] || f['Notes'] || f['Comments'] || '',
+          totalDays: f['Total Days'] || f['Days'] || 0,
+          employmentType: f['Employment Type'] || '',
+          approvedBy: f['Approved By'] || '',
+          approvedDate: f['Approved Date'] || '',
+          statusComments: f['Status Comments'] || f['Decline Reason'] || ''
+        };
+      });
+      result.sort(function (a, b) { return (b.startDate || '').localeCompare(a.startDate || ''); });
+      res.json(result);
+    }).catch(function (e) { console.error('Staff availability error:', e.message); res.json([]); });
+  });
 });
 
 // POST /api/contacts/staff-availability — create leave request

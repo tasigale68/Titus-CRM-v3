@@ -2,6 +2,7 @@ var express = require('express');
 var { authenticate, requireRole } = require('../../middleware/auth');
 var { logAudit } = require('../../services/audit');
 var airtable = require('../../services/database');
+var sb = require('../../services/supabaseClient');
 var env = require('../../config/env');
 var { uploadCV } = require('../../config/upload');
 var { msGraphFetch, getMsGraphToken } = require('../../services/email');
@@ -889,9 +890,10 @@ router.post('/scan-cv', function(req, res) {
   }
 });
 
-// ─── POST /api/recruitment/upload-cv — Upload CV file and attach to Airtable contact record ───
+// ─── POST /api/recruitment/upload-cv — Upload CV file and save to Supabase (Airtable fallback) ───
 router.post('/upload-cv', uploadCV.single("cv"), function(req, res) {
   var recordId = req.body.recordId || "";
+  var aiSummary = req.body.aiSummary || "";
   if (!req.file) return res.status(400).json({ error: "No file uploaded" });
   if (!recordId) return res.status(400).json({ error: "No recordId provided" });
 
@@ -902,29 +904,83 @@ router.post('/upload-cv', uploadCV.single("cv"), function(req, res) {
 
   console.log("[CV Upload] Record:", recordId, "File:", originalName, "Serving URL:", fileUrl);
 
-  // PATCH the All Contacts record with the CV attachment
-  airtable.rawFetch("All Contacts", "PATCH", "/" + recordId, {
-    fields: {
-      "CV/Resume": [{ url: fileUrl, filename: originalName }]
-    }
-  }).then(function(data) {
-    console.log("[CV Upload] Airtable response:", JSON.stringify(data).substring(0, 400));
-    if (data.error) {
-      var errMsg = data.error.message || JSON.stringify(data.error);
-      console.error("[CV Upload] PATCH failed:", errMsg);
-      return res.status(400).json({ error: errMsg });
-    }
-    console.log("[CV Upload] CV attached to record:", recordId);
-    res.json({ success: true });
+  // Helper: save CV info to Supabase contacts table
+  function saveToSupabase() {
+    var updateData = {
+      cv_url: fileUrl,
+      cv_filename: originalName,
+      updated_at: new Date().toISOString()
+    };
+    if (aiSummary) updateData.cv_ai_summary = aiSummary;
 
-    // Clean up temp file after 2 minutes (Airtable needs time to download from URL)
-    setTimeout(function() {
-      try { fs.unlinkSync(req.file.path); } catch(e) {}
-    }, 120000);
-  }).catch(function(err) {
-    console.error("[CV Upload] Exception:", err.message);
-    res.status(500).json({ error: err.message });
-  });
+    return sb.update('contacts', { eq: { id: recordId } }, updateData).then(function(sbRows) {
+      if (!sbRows || sbRows.length === 0) {
+        // recordId might be an Airtable ID — try matching by airtable_id
+        return sb.update('contacts', { eq: { airtable_id: recordId } }, updateData);
+      }
+      return sbRows;
+    }).then(function(sbRows) {
+      console.log("[CV Upload] Supabase updated: " + (sbRows && sbRows.length || 0) + " rows");
+      return true;
+    });
+  }
+
+  // Try Airtable first (preserves existing attachment behavior)
+  try {
+    airtable.rawFetch("All Contacts", "PATCH", "/" + recordId, {
+      fields: {
+        "CV/Resume": [{ url: fileUrl, filename: originalName }]
+      }
+    }).then(function(data) {
+      console.log("[CV Upload] Airtable response:", JSON.stringify(data).substring(0, 400));
+      if (data.error) {
+        var errMsg = data.error.message || JSON.stringify(data.error);
+        console.warn("[CV Upload] Airtable PATCH failed:", errMsg, "— falling back to Supabase");
+        // Airtable failed (e.g. INSUFFICIENT PERMISSIONS) — save to Supabase instead
+        return saveToSupabase().then(function() {
+          res.json({ success: true, source: 'supabase' });
+        });
+      }
+      console.log("[CV Upload] CV attached to record:", recordId);
+
+      // Also write to Supabase for data consistency (non-blocking)
+      saveToSupabase().catch(function(e) {
+        console.warn("[CV Upload] Supabase sync (non-blocking) failed:", e.message);
+      });
+
+      res.json({ success: true, source: 'airtable' });
+
+      // Clean up temp file after 2 minutes (Airtable needs time to download from URL)
+      setTimeout(function() {
+        try { fs.unlinkSync(req.file.path); } catch(e) {}
+      }, 120000);
+    }).catch(function(err) {
+      console.warn("[CV Upload] Airtable exception:", err.message, "— falling back to Supabase");
+      // Airtable completely failed — save to Supabase only
+      saveToSupabase().then(function() {
+        res.json({ success: true, source: 'supabase' });
+        // Clean up temp file after 2 minutes
+        setTimeout(function() {
+          try { fs.unlinkSync(req.file.path); } catch(e) {}
+        }, 120000);
+      }).catch(function(sbErr) {
+        console.error("[CV Upload] Both Airtable and Supabase failed:", sbErr.message);
+        res.status(500).json({ error: "CV upload failed: " + err.message });
+      });
+    });
+  } catch (outerErr) {
+    // Airtable not available at all — go straight to Supabase
+    console.warn("[CV Upload] Airtable unavailable:", outerErr.message, "— using Supabase only");
+    saveToSupabase().then(function() {
+      res.json({ success: true, source: 'supabase' });
+      setTimeout(function() {
+        try { fs.unlinkSync(req.file.path); } catch(e) {}
+      }, 120000);
+    }).catch(function(sbErr) {
+      console.error("[CV Upload] Supabase-only save failed:", sbErr.message);
+      res.status(500).json({ error: "CV upload failed: " + sbErr.message });
+    });
+  }
 });
 
 // ─── GET /api/recruitment/templates — Return available SMS/email templates ───
