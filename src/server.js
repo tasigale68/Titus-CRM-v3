@@ -104,6 +104,105 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/messenger', messengerRoutes);
 
 // ═══════════════════════════════════════════════════════
+//  Contractor Invoices (inline — no dedicated route file)
+// ═══════════════════════════════════════════════════════
+const { authenticate: invoiceAuth } = require('./middleware/auth');
+const invoiceDb = require('./services/database');
+
+// GET /api/invoices/by-contact/:id — invoices for a specific contractor
+app.get('/api/invoices/by-contact/:id', invoiceAuth, function (req, res) {
+  var contactId = req.params.id;
+  if (!contactId) return res.json({ success: false, error: 'Missing contact ID' });
+
+  invoiceDb.fetchAllFromTable('Contractor Invoices').then(function (records) {
+    var invoices = (records || []).filter(function (r) {
+      var f = r.fields || {};
+      // Match by linked contact record ID or by contractor name
+      var linked = f['Contractor'] || f['Contact'] || f['Staff Name'] || [];
+      if (Array.isArray(linked) && linked.indexOf(contactId) >= 0) return true;
+      if (linked === contactId) return true;
+      var linkedRecord = f['Contact Record'] || [];
+      if (Array.isArray(linkedRecord) && linkedRecord.indexOf(contactId) >= 0) return true;
+      return false;
+    }).map(function (r) {
+      var f = r.fields || {};
+      var shifts = [];
+      try { if (f['Shifts']) shifts = typeof f['Shifts'] === 'string' ? JSON.parse(f['Shifts']) : f['Shifts']; } catch (e) {}
+      return {
+        id: r.id,
+        invoiceNumber: f['Invoice Number'] || f['Invoice #'] || f['Name'] || '',
+        status: f['Status'] || 'Draft',
+        dateSubmitted: f['Date Submitted'] || f['Submitted Date'] || '',
+        periodStart: f['Period Start'] || f['From'] || '',
+        periodEnd: f['Period End'] || f['To'] || '',
+        totalHours: parseFloat(f['Total Hours'] || 0),
+        totalKilometres: parseFloat(f['Total KMs'] || f['Total Kilometres'] || 0),
+        amountExGst: parseFloat(f['Amount Ex GST'] || f['Amount'] || 0),
+        gstAmount: parseFloat(f['GST Amount'] || f['GST'] || 0),
+        totalIncGst: parseFloat(f['Total Inc GST'] || f['Total'] || 0),
+        shifts: shifts,
+        staffName: f['Contractor Name'] || ''
+      };
+    });
+
+    // Sort newest first
+    invoices.sort(function (a, b) {
+      return (b.dateSubmitted || '').localeCompare(a.dateSubmitted || '');
+    });
+
+    res.json({ success: true, invoices: invoices });
+  }).catch(function (e) {
+    console.error('Invoice fetch error:', e.message);
+    // Return empty list instead of error so UI shows gracefully
+    res.json({ success: true, invoices: [] });
+  });
+});
+
+// GET /api/invoices — all invoices (for ShiftCare reconciliation)
+app.get('/api/invoices', invoiceAuth, function (req, res) {
+  var dateFrom = req.query.dateFrom || '';
+  var dateTo = req.query.dateTo || '';
+  var contractor = req.query.contractor || '';
+
+  invoiceDb.fetchAllFromTable('Contractor Invoices').then(function (records) {
+    var invoices = (records || []).map(function (r) {
+      var f = r.fields || {};
+      var shifts = [];
+      try { if (f['Shifts']) shifts = typeof f['Shifts'] === 'string' ? JSON.parse(f['Shifts']) : f['Shifts']; } catch (e) {}
+      var staffNameVal = f['Contractor Name'] || f['Full Name (from Contractor)'] || '';
+      if (Array.isArray(staffNameVal)) staffNameVal = staffNameVal[0] || '';
+      return {
+        id: r.id,
+        invoiceNumber: f['Invoice Number'] || f['Invoice #'] || f['Name'] || '',
+        status: f['Status'] || 'Draft',
+        dateSubmitted: f['Date Submitted'] || f['Submitted Date'] || '',
+        periodStart: f['Period Start'] || f['From'] || '',
+        periodEnd: f['Period End'] || f['To'] || '',
+        totalHours: parseFloat(f['Total Hours'] || 0),
+        totalKilometres: parseFloat(f['Total KMs'] || f['Total Kilometres'] || 0),
+        amountExGst: parseFloat(f['Amount Ex GST'] || f['Amount'] || 0),
+        gstAmount: parseFloat(f['GST Amount'] || f['GST'] || 0),
+        totalIncGst: parseFloat(f['Total Inc GST'] || f['Total'] || 0),
+        shifts: shifts,
+        staffName: staffNameVal
+      };
+    });
+
+    // Apply filters
+    if (dateFrom) invoices = invoices.filter(function (inv) { return (inv.dateSubmitted || '') >= dateFrom; });
+    if (dateTo) invoices = invoices.filter(function (inv) { return (inv.dateSubmitted || '') <= dateTo; });
+    if (contractor) invoices = invoices.filter(function (inv) { return (inv.staffName || '').toLowerCase().indexOf(contractor.toLowerCase()) >= 0; });
+
+    invoices.sort(function (a, b) { return (b.dateSubmitted || '').localeCompare(a.dateSubmitted || ''); });
+
+    res.json({ success: true, invoices: invoices });
+  }).catch(function (e) {
+    console.error('Invoice fetch error:', e.message);
+    res.json({ success: true, invoices: [] });
+  });
+});
+
+// ═══════════════════════════════════════════════════════
 //  SaaS Multi-Tenant Routes
 // ═══════════════════════════════════════════════════════
 
@@ -132,6 +231,41 @@ app.get('/pricing', (req, res) => {
 });
 app.get('/admin/tenants', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'admin', 'tenants.html'));
+});
+
+// ═══════════════════════════════════════════════════════
+//  AI Ask Endpoint (used by Employment tab pay rate analysis)
+// ═══════════════════════════════════════════════════════
+
+app.post('/api/ai/ask', (req, res) => {
+  var question = (req.body && req.body.question) || '';
+  var maxTokens = (req.body && req.body.maxTokens) || 2000;
+  if (!question) return res.json({ answer: 'No question provided' });
+  if (!process.env.ANTHROPIC_API_KEY) return res.json({ answer: 'AI not configured — ANTHROPIC_API_KEY missing' });
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': process.env.ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: question }]
+    })
+  }).then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error('Claude API ' + r.status + ': ' + t.substring(0, 200)); });
+    return r.json();
+  }).then(function(data) {
+    var text = '';
+    if (data.content && data.content.length > 0) text = data.content[0].text || '';
+    res.json({ answer: text });
+  }).catch(function(e) {
+    console.error('[AI ASK] Error:', e.message);
+    res.json({ answer: 'AI analysis failed: ' + e.message });
+  });
 });
 
 // ═══════════════════════════════════════════════════════
@@ -180,6 +314,12 @@ io.on('connection', (socket) => {
 //  Error handling
 // ═══════════════════════════════════════════════════════
 
+// Catch-all for unmatched /api/* routes — return JSON 404, not HTML
+app.use('/api', function(req, res) {
+  res.status(404).json({ error: 'API endpoint not found: ' + req.method + ' ' + req.originalUrl });
+});
+
+// Global error handler — always return JSON, never HTML
 app.use(errorHandler);
 
 // ═══════════════════════════════════════════════════════

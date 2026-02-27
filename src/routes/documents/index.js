@@ -1191,119 +1191,127 @@ router.get('/sos/:clientName/pdf', function (req, res) {
 // ═══════════════════════════════════════════════════════════
 
 router.post('/cv-summary', function (req, res) {
-  var cvUrl = req.body.cvUrl || '';
-  var contactName = req.body.contactName || 'this person';
-  var fileName = req.body.fileName || '';
-  if (!cvUrl) return res.json({ error: 'No CV URL provided' });
-  if (!env.anthropic.apiKey) return res.json({ error: 'Anthropic API key not configured' });
+  try {
+    var cvUrl = req.body.cvUrl || '';
+    var contactName = req.body.contactName || 'this person';
+    var fileName = req.body.fileName || '';
+    if (!cvUrl) return res.status(400).json({ error: 'No CV URL provided' });
+    if (!env.anthropic.apiKey) return res.status(500).json({ error: 'Anthropic API key not configured' });
 
-  var https = require('https');
-  var http = require('http');
+    var https = require('https');
+    var http = require('http');
 
-  // Step 1: Fetch the file from Airtable URL
-  function fetchFile(url, cb) {
-    var mod = url.startsWith('https') ? https : http;
-    mod.get(url, function (response) {
-      // Follow redirects (Airtable uses redirects)
-      if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
-        return fetchFile(response.headers.location, cb);
-      }
-      var chunks = [];
-      response.on('data', function (c) { chunks.push(c); });
-      response.on('end', function () { cb(null, Buffer.concat(chunks), response.headers['content-type'] || ''); });
-      response.on('error', function (e) { cb(e); });
-    }).on('error', function (e) { cb(e); });
-  }
-
-  fetchFile(cvUrl, function (err, fileBuffer, contentType) {
-    if (err) return res.json({ error: 'Failed to fetch CV: ' + err.message });
-    if (!fileBuffer || fileBuffer.length === 0) return res.json({ error: 'Empty file' });
-
-    var isPDF = contentType.indexOf('pdf') >= 0 || fileName.toLowerCase().endsWith('.pdf');
-    var isWord = contentType.indexOf('word') >= 0 || contentType.indexOf('openxml') >= 0 ||
-                 fileName.toLowerCase().endsWith('.docx') || fileName.toLowerCase().endsWith('.doc');
-
-    var base64Data = fileBuffer.toString('base64');
-
-    var summaryPrompt = 'Analyse this CV/resume for ' + contactName + ' and provide a structured summary. Focus on:\n\n' +
-      '1. **Support Worker / Youth Worker Experience**: List any disability support, aged care, youth work, community services, or NDIS-related roles with approximate timeframes\n' +
-      '2. **Qualifications & Certifications**: List relevant qualifications (e.g. Cert III/IV Individual Support, First Aid, CPR, WWCC, drivers licence, manual handling, medication management)\n' +
-      '3. **Other Work Experience**: Brief summary of other employment history\n' +
-      '4. **Key Skills**: Relevant skills mentioned (e.g. personal care, behaviour support, medication administration, transport, meal preparation, community access)\n' +
-      '5. **Overall Assessment**: 2-3 sentence assessment of suitability for a Disability Support Worker role at an NDIS provider\n\n' +
-      'Format your response in clear sections with the headings above. Be concise and factual. If a section has no relevant information, say "Not specified in CV".';
-
-    // Build API request body
-    var apiBody;
-    if (isPDF) {
-      // Use Claude's native PDF support
-      apiBody = {
-        model: 'claude-sonnet-4-5',
-        max_tokens: 1500,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64Data } },
-            { type: 'text', text: summaryPrompt }
-          ]
-        }]
-      };
-    } else {
-      // For Word docs or unknown types, try to extract readable text from buffer
-      var textContent = '';
-      try {
-        textContent = fileBuffer.toString('utf8');
-        // Clean up binary garbage from Word docs — extract just readable text
-        textContent = textContent.replace(/[^\x20-\x7E\n\r\t]/g, ' ').replace(/\s{3,}/g, ' ').trim();
-      } catch (e) { textContent = ''; }
-
-      if (textContent.length < 50) {
-        return res.json({ error: 'Could not extract text from this file format. Please upload a PDF version.' });
-      }
-
-      apiBody = {
-        model: 'claude-sonnet-4-5',
-        max_tokens: 1500,
-        messages: [{
-          role: 'user',
-          content: summaryPrompt + '\n\nCV Text:\n' + textContent.substring(0, 8000)
-        }]
-      };
+    // Step 1: Fetch the file from Airtable URL
+    function fetchFile(url, cb) {
+      var mod = url.startsWith('https') ? https : http;
+      mod.get(url, function (response) {
+        // Follow redirects (Airtable uses redirects)
+        if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+          return fetchFile(response.headers.location, cb);
+        }
+        var chunks = [];
+        response.on('data', function (c) { chunks.push(c); });
+        response.on('end', function () { cb(null, Buffer.concat(chunks), response.headers['content-type'] || ''); });
+        response.on('error', function (e) { cb(e); });
+      }).on('error', function (e) { cb(e); });
     }
 
-    var body = JSON.stringify(apiBody);
-    var opts = {
-      hostname: 'api.anthropic.com',
-      path: '/v1/messages',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': env.anthropic.apiKey,
-        'anthropic-version': '2023-06-01'
-      }
-    };
+    fetchFile(cvUrl, function (err, fileBuffer, contentType) {
+      if (err) return res.status(502).json({ error: 'Failed to fetch CV: ' + err.message });
+      if (!fileBuffer || fileBuffer.length === 0) return res.status(400).json({ error: 'Empty file' });
 
-    var apiReq = https.request(opts, function (apiRes) {
-      var data = '';
-      apiRes.on('data', function (c) { data += c; });
-      apiRes.on('end', function () {
+      var isPDF = contentType.indexOf('pdf') >= 0 || fileName.toLowerCase().endsWith('.pdf');
+      var isWord = contentType.indexOf('word') >= 0 || contentType.indexOf('openxml') >= 0 ||
+                   fileName.toLowerCase().endsWith('.docx') || fileName.toLowerCase().endsWith('.doc');
+
+      var base64Data = fileBuffer.toString('base64');
+
+      var summaryPrompt = 'Analyse this CV/resume for ' + contactName + ' and provide a structured summary. Focus on:\n\n' +
+        '1. **Support Worker / Youth Worker Experience**: List any disability support, aged care, youth work, community services, or NDIS-related roles with approximate timeframes\n' +
+        '2. **Qualifications & Certifications**: List relevant qualifications (e.g. Cert III/IV Individual Support, First Aid, CPR, WWCC, drivers licence, manual handling, medication management)\n' +
+        '3. **Other Work Experience**: Brief summary of other employment history\n' +
+        '4. **Key Skills**: Relevant skills mentioned (e.g. personal care, behaviour support, medication administration, transport, meal preparation, community access)\n' +
+        '5. **Overall Assessment**: 2-3 sentence assessment of suitability for a Disability Support Worker role at an NDIS provider\n\n' +
+        'Format your response in clear sections with the headings above. Be concise and factual. If a section has no relevant information, say "Not specified in CV".';
+
+      // Build API request body
+      var apiBody;
+      if (isPDF) {
+        // Use Claude's native PDF support
+        apiBody = {
+          model: 'claude-sonnet-4-5',
+          max_tokens: 1500,
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64Data } },
+              { type: 'text', text: summaryPrompt }
+            ]
+          }]
+        };
+      } else {
+        // For Word docs or unknown types, try to extract readable text from buffer
+        var textContent = '';
         try {
-          var j = JSON.parse(data);
-          if (j.error) return res.json({ error: j.error.message || 'API error' });
-          var content = '';
-          if (j.content && j.content.length > 0) content = j.content[0].text || '';
-          console.log('CV Summary generated for: ' + contactName + ' (' + content.length + ' chars)');
-          res.json({ summary: content });
-        } catch (e) {
-          console.error('CV summary parse error:', e.message);
-          res.json({ error: 'Failed to parse AI response' });
+          textContent = fileBuffer.toString('utf8');
+          // Clean up binary garbage from Word docs — extract just readable text
+          textContent = textContent.replace(/[^\x20-\x7E\n\r\t]/g, ' ').replace(/\s{3,}/g, ' ').trim();
+        } catch (e) { textContent = ''; }
+
+        if (textContent.length < 50) {
+          return res.status(400).json({ error: 'Could not extract text from this file format. Please upload a PDF version.' });
         }
+
+        apiBody = {
+          model: 'claude-sonnet-4-5',
+          max_tokens: 1500,
+          messages: [{
+            role: 'user',
+            content: summaryPrompt + '\n\nCV Text:\n' + textContent.substring(0, 8000)
+          }]
+        };
+      }
+
+      var body = JSON.stringify(apiBody);
+      var opts = {
+        hostname: 'api.anthropic.com',
+        path: '/v1/messages',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': env.anthropic.apiKey,
+          'anthropic-version': '2023-06-01'
+        }
+      };
+
+      var apiReq = https.request(opts, function (apiRes) {
+        var data = '';
+        apiRes.on('data', function (c) { data += c; });
+        apiRes.on('end', function () {
+          try {
+            var j = JSON.parse(data);
+            if (j.error) return res.status(502).json({ error: 'AI API error: ' + (j.error.message || JSON.stringify(j.error)) });
+            var content = '';
+            if (j.content && j.content.length > 0) content = j.content[0].text || '';
+            console.log('CV Summary generated for: ' + contactName + ' (' + content.length + ' chars)');
+            res.json({ summary: content });
+          } catch (e) {
+            console.error('CV summary parse error:', e.message);
+            res.status(500).json({ error: 'Failed to parse AI response' });
+          }
+        });
       });
+      apiReq.on('error', function (e) {
+        console.error('CV summary request error:', e.message);
+        res.status(502).json({ error: 'AI request failed: ' + e.message });
+      });
+      apiReq.write(body);
+      apiReq.end();
     });
-    apiReq.on('error', function (e) { res.json({ error: e.message }); });
-    apiReq.write(body);
-    apiReq.end();
-  });
+  } catch (err) {
+    console.error('CV summary unexpected error:', err.message);
+    res.status(500).json({ error: 'CV summary failed: ' + err.message });
+  }
 });
 
 

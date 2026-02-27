@@ -3,6 +3,7 @@ var { authenticate, requireRole } = require('../../middleware/auth');
 var { db } = require('../../db/sqlite');
 var airtable = require('../../services/database');
 var env = require('../../config/env');
+var { msGraphFetch, getMsGraphToken } = require('../../services/email');
 
 var router = express.Router();
 
@@ -114,7 +115,44 @@ router.post('/enroll', function (req, res) {
   function processBatch(idx) {
     if (idx >= batches.length) {
       console.log('LMS Enroll: ' + created + ' enrollments created for ' + candidateName);
-      return res.json({ success: true, created: created, errors: errors });
+      res.json({ success: true, created: created, errors: errors });
+
+      // Send enrollment notification email
+      var candidateEmail = req.body.candidateEmail || '';
+      var firstName = (candidateName || '').split(' ')[0] || 'Team Member';
+      var courseNames = courses.map(function (c) { return c.name || 'Course'; }).join(', ');
+      if (candidateEmail && env.microsoft.emailAddress && created > 0) {
+        var emailSubject = "You've been enrolled in: " + courseNames;
+        var emailBody = '<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px">' +
+          '<div style="background:linear-gradient(135deg,#0a9396,#2563eb);padding:24px;border-radius:12px 12px 0 0;text-align:center">' +
+          '<div style="font-size:32px;margin-bottom:8px">🎓</div>' +
+          '<h1 style="color:#fff;font-size:20px;margin:0">Course Enrollment</h1></div>' +
+          '<div style="background:#f9fafb;padding:24px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px">' +
+          '<p style="font-size:15px;color:#1f2937;margin-bottom:16px">Hi ' + firstName + ',</p>' +
+          '<p style="font-size:14px;color:#374151;line-height:1.6;margin-bottom:16px">You have been enrolled in <strong>' + created + ' course(s)</strong> at Delta Community Support:</p>' +
+          '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:16px">' +
+          '<div style="font-size:14px;color:#1f2937"><strong>Courses:</strong> ' + courseNames + '</div>' +
+          '<div style="font-size:14px;color:#1f2937;margin-top:4px"><strong>Date:</strong> ' + new Date().toLocaleDateString('en-AU') + '</div></div>' +
+          '<p style="font-size:14px;color:#374151;line-height:1.6">Please log in to begin your training.</p>' +
+          '<p style="font-size:14px;color:#6b7280;margin-top:24px">Kind regards,<br><strong>Delta Community Support</strong></p>' +
+          '</div></div>';
+
+        getMsGraphToken().then(function () {
+          return msGraphFetch('/users/' + env.microsoft.emailAddress + '/sendMail', 'POST', {
+            message: {
+              subject: emailSubject,
+              body: { contentType: 'HTML', content: emailBody },
+              toRecipients: [{ emailAddress: { address: candidateEmail } }],
+              from: { emailAddress: { address: env.microsoft.emailAddress } }
+            }
+          });
+        }).then(function () {
+          console.log('[LMS] Batch enrollment email sent to ' + candidateEmail);
+        }).catch(function (emailErr) {
+          console.error('[LMS] Batch enrollment email failed:', emailErr.message);
+        });
+      }
+      return;
     }
     airtable.rawFetch('Course Enrollments', 'POST', '', { records: batches[idx] })
       .then(function (data) {
@@ -379,7 +417,45 @@ router.post('/enroll-v2', function (req, res) {
   airtable.rawFetch('Course Enrollments', 'POST', '', { records: [{ fields: fields }] })
     .then(function (data) {
       if (data.records && data.records.length > 0) {
-        res.json({ success: true, enrollmentId: data.records[0].id });
+        var enrollmentId = data.records[0].id;
+        res.json({ success: true, enrollmentId: enrollmentId });
+
+        // Send enrollment notification email to staff member
+        var staffEmail = req.body.staffEmail || '';
+        var staffFirstName = req.body.staffFirstName || staffName.split(' ')[0] || 'Team Member';
+        if (staffEmail && env.microsoft.emailAddress) {
+          var emailSubject = "You've been enrolled in: " + (courseName || 'a course');
+          var emailBody = '<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px">' +
+            '<div style="background:linear-gradient(135deg,#0a9396,#2563eb);padding:24px;border-radius:12px 12px 0 0;text-align:center">' +
+            '<div style="font-size:32px;margin-bottom:8px">🎓</div>' +
+            '<h1 style="color:#fff;font-size:20px;margin:0">Course Enrollment</h1></div>' +
+            '<div style="background:#f9fafb;padding:24px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px">' +
+            '<p style="font-size:15px;color:#1f2937;margin-bottom:16px">Hi ' + staffFirstName + ',</p>' +
+            '<p style="font-size:14px;color:#374151;line-height:1.6;margin-bottom:16px">You have been enrolled in <strong>' + (courseName || 'a new course') + '</strong> at Delta Community Support.</p>' +
+            '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:16px">' +
+            '<div style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Enrollment Details</div>' +
+            '<div style="font-size:14px;color:#1f2937"><strong>Course:</strong> ' + (courseName || 'N/A') + '</div>' +
+            '<div style="font-size:14px;color:#1f2937;margin-top:4px"><strong>Date Enrolled:</strong> ' + new Date().toLocaleDateString('en-AU') + '</div>' +
+            '<div style="font-size:14px;color:#1f2937;margin-top:4px"><strong>Status:</strong> <span style="color:#0a9396;font-weight:700">Enrolled</span></div></div>' +
+            '<p style="font-size:14px;color:#374151;line-height:1.6">Please log in to the Titus CRM platform to begin your training. If you have any questions, contact your Team Leader.</p>' +
+            '<p style="font-size:14px;color:#6b7280;margin-top:24px">Kind regards,<br><strong>Delta Community Support</strong><br>Training & Compliance</p>' +
+            '</div></div>';
+
+          getMsGraphToken().then(function () {
+            return msGraphFetch('/users/' + env.microsoft.emailAddress + '/sendMail', 'POST', {
+              message: {
+                subject: emailSubject,
+                body: { contentType: 'HTML', content: emailBody },
+                toRecipients: [{ emailAddress: { address: staffEmail } }],
+                from: { emailAddress: { address: env.microsoft.emailAddress } }
+              }
+            });
+          }).then(function () {
+            console.log('[LMS] Enrollment email sent to ' + staffEmail + ' for course: ' + courseName);
+          }).catch(function (emailErr) {
+            console.error('[LMS] Enrollment email failed:', emailErr.message);
+          });
+        }
       } else {
         res.json({ error: data.error || 'Failed to create enrollment' });
       }

@@ -985,12 +985,28 @@ router.get('/docs', function (req, res) {
           updatedBy: f['Updated by'] || '',
           attachmentSummary: f['Attachment Summary'] || '',
           statusOfDoc: f['Status of Doc'] || '',
+          visibility: f['Visibility'] || 'both',
           files: files
         };
       });
       res.json(results);
     })
     .catch(function (err) { console.error('Client docs GET error:', err); res.json([]); });
+});
+
+// ═══════════════════════════════════════════════════════════
+//  PATCH /api/clients/docs/visibility — update doc visibility
+// ═══════════════════════════════════════════════════════════
+router.patch('/docs/visibility', function(req, res) {
+  var docId = req.body.docId;
+  var visibility = req.body.visibility;
+  if (!docId || !visibility) return res.status(400).json({ error: 'docId and visibility required' });
+  airtable.rawFetch(CLIENT_DOCS_TABLE, 'PATCH', '/' + docId, {
+    fields: { "Visibility": visibility }
+  }).then(function(data) {
+    if (data.error) return res.json({ error: data.error.message || 'Update failed' });
+    res.json({ ok: true });
+  }).catch(function(e) { res.json({ error: e.message }); });
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -1042,6 +1058,73 @@ router.post('/docs/upload', function (req, res) {
       res.json({ success: true, id: recId, uniqueRef: uniqueRef });
     })
     .catch(function (err) { res.status(500).json({ error: err.message }); });
+});
+
+// PATCH /api/clients/update-field — update a single field on client record
+router.patch('/update-field', function(req, res) {
+  var clientName = req.body.clientName;
+  var field = req.body.field;
+  var value = req.body.value;
+  if (!clientName || !field) return res.status(400).json({ error: 'clientName and field required' });
+
+  // Map frontend field keys to Airtable column names
+  var fieldMap = {
+    'ndis_number': 'NDIS Number',
+    'gender': 'Gender',
+    'date_of_birth': 'Date of Birth',
+    'phone': 'Phone',
+    'email': 'Email',
+    'suburb': 'Suburb',
+    'gender_of_workers': 'Gender of Support Workers',
+    'address': 'Home Address',
+    'type_of_disability': 'Type of Disability',
+    'ndis_goals': 'NDIS Client Goals'
+  };
+
+  var airtableField = fieldMap[field] || field;
+  var updateFields = {};
+  updateFields[airtableField] = value;
+
+  // First find the client record by name
+  airtable.fetchAllFromTable(airtable.TABLES.CLIENTS || 'Clients').then(function(records) {
+    var match = (records || []).find(function(r) {
+      var f = r.fields || {};
+      var name = f['Client Name'] || f['Full Name'] || f['Name'] || '';
+      return name.toLowerCase() === clientName.toLowerCase();
+    });
+    if (!match) return res.json({ error: 'Client not found' });
+
+    return airtable.rawFetch(airtable.TABLES.CLIENTS || 'Clients', 'PATCH', '/' + match.id, { fields: updateFields });
+  }).then(function(data) {
+    if (data && data.error) return res.json({ error: data.error.message || 'Update failed' });
+    res.json({ ok: true });
+  }).catch(function(e) {
+    res.json({ error: e.message });
+  });
+
+  // Also update in Supabase if available
+  if (supabase) {
+    var sbFieldMap = {
+      'ndis_number': 'ndis_number',
+      'gender': 'gender',
+      'date_of_birth': 'date_of_birth',
+      'phone': 'phone',
+      'email': 'email',
+      'suburb': 'suburb',
+      'gender_of_workers': 'gender_of_workers',
+      'address': 'home_address',
+      'type_of_disability': 'type_of_disability',
+      'ndis_goals': 'ndis_goals'
+    };
+    var sbCol = sbFieldMap[field];
+    if (sbCol) {
+      var sbUpdate = {};
+      sbUpdate[sbCol] = value;
+      supabase.from('clients').update(sbUpdate)
+        .or('client_name.ilike.' + clientName + ',full_name.ilike.' + clientName)
+        .then(function() {}).catch(function() {});
+    }
+  }
 });
 
 module.exports = router;

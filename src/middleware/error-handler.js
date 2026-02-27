@@ -1,11 +1,15 @@
+// Global error handler — always return JSON, never HTML
 function errorHandler(err, req, res, next) {
-  console.error(`[${new Date().toISOString()}] ${req.method} ${req.path}:`, err.message);
+  console.error(`[${new Date().toISOString()}] ${req.method} ${req.path}:`, err.message || err);
+  if (err.stack) console.error(err.stack);
 
-  if (err.status) {
-    return res.status(err.status).json({ error: err.message });
+  // Prevent sending headers after they've already been sent
+  if (res.headersSent) {
+    return next(err);
   }
 
-  res.status(500).json({ error: 'Internal server error' });
+  var statusCode = err.status || err.statusCode || 500;
+  res.status(statusCode).json({ error: err.message || 'Internal server error' });
 }
 
 module.exports = errorHandler;

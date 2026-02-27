@@ -179,6 +179,31 @@ router.get('/', function(req, res) {
   });
 });
 
+// POST /api/leads/create — Create a new lead
+router.post('/create', function(req, res) {
+  var b = req.body || {};
+  var fields = {};
+  if (b.name) fields["Lead Name or Initials"] = b.name;
+  if (b.firstName) fields["First Name"] = b.firstName;
+  if (b.lastName) fields["Last Name"] = b.lastName;
+  if (b.disabilityType) fields["Type of Disability"] = b.disabilityType;
+  if (b.serviceType) fields["Type of Service"] = b.serviceType;
+  if (b.triggers) fields["Known Triggers"] = b.triggers;
+  if (b.scFirstName || b.scLastName) fields["Support Coordinators Name"] = ((b.scFirstName || "") + " " + (b.scLastName || "")).trim();
+  if (b.scPhone) fields["Support Coordinators Mobile"] = b.scPhone;
+  if (b.scEmail) fields["Support Coordinators Email"] = b.scEmail;
+  fields["Stage"] = b.stage || "Enquiry";
+  fields["Date"] = new Date().toISOString().split("T")[0];
+
+  airtable.rawFetch(airtable.TABLES.LEADS, "POST", "", { fields: fields })
+    .then(function(data) {
+      if (data.error) return res.json({ error: data.error.message || "Create failed" });
+      logAudit(req.user, "lead_created", "Lead", data.id || "", b.name || "", "", "", "New lead created");
+      res.json({ success: true, id: data.id });
+    })
+    .catch(function(e) { res.json({ error: e.message }); });
+});
+
 // PATCH /api/leads/:id
 router.patch('/:id', function(req, res) {
   var id = req.params.id;

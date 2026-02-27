@@ -1,173 +1,323 @@
-const express = require('express');
-const { authenticate } = require('../../middleware/auth');
-const { db } = require('../../db/sqlite');
-const { uploadGeneral } = require('../../config/upload');
+var express = require('express');
+var { authenticate } = require('../../middleware/auth');
+var { db } = require('../../db/sqlite');
+var { uploadGeneral } = require('../../config/upload');
+var sb = require('../../services/supabaseClient');
 
-const router = express.Router();
+var router = express.Router();
 router.use(authenticate);
 
-// GET /api/chat/conversations — list user's conversations
+// ═══════════════════════════════════════════════════════════
+//  Helper: get tenant_id from session (fallback to a default)
+// ═══════════════════════════════════════════════════════════
+function getTenantId(req) {
+  return (req.tenant && req.tenant.id) || (req.session && req.session.tenant_id) || null;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  GET /api/chat/conversations — list user's conversations
+// ═══════════════════════════════════════════════════════════
 router.get('/conversations', function (req, res) {
   var email = (req.user.email || '').toLowerCase();
-  var rows = db.prepare(
-    "SELECT c.id, c.title, c.type, c.created_by_name, c.updated_at " +
-    "FROM chat_conversations c " +
-    "JOIN chat_members m ON m.conversation_id = c.id " +
-    "WHERE LOWER(m.user_email) = ? " +
-    "ORDER BY c.updated_at DESC"
-  ).all(email);
+  var tenantId = getTenantId(req);
 
-  var result = rows.map(function (r) {
-    // Get last message
-    var lastMsg = db.prepare(
-      "SELECT content, sender_name, created_at FROM chat_messages WHERE conversation_id = ? ORDER BY created_at DESC LIMIT 1"
-    ).get(r.id);
-    // Get unread count
-    var member = db.prepare(
-      "SELECT last_read_at FROM chat_members WHERE conversation_id = ? AND LOWER(user_email) = ?"
-    ).get(r.id, email);
-    var unreadCount = 0;
-    if (member && member.last_read_at) {
-      unreadCount = db.prepare(
-        "SELECT COUNT(*) as cnt FROM chat_messages WHERE conversation_id = ? AND created_at > ? AND LOWER(sender_email) != ?"
-      ).get(r.id, member.last_read_at, email).cnt;
-    }
-    // Get member names for title
-    var members = db.prepare("SELECT user_name FROM chat_members WHERE conversation_id = ?").all(r.id);
-    var title = r.title;
-    if (!title && r.type === 'direct') {
-      title = members.filter(function (m) { return m.user_name && m.user_name !== req.user.name; }).map(function (m) { return m.user_name; }).join(', ') || 'Direct Message';
-    }
-    return {
-      id: r.id,
-      title: title || 'Chat',
-      type: r.type,
-      lastMessage: lastMsg ? lastMsg.content : '',
-      lastMessageTime: lastMsg ? lastMsg.created_at : r.updated_at,
-      unreadCount: unreadCount,
-      updated_at: r.updated_at
-    };
+  // Query conversations where the user's email is in the members JSONB array
+  var params = {
+    contains: { members: [email] },
+    order: 'created_at.desc'
+  };
+  if (tenantId) params.eq = { tenant_id: tenantId };
+
+  sb.query('chat_conversations', 'GET', params).then(function (convos) {
+    if (!convos || convos.length === 0) return res.json([]);
+
+    // For each conversation, get last message and unread count
+    var promises = convos.map(function (conv) {
+      // Get last message
+      var msgParams = {
+        eq: { conversation_id: conv.id },
+        order: 'created_at.desc',
+        limit: 1
+      };
+
+      return sb.query('chat_messages', 'GET', msgParams).then(function (msgs) {
+        var lastMsg = (msgs && msgs.length > 0) ? msgs[0] : null;
+
+        // Compute unread count from read_by JSONB
+        // We need to count messages not read by this user
+        var unreadParams = {
+          eq: { conversation_id: conv.id },
+          order: 'created_at.desc'
+        };
+
+        return sb.query('chat_messages', 'GET', unreadParams).then(function (allMsgs) {
+          var unreadCount = 0;
+          (allMsgs || []).forEach(function (m) {
+            var readBy = m.read_by || [];
+            if (readBy.indexOf(email) < 0 && (m.sender_name || '').toLowerCase() !== email) {
+              unreadCount++;
+            }
+          });
+
+          // Build title
+          var title = conv.name;
+          if (!title && conv.type === 'direct') {
+            var members = conv.members || [];
+            title = members.filter(function (m) {
+              return m && m.toLowerCase() !== email;
+            }).join(', ') || 'Direct Message';
+          }
+
+          return {
+            id: conv.id,
+            title: title || 'Chat',
+            type: conv.type || 'group',
+            lastMessage: lastMsg ? lastMsg.content : '',
+            lastMessageTime: lastMsg ? lastMsg.created_at : conv.created_at,
+            unreadCount: unreadCount,
+            updated_at: conv.created_at
+          };
+        });
+      });
+    });
+
+    return Promise.all(promises).then(function (results) {
+      res.json(results);
+    });
+  }).catch(function (e) {
+    console.error('[CHAT] conversations error:', e.message);
+    res.status(500).json({ error: 'Failed to load conversations' });
   });
-  res.json(result);
 });
 
-// GET /api/chat/conversations/:id — get conversation thread
+// ═══════════════════════════════════════════════════════════
+//  GET /api/chat/conversations/:id — get conversation thread
+// ═══════════════════════════════════════════════════════════
 router.get('/conversations/:id', function (req, res) {
   var convId = req.params.id;
-  var conv = db.prepare("SELECT * FROM chat_conversations WHERE id = ?").get(convId);
-  if (!conv) return res.status(404).json({ error: 'Conversation not found' });
-  var messages = db.prepare(
-    "SELECT id, sender_email, sender_name, content, attachments, created_at FROM chat_messages WHERE conversation_id = ? ORDER BY created_at ASC"
-  ).all(convId);
-  var members = db.prepare("SELECT user_name FROM chat_members WHERE conversation_id = ?").all(convId);
-  var title = conv.title;
-  if (!title && conv.type === 'direct') {
-    title = members.filter(function (m) { return m.user_name !== req.user.name; }).map(function (m) { return m.user_name; }).join(', ') || 'Direct Message';
-  }
-  res.json({ id: conv.id, title: title || 'Chat', type: conv.type, messages: messages });
+  var email = (req.user.email || '').toLowerCase();
+
+  // Get conversation
+  sb.query('chat_conversations', 'GET', { eq: { id: convId } }).then(function (convos) {
+    if (!convos || convos.length === 0) return res.status(404).json({ error: 'Conversation not found' });
+    var conv = convos[0];
+
+    // Get messages
+    return sb.query('chat_messages', 'GET', {
+      eq: { conversation_id: convId },
+      order: 'created_at.asc'
+    }).then(function (messages) {
+      // Map messages to match frontend expected format
+      var mappedMessages = (messages || []).map(function (m) {
+        return {
+          id: m.id,
+          sender_email: m.sender_id || '',
+          sender_name: m.sender_name || '',
+          content: m.content || '',
+          attachments: m.attachment_url ? JSON.stringify([{ url: m.attachment_url, type: m.attachment_type }]) : null,
+          created_at: m.created_at
+        };
+      });
+
+      var title = conv.name;
+      if (!title && conv.type === 'direct') {
+        var members = conv.members || [];
+        title = members.filter(function (m) {
+          return m && m.toLowerCase() !== email;
+        }).join(', ') || 'Direct Message';
+      }
+
+      res.json({ id: conv.id, title: title || 'Chat', type: conv.type, messages: mappedMessages });
+    });
+  }).catch(function (e) {
+    console.error('[CHAT] conversation detail error:', e.message);
+    res.status(500).json({ error: 'Failed to load conversation' });
+  });
 });
 
-// POST /api/chat/conversations/direct — create or get direct message
+// ═══════════════════════════════════════════════════════════
+//  POST /api/chat/conversations/direct — create or get DM
+// ═══════════════════════════════════════════════════════════
 router.post('/conversations/direct', function (req, res) {
   var recipientEmail = (req.body.recipientEmail || '').toLowerCase();
   var senderEmail = (req.user.email || '').toLowerCase();
+  var tenantId = getTenantId(req);
   if (!recipientEmail) return res.status(400).json({ error: 'recipientEmail required' });
 
-  // Check if DM already exists between these two users
-  var existing = db.prepare(
-    "SELECT c.id FROM chat_conversations c " +
-    "JOIN chat_members m1 ON m1.conversation_id = c.id AND LOWER(m1.user_email) = ? " +
-    "JOIN chat_members m2 ON m2.conversation_id = c.id AND LOWER(m2.user_email) = ? " +
-    "WHERE c.type = 'direct'"
-  ).get(senderEmail, recipientEmail);
+  // Find existing direct conversations that contain both users
+  var params = {
+    eq: { type: 'direct' },
+    contains: { members: [senderEmail] }
+  };
+  if (tenantId) params.eq.tenant_id = tenantId;
 
-  if (existing) return res.json({ id: existing.id });
+  sb.query('chat_conversations', 'GET', params).then(function (convos) {
+    // Check if any conversation also contains the recipient
+    var existing = (convos || []).find(function (c) {
+      var members = c.members || [];
+      return members.indexOf(recipientEmail) >= 0;
+    });
 
-  // Create new direct conversation
-  var result = db.prepare(
-    "INSERT INTO chat_conversations (type, created_by, created_by_name, created_by_email, updated_at) VALUES ('direct', ?, ?, ?, datetime('now'))"
-  ).run(req.user.id, req.user.name || '', senderEmail);
+    if (existing) return res.json({ id: existing.id });
 
-  var convId = result.lastInsertRowid;
+    // Lookup recipient name from SQLite users table (still used for user management)
+    var recipientUser = null;
+    try { recipientUser = db.prepare("SELECT name FROM users WHERE LOWER(email) = ?").get(recipientEmail); } catch (e) { /* ignore */ }
 
-  // Add both members
-  db.prepare("INSERT INTO chat_members (conversation_id, user_email, user_name) VALUES (?, ?, ?)").run(convId, senderEmail, req.user.name || '');
-  // Lookup recipient name from users table
-  var recipientUser = db.prepare("SELECT name FROM users WHERE LOWER(email) = ?").get(recipientEmail);
-  db.prepare("INSERT INTO chat_members (conversation_id, user_email, user_name) VALUES (?, ?, ?)").run(convId, recipientEmail, (recipientUser && recipientUser.name) || '');
+    // Create new direct conversation with members JSONB array
+    var newConv = {
+      type: 'direct',
+      members: [senderEmail, recipientEmail],
+      name: null,
+      pinned: false
+    };
+    if (tenantId) newConv.tenant_id = tenantId;
 
-  res.json({ id: convId });
+    return sb.insert('chat_conversations', newConv).then(function (rows) {
+      if (rows && rows.length > 0) {
+        res.json({ id: rows[0].id });
+      } else {
+        res.status(500).json({ error: 'Failed to create conversation' });
+      }
+    });
+  }).catch(function (e) {
+    console.error('[CHAT] direct conversation error:', e.message);
+    res.status(500).json({ error: 'Failed to create direct conversation' });
+  });
 });
 
-// POST /api/chat/conversations — create group conversation
+// ═══════════════════════════════════════════════════════════
+//  POST /api/chat/conversations — create group conversation
+// ═══════════════════════════════════════════════════════════
 router.post('/conversations', function (req, res) {
   var title = req.body.title || 'Group Chat';
   var members = req.body.members || [];
   var senderEmail = (req.user.email || '').toLowerCase();
+  var tenantId = getTenantId(req);
 
-  var result = db.prepare(
-    "INSERT INTO chat_conversations (title, type, created_by, created_by_name, created_by_email, updated_at) VALUES (?, 'group', ?, ?, ?, datetime('now'))"
-  ).run(title, req.user.id, req.user.name || '', senderEmail);
-
-  var convId = result.lastInsertRowid;
-
-  // Add creator
-  db.prepare("INSERT INTO chat_members (conversation_id, user_email, user_name) VALUES (?, ?, ?)").run(convId, senderEmail, req.user.name || '');
-
-  // Add members
+  // Build members array with creator + all members (lowercase)
+  var allMembers = [senderEmail];
   members.forEach(function (email) {
-    var memberUser = db.prepare("SELECT name FROM users WHERE LOWER(email) = ?").get(email.toLowerCase());
-    db.prepare("INSERT INTO chat_members (conversation_id, user_email, user_name) VALUES (?, ?, ?)").run(convId, email.toLowerCase(), (memberUser && memberUser.name) || '');
+    var lower = (email || '').toLowerCase();
+    if (lower && allMembers.indexOf(lower) < 0) allMembers.push(lower);
   });
 
-  res.json({ id: convId });
+  var newConv = {
+    name: title,
+    type: 'group',
+    members: allMembers,
+    pinned: false
+  };
+  if (tenantId) newConv.tenant_id = tenantId;
+
+  sb.insert('chat_conversations', newConv).then(function (rows) {
+    if (rows && rows.length > 0) {
+      res.json({ id: rows[0].id });
+    } else {
+      res.status(500).json({ error: 'Failed to create conversation' });
+    }
+  }).catch(function (e) {
+    console.error('[CHAT] create group error:', e.message);
+    res.status(500).json({ error: 'Failed to create group conversation' });
+  });
 });
 
-// POST /api/chat/message — send message
+// ═══════════════════════════════════════════════════════════
+//  POST /api/chat/message — send message
+// ═══════════════════════════════════════════════════════════
 router.post('/message', function (req, res) {
   var convId = req.body.conversation_id;
   var content = req.body.content || '';
+  var tenantId = getTenantId(req);
   if (!convId || !content) return res.status(400).json({ error: 'conversation_id and content required' });
 
-  db.prepare(
-    "INSERT INTO chat_messages (conversation_id, sender_email, sender_name, content) VALUES (?, ?, ?, ?)"
-  ).run(convId, req.user.email || '', req.user.name || '', content);
+  var newMsg = {
+    conversation_id: convId,
+    sender_id: req.user.email || '',
+    sender_name: req.user.name || '',
+    message_type: 'text',
+    content: content,
+    read_by: [req.user.email || '']
+  };
+  if (tenantId) newMsg.tenant_id = tenantId;
 
-  // Update conversation timestamp
-  db.prepare("UPDATE chat_conversations SET updated_at = datetime('now') WHERE id = ?").run(convId);
+  sb.insert('chat_messages', newMsg).then(function () {
+    // Emit socket event for real-time
+    var io = req.app.get('io');
+    if (io) {
+      io.emit('chat:message', { conversation_id: convId, sender: req.user.name, content: content });
+    }
 
-  // Emit socket event
-  var io = req.app.get('io');
-  if (io) {
-    io.emit('chat:message', { conversation_id: convId, sender: req.user.name, content: content });
-  }
-
-  res.json({ success: true });
+    res.json({ success: true });
+  }).catch(function (e) {
+    console.error('[CHAT] send message error:', e.message);
+    res.status(500).json({ error: 'Failed to send message' });
+  });
 });
 
-// POST /api/chat/conversations/:id/read — mark as read
+// ═══════════════════════════════════════════════════════════
+//  POST /api/chat/conversations/:id/read — mark as read
+// ═══════════════════════════════════════════════════════════
 router.post('/conversations/:id/read', function (req, res) {
   var convId = req.params.id;
   var email = (req.user.email || '').toLowerCase();
-  db.prepare("UPDATE chat_members SET last_read_at = datetime('now') WHERE conversation_id = ? AND LOWER(user_email) = ?").run(convId, email);
-  res.json({ success: true });
+
+  // Get all unread messages in this conversation and add user to read_by
+  sb.query('chat_messages', 'GET', {
+    eq: { conversation_id: convId }
+  }).then(function (messages) {
+    var updates = [];
+    (messages || []).forEach(function (m) {
+      var readBy = m.read_by || [];
+      if (readBy.indexOf(email) < 0) {
+        readBy.push(email);
+        updates.push(
+          sb.update('chat_messages', { eq: { id: m.id } }, { read_by: readBy })
+        );
+      }
+    });
+    return Promise.all(updates);
+  }).then(function () {
+    res.json({ success: true });
+  }).catch(function (e) {
+    console.error('[CHAT] mark read error:', e.message);
+    res.status(500).json({ error: 'Failed to mark as read' });
+  });
 });
 
-// POST /api/chat/attachment — send message with file attachments
+// ═══════════════════════════════════════════════════════════
+//  POST /api/chat/attachment — send message with file attachments
+// ═══════════════════════════════════════════════════════════
 router.post('/attachment', uploadGeneral.array('files', 5), function (req, res) {
   var convId = req.body.conversation_id;
   var content = req.body.content || '';
+  var tenantId = getTenantId(req);
   var attachments = (req.files || []).map(function (f) {
     return { name: f.originalname, url: '/uploads/' + f.filename, size: f.size };
   });
 
-  db.prepare(
-    "INSERT INTO chat_messages (conversation_id, sender_email, sender_name, content, attachments) VALUES (?, ?, ?, ?, ?)"
-  ).run(convId, req.user.email || '', req.user.name || '', content, JSON.stringify(attachments));
+  // Insert one message per attachment (or a single message with first attachment)
+  var attachmentUrl = attachments.length > 0 ? JSON.stringify(attachments) : null;
+  var attachmentType = attachments.length > 0 ? 'file' : null;
 
-  db.prepare("UPDATE chat_conversations SET updated_at = datetime('now') WHERE id = ?").run(convId);
+  var newMsg = {
+    conversation_id: convId,
+    sender_id: req.user.email || '',
+    sender_name: req.user.name || '',
+    message_type: attachments.length > 0 ? 'file' : 'text',
+    content: content,
+    attachment_url: attachmentUrl,
+    attachment_type: attachmentType,
+    read_by: [req.user.email || '']
+  };
+  if (tenantId) newMsg.tenant_id = tenantId;
 
-  res.json({ success: true });
+  sb.insert('chat_messages', newMsg).then(function () {
+    res.json({ success: true });
+  }).catch(function (e) {
+    console.error('[CHAT] attachment error:', e.message);
+    res.status(500).json({ error: 'Failed to send attachment' });
+  });
 });
 
 module.exports = router;

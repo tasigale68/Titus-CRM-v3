@@ -176,7 +176,8 @@ router.get('/candidates', function(req, res) {
   // Fetch all contacts then filter for Jobseekers client-side (most reliable approach)
   airtable.fetchAllFromTable("All Contacts").then(function(allRecords) {
     var records = (allRecords || []).filter(function(rec) {
-      var t = (rec.fields || {})["Type of Contact (Single Select)"] || (rec.fields || {})["Type of Contact"] || "";
+      var f = rec.fields || {};
+      var t = f["Type of Contact (Single Select)"] || f["Type of Contact"] || f["type_of_contact"] || f["contact_type"] || "";
       return t === "Jobseeker";
     });
     console.log("Recruit: Found " + records.length + " jobseekers out of " + (allRecords || []).length + " total contacts");
@@ -827,53 +828,65 @@ router.post('/bulk-stage', function(req, res) {
 
 // ─── POST /api/recruitment/scan-cv — AI CV extraction with Claude ───
 router.post('/scan-cv', function(req, res) {
-  var text = req.body.text || "";
-  var fileName = req.body.fileName || "";
-  if (!text || text.trim().length < 20) return res.json({ error: "No text to scan" });
-  if (!env.anthropic.apiKey) return res.json({ error: "Anthropic API key not configured" });
+  try {
+    var text = req.body.text || "";
+    var fileName = req.body.fileName || "";
+    if (!text || text.trim().length < 20) return res.status(400).json({ error: "No text to scan" });
+    if (!env.anthropic.apiKey) return res.status(500).json({ error: "Anthropic API key not configured" });
 
-  var prompt = 'Extract the following fields from this CV/resume text. Return ONLY valid JSON with these exact keys:\n{\n  "firstName": "",\n  "lastName": "",\n  "email": "",\n  "phone": "",\n  "suburb": "",\n  "state": "",\n  "appliedFor": "",\n  "skills": ""\n}\n\nRules:\n- phone: Australian mobile format preferred (e.g. 0412345678 or +61412345678)\n- state: Australian state abbreviation (QLD, NSW, VIC, SA, WA, NT, TAS, ACT)\n- suburb: just the suburb/city name\n- appliedFor: job title they seem suited for based on their experience, or "Disability Support Worker" as default for care/disability sector CVs\n- skills: comma-separated key skills (max 6), relevant to disability/aged care/support work if applicable\n- If a field cannot be determined, use empty string ""\n- Return ONLY the JSON object, no markdown, no backticks, no explanation\n\nCV Text:\n' + text.substring(0, 6000);
+    var prompt = 'Extract the following fields from this CV/resume text. Return ONLY valid JSON with these exact keys:\n{\n  "firstName": "",\n  "lastName": "",\n  "email": "",\n  "phone": "",\n  "suburb": "",\n  "state": "",\n  "appliedFor": "",\n  "skills": ""\n}\n\nRules:\n- phone: Australian mobile format preferred (e.g. 0412345678 or +61412345678)\n- state: Australian state abbreviation (QLD, NSW, VIC, SA, WA, NT, TAS, ACT)\n- suburb: just the suburb/city name\n- appliedFor: job title they seem suited for based on their experience, or "Disability Support Worker" as default for care/disability sector CVs\n- skills: comma-separated key skills (max 6), relevant to disability/aged care/support work if applicable\n- If a field cannot be determined, use empty string ""\n- Return ONLY the JSON object, no markdown, no backticks, no explanation\n\nCV Text:\n' + text.substring(0, 6000);
 
-  var apiBody = JSON.stringify({
-    model: "claude-sonnet-4-5",
-    max_tokens: 500,
-    messages: [{ role: "user", content: prompt }]
-  });
-
-  var https = require("https");
-  var opts = {
-    hostname: "api.anthropic.com",
-    path: "/v1/messages",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": env.anthropic.apiKey,
-      "anthropic-version": "2023-06-01"
-    }
-  };
-
-  var apiReq = https.request(opts, function(apiRes) {
-    var data = "";
-    apiRes.on("data", function(c) { data += c; });
-    apiRes.on("end", function() {
-      try {
-        var j = JSON.parse(data);
-        var content = "";
-        if (j.content && j.content.length > 0) content = j.content[0].text || "";
-        // Clean any markdown backticks
-        content = content.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-        var parsed = JSON.parse(content);
-        console.log("CV Scan [" + fileName + "]: " + (parsed.firstName || "") + " " + (parsed.lastName || "") + " <" + (parsed.email || "") + ">");
-        res.json({ parsed: parsed });
-      } catch(e) {
-        console.error("CV scan parse error:", e.message, "Raw:", data.substring(0, 200));
-        res.json({ error: "Failed to parse AI response", raw: data.substring(0, 500) });
-      }
+    var apiBody = JSON.stringify({
+      model: "claude-sonnet-4-5",
+      max_tokens: 500,
+      messages: [{ role: "user", content: prompt }]
     });
-  });
-  apiReq.on("error", function(e) { res.json({ error: e.message }); });
-  apiReq.write(apiBody);
-  apiReq.end();
+
+    var https = require("https");
+    var opts = {
+      hostname: "api.anthropic.com",
+      path: "/v1/messages",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": env.anthropic.apiKey,
+        "anthropic-version": "2023-06-01"
+      }
+    };
+
+    var apiReq = https.request(opts, function(apiRes) {
+      var data = "";
+      apiRes.on("data", function(c) { data += c; });
+      apiRes.on("end", function() {
+        try {
+          var j = JSON.parse(data);
+          if (j.error) {
+            console.error("CV scan API error:", j.error);
+            return res.status(502).json({ error: "AI API error: " + (j.error.message || JSON.stringify(j.error)) });
+          }
+          var content = "";
+          if (j.content && j.content.length > 0) content = j.content[0].text || "";
+          // Clean any markdown backticks
+          content = content.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
+          var parsed = JSON.parse(content);
+          console.log("CV Scan [" + fileName + "]: " + (parsed.firstName || "") + " " + (parsed.lastName || "") + " <" + (parsed.email || "") + ">");
+          res.json({ parsed: parsed });
+        } catch(e) {
+          console.error("CV scan parse error:", e.message, "Raw:", data.substring(0, 200));
+          res.status(500).json({ error: "Failed to parse AI response", raw: data.substring(0, 500) });
+        }
+      });
+    });
+    apiReq.on("error", function(e) {
+      console.error("CV scan request error:", e.message);
+      res.status(502).json({ error: "AI request failed: " + e.message });
+    });
+    apiReq.write(apiBody);
+    apiReq.end();
+  } catch (err) {
+    console.error("CV scan unexpected error:", err.message);
+    res.status(500).json({ error: "CV scan failed: " + err.message });
+  }
 });
 
 // ─── POST /api/recruitment/upload-cv — Upload CV file and attach to Airtable contact record ───

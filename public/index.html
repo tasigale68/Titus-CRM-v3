@@ -201,45 +201,45 @@ button:not(.sb-item):not(.sb-sub-item):not(.sb-collapse-btn){cursor:pointer}
 .btn:focus-visible{outline:none;box-shadow:var(--focus-ring)}
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--dim);font-size:13px;gap:6px;padding:20px;text-align:center}
 /* DIALER MODAL */
-.dialer-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.dialer-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 .dialer-overlay.show{display:flex}
-.dialer-modal{background:var(--surface);border-radius:16px;width:380px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:dialIn .2s ease}
+.dialer-modal{background:#0B1D3A;border-radius:24px;width:380px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.45);animation:dialIn .25s ease}
 @keyframes dialIn{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-.dialer-modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border)}
-.dialer-modal-hdr h3{font-size:15px;font-weight:700;color:var(--text)}
-.dialer-modal-close{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:16px;transition:all .12s}
-.dialer-modal-close:hover{background:var(--red);color:#fff;border-color:var(--red)}
-.dialer-wrap{display:flex;flex-direction:column;align-items:center;padding:16px 20px;gap:12px}
+.dialer-modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid rgba(255,255,255,.08)}
+.dialer-modal-hdr h3{font-size:16px;font-weight:700;color:#E2E8F0;letter-spacing:.3px}
+.dialer-modal-close{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#94A3B8;font-size:18px;transition:all .15s}
+.dialer-modal-close:hover{background:#EF4444;color:#fff;border-color:#EF4444}
+.dialer-wrap{display:flex;flex-direction:column;align-items:center;padding:18px 22px;gap:14px}
 .dialer-search{width:100%;position:relative}
-.dialer-search input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px;font-size:13px;color:var(--text);font-family:inherit;outline:none}
-.dialer-search input:focus{border-color:var(--teal)}
-.dialer-search input::placeholder{color:var(--dim)}
-.dialer-search label{display:block;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.dialer-results{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);max-height:200px;overflow-y:auto;z-index:10;display:none;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.dialer-search input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;font-size:13px;color:#E2E8F0;font-family:inherit;outline:none;transition:border-color .15s}
+.dialer-search input:focus{border-color:#00B4D8;box-shadow:0 0 0 2px rgba(0,180,216,.15)}
+.dialer-search input::placeholder{color:#64748B}
+.dialer-search label{display:block;font-size:10px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.dialer-results{position:absolute;top:100%;left:0;right:0;background:#0F2847;border:1px solid rgba(255,255,255,.1);border-radius:12px;max-height:200px;overflow-y:auto;z-index:10;display:none;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 .dialer-results.show{display:block}
-.dialer-result-item{padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);transition:background .1s}
-.dialer-result-item:hover{background:var(--tealLight)}
+.dialer-result-item{padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.05);transition:background .12s}
+.dialer-result-item:hover{background:rgba(0,180,216,.1)}
 .dialer-result-item:last-child{border-bottom:none}
-.dialer-result-name{font-size:13px;font-weight:600;color:var(--text)}
-.dialer-result-phone{font-size:11px;color:var(--dim);font-family:'JetBrains Mono',monospace}
-.dialer-display{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:12px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:var(--text);min-height:52px;display:flex;align-items:center;justify-content:center;letter-spacing:1px;flex-direction:column;gap:4px}
-.dialer-display .contact-label{font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:var(--teal);letter-spacing:0}
-.dialer-pad{display:grid;grid-template-columns:repeat(3,80px);gap:8px}
-.dial-key{width:80px;height:52px;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface);font-size:20px;font-weight:600;color:var(--text);cursor:pointer;font-family:inherit;transition:all .1s;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.dial-key:hover{background:var(--surface2);border-color:var(--teal)}
-.dial-key:active{background:var(--tealLight)}
-.dial-key .sub{font-size:8px;color:var(--dim);font-weight:400;letter-spacing:2px}
-.dialer-actions{display:flex;gap:10px;align-items:center}
-.dial-call{width:56px;height:56px;border-radius:50%;border:none;color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.dial-call:hover{transform:scale(1.05)}
-.dial-call.del-btn{background:var(--surface2);color:var(--muted);width:40px;height:40px;font-size:16px;border:1px solid var(--border)}
-.dial-call.del-btn:hover{background:var(--border);transform:none}
+.dialer-result-name{font-size:13px;font-weight:600;color:#E2E8F0}
+.dialer-result-phone{font-size:11px;color:#64748B;font-family:'JetBrains Mono',monospace}
+.dialer-display{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:600;color:#F1F5F9;min-height:58px;display:flex;align-items:center;justify-content:center;letter-spacing:2px;flex-direction:column;gap:4px}
+.dialer-display .contact-label{font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:#00B4D8;letter-spacing:0}
+.dialer-pad{display:grid;grid-template-columns:repeat(3,80px);gap:10px}
+.dial-key{width:80px;height:56px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05);font-size:22px;font-weight:600;color:#E2E8F0;cursor:pointer;font-family:inherit;transition:all .12s;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dial-key:hover{background:rgba(0,180,216,.12);border-color:rgba(0,180,216,.3);box-shadow:0 0 12px rgba(0,180,216,.15)}
+.dial-key:active{background:rgba(0,180,216,.2);transform:scale(.96)}
+.dial-key .sub{font-size:8px;color:#64748B;font-weight:400;letter-spacing:2px}
+.dialer-actions{display:flex;gap:12px;align-items:center}
+.dial-call{width:58px;height:58px;border-radius:50%;border:none;color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.dial-call:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(0,0,0,.3)}
+.dial-call.del-btn{background:rgba(255,255,255,.08);color:#94A3B8;width:42px;height:42px;font-size:18px;border:1px solid rgba(255,255,255,.1);box-shadow:none}
+.dial-call.del-btn:hover{background:rgba(255,255,255,.12);transform:none;box-shadow:none}
 .dialer-sms-area{width:100%;display:none}
 .dialer-sms-area.show{display:block}
-.dialer-sms-area textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:10px;font-size:13px;color:var(--text);font-family:inherit;outline:none;resize:vertical;min-height:60px}
-.dialer-sms-area textarea:focus{border-color:var(--teal)}
+.dialer-sms-area textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px;font-size:13px;color:#E2E8F0;font-family:inherit;outline:none;resize:vertical;min-height:60px}
+.dialer-sms-area textarea:focus{border-color:#00B4D8;box-shadow:0 0 0 2px rgba(0,180,216,.15)}
 .dialer-sms-area button{margin-top:8px;width:100%}
-.dialer-status{font-size:12px;color:var(--muted);min-height:18px;text-align:center}
+.dialer-status{font-size:12px;color:#64748B;min-height:18px;text-align:center}
 /* INLINE TRANSCRIPT */
 .call-transcript-btn{font-size:10px;font-weight:600;color:var(--teal);cursor:pointer;margin-top:6px;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--tealLight);border:1px solid var(--tealBorder);border-radius:4px;transition:all .12s}
 .call-transcript-btn:hover{background:var(--teal);color:#fff}
@@ -566,7 +566,7 @@ button:not(.sb-item):not(.sb-sub-item):not(.sb-collapse-btn){cursor:pointer}
 <button class="sb-sub-item" data-view="recruit" data-subview="list" onclick="setRecruitView('list')"><span class="sb-item-label">📋 List</span></button>
 <button class="sb-sub-item" data-view="recruit" data-subview="kanban" onclick="setRecruitView('kanban')"><span class="sb-item-label">📌 Kanban</span></button>
 <button class="sb-sub-item" id="navLms" data-view="recruit" data-subview="lms" onclick="setRecruitView('lms')" style="display:none"><span class="sb-item-label">🎓 LMS</span></button>
-<button class="sb-sub-item sb-admin-contacts" id="navCourseLib" onclick="setRecruitView('courseLibrary')"><span class="sb-item-label">📚 Course Library</span></button>
+<button class="sb-sub-item sb-admin-contacts" id="navCourseLib" onclick="setRecruitView('courseLibrary')" style="display:none!important"><span class="sb-item-label">📚 Course Library</span></button>
 </div>
 <button class="sb-item" data-view="rosters" onclick="toggleRostersMenu(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="sb-item-label">Rosters</span><span class="sb-arrow sb-item-label">▾</span></button>
 <div class="sb-sub" id="rostersSub">
@@ -595,8 +595,8 @@ button:not(.sb-item):not(.sb-sub-item):not(.sb-collapse-btn){cursor:pointer}
 <button class="sb-sub-item" id="navSleepReport" data-view="reports" data-subview="sleepReport" onclick="setReportsMenuView('sleepReport')" style="display:none"><span class="sb-item-label">🌙 Sleep</span></button>
 </div>
 
-<button class="sb-item phase2-nav" id="navIntelligence" data-view="intelligence" onclick="toggleIntelMenu(event)" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.58-3.25 3.93L12 22"/><path d="M8 6a4 4 0 0 1 8 0"/><circle cx="12" cy="6" r="1"/></svg><span class="sb-item-label">Intelligence</span><span class="sb-arrow sb-item-label">▾</span></button>
-<div class="sb-sub" id="intelSub" style="display:none">
+<button class="sb-item phase2-nav" id="navIntelligence" data-view="intelligence" onclick="toggleIntelMenu(event)" style="display:none!important"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.58-3.25 3.93L12 22"/><path d="M8 6a4 4 0 0 1 8 0"/><circle cx="12" cy="6" r="1"/></svg><span class="sb-item-label">Intelligence</span><span class="sb-arrow sb-item-label">▾</span></button>
+<div class="sb-sub" id="intelSub" style="display:none!important">
 <button class="sb-sub-item phase2-nav" id="navAiRoster" data-view="intelligence" data-subview="aiRoster" onclick="setIntelView('aiRoster')" style="display:none"><span class="sb-item-label">🤖 AI Roster Agent</span></button>
 <button class="sb-sub-item phase2-nav" data-view="intelligence" data-subview="cancellations" onclick="setIntelView('cancellations')"><span class="sb-item-label">❌ Cancellation Engine</span></button>
 <button class="sb-sub-item phase2-nav" data-view="intelligence" data-subview="handover" onclick="setIntelView('handover')"><span class="sb-item-label">📋 Shift Handover</span></button>
@@ -640,14 +640,14 @@ Or: "What does our SOP say about incident reporting?"</div></div>
 <div class="dialer-modal">
 <div class="dialer-modal-hdr"><h3>Dialer</h3><div class="dialer-modal-close" onclick="closeDialer()">&times;</div></div>
 <div class="dialer-wrap">
-<div id="dialerSoftphoneStatus" style="width:100%;display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--muted)"><span id="dialerSoftphoneDot" style="width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0;display:inline-block"></span><span id="dialerSoftphoneLabel">Checking softphone...</span></div>
-<div class="dialer-search"><label>Destination Number or Contact Name</label><div style="display:flex;gap:6px;align-items:center"><input id="dialSearch" placeholder="Type number or search contacts..." oninput="dialSearchOrNumber(this.value)" onfocus="dialSearchContacts(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();dialCall()}" style="flex:1"><button id="dialMicBtn" onclick="toggleVoiceInput('dialSearch','dialMicBtn')" title="Voice input" style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button></div><div class="dialer-results" id="dialResults"></div></div>
-<div class="dialer-display" id="dialDisplay"><span>Enter number</span></div>
+<div id="dialerSoftphoneStatus" style="width:100%;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);font-size:11px;font-weight:600;color:#94A3B8"><span id="dialerSoftphoneDot" style="width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0;display:inline-block"></span><span id="dialerSoftphoneLabel">Checking softphone...</span></div>
+<div class="dialer-search"><label>Destination Number or Contact Name</label><div style="display:flex;gap:6px;align-items:center"><input id="dialSearch" placeholder="Type number or search contacts..." oninput="dialSearchOrNumber(this.value)" onfocus="dialSearchContacts(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();dialCall()}" style="flex:1"><button id="dialMicBtn" onclick="toggleVoiceInput('dialSearch','dialMicBtn')" title="Voice input" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#94A3B8;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button></div><div class="dialer-results" id="dialResults"></div></div>
+<div class="dialer-display" id="dialDisplay"><span style="color:#64748B">Enter number</span></div>
 <div class="dialer-pad" id="dialPad"></div>
 <div class="dialer-actions">
 <button class="dial-call del-btn" onclick="dialDelete()" title="Delete">&#9003;</button>
-<button id="dialCallBtn" class="dial-call" style="background:var(--green)" onclick="dialCall()" title="Call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="26" height="26"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
-<button class="dial-call" style="background:var(--teal);width:46px;height:46px" onclick="dialToggleSms()" title="SMS"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+<button id="dialCallBtn" class="dial-call" style="background:#10B981;box-shadow:0 4px 20px rgba(16,185,129,.35)" onclick="dialCall()" title="Call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="26" height="26"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
+<button class="dial-call" style="background:#00B4D8;width:48px;height:48px;border-radius:14px;box-shadow:0 4px 16px rgba(0,180,216,.3)" onclick="dialToggleSms()" title="SMS"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
 </div>
 <div class="dialer-status" id="dialStatus"></div>
 <div class="dialer-sms-area" id="dialSmsArea" style="display:none"></div>
@@ -809,13 +809,14 @@ var calls=[],smsList=[],emailList=[],participants=[],contacts=[],users=[],conver
 var chatConversations=[],selectedChatConv=null,chatMessages=[],_chatLoaded=false,_chatUsers=null;
 var dialerNumber="",dialerContactName="";
 var contactFilter=[];var contactGenderFilter="";var contactSuburbFilter="";var contactStatusFilter="Active Contact";
+var staffListFilter={type:"",gender:""};
 var AU_TIMEZONES={QLD:"Australia/Brisbane",NSW:"Australia/Sydney",VIC:"Australia/Melbourne",SA:"Australia/Adelaide",NT:"Australia/Darwin",WA:"Australia/Perth",TAS:"Australia/Hobart",ACT:"Australia/Sydney"};
 function getAppTimezone(){return window._appTimezone||localStorage.getItem("titus_timezone")||"QLD"}
 function fmtTimeInTZ(iso){if(!iso)return"";try{return new Date(iso).toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit",hour12:true,timeZone:AU_TIMEZONES[getAppTimezone()]||"Australia/Brisbane"})}catch(e){return""}}
 function fmtDateInTZ(iso){if(!iso)return"";var tz=AU_TIMEZONES[getAppTimezone()]||"Australia/Brisbane";return TitusDate.formatInTZ(iso,tz)}
 function updateTzBar(){var bar=document.getElementById("tzBar");if(!bar)return;var tz=getAppTimezone();try{var tzStr=AU_TIMEZONES[tz]||"Australia/Brisbane";var now=TitusDate.formatDateTimeInTZ(new Date(),tzStr);bar.innerHTML='<span style="opacity:.7">🕒</span> <span class="tz-time">'+now+'</span> <span style="color:rgba(255,255,255,.5)">'+tz+'</span>';bar.style.display="flex"}catch(e){bar.style.display="none"}}
 setInterval(updateTzBar,1000);
-function apiCall(method,url,body){var headers={"Content-Type":"application/json"};if(token)headers["Authorization"]="Bearer "+token;var opts={method:method,headers:headers};if(body)opts.body=JSON.stringify(body);return fetch(url,opts).then(function(r){if(r.status===401){localStorage.removeItem("titus_token");localStorage.removeItem("titus_user");location.reload()}return r.json()})}
+function apiCall(method,url,body){var headers={"Content-Type":"application/json"};if(token)headers["Authorization"]="Bearer "+token;var opts={method:method,headers:headers};if(body)opts.body=JSON.stringify(body);return fetch(url,opts).then(function(r){if(r.status===401){localStorage.removeItem("titus_token");localStorage.removeItem("titus_user");location.reload()}var ct=r.headers.get("content-type")||"";if(!r.ok){return r.text().then(function(t){var msg="Server error "+r.status;try{var j=JSON.parse(t);if(j.error)msg=j.error}catch(x){if(t.indexOf("<")===0)msg="Server returned HTML instead of JSON ("+r.status+")"}throw new Error(msg)})}if(ct.indexOf("json")<0){return r.text().then(function(t){try{return JSON.parse(t)}catch(x){throw new Error("Expected JSON response but got: "+t.substring(0,100))}})}return r.json()})}
 function showLogin(){document.title="Titus CRM | Login";document.getElementById("loginScreen").style.display="flex";document.getElementById("dashboard").style.display="none";document.getElementById("fabDial").style.display="none";document.getElementById("fabSms").style.display="none";var aiBtn=document.getElementById("fabAi");if(aiBtn)aiBtn.style.display="none";var aiPanel=document.getElementById("aiChatbotPanel");if(aiPanel)aiPanel.classList.remove("open")}
 // ── Permission helpers ──
 var PERM_KEYS=[
@@ -1238,7 +1239,28 @@ updateAvailUI();
 }).catch(function(){});
 }
 
-var _autoSynced=false;function autoSyncTranscripts(){if(_autoSynced)return;var missing=calls.filter(function(c){return!c.transcript&&c.status==="completed"&&c.duration>0});if(missing.length>0){_autoSynced=true;console.log("Auto-syncing transcripts for",missing.length,"calls");apiCall("POST","/api/transcripts/bulk-fetch",{}).then(function(d){console.log("Bulk fetch started:",d);setTimeout(function(){apiCall("GET","/api/calls").then(function(d2){calls=d2||[];buildConversations();render()})},12000)})}}
+var _autoSynced=false;var _transcriptPoller=null;
+function autoSyncTranscripts(){
+  var missing=calls.filter(function(c){return!c.transcript&&c.status==="completed"&&c.duration>0});
+  if(missing.length>0&&!_autoSynced){
+    _autoSynced=true;
+    console.log("Auto-fetching transcripts for",missing.length,"calls");
+    apiCall("POST","/api/transcripts/bulk-fetch",{}).then(function(d){
+      console.log("Auto-fetch started:",d);
+      setTimeout(function(){apiCall("GET","/api/calls").then(function(d2){calls=d2||[];buildConversations();render()})},12000);
+    }).catch(function(){});
+  }
+  var active=calls.filter(function(c){return c.status==="in-progress"||c.status==="ringing"});
+  if(active.length>0&&!_transcriptPoller){
+    _transcriptPoller=setInterval(function(){
+      apiCall("GET","/api/calls").then(function(d2){
+        calls=d2||[];buildConversations();render();
+        var stillActive=calls.filter(function(c){return c.status==="in-progress"||c.status==="ringing"});
+        if(stillActive.length===0){clearInterval(_transcriptPoller);_transcriptPoller=null;_autoSynced=false;autoSyncTranscripts();}
+      });
+    },30000);
+  }
+}
 function bulkFetchTranscripts(){var btn=document.getElementById("bulkFetchBtn");if(btn){btn.innerHTML="⏳ Fetching all transcripts...";btn.disabled=true;btn.style.opacity=".6"}apiCall("POST","/api/transcripts/bulk-fetch",{}).then(function(d){if(btn)btn.innerHTML="⏳ Processing "+((d&&d.total)||"")+" calls...";setTimeout(function(){apiCall("GET","/api/calls").then(function(d2){calls=d2||[];buildConversations();render();if(btn){btn.innerHTML="✅ Done — Fetch All Transcripts";btn.disabled=false;btn.style.opacity="1"}})},10000)}).catch(function(){if(btn){btn.innerHTML="❌ Failed — Fetch All Transcripts";btn.disabled=false;btn.style.opacity="1"}})}
 function getInitials(name){if(!name||name==="Unknown"||typeof name!=="string")return"?";var n=name.trim();if(!n)return"?";if(n.indexOf("@")>=0)n=n.split("@")[0];var parts=n.split(" ").filter(function(p){return p.length>0});return parts.length>1?(parts[0][0]+parts[parts.length-1][0]).toUpperCase():n.substring(0,2).toUpperCase()}
 function fmtTime(iso){if(!iso)return"";try{
@@ -1274,7 +1296,7 @@ midPanel.style.display="flex";midPanel.style.flexDirection="column";midPanel.sty
 // Gender filter
 var genderSet={};contacts.forEach(function(c){var g=c.gender||"";if(g)genderSet[g]=(genderSet[g]||0)+1});
 var genderKeys=Object.keys(genderSet).sort();
-ddHtml+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px">';
+ddHtml+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">';
 ddHtml+='<div><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Gender</div>';
 ddHtml+='<select onchange="contactGenderFilter=this.value;renderContactsList()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:7px 10px;font-size:12px;color:var(--text);font-family:inherit;outline:none;cursor:pointer;box-sizing:border-box">';
 ddHtml+='<option value=""'+(contactGenderFilter===""?" selected":"")+'>All Genders</option>';
@@ -1286,18 +1308,9 @@ ddHtml+='<select onchange="contactStatusFilter=this.value;renderContactsList()" 
 var statusOpts=["Active Contact","Draft","Inactive Contact","Archive (Gus only)"];
 ddHtml+='<option value=""'+(contactStatusFilter===""?" selected":"")+'>All Statuses</option>';
 statusOpts.forEach(function(so){ddHtml+='<option value="'+so+'"'+(contactStatusFilter===so?" selected":"")+'>'+so+'</option>'});
-ddHtml+='</select></div>';
-// Suburb filter
-var suburbSet={};contacts.forEach(function(c){var s=c.suburb||"";if(s)suburbSet[s]=(suburbSet[s]||0)+1});
-var suburbKeys=Object.keys(suburbSet).sort(function(a,b){return a.toLowerCase().localeCompare(b.toLowerCase())});
-ddHtml+='<div><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Suburb</div>';
-ddHtml+='<div style="position:relative"><input id="suburbFilterInput" type="text" placeholder="Type to filter..." value="'+contactSuburbFilter+'" oninput="filterSuburbDD(this.value)" onfocus="document.getElementById(\'suburbFilterDD\').style.display=\'block\'" autocomplete="off" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:7px 10px;font-size:12px;color:var(--text);font-family:inherit;outline:none;box-sizing:border-box">';
-ddHtml+='<div id="suburbFilterDD" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:50;max-height:200px;overflow-y:auto;margin-top:2px">';
-ddHtml+='<div class="suburb-opt" onclick="setSuburbFilter(\'\')" style="padding:6px 10px;cursor:pointer;font-size:11px;font-weight:600;border-bottom:1px solid var(--border)">All Suburbs</div>';
-suburbKeys.forEach(function(s){ddHtml+='<div class="suburb-opt" onclick="setSuburbFilter(\''+s.replace(/'/g,"\\\\'")+'\')" style="padding:6px 10px;cursor:pointer;font-size:11px;'+(contactSuburbFilter===s?"background:rgba(10,175,171,.06);font-weight:600":"")+'" data-suburb="'+s.toLowerCase()+'">'+s+' <span style="opacity:.5">('+suburbSet[s]+')</span></div>'});
-ddHtml+='</div></div></div></div>';
+ddHtml+='</select></div></div>';
 // Clear all filters button
-if(contactFilter.length>0||contactGenderFilter||contactSuburbFilter||contactStatusFilter!=="Active Contact"){
+if(contactFilter.length>0||contactGenderFilter||contactStatusFilter!=="Active Contact"){
 ddHtml+='<div style="margin-top:8px"><button onclick="contactFilter=[];contactGenderFilter=\'\';contactSuburbFilter=\'\';contactStatusFilter=\'Active Contact\';render()" style="width:100%;padding:6px;font-size:11px;font-weight:600;color:var(--red);background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">✕ Clear All Filters</button></div>';
 }
 document.getElementById("midTabs").innerHTML=ddHtml;renderContactsList();renderContactDetail()}}else if(currentView==="dialer"){openDialer();currentView="conversations";render()}else if(currentView==="agent"){toggleAiChatbot();currentView="conversations";render()}else if(currentView==="tasks"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderTasks()}else if(currentView==="callWorkflow"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderCallWorkflow()}else if(currentView==="reports"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderReportsMenu()}else if(currentView==="dashboard"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderDashboardOverhaul()}else if(currentView==="admin"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAdmin()}else if(currentView==="recruit"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderRecruit()}else if(currentView==="leadsOverview"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderLeadsOverview()}else if(currentView==="leads"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderLeads()}else if(currentView==="accommodation"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAccommodation()}else if(currentView==="scheduler"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderScheduler()}else if(currentView==="clientBudget"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderClientBudget()}else if(currentView==="roc"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderRoC()}else if(currentView==="timeAttendance"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderTimeAttendance()}else if(currentView==="registers"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderPlaceholder("Registers","📋","Document registers and compliance tracking coming soon.")}else if(currentView==="files"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderCompanyFiles()}else if(currentView==="auditLog"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAuditLog()}else if(currentView==="supportTickets"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSupportTickets()}else if(currentView==="incidentRegister"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderIncidentRegister()}else if(currentView==="continuousImprovement"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderContinuousImprovement()}else if(currentView==="progressNotes"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderProgressNotesEnhanced()}else if(currentView==="sendClientAgreement"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSendDocPage("client")}else if(currentView==="sendEmploymentContract"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSendDocPage("employment")}else if(currentView==="sendContractorAgreement"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSendDocPage("contractor")}else if(currentView==="aiRoster"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAIRoster()}else if(currentView==="cancellations"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderCancellations()}else if(currentView==="handover"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderHandover()}else if(currentView==="payroll"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderPayroll()}else if(currentView==="sleepReport"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSleepReport()}else if(currentView==="reconciliation"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderReconciliation()}else if(currentView==="kmReport"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderKmReport()}else if(currentView==="newsletters"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderNewsletters()}else if(currentView==="loginActivity"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderLoginActivity()}else if(currentView==="automations"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAutomations()}else if(currentView==="complianceReports"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderComplianceReports()}else if(currentView==="shiftcareComparison"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderShiftCareComparison()}}
@@ -2445,22 +2458,37 @@ if(isSCFilter)html+='<div style="padding:8px 12px;background:rgba(245,158,11,.08
 html+='<div style="padding:8px 12px">';if(canEdit("contacts"))html+='<button class="btn btn-p" style="width:100%;padding:8px" onclick="showAddContact()">+ Add Contact</button>';var filterParts=[];if(contactFilter.length>0)filterParts.push(contactFilter.join(", "));if(contactGenderFilter)filterParts.push(contactGenderFilter);if(contactSuburbFilter)filterParts.push(contactSuburbFilter);if(contactStatusFilter&&contactStatusFilter!=="Active Contact")filterParts.push(contactStatusFilter);html+='<div style="font-size:10px;color:var(--dim);text-align:center;margin-top:4px">'+filtered.length+' contact'+(filtered.length!==1?'s':'')+(filterParts.length>0?' — '+filterParts.join(' · '):'')+'</div></div>';if(filtered.length===0){html+='<div class="empty-state" style="padding:20px">No contacts found.</div>'}filtered.forEach(function(c){var isOn=selectedConv&&selectedConv.id===c.id;var _ct=(c.contactType||"").toLowerCase();var _isStaffContact=_ct.indexOf("employee")>=0||_ct.indexOf("independent")>=0||_ct.indexOf("contractor")>=0;var _isSA=currentUser&&currentUser.role==="superadmin";html+='<div class="conv-item'+(isOn?" on":"")+'" data-contact-id="'+(c.id||c.airtable_id||"")+'">';html+='<div class="conv-avatar" style="overflow:hidden">'+(c.photo&&c.photo.length>0?'<img src="'+(c.photo[0].thumbnailUrl||c.photo[0].url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':getInitials(c.name))+'</div>';html+='<div class="conv-body">';html+='<div class="conv-name">'+(c.name||"Unnamed")+'</div>';if(_isStaffContact&&!_isSA){if(c.contactType)html+='<div class="contact-type-badge '+getContactTypeCss(c.contactType)+'">'+c.contactType+'</div>'}else{html+='<div class="conv-sub">'+(c.phone||"No phone")+'</div>';if(c.contactType)html+='<div class="contact-type-badge '+getContactTypeCss(c.contactType)+'">'+c.contactType+'</div>';if(c.statusOfContact)html+='<span style="font-size:9px;font-weight:600;margin-left:4px;padding:1px 6px;border-radius:8px;'+(c.statusOfContact.toLowerCase().indexOf("active")>=0&&c.statusOfContact.toLowerCase().indexOf("inactive")<0?"background:rgba(16,185,129,.08);color:var(--green)":"background:rgba(239,68,68,.06);color:var(--red)")+'">'+c.statusOfContact+'</span>';if(c.suburb)html+='<div class="conv-preview" style="font-size:10px;color:var(--muted)">📍 '+c.suburb+'</div>';else if(c.email)html+='<div class="conv-preview">'+c.email+'</div>'}html+='</div></div>'});list.innerHTML=html;list.querySelectorAll(".conv-item").forEach(function(el){el.addEventListener("click",function(){var cid=this.getAttribute("data-contact-id");selectedConv=contacts.find(function(c){return(c.id||c.airtable_id)==cid})||null;render()})})}
 
 // ─── Filtered contact list for Clients / Staff sub-views ───
+function setStaffFilter(type,gender){staffListFilter.type=type||"";staffListFilter.gender=gender||"";renderFilteredContactList(["Employee","Jobseeker","Independant Contractor"],"staff")}
 function renderFilteredContactList(typeFilter,viewLabel){
 var list=document.getElementById("midList");
 var searchVal=document.getElementById("midSearch").value.toLowerCase();
 var filtered=contacts.filter(function(c){
 var ct=c.contactType||"";
 if(typeFilter.indexOf(ct)<0)return false;
+if(viewLabel==="staff"){
+  if(staffListFilter.type==="Employee"&&ct!=="Employee")return false;
+  if(staffListFilter.type==="Contractor"&&ct!=="Independant Contractor")return false;
+  if(staffListFilter.gender&&(c.gender||"")!==staffListFilter.gender)return false;
+}
 if(!searchVal)return true;
 return(c.name||"").toLowerCase().indexOf(searchVal)>=0||(c.phone||"").indexOf(searchVal)>=0||(c.email||"").toLowerCase().indexOf(searchVal)>=0||(c.suburb||"").toLowerCase().indexOf(searchVal)>=0});
-var html='<div style="padding:8px 12px"><div style="font-size:10px;color:var(--dim);text-align:center">'+filtered.length+' '+viewLabel+'</div></div>';
+var html='';
+if(viewLabel==="staff"){
+html+='<div style="padding:8px 12px 4px;display:flex;gap:4px;flex-wrap:wrap">';
+var _sfBtns=[{label:"All",type:"",gender:""},{label:"Employees",type:"Employee",gender:""},{label:"Contractors",type:"Contractor",gender:""},{label:"Male",type:"",gender:"Male"},{label:"Female",type:"",gender:"Female"}];
+_sfBtns.forEach(function(b){var isActive=(staffListFilter.type===b.type&&staffListFilter.gender===b.gender);
+html+='<button onclick="setStaffFilter(\''+b.type+'\',\''+b.gender+'\')" style="padding:4px 10px;font-size:10px;font-weight:700;border-radius:12px;border:1px solid '+(isActive?'var(--teal)':'var(--border)')+';background:'+(isActive?'rgba(10,147,150,.1)':'var(--surface2)')+';color:'+(isActive?'var(--teal)':'var(--muted)')+';cursor:pointer;font-family:inherit;transition:all .12s">'+b.label+'</button>'});
+html+='</div>';
+}
+html+='<div style="padding:4px 12px 8px"><div style="font-size:10px;color:var(--dim);text-align:center">'+filtered.length+' '+viewLabel+'</div></div>';
 if(filtered.length===0){html+='<div class="empty-state" style="padding:20px">No '+viewLabel+' found.</div>'}
 filtered.forEach(function(c){
 var isOn=selectedConv&&selectedConv.id===c.id;
-html+='<div class="conv-item'+(isOn?" on":"")+'" data-contact-id="'+(c.id||c.airtable_id||"")+'">';
+var _isContractor=(c.contactType||"").indexOf("Contractor")>=0||(c.contactType||"").indexOf("contractor")>=0;
+html+='<div class="conv-item'+(isOn?" on":"")+'" data-contact-id="'+(c.id||c.airtable_id||"")+'" style="'+(_isContractor&&viewLabel==="staff"?"border-left:3px solid var(--teal)":"")+'">';
 html+='<div class="conv-avatar" style="overflow:hidden">'+(c.photo&&c.photo.length>0?'<img src="'+(c.photo[0].thumbnailUrl||c.photo[0].url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':getInitials(c.name))+'</div>';
 html+='<div class="conv-body">';
-html+='<div class="conv-name">'+(c.name||"Unnamed")+'</div>';
+html+='<div class="conv-name">'+(c.name||"Unnamed")+(_isContractor&&viewLabel==="staff"?'<span style="padding:2px 6px;border-radius:8px;font-size:9px;font-weight:700;background:rgba(10,147,150,.1);color:var(--teal);border:1px solid rgba(10,147,150,.2);margin-left:6px">Contractor</span>':'')+'</div>';
 html+='<div class="conv-sub">'+(c.phone||"No phone")+'</div>';
 if(c.contactType)html+='<div class="contact-type-badge '+getContactTypeCss(c.contactType)+'">'+c.contactType+'</div>';
 if(c.statusOfContact)html+='<span style="font-size:9px;font-weight:600;margin-left:4px;padding:1px 6px;border-radius:8px;'+(c.statusOfContact.toLowerCase().indexOf("active")>=0&&c.statusOfContact.toLowerCase().indexOf("inactive")<0?"background:rgba(16,185,129,.08);color:var(--green)":"background:rgba(239,68,68,.06);color:var(--red)")+'">'+c.statusOfContact+'</span>';
@@ -2490,7 +2518,10 @@ function renderComplianceSection(compFields,contactId){
     h+='<div style="padding:6px 8px;background:'+bg+';border:1px solid '+border+';border-radius:var(--rs)">';
     h+='<div style="display:flex;align-items:center;justify-content:space-between"><div style="font-size:9px;font-weight:600;color:var(--muted)">'+f.label+'</div>';
     if(contactId&&docType){
+      h+='<div style="display:flex;align-items:center;gap:4px">';
+      h+='<button onclick="viewComplianceDoc(\''+f.label+'\',\''+contactId+'\')" style="font-size:8px;font-weight:700;color:var(--royal);cursor:pointer;background:rgba(30,75,160,.08);border:1px solid rgba(30,75,160,.15);border-radius:3px;padding:1px 5px;font-family:inherit" title="View '+f.label+' document">VIEW</button>';
       h+='<label style="font-size:8px;font-weight:700;color:var(--teal);cursor:pointer;display:flex;align-items:center;gap:2px" title="Upload '+f.label+'">📎<input type="file" accept="image/*,.pdf" style="display:none" onchange="uploadCompDoc(this,\''+contactId+'\',\''+docType+'\',\''+f.label+'\')">Upload</label>';
+      h+='</div>';
     }
     h+='</div>';
     if(dateVal){
@@ -2502,6 +2533,46 @@ function renderComplianceSection(compFields,contactId){
     h+='</div>';
   });
   h+='</div></div>';return h;
+}
+// ─── View Compliance Document ───
+var COMP_DOC_FIELD_MAP={"First Aid":["First Aid Certificate","First Aid Document","First Aid"],"CPR":["CPR Certificate","CPR Document","CPR"],"Car Insurance":["Car Insurance Document","Car Insurance Certificate","Insurance Document","Car Insurance"],"Driver Licence":["Driver Licence Document","Drivers Licence","Driver Licence"],"NDIS Worker Screening":["NDIS Worker Screening Document","NDIS Screening Certificate","NDIS Worker Screening"],"WWCC Blue Card":["WWCC Blue Card Document","WWCC Certificate","Blue Card","WWCC Blue Card"]};
+function viewComplianceDoc(fieldName,contactId){
+  if(!contactId){showToast("No contact ID","error");return}
+  showToast("Loading document...","info");
+  apiCall("GET","/api/contacts/"+contactId).then(function(d){
+    if(!d||!d.record){showToast("Could not load contact","error");return}
+    var af=d.record.allFields||{};
+    var possibleFields=COMP_DOC_FIELD_MAP[fieldName]||[fieldName];
+    var attachment=null;
+    for(var i=0;i<possibleFields.length;i++){
+      var val=af[possibleFields[i]];
+      if(val&&Array.isArray(val)&&val.length>0){attachment=val[0];break}
+    }
+    // Build modal
+    var ov=document.createElement("div");ov.id="compDocOverlay";
+    ov.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px";
+    ov.onclick=function(e){if(e.target===ov)ov.remove()};
+    var h='<div style="background:var(--surface);border-radius:16px;max-width:700px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3)">';
+    h+='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">📋</span><span style="font-size:15px;font-weight:700;color:var(--text)">'+fieldName+'</span></div>';
+    h+='<button onclick="document.getElementById(\'compDocOverlay\').remove()" style="padding:4px 10px;font-size:16px;background:transparent;border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--muted)">&times;</button></div>';
+    h+='<div style="padding:20px;overflow-y:auto;flex:1">';
+    if(!attachment){
+      h+='<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:40px;margin-bottom:8px">📭</div><div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">No document uploaded</div><div style="font-size:12px">Upload a document using the Upload button on the compliance card</div></div>';
+    }else{
+      var url=attachment.url||"";var fname=(attachment.filename||attachment.name||"Document").toLowerCase();
+      var isPdf=fname.endsWith(".pdf")||url.indexOf(".pdf")>=0;
+      var isImage=/\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(fname)||/\.(jpg|jpeg|png|gif|bmp|webp)/i.test(url);
+      if(isImage){
+        h+='<div style="text-align:center"><img src="'+url+'" style="max-width:100%;max-height:60vh;border-radius:8px;border:1px solid var(--border)" alt="'+fieldName+'"></div>';
+      }else if(isPdf){
+        h+='<iframe src="'+url+'" style="width:100%;height:60vh;border:1px solid var(--border);border-radius:8px" title="'+fieldName+'"></iframe>';
+      }else{
+        h+='<div style="text-align:center;padding:20px"><a href="'+url+'" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:var(--teal);color:#fff;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px">📥 Download '+(attachment.filename||"Document")+'</a></div>';
+      }
+    }
+    h+='</div></div>';
+    ov.innerHTML=h;document.body.appendChild(ov);
+  }).catch(function(e){showToast("Error loading: "+e.message,"error")});
 }
 function uploadCompDoc(input,contactId,docType,docLabel){
   if(!input.files||!input.files[0])return;
@@ -2577,15 +2648,32 @@ html+='<div style="display:flex;gap:0;border-bottom:1px solid var(--border);padd
 var tabs;
 if(isNDISClient){tabs=[{id:"details",label:"📋 Details"},{id:"supportPlan",label:"🛡️ Support Plan"},{id:"ndisPlanBudget",label:"💜 NDIS Plan & Budget"},{id:"stakeholders",label:"👥 Stakeholders"},{id:"serviceRecords",label:"📂 Service Records"},{id:"history",label:"📝 Contact History"},{id:"documents",label:"📁 Docs"}]}
 else if(isJobseeker){tabs=[{id:"details",label:"📋 Details"},{id:"convos",label:"💬 Conversations"},{id:"history",label:"📝 Contact History"},{id:"training",label:"🎓 Training"}]}
-else if(isStaff){var _hasContactsAccess=canView("contacts_all")||canEdit("contacts");if(_hasContactsAccess){tabs=[{id:"details",label:"📋 Details"},{id:"employment",label:"💼 Employment"},{id:"serviceRecords",label:"📂 Service Records"},{id:"convos",label:"💬 Conversations"}];if(isContractor){tabs.push({id:"invoices",label:"💰 Invoices"})}tabs.push({id:"history",label:"📝 Contact History"});tabs.push({id:"training",label:"🎓 Training"})}else{tabs=[{id:"details",label:"📋 Details"},{id:"employment",label:"💼 Employment"},{id:"serviceRecords",label:"📂 Service Records"}];if(isContractor){tabs.push({id:"invoices",label:"💰 Invoices"})}tabs.push({id:"training",label:"🎓 Training"})}}
+else if(isStaff){var _hasContactsAccess=canView("contacts_all")||canEdit("contacts");if(_hasContactsAccess){tabs=[{id:"details",label:"📋 Details"},{id:"employment",label:"💼 Employment"},{id:"rosters",label:"📅 Rosters"},{id:"serviceRecords",label:"📂 Service Records"},{id:"convos",label:"💬 Conversations"}];if(isContractor){tabs.push({id:"invoices",label:"💰 Invoices"})}tabs.push({id:"history",label:"📝 Contact History"});tabs.push({id:"training",label:"🎓 Training"})}else{tabs=[{id:"details",label:"📋 Details"},{id:"employment",label:"💼 Employment"},{id:"rosters",label:"📅 Rosters"},{id:"serviceRecords",label:"📂 Service Records"}];if(isContractor){tabs.push({id:"invoices",label:"💰 Invoices"})}tabs.push({id:"training",label:"🎓 Training"})}}
 else{tabs=[{id:"details",label:"📋 Details"},{id:"convos",label:"💬 Conversations"},{id:"history",label:"📝 Contact History"},{id:"serviceRecords",label:"📂 Service Records"},{id:"training",label:"🎓 Training"}]}
 tabs.forEach(function(tab){var isActive=activeTab===tab.id||(tab.id==="serviceRecords"&&["progress","incidents","kms","calendar","weeklyreports","sleepChart","bowelChart","fluidChart","consumables","behaviours"].indexOf(activeTab)>=0)||(tab.id==="ndisPlanBudget"&&["ndisPlan","budget"].indexOf(activeTab)>=0);html+='<button onclick="switchContactTab(\''+tab.id+'\')" style="padding:10px 12px;font-size:11px;font-weight:600;border:none;background:none;cursor:pointer;color:'+(isActive?"var(--teal)":"var(--muted)")+';border-bottom:2px solid '+(isActive?"var(--teal)":"transparent")+';transition:all .12s;white-space:nowrap">'+tab.label+'</button>'});
 html+='</div>';
 // ── TAB CONTENT ──
 html+='<div style="flex:1;overflow-y:auto;padding:20px">';
 if(activeTab==="details"){
-// Photo above fields if staff
-if(isStaff&&!isNDISClient&&c.photo&&c.photo.length>0){var photoUrl=c.photo[0].thumbnailUrl||c.photo[0].url;html+='<div style="text-align:center;margin-bottom:12px"><img src="'+photoUrl+'" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--teal);box-shadow:0 2px 8px rgba(0,0,0,.15)" alt="Photo"></div>'}
+// Staff profile header — rectangle photo on left, links on right
+if(isStaff&&!isNDISClient){
+var _profPhotoUrl=(c.photo&&c.photo.length>0)?(c.photo[0].thumbnailUrl||c.photo[0].url):"";
+html+='<div style="display:flex;gap:16px;margin-bottom:16px;align-items:flex-start">';
+html+='<div style="flex-shrink:0">';
+if(_profPhotoUrl){html+='<img src="'+_profPhotoUrl+'" style="width:160px;height:200px;object-fit:cover;border-radius:var(--r);border:3px solid var(--teal);box-shadow:0 2px 8px rgba(0,0,0,.15)" alt="Photo">'}
+else{html+='<div style="width:160px;height:200px;border-radius:var(--r);border:3px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:48px;color:var(--dim)">'+getInitials(c.name)+'</div>'}
+html+='</div>';
+html+='<div style="display:flex;flex-direction:column;gap:8px;flex:1;padding-top:4px">';
+html+='<div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:2px">'+(c.name||"Unnamed")+'</div>';
+if(c.jobTitle)html+='<div style="font-size:12px;color:var(--muted);margin-bottom:4px">'+c.jobTitle+'</div>';
+if(c.cvResume&&c.cvResume.length>0){var _pCv=c.cvResume[0];html+='<a href="'+_pCv.url+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(30,75,160,.04);border:1px solid rgba(30,75,160,.15);border-radius:var(--rs);text-decoration:none;transition:all .12s" onmouseover="this.style.background=\'rgba(30,75,160,.1)\'" onmouseout="this.style.background=\'rgba(30,75,160,.04)\'"><span style="font-size:16px">📋</span><div><div style="font-size:11px;font-weight:700;color:var(--royal)">CV / Resume</div><div style="font-size:9px;color:var(--muted)">'+(_pCv.name||"View")+'</div></div></a>'}
+else{html+='<div style="padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:11px;font-weight:700;color:var(--dim)">📋 No CV uploaded</div></div>'}
+if(c.swProfile&&c.swProfile.length>0){var _pSw=c.swProfile[0];html+='<a href="'+_pSw.url+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(10,147,150,.04);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);text-decoration:none;transition:all .12s" onmouseover="this.style.background=\'rgba(10,147,150,.1)\'" onmouseout="this.style.background=\'rgba(10,147,150,.04)\'"><span style="font-size:16px">📄</span><div><div style="font-size:11px;font-weight:700;color:var(--teal)">SW Profile</div><div style="font-size:9px;color:var(--muted)">'+(_pSw.name||"View")+'</div></div></a>'}
+else{html+='<div style="padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:11px;font-weight:700;color:var(--dim)">📄 No SW Profile</div></div>'}
+var _profHasCv=c.cvResume&&c.cvResume.length>0;var _profSaved=c.cvAiSummary||"";
+html+='<button onclick="'+(_profSaved?'showCvSummaryModal()':'generateCVSummary()')+'" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(59,130,246,.06));border:1px solid rgba(124,58,237,.15);border-radius:var(--rs);cursor:'+(_profHasCv?'pointer':'default')+';font-family:inherit;text-align:left;transition:all .12s;width:100%"'+(!_profHasCv?' disabled':'')+'><span style="font-size:16px">🤖</span><div><div style="font-size:11px;font-weight:700;color:#7C3AED">'+(_profSaved?"View AI CV Summary":"Generate AI CV Summary")+'</div><div style="font-size:9px;color:var(--muted)">'+(_profHasCv?(_profSaved?"Click to view summary":"Analyse CV with Claude AI"):"Upload CV first")+'</div></div></button>';
+html+='</div></div>';
+}
 if(isNDISClient){
 // ── NDIS CLIENT DETAILS — loads from Clients table ──
 // Determine client name: try linked field, then full name, then firstName+lastName
@@ -2701,12 +2789,17 @@ html+='<div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-p
 var _hasFullContactAccess=canEdit("contacts")||canEdit("contacts_all");
 if(!_hasFullContactAccess){
 // RESTRICTED VIEW — non-superadmin sees name, job title, compliance docs & certs
-html+='<div style="text-align:center;margin-bottom:16px">';
-if(c.photo&&c.photo.length>0){html+='<img src="'+(c.photo[0].thumbnailUrl||c.photo[0].url)+'" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--teal);box-shadow:0 2px 8px rgba(0,0,0,.15);margin-bottom:8px" alt="Photo">'}
-html+='<div style="font-size:18px;font-weight:800;color:var(--text)">'+(c.name||"Unnamed")+'</div>';
-if(c.jobTitle)html+='<div style="font-size:13px;color:var(--muted);margin-top:4px">'+c.jobTitle+'</div>';
-if(c.contactType)html+='<div style="margin-top:6px"><span class="contact-type-badge '+getContactTypeCss(c.contactType)+'">'+c.contactType+'</span></div>';
+var _rPhotoUrl=(c.photo&&c.photo.length>0)?(c.photo[0].thumbnailUrl||c.photo[0].url):"";
+html+='<div style="display:flex;gap:16px;margin-bottom:16px;align-items:flex-start">';
+html+='<div style="flex-shrink:0">';
+if(_rPhotoUrl){html+='<img src="'+_rPhotoUrl+'" style="width:160px;height:200px;object-fit:cover;border-radius:var(--r);border:3px solid var(--teal);box-shadow:0 2px 8px rgba(0,0,0,.15)" alt="Photo">'}
+else{html+='<div style="width:160px;height:200px;border-radius:var(--r);border:3px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:48px;color:var(--dim)">'+getInitials(c.name)+'</div>'}
 html+='</div>';
+html+='<div style="display:flex;flex-direction:column;gap:6px;flex:1;padding-top:4px">';
+html+='<div style="font-size:18px;font-weight:800;color:var(--text)">'+(c.name||"Unnamed")+'</div>';
+if(c.jobTitle)html+='<div style="font-size:13px;color:var(--muted)">'+c.jobTitle+'</div>';
+if(c.contactType)html+='<div><span class="contact-type-badge '+getContactTypeCss(c.contactType)+'">'+c.contactType+'</span></div>';
+html+='</div></div>';
 // Compliance Documents — SW Profile + CV/Resume (read-only download)
 var _hasDocsSW=(c.swProfile&&c.swProfile.length>0)||(c.cvResume&&c.cvResume.length>0);
 if(_hasDocsSW){html+='<div style="padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📁 My Documents</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
@@ -2719,31 +2812,9 @@ html+=renderComplianceSection(compFieldsR,c.airtable_id||c.id);
 html+='<div style="padding:10px;background:rgba(36,84,160,.04);border:1px solid rgba(36,84,160,.12);border-radius:var(--rs);text-align:center;color:var(--muted);font-size:11px">ℹ️ To update your personal details, please contact your Team Leader</div>';
 }else{
 // FULL VIEW — superadmin sees everything
-// SW Profile + CV/Resume — moved to top
-var hasDocs=(c.swProfile&&c.swProfile.length>0)||(c.cvResume&&c.cvResume.length>0);
-if(hasDocs){html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">';
-if(c.swProfile&&c.swProfile.length>0){var sp=c.swProfile[0];html+='<a href="'+sp.url+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(10,147,150,.04);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);text-decoration:none;transition:all .12s" onmouseover="this.style.background=\'rgba(10,147,150,.1)\'" onmouseout="this.style.background=\'rgba(10,147,150,.04)\'"><span style="font-size:20px">📄</span><div><div style="font-size:12px;font-weight:700;color:var(--teal)">SW Profile</div><div style="font-size:9px;color:var(--muted)">'+sp.name+(sp.size?' · '+(sp.size>1048576?(sp.size/1048576).toFixed(1)+'MB':(sp.size/1024).toFixed(0)+'KB'):'')+'</div></div></a>'}
-if(c.cvResume&&c.cvResume.length>0){var cv=c.cvResume[0];html+='<a href="'+cv.url+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(30,75,160,.04);border:1px solid rgba(30,75,160,.15);border-radius:var(--rs);text-decoration:none;transition:all .12s" onmouseover="this.style.background=\'rgba(30,75,160,.1)\'" onmouseout="this.style.background=\'rgba(30,75,160,.04)\'"><span style="font-size:20px">📋</span><div><div style="font-size:12px;font-weight:700;color:var(--royal)">CV / Resume</div><div style="font-size:9px;color:var(--muted)">'+cv.name+(cv.size?' · '+(cv.size>1048576?(cv.size/1048576).toFixed(1)+'MB':(cv.size/1024).toFixed(0)+'KB'):'')+'</div></div></a>'}
-html+='</div>'}
-// AI CV Summary card (staff)
-html+='<div style="padding:14px;background:linear-gradient(135deg,rgba(124,58,237,.03),rgba(59,130,246,.03));border:1px solid rgba(124,58,237,.12);border-radius:var(--rs);margin-bottom:12px">';
-html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="display:flex;align-items:center;gap:6px"><span style="font-size:16px">🤖</span><span style="font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.4px">AI CV Summary</span></div>';
-if(c.cvResume&&c.cvResume.length>0){
-var savedSummary2=c.cvAiSummary||"";
-html+='<button id="cvSummaryBtn" onclick="generateCVSummary()" style="font-size:10px;font-weight:700;padding:5px 12px;border-radius:6px;border:1px solid rgba(124,58,237,.3);background:rgba(124,58,237,.08);color:#7C3AED;cursor:pointer;transition:all .12s" onmouseenter="this.style.background=\'#7C3AED\';this.style.color=\'#fff\'" onmouseleave="this.style.background=\'rgba(124,58,237,.08)\';this.style.color=\'#7C3AED\'">'+(savedSummary2?'🔄 Regenerate':'✨ Generate')+'</button>';
-}
-html+='</div>';
-html+='<div id="cvSummaryContent">';
-var savedSummary2=c.cvAiSummary||"";
-if(savedSummary2){
-var sHtml2=savedSummary2.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/^### (.+)$/gm,'<div style="font-size:12px;font-weight:800;color:#7C3AED;margin-top:10px;margin-bottom:4px">$1</div>').replace(/^## (.+)$/gm,'<div style="font-size:12px;font-weight:800;color:#7C3AED;margin-top:10px;margin-bottom:4px">$1</div>').replace(/^# (.+)$/gm,'<div style="font-size:13px;font-weight:800;color:#7C3AED;margin-top:10px;margin-bottom:4px">$1</div>').replace(/^- (.+)$/gm,'<div style="padding-left:12px;position:relative;margin:2px 0"><span style="position:absolute;left:0">•</span> $1</div>').replace(/\n{2,}/g,'<div style="height:6px"></div>').replace(/\n/g,'<br>');
-html+='<div style="font-size:11px;line-height:1.6;color:var(--text)">'+sHtml2+'</div>';
-}else if(!c.cvResume||c.cvResume.length===0){
-html+='<div style="font-size:11px;color:var(--dim);font-style:italic">Upload a CV/Resume to generate an AI summary</div>';
-}else{
-html+='<div style="font-size:11px;color:var(--dim)">Click Generate to analyse '+(c.name||"this person")+'\'s CV with AI</div>';
-}
-html+='</div></div>';
+// CV/SW Profile/AI Summary now in profile header above
+// ── PERSONAL DETAILS heading ──
+html+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">PERSONAL DETAILS</div>';
 // First Name + Last Name + Cultural Ethnicity (3 columns)
 html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>First Name</label><input id="editFirstName" value="'+(c.firstName||"")+'"></div><div class="fg" style="margin:0"><label>Last Name</label><input id="editLastName" value="'+(c.lastName||"")+'"></div><div class="fg" style="margin:0"><label>Cultural Ethnicity</label><input value="'+(c.cultureEthnicity||"")+'" disabled style="opacity:.7"></div></div>';
 // Type of Contact + Job Title + Status of Contact (3 columns)
@@ -2762,12 +2833,18 @@ var genderOpts=["","Male","Female","Non-Binary","Other","Prefer not to say"];var
 html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Gender</label>'+genderSelect+'</div><div class="fg" style="margin:0"><label>Date of Birth</label><input value="'+dobDisplay+'" disabled style="opacity:.7"></div><div class="fg" style="margin:0"><label>Age</label><input value="'+ageDisplay+'" disabled style="opacity:.7"></div></div>';
 // Save button
 html+='<div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn btn-p" style="width:auto;padding:6px 14px;font-size:12px" onclick="saveContact(\''+(c.id||c.airtable_id||"")+'\')">'+(c.id==="new"?"Create Contact":"Save Changes")+'</button></div>';
+// ── CONTACT DETAILS heading ──
+html+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">CONTACT DETAILS</div>';
 // Address
 html+='<div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📍 Address</div>';
 html+='<div class="fg" style="margin:0 0 6px"><input id="editAddress" value="'+(c.homeAddress||"")+'" placeholder="Street Address" style="font-size:12px;padding:6px 8px"></div>';
 html+='<div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px"><input id="editSuburb" value="'+(c.suburb||"")+'" placeholder="Suburb" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit"><input id="editState" value="'+(c.state||"")+'" placeholder="State" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit"><input id="editPostcode" value="'+(c.postcode||"")+'" placeholder="Postcode" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit"></div></div>';
-// Emergency contact
+// ── EMERGENCY CONTACT heading ──
+html+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">EMERGENCY CONTACT</div>';
 if(c.emergencyContact||c.emergencyPhone)html+='<div style="padding:10px;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🚨 Emergency Contact</div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span style="font-size:13px;font-weight:600;color:var(--text)">'+(c.emergencyContact||"Not set")+'</span>'+(c.emergencyRelationship?'<span style="font-size:11px;color:var(--muted)">('+c.emergencyRelationship+')</span>':'')+(c.emergencyPhone?'<a href="tel:'+c.emergencyPhone+'" style="font-size:12px;color:var(--teal);font-family:JetBrains Mono,monospace;font-weight:600;text-decoration:none">📞 '+c.emergencyPhone+'</a>':'')+(c.emergencyEmail?'<a href="mailto:'+c.emergencyEmail+'" style="font-size:11px;color:var(--muted);text-decoration:none">✉️ '+c.emergencyEmail+'</a>':'')+'</div></div>';
+else html+='<div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px;font-size:11px;color:var(--dim);font-style:italic">No emergency contact set</div>';
+// ── COMPLIANCE heading ──
+html+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">COMPLIANCE</div>';
 // Compliance — superadmin view with upload buttons
 var compFields=[{label:"First Aid",val:c.firstAidExpiry},{label:"CPR",val:c.cprExpiry},{label:"Car Insurance",val:c.insuranceExpiry},{label:"Driver Licence",val:c.driversLicenseExpiry},{label:"NDIS Worker Screening",val:c.ndisExpiry},{label:"WWCC Blue Card",val:c.wwccExpiry}];
 html+=renderComplianceSection(compFields,c.airtable_id||c.id);
@@ -2824,33 +2901,34 @@ html+='</div></div>';
 html+='<style>.srTabShort{display:none}@media(max-width:768px){.srTabFull{display:none}.srTabShort{display:inline}}#srTabBar::-webkit-scrollbar{display:none}</style>';
 
 if(srSubTab==="overview"){
-// Cards view
+// Table view
 html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">';
 html+='<div><div style="font-size:16px;font-weight:700;color:var(--text)">📂 Service Records</div><div style="font-size:11px;color:var(--muted)">View progress notes, incidents and KM records for '+(c.name||"this contact")+'</div></div></div>';
 var srCards=[
-{id:"progress",icon:"📓",title:"Progress Notes",desc:"Shift notes, observations and service delivery records",color:"var(--teal)",bg:"rgba(10,175,171,.06)"},
-{id:"incidents",icon:"⚠️",title:"Incident Reports",desc:"Incident records, injuries, near-misses and behavioural events",color:"var(--red)",bg:"rgba(239,68,68,.04)"},
-{id:"kms",icon:"🚗",title:"KM Records",desc:"Travel and mileage claims for client support trips",color:"#F59E0B",bg:"rgba(245,158,11,.06)"}
+{id:"progress",icon:"📓",title:"Progress Notes",desc:"Shift notes, observations and service delivery records",color:"var(--teal)"},
+{id:"incidents",icon:"⚠️",title:"Incident Reports",desc:"Incident records, injuries, near-misses and behavioural events",color:"var(--red)"},
+{id:"kms",icon:"🚗",title:"KM Records",desc:"Travel and mileage claims for client support trips",color:"#F59E0B"}
 ];
 if(isNDISClient){
-srCards.push({id:"behaviours",icon:"🧠",title:"Behaviours",desc:"QR behaviour observations — triggers, verbal/physical, de-escalation",color:"#7c3aed",bg:"rgba(124,58,237,.04)"});
-srCards.push({id:"sleepChart",icon:"😴",title:"Sleep Chart",desc:"Sleep patterns, bed/wake times and quality tracking",color:"#6366F1",bg:"rgba(99,102,241,.04)"});
-srCards.push({id:"bowelChart",icon:"💊",title:"Bowel Chart",desc:"Bowel movement tracking — type, size and frequency",color:"#EC4899",bg:"rgba(236,72,153,.04)"});
-srCards.push({id:"fluidChart",icon:"💧",title:"Fluid Intake",desc:"Daily fluid intake diary — volumes and fluid types",color:"#0EA5E9",bg:"rgba(14,165,233,.04)"});
-srCards.push({id:"consumables",icon:"📦",title:"Consumables",desc:"Client supplies — ordering, delivery and sign-off tracking",color:"#F97316",bg:"rgba(249,115,22,.04)"});
-srCards.push({id:"calendar",icon:"📅",title:"Client Calendar",desc:"Appointments, inspections and scheduled events",color:"#3B82F6",bg:"rgba(59,130,246,.04)"});
-srCards.push({id:"weeklyreports",icon:"📊",title:"Weekly Reports",desc:"NDIS stakeholder reports generated for this participant",color:"#7c3aed",bg:"rgba(124,58,237,.04)"});
+srCards.push({id:"behaviours",icon:"🧠",title:"Behaviours",desc:"QR behaviour observations — triggers, verbal/physical, de-escalation",color:"#7c3aed"});
+srCards.push({id:"sleepChart",icon:"😴",title:"Sleep Chart",desc:"Sleep patterns, bed/wake times and quality tracking",color:"#6366F1"});
+srCards.push({id:"bowelChart",icon:"💊",title:"Bowel Chart",desc:"Bowel movement tracking — type, size and frequency",color:"#EC4899"});
+srCards.push({id:"fluidChart",icon:"💧",title:"Fluid Intake",desc:"Daily fluid intake diary — volumes and fluid types",color:"#0EA5E9"});
+srCards.push({id:"consumables",icon:"📦",title:"Consumables",desc:"Client supplies — ordering, delivery and sign-off tracking",color:"#F97316"});
+srCards.push({id:"calendar",icon:"📅",title:"Client Calendar",desc:"Appointments, inspections and scheduled events",color:"#3B82F6"});
+srCards.push({id:"weeklyreports",icon:"📊",title:"Weekly Reports",desc:"NDIS stakeholder reports generated for this participant",color:"#7c3aed"});
 }
-html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">';
+// Sort alphabetically by title
+srCards.sort(function(a,b){return a.title.localeCompare(b.title)});
+html+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+html+='<thead><tr><th style="padding:10px 12px;text-align:left;font-weight:700;color:var(--muted);border-bottom:2px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.4px">Name</th><th style="padding:10px 12px;text-align:left;font-weight:700;color:var(--muted);border-bottom:2px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.4px">Description</th></tr></thead><tbody>';
 srCards.forEach(function(sr){
-html+='<div onclick="switchContactTab(\''+sr.id+'\')" style="padding:20px;background:'+sr.bg+';border:1px solid '+sr.color+'20;border-radius:var(--r);cursor:pointer;transition:all .15s;border-left:4px solid '+sr.color+'" onmouseover="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,.08)\';this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.boxShadow=\'none\';this.style.transform=\'none\'">';
-html+='<div style="font-size:28px;margin-bottom:8px">'+sr.icon+'</div>';
-html+='<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">'+sr.title+'</div>';
-html+='<div style="font-size:11px;color:var(--muted);line-height:1.4">'+sr.desc+'</div>';
-html+='<div style="margin-top:12px;font-size:11px;font-weight:700;color:'+sr.color+'">Open →</div>';
-html+='</div>';
+html+='<tr onclick="switchContactTab(\''+sr.id+'\')" style="cursor:pointer;border-bottom:1px solid var(--border);transition:background .12s" onmouseover="this.style.background=\'var(--surface2)\'" onmouseout="this.style.background=\'transparent\'">';
+html+='<td style="padding:10px 12px;white-space:nowrap"><span style="margin-right:6px">'+sr.icon+'</span><span style="font-weight:700;color:var(--text)">'+sr.title+'</span></td>';
+html+='<td style="padding:10px 12px;color:var(--muted)">'+sr.desc+'</td>';
+html+='</tr>';
 });
-html+='</div>';
+html+='</tbody></table></div>';
 }else if(srSubTab==="progress"){
 html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div style="font-size:16px;font-weight:700;color:var(--text)">📓 Progress Notes</div><div style="display:flex;gap:8px"><button onclick="loadProgressDrafts()" style="padding:6px 14px;font-size:11px;font-weight:600;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;font-family:inherit" title="View saved drafts">📋 Drafts</button><button onclick="openNewProgressNote()" style="padding:6px 14px;font-size:11px;font-weight:700;border-radius:var(--rs);border:none;background:var(--teal);color:#fff;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px">＋ Add New</button></div></div>';
 html+='<div id="progressNotesContent"><div style="text-align:center;padding:20px;color:var(--muted)"><div class="spin" style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 8px"></div>Loading progress notes...</div></div>';
@@ -2923,6 +3001,8 @@ html+='<button onclick="startVoiceToText(\'histSummary\')" style="position:absol
 html+='<button onclick="saveHistoryNote(\''+(c.email||"")+'\',\''+(c.name||"").replace(/'/g,"\\'")+'\',\''+(isNDISClient?"client":"staff")+'\')" style="padding:7px 16px;font-size:12px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit">Save Note</button>';
 html+='</div>';
 html+='<div id="contactHistoryContent"><div style="text-align:center;padding:20px;color:var(--muted)"><div class="spin" style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 8px"></div>Loading contact history...</div></div>';
+}else if(activeTab==="rosters"){
+html+='<div id="tabContent_rosters"><div style="text-align:center;padding:20px;color:var(--muted)"><div class="spin" style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 8px"></div>Loading rosters...</div></div>';
 }else if(activeTab==="training"){
 html+='<div id="trainingContent"><div style="text-align:center;padding:20px;color:var(--muted)"><div class="spin" style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 8px"></div>Loading training records...</div></div>';
 }else if(activeTab==="supportPlan"){
@@ -2978,6 +3058,7 @@ if(c._activeTab==="invoices"&&c.airtableId)loadContractorInvoices(c.airtableId);
 if(c._activeTab==="employment")loadEmploymentTab(c);
 if(c._activeTab==="leave")loadLeaveTab(c);
 if(c._activeTab==="training")loadTrainingRecords(c.name,c.email,c.airtableId);
+if(c._activeTab==="rosters")loadStaffRosters(c.email||c.name);
 // NDIS Client auto-loads
 if(isNDISClient){
 var clientName=c.linkedToClient||(c.firstName&&c.lastName?c.firstName+" "+c.lastName:c.name);
@@ -4742,6 +4823,12 @@ renderNDISClientCard(el,d,contact)
 
 function renderNDISClientCard(el,d,contact){
 if(selectedConv)selectedConv._clientData=d;
+var _user=JSON.parse(localStorage.getItem("titus_user")||"{}");
+var canEdit=["superadmin","roster_officer","team_leader"].indexOf((_user.role||"").toLowerCase())>=0;
+function spInlineEdit(label,value,fieldKey,type){
+if(!canEdit)return'<div style="font-size:12px;font-weight:600;color:var(--text)">'+(value||"\u2014")+'</div>';
+var inputType=type||"text";
+return'<div style="display:flex;align-items:center;gap:4px"><input id="cEdit_'+fieldKey+'" type="'+inputType+'" value="'+(value||"").replace(/"/g,"&quot;")+'" style="flex:1;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box"><button onclick="saveClientField(\''+fieldKey+'\',document.getElementById(\'cEdit_'+fieldKey+'\').value)" style="padding:3px 6px;font-size:10px;background:var(--teal);color:#fff;border:none;border-radius:4px;cursor:pointer" title="Save">\uD83D\uDCBE</button></div>'}
 var h='';
 // Account status banner
 var acctType=(d.accountType||"").toLowerCase();
@@ -4756,39 +4843,51 @@ h+='</div>';
 // Personal info grid
 h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
 h+='<div class="fg" style="margin:0"><label>Client Name</label><input value="'+(d.name||"")+'" disabled style="opacity:.7;font-weight:700"></div>';
-h+='<div class="fg" style="margin:0"><label>NDIS Number</label><input value="'+(d.ndisNumber||"—")+'" disabled style="opacity:.7;font-family:JetBrains Mono,monospace;font-weight:600;color:var(--royal)"></div>';
+h+='<div class="fg" style="margin:0"><label>NDIS Number</label>'+spInlineEdit("NDIS Number",d.ndisNumber||"","ndisNumber")+'</div>';
 h+='<div class="fg" style="margin:0"><label>Age</label><input value="'+(d.age?d.age+" yrs":"—")+'" disabled style="opacity:.7"></div>';
 h+='</div>';
+h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">PERSONAL DETAILS</div>';
 h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
 var dobDisp=d.dateOfBirth||"";
 if(dobDisp){try{var dp=new Date(dobDisp);if(!isNaN(dp))dobDisp=("0"+dp.getDate()).slice(-2)+"/"+("0"+(dp.getMonth()+1)).slice(-2)+"/"+dp.getFullYear()}catch(e){}}
-h+='<div class="fg" style="margin:0"><label>Gender</label><input value="'+(d.gender||"—")+'" disabled style="opacity:.7"></div>';
-h+='<div class="fg" style="margin:0"><label>Date of Birth</label><input value="'+(dobDisp||"—")+'" disabled style="opacity:.7"></div>';
-h+='<div class="fg" style="margin:0"><label>Phone</label><input value="'+(d.phone||contact.phone||"—")+'" disabled style="opacity:.7"></div>';
+h+='<div class="fg" style="margin:0"><label>Gender</label>'+spInlineEdit("Gender",d.gender||"","gender")+'</div>';
+h+='<div class="fg" style="margin:0"><label>Date of Birth</label>'+spInlineEdit("Date of Birth",dobDisp||"","dateOfBirth")+'</div>';
+h+='<div class="fg" style="margin:0"><label>Phone</label>'+spInlineEdit("Phone",d.phone||contact.phone||"","phone")+'</div>';
 h+='</div>';
 h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
-h+='<div class="fg" style="margin:0"><label>Email</label><input value="'+(d.email||contact.email||"—")+'" disabled style="opacity:.7"></div>';
-h+='<div class="fg" style="margin:0"><label>Suburb</label><input value="'+(d.suburb||"—")+'" disabled style="opacity:.7"></div>';
+h+='<div class="fg" style="margin:0"><label>Email</label>'+spInlineEdit("Email",d.email||contact.email||"","email","email")+'</div>';
+h+='<div class="fg" style="margin:0"><label>Suburb</label>'+spInlineEdit("Suburb",d.suburb||"","suburb")+'</div>';
 h+='<div class="fg" style="margin:0"><label>KM Allowance</label><input value="'+(d.kmAllowance?d.kmAllowance+" km/wk":"—")+'" disabled style="opacity:.7"></div>';
 h+='</div>';
+h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">GENDER OF SUPPORT WORKER</div>';
 h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
-h+='<div class="fg" style="margin:0"><label>Gender of Support Workers</label><input value="'+(d.genderOfWorkers||"—")+'" disabled style="opacity:.7"></div>';
+h+='<div class="fg" style="margin:0"><label>Gender of Support Workers</label>'+spInlineEdit("Gender of Support Workers",d.genderOfWorkers||"","genderOfWorkers")+'</div>';
 h+='<div class="fg" style="margin:0"><label>Personal Care</label><input value="'+(d.personalCare||"—")+'" disabled style="opacity:.7"></div>';
 h+='<div class="fg" style="margin:0"><label>Communication Aids</label><input value="'+(d.communicationAids||"—")+'" disabled style="opacity:.7"></div>';
 h+='</div>';
 // Address
-h+='<div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📍 Address</div>';
+h+='<div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">\uD83D\uDCCD Address</div>';
 var addrParts=[d.address,d.suburb,d.state,d.postcode].filter(function(v){return v});
-h+='<div style="font-size:12px;color:var(--text);font-weight:600">'+(addrParts.length>0?addrParts.join(", "):"No address on file")+'</div></div>';
+var addrFull=addrParts.length>0?addrParts.join(", "):"";
+if(canEdit){h+='<div style="display:flex;align-items:center;gap:4px"><input id="cEdit_address" type="text" value="'+(addrFull).replace(/"/g,"&quot;")+'" style="flex:1;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box"><button onclick="saveClientField(\'address\',document.getElementById(\'cEdit_address\').value)" style="padding:3px 6px;font-size:10px;background:var(--teal);color:#fff;border:none;border-radius:4px;cursor:pointer" title="Save">\uD83D\uDCBE</button></div>'}
+else{h+='<div style="font-size:12px;color:var(--text);font-weight:600">'+(addrFull||"No address on file")+'</div>'}
+h+='</div>';
 // Type of Disability
-if(d.typeOfDisability){
-h+='<div style="padding:10px;background:rgba(124,58,237,.04);border:1px solid rgba(124,58,237,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:#7C3AED;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🧩 Type of Disability</div><div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+d.typeOfDisability+'</div></div>'}
+h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">TYPE OF DISABILITY</div>';
+if(d.typeOfDisability||canEdit){
+h+='<div style="padding:10px;background:rgba(124,58,237,.04);border:1px solid rgba(124,58,237,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:#7C3AED;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">\uD83E\uDDE9 Type of Disability</div>';
+if(canEdit){h+='<div style="display:flex;align-items:flex-start;gap:4px"><textarea id="cEdit_typeOfDisability" style="flex:1;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box;min-height:40px;resize:vertical">'+(d.typeOfDisability||"").replace(/</g,"&lt;")+'</textarea><button onclick="saveClientField(\'typeOfDisability\',document.getElementById(\'cEdit_typeOfDisability\').value)" style="padding:3px 6px;font-size:10px;background:var(--teal);color:#fff;border:none;border-radius:4px;cursor:pointer;margin-top:2px" title="Save">\uD83D\uDCBE</button></div>'}
+else{h+='<div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+d.typeOfDisability+'</div>'}
+h+='</div>'}
 // General Background Info
 if(d.generalBackground){
 h+='<div style="padding:10px;background:rgba(30,75,160,.04);border:1px solid rgba(30,75,160,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--royal);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📋 General Background</div><div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+d.generalBackground+'</div></div>'}
 // NDIS Goals
-if(d.ndisGoals){
-h+='<div style="padding:10px;background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🎯 NDIS Client Goals</div><div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+d.ndisGoals+'</div></div>'}
+if(d.ndisGoals||canEdit){
+h+='<div style="padding:10px;background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">\uD83C\uDFAF NDIS Client Goals</div>';
+if(canEdit){h+='<div style="display:flex;align-items:flex-start;gap:4px"><textarea id="cEdit_ndisGoals" style="flex:1;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box;min-height:40px;resize:vertical">'+(d.ndisGoals||"").replace(/</g,"&lt;")+'</textarea><button onclick="saveClientField(\'ndisGoals\',document.getElementById(\'cEdit_ndisGoals\').value)" style="padding:3px 6px;font-size:10px;background:var(--teal);color:#fff;border:none;border-radius:4px;cursor:pointer;margin-top:2px" title="Save">\uD83D\uDCBE</button></div>'}
+else{h+='<div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+d.ndisGoals+'</div>'}
+h+='</div>'}
 // Allergies & Alerts
 if(d.hasAllergies==="Yes"||d.allergiesAlerts){
 h+='<div style="padding:10px;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">⚠️ Allergies & Alerts</div><div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+(d.allergiesAlerts||"Yes — see details in Support Plan")+'</div></div>'}
@@ -4815,17 +4914,16 @@ if(d.emergencyRelationship)h+='<span style="font-size:11px;color:var(--muted)">(
 if(d.emergencyPhone)h+='<a href="tel:'+d.emergencyPhone+'" style="font-size:12px;color:var(--teal);font-family:JetBrains Mono,monospace;font-weight:600;text-decoration:none">📞 '+d.emergencyPhone+'</a>';
 if(d.emergencyEmail)h+='<a href="mailto:'+d.emergencyEmail+'" style="font-size:12px;color:var(--teal);font-weight:600;text-decoration:none">📧 '+d.emergencyEmail+'</a>';
 h+='</div></div>'}
-// Plan Expiry
-if(d.planExpiry){
-var expDate;try{expDate=new Date(d.planExpiry)}catch(e){}
-var daysLeft=expDate?Math.ceil((expDate-new Date())/(1000*60*60*24)):999;
-var expColor=daysLeft<0?"var(--red)":daysLeft<90?"var(--orange)":"var(--green)";
-var expBg=daysLeft<0?"rgba(239,68,68,.06)":daysLeft<90?"rgba(245,158,11,.06)":"rgba(16,185,129,.06)";
-var expBorder=daysLeft<0?"rgba(239,68,68,.15)":daysLeft<90?"rgba(245,158,11,.15)":"rgba(16,185,129,.15)";
-var expDisp=TitusDate.format(d.planExpiry)
-var expStatus=daysLeft<0?"EXPIRED — "+Math.abs(daysLeft)+" days ago":daysLeft<90?"⚠️ "+daysLeft+" days remaining":"✅ "+daysLeft+" days remaining";
-h+='<div style="padding:10px;background:'+expBg+';border:1px solid '+expBorder+';border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:'+expColor+';text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">📅 NDIS Plan Expiry</div><div style="display:flex;align-items:center;gap:12px"><span style="font-size:14px;font-weight:700;color:'+expColor+'">'+expDisp+'</span><span style="font-size:11px;color:'+expColor+';font-weight:600">'+expStatus+'</span></div></div>'}
+// Plan Expiry — HIDDEN (Item #6)
 el.innerHTML=h}
+
+function saveClientField(field,value,clientName){
+var name=clientName||(selectedConv&&selectedConv._clientData&&selectedConv._clientData.name)||"";
+apiCall("PATCH","/api/clients/update-field",{clientName:name,field:field,value:value})
+.then(function(d){
+if(d.error){showToast("Save failed: "+d.error,"error");return}
+showToast(field+" updated","success");
+}).catch(function(e){showToast("Save failed: "+e.message,"error")})}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 //  CLIENT SUPPORT PLAN — Full Frontend Implementation
@@ -6465,7 +6563,7 @@ el.innerHTML=h}
 
 function loadNDISClientCalendar(clientName){
 var el=document.getElementById("calendarContent");if(!el)return;
-apiCall("GET","/api/client-calendar?name="+encodeURIComponent(clientName)).then(function(data){
+apiCall("GET","/api/clients/calendar?name="+encodeURIComponent(clientName)).then(function(data){
 var records=data.records||[];
 window._calEvents=records;
 window._calClientName=clientName;
@@ -7736,7 +7834,16 @@ var bp=sh.behaviourPractitioner||{};if(bp.name)stakeholders.push({role:"Behaviou
 var ec=sh.emergency||{};if(ec.name)stakeholders.push({role:"Emergency Contact",name:ec.name,email:ec.email,phone:ec.phone,relationship:ec.relationship,icon:"🚨",color:"#EF4444",bg:"rgba(239,68,68,.04)"});
 // Decisions section
 var dec=sh.decisions||{};
-var h='<div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px">👥 Key Stakeholders</div>';
+var h='';
+if(dec.ownDecisionMaker){
+h+='<div style="margin-bottom:16px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r)">';
+h+='<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px">\u2696\uFE0F Decision Making</div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+var decFields=[{l:"Own Decision Maker?",v:dec.ownDecisionMaker},{l:"Medical",v:dec.medical},{l:"Financial",v:dec.financial},{l:"NDIS & Accommodation",v:dec.ndisAccommodation},{l:"Living Arrangements",v:dec.livingArrangements},{l:"Legal",v:dec.legal}];
+decFields.forEach(function(df){if(!df.v)return;
+h+='<div style="padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase">'+df.l+'</div><div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px">'+df.v+'</div></div>'});
+h+='</div></div>'}
+h+='<div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px">\uD83D\uDC65 Key Stakeholders</div>';
 h+='<div style="font-size:11px;color:var(--muted);margin-bottom:16px">Support team contacts for '+clientName+'</div>';
 if(stakeholders.length===0){
 h+='<div style="text-align:center;padding:30px;color:var(--muted);background:var(--surface2);border:1px dashed var(--border);border-radius:var(--r)"><div style="font-size:28px;margin-bottom:8px">👥</div><div style="font-size:12px;font-weight:600">No stakeholders assigned</div><div style="font-size:11px;margin-top:4px">Assign a Support Coordinator, Plan Manager, or Guardian in the Clients table</div></div>';
@@ -7761,23 +7868,14 @@ if(s.email)h+='<a href="mailto:'+s.email+'" style="flex:1;padding:6px;background
 h+='</div>';
 h+='</div></div>'});
 h+='</div>'}
-// Stakeholder Portal link section
-if(canEdit("contacts")||canEdit("contacts_all")){
-h+='<div style="margin-top:16px;padding:14px;background:rgba(0,180,216,.04);border:1px solid rgba(0,180,216,.15);border-radius:var(--r)">';
-h+='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">';
-h+='<div><div style="font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.5px">🔗 Stakeholder Portal</div>';
-h+='<div style="font-size:11px;color:var(--muted);margin-top:2px">Generate a secure link for family/stakeholders to view this client\'s information</div></div>';
-h+='<button onclick="generatePortalLink(\''+contact.id+'\',\''+clientName.replace(/'/g,"\\'")+'\')" style="padding:8px 16px;background:linear-gradient(135deg,var(--teal),#0E9AA7);color:#fff;border:none;border-radius:var(--rs);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🔗 Generate Portal Link</button>';
-h+='</div><div id="portalLinkResult_'+contact.id+'" style="margin-top:8px"></div></div>'}
-// Decisions section
-if(dec.ownDecisionMaker){
-h+='<div style="margin-top:16px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r)">';
-h+='<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">⚖️ Decision Making</div>';
-h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
-var decFields=[{l:"Own Decision Maker?",v:dec.ownDecisionMaker},{l:"Medical",v:dec.medical},{l:"Financial",v:dec.financial},{l:"NDIS & Accommodation",v:dec.ndisAccommodation},{l:"Living Arrangements",v:dec.livingArrangements},{l:"Legal",v:dec.legal}];
-decFields.forEach(function(df){if(!df.v)return;
-h+='<div style="padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase">'+df.l+'</div><div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px">'+df.v+'</div></div>'});
-h+='</div></div>'}
+// Stakeholder Portal link section — HIDDEN (Item #10)
+// if(canEdit("contacts")||canEdit("contacts_all")){
+// h+='<div style="margin-top:16px;padding:14px;background:rgba(0,180,216,.04);border:1px solid rgba(0,180,216,.15);border-radius:var(--r)">';
+// h+='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">';
+// h+='<div><div style="font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.5px">🔗 Stakeholder Portal</div>';
+// h+='<div style="font-size:11px;color:var(--muted);margin-top:2px">Generate a secure link for family/stakeholders to view this client\'s information</div></div>';
+// h+='<button onclick="generatePortalLink(\''+contact.id+'\',\''+clientName.replace(/'/g,"\\'")+'\')" style="padding:8px 16px;background:linear-gradient(135deg,var(--teal),#0E9AA7);color:#fff;border:none;border-radius:var(--rs);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🔗 Generate Portal Link</button>';
+// h+='</div><div id="portalLinkResult_'+contact.id+'" style="margin-top:8px"></div></div>'}
 el.innerHTML=h;
 }).catch(function(e){
 el.innerHTML='<div style="text-align:center;padding:30px;color:var(--red)">Failed to load: '+e.message+'</div>';
@@ -7867,6 +7965,25 @@ function generateCVSummary(){
     content.innerHTML='<div style="font-size:11px;color:var(--red);padding:8px 0">❌ Failed: '+(e.message||"Unknown error")+'</div>';
     if(btn){btn.disabled=false;btn.innerHTML="✨ Retry";btn.style.background="rgba(124,58,237,.08)";btn.style.color="#7C3AED"}
   });
+}
+
+// ── Show AI CV Summary Modal ──
+function showCvSummaryModal(){
+  var c=selectedConv;if(!c||!c.cvAiSummary)return;
+  var summary=c.cvAiSummary;
+  var sHtml=summary.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/^### (.+)$/gm,'<div style="font-size:13px;font-weight:800;color:#7C3AED;margin-top:12px;margin-bottom:4px">$1</div>').replace(/^## (.+)$/gm,'<div style="font-size:13px;font-weight:800;color:#7C3AED;margin-top:12px;margin-bottom:4px">$1</div>').replace(/^# (.+)$/gm,'<div style="font-size:14px;font-weight:800;color:#7C3AED;margin-top:12px;margin-bottom:4px">$1</div>').replace(/^- (.+)$/gm,'<div style="padding-left:14px;position:relative;margin:3px 0"><span style="position:absolute;left:0">•</span> $1</div>').replace(/\n{2,}/g,'<div style="height:8px"></div>').replace(/\n/g,'<br>');
+  var ov=document.createElement("div");ov.id="cvSummaryOverlay";
+  ov.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px";
+  ov.onclick=function(e){if(e.target===ov)ov.remove()};
+  var h='<div style="background:var(--surface);border-radius:16px;max-width:600px;width:100%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3)">';
+  h+='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">🤖</span><span style="font-size:15px;font-weight:700;color:var(--text)">AI CV Summary — '+(c.name||"")+'</span></div>';
+  h+='<button onclick="document.getElementById(\'cvSummaryOverlay\').remove()" style="padding:4px 10px;font-size:16px;background:transparent;border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--muted)">&times;</button></div>';
+  h+='<div style="padding:20px;overflow-y:auto;flex:1"><div style="font-size:12px;line-height:1.7;color:var(--text)">'+sHtml+'</div></div>';
+  h+='<div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px">';
+  h+='<button onclick="document.getElementById(\'cvSummaryOverlay\').remove();generateCVSummary()" style="padding:6px 14px;font-size:11px;font-weight:700;background:rgba(124,58,237,.08);color:#7C3AED;border:1px solid rgba(124,58,237,.2);border-radius:var(--rs);cursor:pointer;font-family:inherit">🔄 Regenerate</button>';
+  h+='<button onclick="document.getElementById(\'cvSummaryOverlay\').remove()" style="padding:6px 14px;font-size:11px;font-weight:600;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit">Close</button>';
+  h+='</div></div>';
+  ov.innerHTML=h;document.body.appendChild(ov);
 }
 
 // ── ABN Validation & Lookup ──
@@ -7970,9 +8087,9 @@ function dialSelectContact(phone,name){dialerNumber=phone;dialerContactName=name
 function dialPress(key){dialerNumber+=key;dialerContactName=findContactName(dialerNumber);if(dialerContactName==="Unknown")dialerContactName="";updateDialDisplay()}
 function dialDelete(){dialerNumber=dialerNumber.slice(0,-1);if(!dialerNumber)dialerContactName="";else{dialerContactName=findContactName(dialerNumber);if(dialerContactName==="Unknown")dialerContactName="";}updateDialDisplay()}
 function updateDialDisplay(){var display=document.getElementById("dialDisplay");if(!display)return;var html="";if(dialerContactName)html+='<span class="contact-label">'+dialerContactName+'</span>';html+='<span>'+(dialerNumber||"Enter number")+'</span>';display.innerHTML=html}
-function dialCall(){if(!dialerNumber||dialerNumber.length<4){document.getElementById("dialStatus").textContent="Enter a valid number";return}if(!twilioDevice){document.getElementById("dialStatus").textContent="⚠️ Softphone not ready — please wait a moment";return}document.getElementById("dialStatus").textContent="Connecting...";twilioDevice.connect({params:{To:dialerNumber,ContactName:dialerContactName||""}}).then(function(call){twilioConnection=call;updateSoftphoneStatus("active");document.getElementById("dialStatus").textContent="📞 On call with "+(dialerContactName||dialerNumber);var btn=document.getElementById("dialCallBtn");if(btn){btn.style.background="var(--red)";btn.title="Hang up";btn.onclick=function(){dialHangup()}}if(dialerContactName){var _mc=contacts.find(function(c){var cp=(c.phone||"").replace(/\D/g,"");var dn=(dialerNumber||"").replace(/\D/g,"");return cp&&dn&&(cp===dn||cp.slice(-9)===dn.slice(-9))});if(_mc){selectedConv=_mc;currentView="contacts";render()}}call.on("disconnect",function(){twilioConnection=null;updateSoftphoneStatus("ready");document.getElementById("dialStatus").textContent="Call ended";resetDialCallBtn();setTimeout(function(){loadData()},2000)});call.on("cancel",function(){twilioConnection=null;updateSoftphoneStatus("ready");document.getElementById("dialStatus").textContent="Call cancelled";resetDialCallBtn()});call.on("reject",function(){twilioConnection=null;updateSoftphoneStatus("ready");document.getElementById("dialStatus").textContent="Call rejected";resetDialCallBtn()})}).catch(function(e){document.getElementById("dialStatus").textContent="Call failed: "+e.message})}
+function dialCall(){if(!dialerNumber||dialerNumber.length<4){document.getElementById("dialStatus").textContent="Enter a valid number";return}if(!twilioDevice){document.getElementById("dialStatus").textContent="⚠️ Softphone not ready — please wait a moment";return}document.getElementById("dialStatus").textContent="Connecting...";twilioDevice.connect({params:{To:dialerNumber,ContactName:dialerContactName||""}}).then(function(call){twilioConnection=call;updateSoftphoneStatus("active");document.getElementById("dialStatus").textContent="📞 On call with "+(dialerContactName||dialerNumber);var btn=document.getElementById("dialCallBtn");if(btn){btn.style.background="#EF4444";btn.style.boxShadow="0 4px 20px rgba(239,68,68,.35)";btn.title="Hang up";btn.onclick=function(){dialHangup()}}if(dialerContactName){var _mc=contacts.find(function(c){var cp=(c.phone||"").replace(/\D/g,"");var dn=(dialerNumber||"").replace(/\D/g,"");return cp&&dn&&(cp===dn||cp.slice(-9)===dn.slice(-9))});if(_mc){selectedConv=_mc;currentView="contacts";render()}}call.on("disconnect",function(){twilioConnection=null;updateSoftphoneStatus("ready");document.getElementById("dialStatus").textContent="Call ended";resetDialCallBtn();setTimeout(function(){loadData()},2000)});call.on("cancel",function(){twilioConnection=null;updateSoftphoneStatus("ready");document.getElementById("dialStatus").textContent="Call cancelled";resetDialCallBtn()});call.on("reject",function(){twilioConnection=null;updateSoftphoneStatus("ready");document.getElementById("dialStatus").textContent="Call rejected";resetDialCallBtn()})}).catch(function(e){document.getElementById("dialStatus").textContent="Call failed: "+e.message})}
 function dialHangup(){if(twilioConnection){twilioConnection.disconnect()}else if(twilioDevice){twilioDevice.disconnectAll()}twilioConnection=null;updateSoftphoneStatus("ready");document.getElementById("dialStatus").textContent="Call ended";resetDialCallBtn()}
-function resetDialCallBtn(){var btn=document.getElementById("dialCallBtn");if(!btn)return;btn.style.background="var(--green)";btn.title="Call";btn.onclick=function(){dialCall()}}
+function resetDialCallBtn(){var btn=document.getElementById("dialCallBtn");if(!btn)return;btn.style.background="#10B981";btn.style.boxShadow="0 4px 20px rgba(16,185,129,.35)";btn.title="Call";btn.onclick=function(){dialCall()}}
 function dialToggleSms(){closeDialer();openSmsComposer(dialerNumber||"",dialerContactName||"")}
 function dialSendSms(){if(!dialerNumber||dialerNumber.length<4){document.getElementById("dialStatus").textContent="Enter a valid number";return}var body=(document.getElementById("dialSmsBody").value||"").trim();if(!body){document.getElementById("dialStatus").textContent="Type a message first";return}document.getElementById("dialStatus").textContent="Sending SMS...";apiCall("POST","/api/sms/send",{to:dialerNumber,body:body,participant:dialerContactName}).then(function(d){if(d.error){document.getElementById("dialStatus").textContent="Error: "+d.error}else{document.getElementById("dialStatus").textContent="SMS sent!";document.getElementById("dialSmsBody").value="";document.getElementById("dialSmsArea").classList.remove("show");setTimeout(function(){loadData()},1500)}}).catch(function(e){document.getElementById("dialStatus").textContent="SMS failed: "+e.message})}
 document.addEventListener("click",function(e){var results=document.getElementById("dialResults");if(results&&!e.target.closest(".dialer-search"))results.classList.remove("show");var cfw=document.getElementById("contactFilterWrap");var cfd=document.getElementById("contactFilterDD");if(cfd&&cfw&&!cfw.contains(e.target))cfd.style.display="none";var sdd=document.getElementById("suburbFilterDD");var sinp=document.getElementById("suburbFilterInput");if(sdd&&sinp&&e.target!==sinp&&!sdd.contains(e.target))sdd.style.display="none"});
@@ -9652,7 +9769,7 @@ function crScrollToSectionIdx(idx){
 function renderNdisReportsList() {
   var rp = document.getElementById('rightPanel');
   rp.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)"><div style="text-align:center"><div class="spin" style="width:28px;height:28px;border:3px solid var(--border);border-top-color:#7c3aed;border-radius:50%;margin:0 auto 12px"></div><div style="font-size:13px;font-weight:600">Loading NDIS reports...</div></div></div>';
-  apiCall('GET', '/api/weekly-reports').then(function(data) {
+  apiCall('GET', '/api/reports/weekly').then(function(data) {
     var records = Array.isArray(data) ? data : [];
     var h = '';
     // Header
@@ -10392,7 +10509,7 @@ function downloadShPDF(){
           var b64     = ev.target.result.split(',')[1] || '';
           var headers2 = { 'Content-Type': 'application/json' };
           if (token) headers2['Authorization'] = 'Bearer ' + token;
-          fetch('/api/weekly-reports', {
+          fetch('/api/reports/weekly', {
             method: 'POST', headers: headers2,
             body: JSON.stringify({
               clientName:  window._wrSaveClientName,
@@ -10691,6 +10808,35 @@ var ctx4=document.getElementById("chartDaily");if(ctx4){if(reportCharts.daily)re
 var recent=fc.slice().sort(function(a,b){return(b.created_at||"").localeCompare(a.created_at||"")}).slice(0,20);var tbHtml="";recent.forEach(function(c){var phone=c.type==="inbound"?c.from_number:c.to_number;var name=c.participant||findContactName(phone);tbHtml+="<tr><td>"+fmtDateInTZ(c.created_at)+" "+fmtTimeInTZ(c.created_at)+"</td><td><span style='color:"+(c.type==="inbound"?"var(--royal)":"var(--teal)")+";font-weight:600'>"+c.type+"</span></td><td>"+(c.type==="inbound"?"<span style='color:#7C3AED;font-weight:600'>🤖 Denise AI</span>":"<span style='color:var(--muted)'>Human</span>")+"</td><td style='font-family:JetBrains Mono,monospace;font-size:11px'>"+(phone||"")+"</td><td>"+name+"</td><td>"+(c.duration||0)+"s</td><td>"+c.status+"</td></tr>"});document.getElementById("rptTableBody").innerHTML=tbHtml||"<tr><td colspan='7' style='text-align:center;color:var(--dim);padding:20px'>No calls in selected range</td></tr>"}
 
 // ═══ TRAINING RECORDS ═══
+function loadStaffRosters(staffId) {
+  var el = document.getElementById("tabContent_rosters");
+  if (!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted)">Loading rosters...</div>';
+  apiCall("GET", "/api/scheduling/staff-shifts?staffId=" + encodeURIComponent(staffId)).then(function(data) {
+    var shifts = data.shifts || data || [];
+    if (shifts.length === 0) {
+      el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted)">No shifts found for this staff member</div>';
+      return;
+    }
+    var h = '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+    h += '<thead><tr style="background:var(--surface2);border-bottom:2px solid var(--border)"><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Date</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Client</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Start</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">End</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Duration</th><th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase">Status</th></tr></thead><tbody>';
+    shifts.forEach(function(s) {
+      var startD = s.startShift || s.start_shift || "";
+      var endD = s.endShift || s.end_shift || "";
+      var date = startD ? startD.split("T")[0] : "\u2014";
+      var startT = startD ? (startD.split("T")[1] || "").substring(0,5) || "" : "\u2014";
+      var endT = endD ? (endD.split("T")[1] || "").substring(0,5) || "" : "\u2014";
+      var dur = s.totalHoursDecimal || s.total_hours || "\u2014";
+      var status = s.status || s.shiftStatus || "\u2014";
+      h += '<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px">' + date + '</td><td style="padding:8px 10px;font-weight:600">' + (s.clientName||s.client_name||"\u2014") + '</td><td style="padding:8px 10px">' + startT + '</td><td style="padding:8px 10px">' + endT + '</td><td style="padding:8px 10px">' + dur + '</td><td style="padding:8px 10px">' + status + '</td></tr>';
+    });
+    h += '</tbody></table>';
+    el.innerHTML = h;
+  }).catch(function(e) {
+    el.innerHTML = '<div style="padding:20px;color:var(--red)">Failed to load rosters: ' + e.message + '</div>';
+  });
+}
+
 function loadTrainingRecords(name,email,staffId){
 var el=document.getElementById("trainingContent");if(!el)return;
 var params="name="+encodeURIComponent(name||"")+"&email="+encodeURIComponent(email||"");
@@ -13375,6 +13521,18 @@ dateInp.value=dateKey}
 // ─── New Shift Modal ───
 function openNewShiftModal(){
 if(!canEdit("scheduler"))return;
+// If people data is empty, try fetching it fresh before opening modal
+if((!schedPeople.clients||schedPeople.clients.length===0)&&(!schedPeople.staff||schedPeople.staff.length===0)){
+  console.log("[NEW SHIFT] schedPeople empty -- fetching fresh from /api/scheduling/people");
+  apiCall("GET","/api/scheduling/people").then(function(d){
+    if(d&&(d.clients||d.staff)){schedPeople=d;console.log("[NEW SHIFT] Loaded "+((d.clients||[]).length)+" clients, "+((d.staff||[]).length)+" staff")}
+    _openNewShiftModalInner();
+  }).catch(function(){_openNewShiftModalInner()});
+  return;
+}
+_openNewShiftModalInner();
+}
+function _openNewShiftModalInner(){
 var ov=document.createElement("div");ov.id="newShiftOverlay";
 ov.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px";
 ov.onclick=function(e){if(e.target===ov)ov.remove()};
@@ -16162,12 +16320,17 @@ function enrollCandidate(){
   if(!opts.length){ if(msg) msg.innerHTML='<span style="color:var(--orange)">Please select at least one course</span>'; return; }
   var candidateId=sel.value;
   var candidateName=sel.options[sel.selectedIndex].text.split(" \u2014 ")[0];
+  // Find staff email from contacts data
+  var candidateRecord=contacts.find(function(ct){return(ct.id||ct.airtable_id)===candidateId});
+  var candidateEmail=candidateRecord?candidateRecord.email:"";
+  var candidateFirstName=candidateRecord?(candidateRecord.firstName||candidateName.split(" ")[0]):(candidateName.split(" ")[0]);
   var courses=opts.map(function(o){ return lmsCourses[parseInt(o.value)]; }).filter(Boolean);
   if(msg) msg.innerHTML='<span style="color:var(--teal)">Enrolling...</span>';
   var promises=courses.map(function(c){
     return apiCall("POST","/api/lms/enroll-v2",{
       staffId:candidateId,staffName:candidateName,
-      courseId:c.airtableId,courseName:c.name
+      courseId:c.airtableId,courseName:c.name,
+      staffEmail:candidateEmail,staffFirstName:candidateFirstName
     });
   });
   Promise.all(promises).then(function(results){
@@ -16201,11 +16364,14 @@ function renderTasksDashboard(){
   var data=tasksData;
   // ── Stats ──
   var total=data.length;
-  var done=data.filter(function(t){return t.status==="Completed"}).length;
-  var prog=data.filter(function(t){return t.status==="In Progress"}).length;
-  var ns=data.filter(function(t){return t.status==="Not Started"}).length;
-  var crit=data.filter(function(t){return t.priority==="Critical"}).length;
-  var overdue=data.filter(function(t){return t.dueDate&&t.status!=="Completed"&&new Date(t.dueDate)<new Date()}).length;
+  // Log distinct status values for debugging
+  var statusSet={};data.forEach(function(t){statusSet[t.status||"(empty)"]=true});
+  console.log("[TASKS] Distinct status values:",Object.keys(statusSet).join(", "),"| Total:",total);
+  var done=data.filter(function(t){return(t.status||"").toLowerCase()==="completed"}).length;
+  var prog=data.filter(function(t){var s=(t.status||"").toLowerCase();return s==="in progress"||s==="in-progress"||s==="inprogress"}).length;
+  var ns=data.filter(function(t){var s=(t.status||"").toLowerCase();return s==="not started"||s==="not_started"||s==="notstarted"||!t.status}).length;
+  var crit=data.filter(function(t){return(t.priority||"").toLowerCase()==="critical"}).length;
+  var overdue=data.filter(function(t){return t.dueDate&&(t.status||"").toLowerCase()!=="completed"&&new Date(t.dueDate)<new Date()}).length;
   // ── Client list ──
   var clientSet={};data.forEach(function(t){if(t.clientName)clientSet[t.clientName]=(clientSet[t.clientName]||0)+1});
   var clients=Object.keys(clientSet).sort();
@@ -16358,7 +16524,7 @@ function getFilteredTasks(){
   var stf=tasksFilters.staff||"";
   return tasksData.filter(function(t){
     var matchQ=!q||(t.taskName||"").toLowerCase().indexOf(q)>=0||(t.clientName||"").toLowerCase().indexOf(q)>=0||(t.assignee||"").toLowerCase().indexOf(q)>=0||(t.typeOfUpdate||"").toLowerCase().indexOf(q)>=0;
-    var matchS=!sf||t.status===sf;
+    var matchS=!sf||(t.status||"").toLowerCase()===sf.toLowerCase();
     var matchP=!pf||t.priority===pf;
     var matchC=!cf||t.clientName===cf;
     var matchSt=!stf||(t.assignee||"").indexOf(stf)>=0;
@@ -16381,13 +16547,13 @@ function filterTX(){
   if(countEl)countEl.textContent=ft.length+" of "+tasksData.length+" tasks";
   var tbody=document.getElementById("txTbody");if(!tbody)return;
   var PRI_COL={"Critical":"#dc2626","High":"#d97706","Medium":"#0891b2","Low":"#059669"};
-  var STA_COL={"Completed":"#059669","In Progress":"#2563eb","Not Started":"#6b7280"};
+  var STA_COL={"Completed":"#059669","In Progress":"#2563eb","Not Started":"#6b7280","completed":"#059669","in progress":"#2563eb","in-progress":"#2563eb","not started":"#6b7280","not_started":"#6b7280"};
   var rows="";
   if(ft.length===0){rows='<tr><td colspan="8" style="padding:40px;text-align:center;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">📋</div><div style="font-size:13px;font-weight:600">No tasks match filters</div></td></tr>';}
   else{
     ft.forEach(function(t){
-      var pc=PRI_COL[t.priority]||"#6b7280";var sc=STA_COL[t.status]||"#6b7280";
-      var isOverdue=t.dueDate&&t.status!=="Completed"&&new Date(t.dueDate)<new Date();
+      var pc=PRI_COL[t.priority]||"#6b7280";var sc=STA_COL[t.status]||STA_COL[(t.status||"").toLowerCase()]||"#6b7280";
+      var isOverdue=t.dueDate&&(t.status||"").toLowerCase()!=="completed"&&new Date(t.dueDate)<new Date();
       var dueFmt=fmtTXDateShort(t.dueDate);
       var createdFmt=fmtTXDate(t.createdDate);
       var names=(t.assignee||"").split(",").map(function(n){return n.trim()}).filter(Boolean);
@@ -16432,7 +16598,8 @@ function drawTaskCharts(data,staffSet,clientSet){
 
   // Status pie
   var statusCounts={"Not Started":0,"In Progress":0,"Completed":0};
-  data.forEach(function(t){var s=t.status||"Not Started";if(statusCounts[s]!==undefined)statusCounts[s]++;else statusCounts["Not Started"]++});
+  var _scMap={"not started":"Not Started","not_started":"Not Started","notstarted":"Not Started","in progress":"In Progress","in-progress":"In Progress","inprogress":"In Progress","completed":"Completed"};
+  data.forEach(function(t){var s=t.status||"Not Started";var mapped=_scMap[(s||"").toLowerCase()]||s;if(statusCounts[mapped]!==undefined)statusCounts[mapped]++;else statusCounts["Not Started"]++});
   var sc1=document.getElementById("statusPieChart");
   if(sc1){new Chart(sc1,{type:"doughnut",data:{labels:Object.keys(statusCounts),datasets:[{data:Object.values(statusCounts),backgroundColor:["#e5e7eb","#3b82f6","#10b981"],borderWidth:2,borderColor:"#fff"}]},options:{responsive:true,plugins:{legend:{position:"bottom",labels:{font:{size:10},padding:8}}}}})}
 
@@ -16452,8 +16619,9 @@ function drawTaskCharts(data,staffSet,clientSet){
     data.forEach(function(t){
       (t.assignee||"").split(",").forEach(function(s){
         s=s.trim();if(!staffDone[s]&&staffDone[s]!==0)return;
-        if(t.status==="Completed")staffDone[s]++;
-        else if(t.status==="In Progress")staffProg[s]++;
+        var _sl=(t.status||"").toLowerCase();
+        if(_sl==="completed")staffDone[s]++;
+        else if(_sl==="in progress"||_sl==="in-progress")staffProg[s]++;
         else staffNS[s]++;
       });
     });
@@ -16521,8 +16689,8 @@ function renderStaffLeaderboard(staffSet,staffList,data){
 function openTaskDetailModal(taskId){
   var t=tasksData.find(function(x){return x.id===taskId});if(!t)return;
   var PRI_COL={"Critical":"#dc2626","High":"#d97706","Medium":"#0891b2","Low":"#059669"};
-  var STA_COL={"Completed":"#059669","In Progress":"#2563eb","Not Started":"#6b7280"};
-  var pc=PRI_COL[t.priority]||"#6b7280";var sc=STA_COL[t.status]||"#6b7280";
+  var STA_COL={"Completed":"#059669","In Progress":"#2563eb","Not Started":"#6b7280","completed":"#059669","in progress":"#2563eb","in-progress":"#2563eb","not started":"#6b7280","not_started":"#6b7280"};
+  var pc=PRI_COL[t.priority]||"#6b7280";var sc=STA_COL[t.status]||STA_COL[(t.status||"").toLowerCase()]||"#6b7280";
   var existing=document.getElementById("taskDetailOverlay");if(existing)existing.remove();
   var overlay=document.createElement("div");overlay.id="taskDetailOverlay";
   overlay.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px";
@@ -16579,7 +16747,7 @@ function openTaskDetailModal(taskId){
   h+='<div style="margin-bottom:14px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px">Status</div>';
   h+='<div style="display:flex;gap:8px;flex-wrap:wrap">';
   ["Not Started","In Progress","Completed"].forEach(function(sv){
-    var svc=STA_COL[sv]||"#6b7280";var isCur=t.status===sv;
+    var svc=STA_COL[sv]||"#6b7280";var isCur=(t.status||"").toLowerCase()===sv.toLowerCase();
     h+='<button onclick="txModalStatus(\''+taskId+'\',\''+sv+'\')" style="padding:7px 16px;border-radius:20px;border:2px solid '+svc+';font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;background:'+(isCur?svc:"transparent")+';color:'+(isCur?"#fff":svc)+'">'+sv+'</button>';
   });
   h+='</div></div>';
@@ -17900,6 +18068,15 @@ h+='<div style="font-size:13px;font-weight:700;color:var(--text)">'+(d.docType||
 h+='<span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;background:'+statusBg+';color:'+statusColor+'">'+(d.statusOfDoc||"—")+'</span>';
 if(d.uniqueRef)h+='<span style="font-size:9px;font-family:monospace;color:var(--muted);background:var(--surface2);padding:2px 6px;border-radius:4px">#'+d.uniqueRef+'</span>';
 h+='</div>';
+var vis = d.visibility || "both";
+h += '<div style="margin-top:6px;display:flex;gap:4px;align-items:center">';
+h += '<span style="font-size:9px;font-weight:600;color:var(--muted)">Visible to:</span>';
+["employee","contractor","both","admin_only"].forEach(function(v){
+  var labels = {employee:"Employee",contractor:"Contractor",both:"Both",admin_only:"Admin Only"};
+  var isActive = vis === v;
+  h += '<button class="docVisBtn" data-docid="'+d.id+'" data-vis="'+v+'" style="padding:2px 8px;font-size:9px;font-weight:'+(isActive?"700":"500")+';border-radius:6px;border:1px solid '+(isActive?"var(--teal)":"var(--border)")+';background:'+(isActive?"rgba(10,147,150,.1)":"var(--surface2)")+';color:'+(isActive?"var(--teal)":"var(--muted)")+';cursor:pointer;font-family:inherit">'+labels[v]+'</button>';
+});
+h += '</div>';
 if(expiryDisplay)h+='<div style="font-size:10px;color:var(--muted);margin-top:3px">Expiry: '+expiryDisplay+'</div>';
 if(d.lastUpdated){
 var lu=new Date(d.lastUpdated);
@@ -17940,9 +18117,30 @@ el.querySelectorAll(".clientDocEditBtn").forEach(function(btn){
     );
   });
 });
+// Wire up visibility buttons
+el.querySelectorAll(".docVisBtn").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    setDocVisibility(btn.getAttribute("data-docid"), btn.getAttribute("data-vis"));
+  });
+});
 }).catch(function(e){
 el.innerHTML='<div style="text-align:center;padding:20px;color:var(--red)">Failed to load: '+e.message+'</div>';
 });
+}
+
+function setDocVisibility(docId, vis) {
+  apiCall("PATCH", "/api/clients/docs/visibility", { docId: docId, visibility: vis })
+    .then(function(d) {
+      if (d.error) { showToast("Failed: " + d.error, "error"); return; }
+      showToast("Visibility updated", "success");
+      var c = selectedConv && selectedConv._clientData;
+      if (c) loadClientDocs(c.id, c.name);
+      else if (selectedConv) {
+        var cn = selectedConv.linkedToClient || selectedConv.name || "";
+        if (Array.isArray(cn)) cn = cn[0] || "";
+        loadClientDocs(selectedConv.id, cn);
+      }
+    }).catch(function(e) { showToast("Failed: " + e.message, "error"); });
 }
 
 function copyDocLink(url){
@@ -19791,7 +19989,7 @@ var leadsStageFilterVal="";
 function renderLeadsList(rp){
 var h='<div style="padding:24px;overflow-y:auto;height:100%">';
 h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div><div style="font-size:18px;font-weight:700;color:var(--text)">Leads</div><div style="font-size:11px;color:var(--muted)">'+leadsData.length+' leads</div></div>';
-h+='<div style="display:flex;gap:6px"><button class="btn btn-teal btn-sm" onclick="setLeadsView(\'kanban\')">📌 Kanban</button></div></div>';
+h+='<div style="display:flex;gap:6px"><button class="btn btn-p btn-sm" onclick="openAddLeadSlideOver()">+ Add New</button><button class="btn btn-teal btn-sm" onclick="setLeadsView(\'kanban\')">📌 Kanban</button></div></div>';
 // Search + SC email filter row
 h+='<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">';
 h+='<input id="leadsSearch" oninput="filterLeadsList()" placeholder="Search leads by name, disability, SC..." style="flex:1;min-width:250px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none">';
@@ -19836,10 +20034,74 @@ function updateLeadStage(idx,newStage){
 var r=leadsData[idx];if(!r)return;r.stage=newStage;
 if(r.airtableId)apiCall("PATCH","/api/leads/"+r.airtableId,{stage:newStage}).catch(function(){})}
 
+// ─── Add New Lead Slide-Over ───
+function openAddLeadSlideOver(){
+var existing=document.getElementById("addLeadSlideOver");if(existing)existing.remove();
+var overlay=document.createElement("div");overlay.id="addLeadSlideOver";
+overlay.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;justify-content:flex-end";
+overlay.onclick=function(e){if(e.target===overlay)overlay.remove()};
+var vttBtn=function(id){return '<button type="button" onclick="startVoiceToText(\''+id+'\')" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:2px 6px;font-size:11px;background:rgba(239,68,68,.08);color:#EF4444;border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);cursor:pointer;font-family:inherit" title="Voice to text">🎤</button>'};
+var fld=function(id,label,type){
+  type=type||"text";
+  if(type==="select"){
+    return '<div style="position:relative"><label style="font-size:10px;font-weight:600;color:var(--muted)">'+label+'</label><select id="'+id+'" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;margin-top:3px;background:var(--surface2)"><option value="">-- Select --</option><option value="SIL">SIL</option><option value="Community Access">Community Access</option><option value="In-Home Support">In-Home Support</option><option value="Other">Other</option></select></div>';
+  }
+  return '<div style="position:relative"><label style="font-size:10px;font-weight:600;color:var(--muted)">'+label+'</label><input id="'+id+'" type="'+type+'" style="width:100%;padding:8px 30px 8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;margin-top:3px" />'+vttBtn(id)+'</div>';
+};
+var h='<div style="width:460px;max-width:90vw;height:100%;background:var(--surface);box-shadow:-8px 0 30px rgba(0,0,0,.15);display:flex;flex-direction:column;animation:slideInRight .25s ease">';
+h+='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><div style="font-size:16px;font-weight:700;color:var(--text)">+ Add New Lead</div><button onclick="document.getElementById(\'addLeadSlideOver\').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button></div>';
+h+='<div style="flex:1;overflow-y:auto;padding:20px">';
+h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Client Details</div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">';
+h+=fld("nlFirstName","Client First Name");
+h+=fld("nlLastName","Client Last Name");
+h+=fld("nlDisability","Type of Disability");
+h+=fld("nlServiceType","Type of Service","select");
+h+='</div>';
+h+='<div style="margin-bottom:16px">'+fld("nlTriggers","Known Triggers")+'</div>';
+h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;margin-top:8px">Support Coordinator</div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">';
+h+=fld("nlScFirstName","SC First Name");
+h+=fld("nlScLastName","SC Last Name");
+h+=fld("nlScPhone","SC Phone","tel");
+h+=fld("nlScEmail","SC Email","email");
+h+='</div>';
+h+='</div>';
+h+='<div style="padding:16px 20px;border-top:1px solid var(--border);display:flex;gap:8px">';
+h+='<button class="btn btn-p" style="flex:1" onclick="saveNewLead()">Save Lead</button>';
+h+='<button class="btn btn-s" onclick="document.getElementById(\'addLeadSlideOver\').remove()">Cancel</button>';
+h+='</div></div>';
+overlay.innerHTML=h;document.body.appendChild(overlay);
+}
+function saveNewLead(){
+var fn=(document.getElementById("nlFirstName")||{}).value||"";
+var ln=(document.getElementById("nlLastName")||{}).value||"";
+if(!fn&&!ln){showToast("Client name is required","error");return}
+var payload={
+  firstName:fn,lastName:ln,
+  name:(fn+" "+ln).trim(),
+  disabilityType:(document.getElementById("nlDisability")||{}).value||"",
+  serviceType:(document.getElementById("nlServiceType")||{}).value||"",
+  triggers:(document.getElementById("nlTriggers")||{}).value||"",
+  scFirstName:(document.getElementById("nlScFirstName")||{}).value||"",
+  scLastName:(document.getElementById("nlScLastName")||{}).value||"",
+  scPhone:(document.getElementById("nlScPhone")||{}).value||"",
+  scEmail:(document.getElementById("nlScEmail")||{}).value||"",
+  stage:"Enquiry"
+};
+showToast("Creating lead...","info");
+apiCall("POST","/api/leads/create",payload).then(function(d){
+  if(d.error){showToast("Error: "+d.error,"error");return}
+  showToast("Lead created successfully","success");
+  var el=document.getElementById("addLeadSlideOver");if(el)el.remove();
+  leadsLoaded=false;renderLeads();
+}).catch(function(e){showToast("Failed: "+e.message,"error")});
+}
+
 function renderLeadsKanban(rp){
 var h='<div style="padding:24px;overflow-y:auto;height:100%">';
 h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div><div style="font-size:18px;font-weight:700;color:var(--text)">Leads Pipeline</div><div style="font-size:11px;color:var(--muted)">Drag and drop to update lead stages</div></div>';
-h+='<div style="display:flex;gap:6px"><button class="btn btn-teal btn-sm" onclick="setLeadsView(\'list\')">📋 List</button></div></div>';
+h+='<div style="display:flex;gap:6px"><button class="btn btn-p btn-sm" onclick="openAddLeadSlideOver()">+ Add New</button><button class="btn btn-teal btn-sm" onclick="setLeadsView(\'list\')">📋 List</button></div></div>';
 h+='<div class="kanban-wrap">';
 leadsStages.forEach(function(stage){
 var col=leadsColors[stage];
@@ -22556,8 +22818,9 @@ function initTwilioDevice() {
     setTimeout(initTwilioDevice, 2000);
     return;
   }
-  apiCall("GET", "/api/twilio/token").then(function(data) {
-    if (!data.token) { console.error("Twilio token API response:", JSON.stringify(data)); return; }
+  // Token endpoint: backend route is /api/voice/dialer/token
+  apiCall("GET", "/api/voice/dialer/token").then(function(data) {
+    if (!data.token) { console.error("Twilio token API response:", JSON.stringify(data)); updateSoftphoneStatus("offline"); return; }
     twilioIdentity = data.identity;
     twilioDevice = new Twilio.Device(data.token, {
       codecPreferences: ["opus","pcmu"],
@@ -22565,12 +22828,16 @@ function initTwilioDevice() {
     });
     // SDK 2.x uses .register() and emits "registered" instead of "ready"
     twilioDevice.on("registered", function() {
-      console.log("Twilio Device ready:", twilioIdentity);
+      console.log("Twilio Device registered:", twilioIdentity);
       updateSoftphoneStatus("ready");
+    });
+    twilioDevice.on("unregistered", function() {
+      console.log("Twilio Device unregistered");
+      updateSoftphoneStatus("offline");
     });
     twilioDevice.on("error", function(err) {
       console.error("Twilio Device error:", err.message);
-      updateSoftphoneStatus("offline");
+      updateSoftphoneStatus("error");
     });
     twilioDevice.on("incoming", function(call) {
       twilioConnection = call;
@@ -22593,21 +22860,21 @@ function initTwilioDevice() {
     });
     twilioDevice.on("tokenWillExpire", function() {
       console.log("Twilio token expiring — refreshing");
-      apiCall("GET", "/api/twilio/token").then(function(d) {
+      apiCall("GET", "/api/voice/dialer/token").then(function(d) {
         if (d.token) twilioDevice.updateToken(d.token);
-      });
+      }).catch(function(e) { console.log("Token refresh failed:", e.message); });
     });
     twilioDevice.register();
     // Refresh token before expiry (50 min fallback)
     setTimeout(function(){ initTwilioDevice(); }, 50*60*1000);
-  }).catch(function(e){ console.log("Twilio token fetch failed:", e.message); });
+  }).catch(function(e){ console.log("Twilio token fetch failed:", e.message); updateSoftphoneStatus("offline"); });
 }
 
 function updateSoftphoneStatus(status) {
   var dot = document.getElementById("softphoneDot");
   var label = document.getElementById("softphoneLabel");
   if (!dot || !label) return;
-  var map = { ready: ["#10b981","Ready"], ringing: ["#f59e0b","Ringing..."], active: ["#ef4444","On Call"], offline: ["#94a3b8","Offline"] };
+  var map = { ready: ["#10b981","Ready"], ringing: ["#f59e0b","Ringing..."], active: ["#ef4444","On Call"], offline: ["#94a3b8","Offline"], error: ["#ef4444","Error"] };
   var s = map[status] || map.offline;
   dot.style.background = s[0];
   label.textContent = s[1];
@@ -22730,7 +22997,7 @@ window.loadWeeklyReports = function(clientName) {
   if (!el) return;
   el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted)"><div class="spin" style="width:20px;height:20px;border:2px solid var(--border);border-top-color:#7c3aed;border-radius:50%;margin:0 auto 8px"></div>Loading weekly reports...</div>';
 
-  apiCall("GET", "/api/weekly-reports?clientName=" + encodeURIComponent(clientName))
+  apiCall("GET", "/api/reports/weekly?clientName=" + encodeURIComponent(clientName))
     .then(function(data) {
       var reports = Array.isArray(data) ? data : [];
       var h = '';
@@ -22894,7 +23161,7 @@ window.runWeeklyReportFlow = function(clientName, from, to) {
   };
 
   bar(20, 'Fetching service records...');
-  fetch('/api/stakeholder-report', { method: 'POST', headers: headers, body: JSON.stringify({ from: from, to: to, clients: [clientName] }) })
+  fetch('/api/reports/weekly', { method: 'POST', headers: headers, body: JSON.stringify({ from: from, to: to, clients: [clientName] }) })
     .then(function(r) { if (!r.ok) throw new Error('Server error ' + r.status); return r.json(); })
     .then(function(data) {
       bar(80, 'Building report...');
@@ -23603,7 +23870,7 @@ function toggleAutomation(id,enable){if(!confirm((enable?"Enable":"Disable")+" t
 function previewAutomation(id){apiCall("GET","/api/automations/"+id+"/preview-last").then(function(d){var a=d.automation||{};var run=d.lastRun;var ov=document.createElement("div");ov.id="previewModal";ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:flex;align-items:center;justify-content:center";ov.onclick=function(e){if(e.target===ov)ov.remove()};ov.innerHTML='<div style="background:var(--card,#0F2440);border-radius:16px;padding:24px;width:560px;max-height:80vh;overflow-y:auto"><div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:16px">👁 Preview — '+a.name+'</div><div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:16px"><div style="font-size:12px;color:var(--muted)">Status: <strong style="color:'+(a.enabled?"var(--ok)":"var(--error)")+'">'+(a.enabled?"Active":"Paused")+'</strong></div>'+(run?'<div style="font-size:12px;color:var(--muted);margin-top:4px">Last run: '+fmtDateInTZ(run.run_at)+' | '+(run.status||"Unknown")+' | '+(run.output_summary||"No output")+'</div>':'<div style="font-size:12px;color:var(--muted);margin-top:4px">No runs yet</div>')+'</div><button onclick="document.getElementById(\'previewModal\').remove()" style="width:100%;padding:10px;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:8px;font-weight:600;cursor:pointer;font-family:inherit">Close</button></div>';document.body.appendChild(ov)}).catch(function(e){showToast("Error: "+e.message,"error")})}
 
 // ── Phase 2 sidebar permissions ──
-function applyPhase2Permissions(){if(!currentUser)return;var show=isPhase2Role();document.querySelectorAll(".phase2-nav").forEach(function(el){el.style.display=show?"":"none"});var autoTab=document.querySelector('#intelSub [data-subview="automations"]');if(autoTab&&currentUser.role!=="superadmin"){/* Keep visible but check on render */}}
+function applyPhase2Permissions(){if(!currentUser)return;var show=isPhase2Role();document.querySelectorAll(".phase2-nav").forEach(function(el){if(el.id==="navIntelligence"||el.closest("#intelSub")){el.style.display="none";return}el.style.display=show?"":"none"});var intelSub=document.getElementById("intelSub");if(intelSub)intelSub.style.display="none";var autoTab=document.querySelector('#intelSub [data-subview="automations"]');if(autoTab&&currentUser.role!=="superadmin"){/* Keep visible but check on render */}}
 if(document.readyState==="complete"||document.readyState==="interactive"){setTimeout(applyPhase2Permissions,100)}else{document.addEventListener("DOMContentLoaded",applyPhase2Permissions)}
 
 // Enhance logout to log event

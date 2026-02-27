@@ -240,6 +240,7 @@ router.get('/people', function(req, res) {
     silProps.forEach(function(p) { silLookup[p.id] = p; });
 
     return airtable.fetchAllFromTableView("Clients", "Client Active View").then(function(records) {
+      console.log("[PEOPLE] Client Active View returned " + (records || []).length + " records");
       var seenIds = {};
       var seenNames = {};
       var clients = (records || []).map(function(r) {
@@ -307,10 +308,20 @@ router.get('/people', function(req, res) {
 
   // Fetch active employees + active contractors in parallel, then merge
   var employeesPromise = airtable.fetchAllFromTableView("All Contacts", "Active Contacts 2026").then(function(records) {
-    return (records || []).map(mapContactToStaff).filter(function(s) { return s; });
+    console.log("[PEOPLE] Active Contacts 2026 view returned " + (records || []).length + " records");
+    var mapped = (records || []).map(mapContactToStaff).filter(function(s) { return s; });
+    if (mapped.length === 0) {
+      console.log("[PEOPLE] No staff from Active Contacts 2026 view -- trying fallback to All Contacts table...");
+      return airtable.fetchAllFromTable("All Contacts").then(function(allRecs) {
+        console.log("[PEOPLE] Fallback: All Contacts table returned " + (allRecs || []).length + " records");
+        return (allRecs || []).map(mapContactToStaff).filter(function(s) { return s; });
+      }).catch(function(e2) { console.error("[PEOPLE] Fallback fetch error:", e2.message); return []; });
+    }
+    return mapped;
   }).catch(function(e) { console.error("Scheduler employees error:", e.message); return []; });
 
   var contractorsPromise = airtable.fetchAllFromTableView("All Contacts", "Active Contractors").then(function(records) {
+    console.log("[PEOPLE] Active Contractors view returned " + (records || []).length + " records");
     return (records || []).map(mapContactToStaff).filter(function(s) { return s; });
   }).catch(function(e) { console.log("Active Contractors view not found -- skipping"); return []; });
 
@@ -566,6 +577,10 @@ router.post('/import', function(req, res) {
   var shifts = req.body.shifts;
   if (!shifts || !Array.isArray(shifts) || shifts.length === 0) return res.json({ created: 0 });
   console.log("[IMPORT] Received " + shifts.length + " shifts -- checking for duplicates...");
+  // Debug: log first 3 rows
+  shifts.slice(0, 3).forEach(function(s, i) {
+    console.log("[IMPORT] Row " + i + ": client=" + (s.clientName||"") + " staff=" + (s.staffName||"") + " start=" + (s.startShift||"") + " end=" + (s.endShift||"") + " shiftId=" + (s.shiftId||""));
+  });
 
   // Step 1: Fetch existing Unique Ref #s for deduplication
   var existingPromise = airtable.fetchAllFromTable("Rosters 2025", "NOT({Unique Ref #} = '')").catch(function() { return []; });
@@ -669,55 +684,60 @@ router.post('/import', function(req, res) {
 //  DELETE /api/scheduling/clear-imported — Delete roster records with blank Shift Status
 // ═══════════════════════════════════════════════════════════
 router.delete('/clear-imported', function(req, res) {
-  var hasAirtable = env.airtable.apiKey && env.airtable.baseId;
-  var hasSupabase = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY;
-  if (!hasAirtable && !hasSupabase) return res.json({ deleted: 0, error: "Database not configured" });
-  console.log("[CLEAR] Fetching roster records with blank Shift Status...");
+  try {
+    var hasAirtable = env.airtable.apiKey && env.airtable.baseId;
+    var hasSupabase = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY;
+    if (!hasAirtable && !hasSupabase) return res.status(400).json({ deleted: 0, error: "Database not configured" });
+    console.log("[CLEAR] Fetching roster records with blank Shift Status...");
 
-  airtable.fetchAllFromTable("Rosters 2025").then(function(records) {
-    var toClear = (records || []).filter(function(r) {
-      var status = (r.fields || {})["Shift Status"];
-      return !status || (typeof status === "string" && status.trim() === "");
-    });
-    console.log("[CLEAR] Found " + toClear.length + " records with blank Shift Status out of " + (records || []).length + " total");
-    if (toClear.length === 0) return res.json({ deleted: 0, message: "No records with blank Shift Status found." });
-
-    var ids = toClear.map(function(r) { return r.id; });
-    var batches = [];
-    for (var i = 0; i < ids.length; i += 10) batches.push(ids.slice(i, i + 10));
-
-    var deleted = 0;
-    var errors = [];
-
-    function deleteBatch(idx) {
-      if (idx >= batches.length) {
-        console.log("[CLEAR] Complete: " + deleted + " deleted, " + errors.length + " errors");
-        return res.json({ deleted: deleted, total: toClear.length, errors: errors.length > 0 ? errors : undefined });
-      }
-      var batch = batches[idx];
-      var qs = batch.map(function(id) { return "records[]=" + encodeURIComponent(id); }).join("&");
-      airtable.rawFetch("Rosters 2025", "DELETE", "?" + qs).then(function(data) {
-        if (data && data.error) {
-          console.error("[CLEAR] Batch " + idx + " error:", JSON.stringify(data.error));
-          errors.push({ batch: idx, error: data.error.message || JSON.stringify(data.error) });
-        } else {
-          var count = (data.records || []).length;
-          deleted += count;
-          console.log("[CLEAR] Batch " + idx + ": " + count + " deleted (running total: " + deleted + ")");
-        }
-        deleteBatch(idx + 1);
-      }).catch(function(e) {
-        console.error("[CLEAR] Batch " + idx + " fetch error:", e.message);
-        errors.push({ batch: idx, error: e.message });
-        deleteBatch(idx + 1);
+    airtable.fetchAllFromTable("Rosters 2025").then(function(records) {
+      var toClear = (records || []).filter(function(r) {
+        var status = (r.fields || {})["Shift Status"];
+        return !status || (typeof status === "string" && status.trim() === "");
       });
-    }
+      console.log("[CLEAR] Found " + toClear.length + " records with blank Shift Status out of " + (records || []).length + " total");
+      if (toClear.length === 0) return res.json({ deleted: 0, message: "No records with blank Shift Status found." });
 
-    deleteBatch(0);
-  }).catch(function(e) {
-    console.error("[CLEAR] Fetch failed:", e.message);
-    res.json({ deleted: 0, error: "Failed to fetch records: " + e.message });
-  });
+      var ids = toClear.map(function(r) { return r.id; });
+      var batches = [];
+      for (var i = 0; i < ids.length; i += 10) batches.push(ids.slice(i, i + 10));
+
+      var deleted = 0;
+      var errors = [];
+
+      function deleteBatch(idx) {
+        if (idx >= batches.length) {
+          console.log("[CLEAR] Complete: " + deleted + " deleted, " + errors.length + " errors");
+          return res.json({ deleted: deleted, total: toClear.length, errors: errors.length > 0 ? errors : undefined });
+        }
+        var batch = batches[idx];
+        var qs = batch.map(function(id) { return "records[]=" + encodeURIComponent(id); }).join("&");
+        airtable.rawFetch("Rosters 2025", "DELETE", "?" + qs).then(function(data) {
+          if (data && data.error) {
+            console.error("[CLEAR] Batch " + idx + " error:", JSON.stringify(data.error));
+            errors.push({ batch: idx, error: data.error.message || JSON.stringify(data.error) });
+          } else {
+            var count = (data.records || []).length;
+            deleted += count;
+            console.log("[CLEAR] Batch " + idx + ": " + count + " deleted (running total: " + deleted + ")");
+          }
+          deleteBatch(idx + 1);
+        }).catch(function(e) {
+          console.error("[CLEAR] Batch " + idx + " fetch error:", e.message);
+          errors.push({ batch: idx, error: e.message });
+          deleteBatch(idx + 1);
+        });
+      }
+
+      deleteBatch(0);
+    }).catch(function(e) {
+      console.error("[CLEAR] Fetch failed:", e.message);
+      res.status(500).json({ deleted: 0, error: "Failed to fetch records: " + e.message });
+    });
+  } catch (err) {
+    console.error("[CLEAR] Unexpected error:", err.message);
+    res.status(500).json({ deleted: 0, error: "Clear imported failed: " + err.message });
+  }
 });
 
 
@@ -1309,6 +1329,36 @@ router.post('/roc/report', rocAuth, function(req, res) {
     console.error("RoC Report participants error:", err);
     res.status(500).json({ error: "Failed to generate report" });
   });
+});
+
+
+// ═══════════════════════════════════════════════════════════
+//  GET /api/scheduling/staff-shifts — shifts for a specific staff member
+// ═══════════════════════════════════════════════════════════
+router.get('/staff-shifts', authenticate, function(req, res) {
+  var staffId = req.query.staffId;
+  if (!staffId) return res.json({ shifts: [] });
+  airtable.fetchAllFromTable(airtable.TABLES.ROSTERS || 'Rosters 2025').then(function(records) {
+    var shifts = (records || []).filter(function(r) {
+      var f = r.fields || {};
+      var staffEmail = f["Staff Email (Text)"] || f["Staff Email"] || "";
+      var staffName = f["Staff Name (Text)"] || f["Staff Name"] || "";
+      return staffEmail === staffId || staffName === staffId;
+    }).map(function(r) {
+      var f = r.fields || {};
+      return {
+        id: r.id,
+        clientName: f["Client Name (Text)"] || f["Client Name"] || "",
+        startShift: f["Start Shift"] || "",
+        endShift: f["End Shift"] || "",
+        totalHoursDecimal: f["Total Hours (Decimal)"] || "",
+        status: f["Shift Status"] || "",
+        dayType: f["Day Type"] || ""
+      };
+    });
+    shifts.sort(function(a, b) { return (b.startShift || "").localeCompare(a.startShift || ""); });
+    res.json({ shifts: shifts });
+  }).catch(function(e) { res.json({ shifts: [], error: e.message }); });
 });
 
 

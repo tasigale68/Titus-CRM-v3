@@ -4,6 +4,7 @@ const { db } = require('../../db/sqlite');
 const { getUserPermissions } = require('../../services/permissions');
 const { logAudit } = require('../../services/audit');
 const airtable = require('../../services/database');
+const sb = require('../../services/supabaseClient');
 const env = require('../../config/env');
 
 const router = express.Router();
@@ -779,6 +780,21 @@ router.get('/pay-rates/contractor', function (req, res) {
 router.get('/pay-rates/tfn', function (req, res) {
   if (!env.airtable.apiKey) return res.json([]);
   airtable.fetchAllFromTable('TFN Pay Rates').then(function (records) {
+    if (!records || records.length === 0) {
+      return res.json([{
+        level: "Home Care Stream",
+        rates: {
+          "Level 1 Casual": "$32.27/hr",
+          "Level 2 Casual": "$34.19/hr",
+          "Level 3 Casual": "$36.24/hr",
+          "Level 4 Casual": "$38.49/hr",
+          "Saturday Loading": "150%",
+          "Sunday Loading": "200%",
+          "Public Holiday": "250%"
+        },
+        source: "SCHADS Award 2025-26 (fallback)"
+      }]);
+    }
     var result = (records || []).map(function (r) {
       var f = r.fields || {};
       return {
@@ -862,6 +878,31 @@ router.patch('/staff-availability/:id', function (req, res) {
     .then(function (data) {
       if (data.error) return res.json({ error: data.error.message || 'Update failed' });
       res.json({ ok: true });
+
+      // Write contact_history entry to Supabase after successful availability update
+      try {
+        var staffName = req.body.staffName || data.fields && (data.fields['Full Name'] || data.fields['Staff Name'] || data.fields['Name']) || 'Staff member';
+        var contactId = req.body.contactId || (data.fields && data.fields['Contact'] && Array.isArray(data.fields['Contact']) ? data.fields['Contact'][0] : null);
+        var updatedBy = (req.user && (req.user.name || req.user.email)) || 'System';
+        var dateStr = new Date().toISOString().split('T')[0];
+        var statusText = req.body.status || 'Updated';
+
+        if (contactId) {
+          sb.insert('contact_history', {
+            contact_id: contactId,
+            type: 'auto',
+            source: 'system',
+            tag: 'Staff Availability Updated',
+            note: staffName + "'s availability was " + statusText.toLowerCase() + " on " + dateStr + ". Updated by: " + updatedBy + ".",
+            created_by: req.user ? req.user.id : null,
+            created_at: new Date().toISOString()
+          }).catch(function (e) {
+            console.error('[STAFF AVAILABILITY] Failed to write contact_history:', e.message);
+          });
+        }
+      } catch (histErr) {
+        console.error('[STAFF AVAILABILITY] contact_history write error:', histErr.message);
+      }
     })
     .catch(function (err) { res.json({ error: err.message }); });
 });
