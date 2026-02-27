@@ -5028,16 +5028,39 @@ function loadNDISClientSupportPlan(clientName) {
   window._supportPlan.activeSection = 0;
 
   apiCall("GET", "/api/clients/full-support-plan?name=" + encodeURIComponent(clientName)).then(function (data) {
-    window._supportPlan.plan = data.plan || null;
-    window._supportPlan.clientId = data.client_id || null;
+    if (data && data.error) {
+      console.warn('[Support Plan] API returned error:', data.error);
+    }
+    window._supportPlan.plan = (data && data.plan) || null;
+    window._supportPlan.clientId = (data && data.client_id) || null;
 
-    if (!data.plan) {
-      renderSPEmptyState(el, clientName, data.client_id);
+    if (!data || !data.plan) {
+      renderSPEmptyState(el, clientName, (data && data.client_id) || null);
     } else {
       renderSPPopulatedView(el, data.plan, clientName);
     }
   }).catch(function (e) {
-    el.innerHTML = '<div style="color:var(--red);padding:12px;text-align:center;font-size:12px;font-weight:600">Failed to load support plan: ' + (e.message || "Unknown error") + '</div>';
+    console.error('[Support Plan] Failed to load from Supabase, falling back to legacy:', e.message || e);
+    // Fall back to legacy Airtable support plan view
+    spLoadLegacyFallback(el, clientName);
+  });
+}
+
+function spLoadLegacyFallback(el, clientName) {
+  apiCall("GET", "/api/clients/support-plan?name=" + encodeURIComponent(clientName)).then(function (data) {
+    var records = (data && data.records) || [];
+    if (records.length === 0) {
+      var d = selectedConv && selectedConv._clientData;
+      if (d) {
+        renderSupportPlanFromClientData(el, d);
+      } else {
+        el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">🛡️</div><div style="font-size:13px;font-weight:600">No support plan records found</div><div style="font-size:11px;margin-top:4px">No entries in Support Plan for ' + (clientName || 'this participant') + '</div></div>';
+      }
+      return;
+    }
+    renderSupportPlanRecords(el, records, clientName);
+  }).catch(function () {
+    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">🛡️</div><div style="font-size:13px;font-weight:600">Support plan unavailable</div><div style="font-size:11px;margin-top:4px;color:var(--muted)">Could not load support plan data</div></div>';
   });
 }
 
@@ -5543,30 +5566,30 @@ function spAutoCalcReviewDate() {
 function spLoadStaffDropdown(currentValue) {
   var wrap = document.getElementById("spMeta_completed_by_wrap");
   if (!wrap) return;
-  apiCall("GET", "/api/clients/staff-for-dropdown").then(function (staff) {
-    if (!staff || !Array.isArray(staff) || staff.length === 0) {
-      // Fallback: keep text input with warning
-      wrap.innerHTML = '<input id="spMeta_completed_by" value="' + spEsc(currentValue) + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box">' +
-        '<div style="font-size:9px;color:var(--orange);margin-top:3px;font-weight:600">Could not load staff list</div>';
+  var fallbackHtml = '<input id="spMeta_completed_by" value="' + spEsc(currentValue) + '" placeholder="Enter staff name" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box">';
+  apiCall("GET", "/api/clients/staff-for-dropdown").then(function (data) {
+    var staff = (data && data.staff) ? data.staff : (Array.isArray(data) ? data : []);
+    if (!staff || staff.length === 0) {
+      wrap.innerHTML = fallbackHtml;
       return;
     }
     var sel = '<select id="spMeta_completed_by" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box">';
     sel += '<option value="">\u2014 Select Staff Member \u2014</option>';
     var matched = false;
     staff.forEach(function (u) {
-      var isSelected = currentValue && u.name && u.name.toLowerCase() === currentValue.toLowerCase();
+      var uName = u.name || u.full_name || '';
+      var uRole = u.role || '';
+      var isSelected = currentValue && uName && uName.toLowerCase() === currentValue.toLowerCase();
       if (isSelected) matched = true;
-      sel += '<option value="' + spEsc(u.name) + '"' + (isSelected ? ' selected' : '') + '>' + spEsc(u.name) + ' \u2014 ' + spEsc(u.role) + '</option>';
+      sel += '<option value="' + spEsc(uName) + '"' + (isSelected ? ' selected' : '') + '>' + spEsc(uName) + ' \u2014 ' + spEsc(uRole) + '</option>';
     });
-    // If current value exists but didn't match any user, add it as a custom option
     if (currentValue && !matched) {
       sel += '<option value="' + spEsc(currentValue) + '" selected>' + spEsc(currentValue) + ' (custom)</option>';
     }
     sel += '</select>';
     wrap.innerHTML = sel;
   }).catch(function () {
-    wrap.innerHTML = '<input id="spMeta_completed_by" value="' + spEsc(currentValue) + '" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:11px;font-family:inherit;background:var(--surface);box-sizing:border-box">' +
-      '<div style="font-size:9px;color:var(--orange);margin-top:3px;font-weight:600">Could not load staff list</div>';
+    wrap.innerHTML = fallbackHtml;
   });
 }
 
