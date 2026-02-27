@@ -1177,7 +1177,7 @@ var initials=(currentUser.name||currentUser.email).substring(0,2).toUpperCase();
 // Office users default to Contacts Overview instead of My Details
 var _officeRoles=["superadmin","director","admin","team_leader","roster_officer","manager","ceo","office_staff"];
 if(currentUser&&_officeRoles.indexOf(currentUser.role)>=0&&canView("contacts_overview")){currentView="contactsOverview";contactsSubView="overview"}
-renderImpersonationBanner();updateTzBar();initDialerPad();initDraggableFabs();loadData();loadMyAvailability();setTimeout(function(){initTwilioDevice();renderSoftphoneIndicator();},2000);
+renderImpersonationBanner();updateTzBar();initDialerPad();initDraggableFabs();loadData();loadMyAvailability();setTimeout(function(){initTwilioDevice();renderSoftphoneIndicator();},2000);_startMsgPoll();setTimeout(_loadChatNameMap,3000);
 // Refresh permissions from server — localStorage may be stale after admin edits
 apiCall("GET","/api/auth/me").then(function(d){
 if(!d||!d.user)return;
@@ -1327,6 +1327,37 @@ function renderConvThread(){if(convFilter==="chats"){renderChatThreadDetail();re
 var _messengerOpen=false;
 var _messengerMessages=[];
 var _messengerActiveConv=null;
+var _msgUnreadCount=0;
+var _msgPollTimer=null;
+var _msgTab="chats";
+// Name resolution cache: email → full name
+window._chatNameMap=window._chatNameMap||{};
+
+// Messenger unread badge check (polls every 15s)
+function _checkMsgUnread(){
+apiCall("GET","/api/chat/unread-count").then(function(d){
+var count=d&&d.count||0;
+var prev=_msgUnreadCount;
+_msgUnreadCount=count;
+// Update badge on messenger FAB
+var fab=document.getElementById("fabMsg");
+if(fab){var badge=fab.querySelector(".msg-badge");
+if(count>0){if(!badge){badge=document.createElement("span");badge.className="msg-badge";badge.style.cssText="position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px";fab.style.position="relative";fab.appendChild(badge)}badge.textContent=count>99?"99+":count}
+else if(badge){badge.remove()}}
+// Toast for new messages
+if(count>prev&&prev>=0&&!_messengerOpen){showToast("You have "+count+" unread message"+(count!==1?"s":""),"info")}
+}).catch(function(){})}
+function _startMsgPoll(){if(_msgPollTimer)return;_checkMsgUnread();_msgPollTimer=setInterval(_checkMsgUnread,15000)}
+function _stopMsgPoll(){if(_msgPollTimer){clearInterval(_msgPollTimer);_msgPollTimer=null}}
+
+// Resolve email→name map on load
+function _loadChatNameMap(){
+apiCall("GET","/api/chat/resolve-names?emails="+(contacts||[]).map(function(c){return c.email}).filter(Boolean).join(",")).then(function(map){
+if(map&&typeof map==="object")window._chatNameMap=map;
+// Also add current user
+if(currentUser&&currentUser.email)window._chatNameMap[currentUser.email.toLowerCase()]=currentUser.name||currentUser.email;
+}).catch(function(){})}
+
 function openMessengerPopup(){
 if(_messengerOpen){var el=document.getElementById("messengerPopup");if(el)el.remove();_messengerOpen=false;return}
 _messengerOpen=true;
@@ -1358,12 +1389,15 @@ var h=tabs;convs.forEach(function(c){
 var lastMsg=(c.lastMessage||c.last_message||"");
 var timeStr=c.lastMessageTime||c.updated_at||"";
 if(timeStr)timeStr=TitusDate.formatDayDateTime(timeStr);
+// Resolve email-based title to full name
+var dispTitle=c.title||c.name||"Chat";
+if(dispTitle.indexOf("@")>=0&&window._chatNameMap){var parts=dispTitle.split(",").map(function(p){p=p.trim();var resolved=window._chatNameMap[p.toLowerCase()];return resolved||p});dispTitle=parts.join(", ")}
 h+='<div onclick="openMsgThread(\''+c.id+'\')" style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;display:flex;align-items:center;gap:10px" onmouseover="this.style.background=\'var(--surface2)\'" onmouseout="this.style.background=\'none\'">';
-h+='<div style="width:36px;height:36px;border-radius:50%;background:rgba(10,147,150,.1);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">'+getInitials(c.title||c.name||"?")+'</div>';
-h+='<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(c.title||c.name||"Chat")+'</span>';
+h+='<div style="width:36px;height:36px;border-radius:50%;background:rgba(10,147,150,.1);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">'+getInitials(dispTitle)+'</div>';
+h+='<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:'+(c.unreadCount>0?"700":"600")+';color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+dispTitle+'</span>';
 h+='<span style="font-size:9px;color:var(--muted);white-space:nowrap;margin-left:4px">'+timeStr+'</span></div>';
 h+='<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+lastMsg+'</div></div>';
-if(c.unreadCount>0)h+='<span style="background:var(--teal);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;flex-shrink:0">'+c.unreadCount+'</span>';
+if(c.unreadCount>0)h+='<span style="background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;flex-shrink:0;min-width:16px;text-align:center">'+c.unreadCount+'</span>';
 h+='</div>'});
 list.innerHTML=h
 }).catch(function(){var list=document.getElementById("msgConvList");if(list)list.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:11px">Could not load conversations</div>'})}
@@ -1474,30 +1508,57 @@ var popup=document.getElementById("messengerPopup");if(!popup)return;
 apiCall("GET","/api/chat/conversations/"+convId).then(function(data){
 var msgs=data.messages||data||[];
 var title=data.title||data.name||"Chat";
-var h='<div style="padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0">';
-h+='<button onclick="loadMessengerConversations();document.getElementById(\'msgThreadView\').remove();document.getElementById(\'msgConvList\').style.display=\'block\'" style="background:none;border:none;font-size:16px;cursor:pointer;color:var(--muted)">←</button>';
-h+='<span style="font-size:13px;font-weight:700;color:var(--text)">'+title+'</span></div>';
-h+='<div id="msgThreadMsgs" style="flex:1;overflow-y:auto;padding:12px">';
+// Resolve email-based title to name
+if(title&&title.indexOf("@")>=0&&window._chatNameMap){var resolved=window._chatNameMap[title.toLowerCase()];if(resolved)title=resolved}
+var h='<div style="padding:10px 16px;background:linear-gradient(135deg,#0f172a,#1e293b);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0">';
+h+='<button onclick="loadMessengerConversations();document.getElementById(\'msgThreadView\').remove();document.getElementById(\'msgConvList\').style.display=\'block\'" style="background:none;border:none;font-size:16px;cursor:pointer;color:rgba(255,255,255,.7)">←</button>';
+h+='<div style="width:28px;height:28px;border-radius:50%;background:rgba(10,147,150,.3);color:#5eead4;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">'+getInitials(title)+'</div>';
+h+='<span style="font-size:13px;font-weight:700;color:#f0f9ff">'+title+'</span></div>';
+h+='<div id="msgThreadMsgs" style="flex:1;overflow-y:auto;padding:12px;background:var(--surface2)">';
+var lastDateStr="";
 (Array.isArray(msgs)?msgs:[]).forEach(function(m){
-var isMe=m.sender_email===(currentUser&&currentUser.email);
-var timeStr=m.created_at?TitusDate.formatDayDateTime(m.created_at):"";
-h+='<div style="display:flex;flex-direction:column;align-items:'+(isMe?"flex-end":"flex-start")+';margin-bottom:8px">';
-h+='<div style="font-size:9px;color:var(--muted);margin-bottom:2px">'+(m.sender_name||"")+(timeStr?" · "+timeStr:"")+'</div>';
-h+='<div style="max-width:80%;padding:8px 12px;border-radius:12px;font-size:12px;background:'+(isMe?"var(--teal)":"var(--surface2)")+';color:'+(isMe?"#fff":"var(--text)")+'">'+(m.content||"")+'</div>';
-if(m.attachments&&m.attachments.length>0){m.attachments.forEach(function(a){h+='<a href="'+a.url+'" target="_blank" style="font-size:10px;color:var(--teal);margin-top:2px">📎 '+a.name+'</a>'})}
+var isMe=(m.sender_email||"").toLowerCase()===(currentUser&&currentUser.email||"").toLowerCase();
+var timeStr=m.created_at?TitusDate.formatTime(m.created_at):"";
+var dateStr=m.created_at?TitusDate.format(m.created_at):"";
+// Date divider
+if(dateStr&&dateStr!==lastDateStr){lastDateStr=dateStr;h+='<div style="text-align:center;margin:12px 0 8px"><span style="font-size:9px;font-weight:600;color:var(--muted);background:var(--surface);padding:3px 12px;border-radius:10px;border:1px solid var(--border)">'+dateStr+'</span></div>'}
+// Resolve sender name from email
+var senderName=m.sender_name||"";
+if(senderName&&senderName.indexOf("@")>=0&&window._chatNameMap){var rn=window._chatNameMap[senderName.toLowerCase()];if(rn)senderName=rn}
+if(!senderName)senderName=m.sender_email||"";
+h+='<div style="display:flex;flex-direction:column;align-items:'+(isMe?"flex-end":"flex-start")+';margin-bottom:10px">';
+if(!isMe)h+='<div style="font-size:9px;font-weight:600;color:var(--teal);margin-bottom:2px;margin-left:4px">'+senderName+'</div>';
+h+='<div style="max-width:80%;padding:10px 14px;border-radius:'+(isMe?"16px 16px 4px 16px":"16px 16px 16px 4px")+';font-size:12px;line-height:1.5;background:'+(isMe?"linear-gradient(135deg,#0d9488,#0f766e)":"var(--surface)")+';color:'+(isMe?"#fff":"var(--text)")+';box-shadow:0 1px 3px rgba(0,0,0,.06);border:1px solid '+(isMe?"transparent":"var(--border)")+'">';
+if(m.content)h+=m.content;
+// Parse attachments — handle both JSON string and array
+var attachArr=[];
+if(m.attachments){
+if(typeof m.attachments==="string"){try{attachArr=JSON.parse(m.attachments)}catch(ex){}}
+else if(Array.isArray(m.attachments)){attachArr=m.attachments}
+}
+if(attachArr.length>0){attachArr.forEach(function(a){
+var isImg=a.type&&a.type.indexOf("image")>=0;
+if(isImg){h+='<div style="margin-top:6px"><a href="'+(a.url||"")+'" target="_blank"><img src="'+(a.url||"")+'" style="max-width:200px;max-height:150px;border-radius:8px;display:block" onerror="this.style.display=\'none\'"></a></div>'}
+else{h+='<div style="margin-top:4px"><a href="'+(a.url||"")+'" target="_blank" style="font-size:10px;color:'+(isMe?"#d1fae5":"var(--teal)")+';text-decoration:none;display:flex;align-items:center;gap:4px">📎 '+(a.name||"Attachment")+'</a></div>'}
+})}
+h+='</div>';
+h+='<div style="font-size:8px;color:var(--dim);margin-top:2px;margin-'+(isMe?"right":"left")+':4px">'+timeStr+'</div>';
 h+='</div>'});
 h+='</div>';
 // Compose area
-h+='<div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0">';
+h+='<div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0;background:var(--surface)">';
 h+='<label style="cursor:pointer;display:flex;align-items:center"><input type="file" id="msgAttachInput" style="display:none" multiple onchange="msgAttachFiles(this.files)"><span style="font-size:18px" title="Attach">📎</span></label>';
-h+='<input id="msgComposeInput" placeholder="Type a message..." style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:20px;font-size:12px;font-family:inherit;background:var(--surface);outline:none" onkeydown="if(event.key===\'Enter\')sendMsgFromPopup(\''+convId+'\')">';
-h+='<button onclick="sendMsgFromPopup(\''+convId+'\')" style="padding:6px 12px;font-size:12px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:20px;cursor:pointer;font-family:inherit">Send</button></div>';
+h+='<input id="msgComposeInput" placeholder="Type a message..." style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:20px;font-size:12px;font-family:inherit;background:var(--surface2);outline:none" onkeydown="if(event.key===\'Enter\')sendMsgFromPopup(\''+convId+'\')">';
+h+='<button onclick="sendMsgFromPopup(\''+convId+'\')" style="padding:6px 14px;font-size:12px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:20px;cursor:pointer;font-family:inherit">Send</button></div>';
 var convList=document.getElementById("msgConvList");if(convList)convList.style.display="none";
+var existing=document.getElementById("msgThreadView");if(existing)existing.remove();
 var threadDiv=document.createElement("div");threadDiv.id="msgThreadView";threadDiv.style.cssText="display:flex;flex-direction:column;flex:1;overflow:hidden";
 threadDiv.innerHTML=h;popup.appendChild(threadDiv);
 setTimeout(function(){var area=document.getElementById("msgThreadMsgs");if(area)area.scrollTop=area.scrollHeight},100);
 // Mark as read
-apiCall("POST","/api/chat/conversations/"+convId+"/read",{}).catch(function(){})
+apiCall("POST","/api/chat/conversations/"+convId+"/read",{}).catch(function(){});
+// Update badge
+_checkMsgUnread()
 }).catch(function(){showToast("Could not load thread — conversation may not exist yet","error")})}
 function sendMsgFromPopup(convId){
 var input=document.getElementById("msgComposeInput");if(!input||!input.value.trim())return;
@@ -4825,52 +4886,75 @@ function renderNDISClientCard(el,d,contact){
 if(selectedConv)selectedConv._clientData=d;
 var _user=JSON.parse(localStorage.getItem("titus_user")||"{}");
 var canEdit=["superadmin","roster_officer","team_leader"].indexOf((_user.role||"").toLowerCase())>=0;
-function spInlineEdit(label,value,fieldKey,type){
+function spInlineEdit(label,value,fieldKey,type,options){
 if(!canEdit)return'<div style="font-size:12px;font-weight:600;color:var(--text)">'+(value||"\u2014")+'</div>';
+// Autosave on blur — no save button needed
+var inputStyle="flex:1;padding:5px 8px;border:1px solid var(--border);border-radius:4px;font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box;transition:border .15s";
+var blurHandler="this.style.borderColor=\'var(--teal)\';var _el=this;saveClientField(\'"+fieldKey+"\',this.value);setTimeout(function(){_el.style.borderColor=\'var(--border)\'},1500)";
+// Dropdown select
+if(type==="select"&&options){
+var sel='<select id="cEdit_'+fieldKey+'" onchange="'+blurHandler+'" style="'+inputStyle+';cursor:pointer">';
+options.forEach(function(opt){sel+='<option value="'+opt+'"'+(value===opt?" selected":"")+'>'+opt+'</option>'});
+sel+='</select>';return sel}
+// Date picker with age calculation
+if(type==="date"){
+var isoVal="";if(value){try{var parts=value.split("/");if(parts.length===3){var yr=parts[2];if(yr.length===2)yr="20"+yr;isoVal=yr+"-"+parts[1].padStart(2,"0")+"-"+parts[0].padStart(2,"0")}else{var dp=new Date(value);if(!isNaN(dp))isoVal=dp.toISOString().split("T")[0]}}catch(ex){isoVal=value}}
+return'<input id="cEdit_'+fieldKey+'" type="date" value="'+isoVal+'" onchange="'+blurHandler+';_updateAgeFromDOB(this.value)" style="'+inputStyle+'">'}
+// Tel / email types
 var inputType=type||"text";
-return'<div style="display:flex;align-items:center;gap:4px"><input id="cEdit_'+fieldKey+'" type="'+inputType+'" value="'+(value||"").replace(/"/g,"&quot;")+'" style="flex:1;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box"><button onclick="saveClientField(\''+fieldKey+'\',document.getElementById(\'cEdit_'+fieldKey+'\').value)" style="padding:3px 6px;font-size:10px;background:var(--teal);color:#fff;border:none;border-radius:4px;cursor:pointer" title="Save">\uD83D\uDCBE</button></div>'}
+return'<input id="cEdit_'+fieldKey+'" type="'+inputType+'" value="'+(value||"").replace(/"/g,"&quot;")+'" onblur="'+blurHandler+'" style="'+inputStyle+'" placeholder="'+(label||"")+'">'}
 var h='';
-// Account status banner
+// Profile photo + status banner row
+var photoUrl=d.photoUrl||d.photo_url||"";
+h+='<div style="display:flex;gap:16px;margin-bottom:14px;align-items:flex-start">';
+// Profile photo
+h+='<div style="flex-shrink:0;position:relative">';
+if(photoUrl){h+='<img src="'+photoUrl+'" style="width:80px;height:80px;object-fit:cover;border-radius:12px;border:2px solid var(--teal);box-shadow:0 2px 8px rgba(0,0,0,.1)" alt="Photo">'}
+else{h+='<div style="width:80px;height:80px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--dim);font-weight:700">'+getInitials(d.name||"")+'</div>'}
+if(canEdit){h+='<label style="position:absolute;bottom:-4px;right:-4px;width:24px;height:24px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;border:2px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.15)" title="Upload photo"><input type="file" accept="image/*" style="display:none" onchange="_uploadClientPhoto(this.files[0])">📷</label>'}
+h+='</div>';
+h+='<div style="flex:1">';
+// Status badges
 var acctType=(d.accountType||"").toLowerCase();
 var statusColor=acctType.indexOf("active")>=0?"var(--green)":acctType.indexOf("prospect")>=0?"var(--orange)":"var(--red)";
 var statusBg=acctType.indexOf("active")>=0?"rgba(16,185,129,.06)":acctType.indexOf("prospect")>=0?"rgba(245,158,11,.06)":"rgba(239,68,68,.06)";
 var statusBorder=acctType.indexOf("active")>=0?"rgba(16,185,129,.15)":acctType.indexOf("prospect")>=0?"rgba(245,158,11,.15)":"rgba(239,68,68,.15)";
-h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">';
-h+='<span style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;background:'+statusBg+';color:'+statusColor+';border:1px solid '+statusBorder+'">'+(d.accountType||"Unknown")+'</span>';
-h+='<span style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;background:rgba(30,75,160,.06);color:var(--royal);border:1px solid rgba(30,75,160,.15)">'+(d.silOrCas||"—")+'</span>';
-h+='<span style="font-size:11px;color:var(--muted);font-weight:600">'+(d.serviceType||"")+'</span>';
+h+='<div style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:4px">'+(d.name||"Unnamed Client")+'</div>';
+h+='<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">';
+h+='<span style="padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:'+statusBg+';color:'+statusColor+';border:1px solid '+statusBorder+'">'+(d.accountType||"Unknown")+'</span>';
+h+='<span style="padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(30,75,160,.06);color:var(--royal);border:1px solid rgba(30,75,160,.15)">'+(d.silOrCas||"—")+'</span>';
+if(d.serviceType)h+='<span style="font-size:10px;color:var(--muted);font-weight:600">'+d.serviceType+'</span>';
 h+='</div>';
-// Personal info grid
+h+='<div style="font-size:11px;color:var(--muted);margin-top:4px">Fields auto-save when you click away</div>';
+h+='</div></div>';
+// Core info grid
 h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
-h+='<div class="fg" style="margin:0"><label>Client Name</label><input value="'+(d.name||"")+'" disabled style="opacity:.7;font-weight:700"></div>';
 h+='<div class="fg" style="margin:0"><label>NDIS Number</label>'+spInlineEdit("NDIS Number",d.ndisNumber||"","ndisNumber")+'</div>';
-h+='<div class="fg" style="margin:0"><label>Age</label><input value="'+(d.age?d.age+" yrs":"—")+'" disabled style="opacity:.7"></div>';
+h+='<div class="fg" style="margin:0"><label>Support Ratio</label><input value="'+(d.supportRatio||"—")+'" disabled style="opacity:.7"></div>';
+h+='<div class="fg" style="margin:0"><label>Age</label><input id="clientAgeDisp" value="'+(d.age?d.age+" yrs":"—")+'" disabled style="opacity:.7"></div>';
 h+='</div>';
 h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">PERSONAL DETAILS</div>';
 h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
 var dobDisp=d.dateOfBirth||"";
 if(dobDisp){try{var dp=new Date(dobDisp);if(!isNaN(dp))dobDisp=("0"+dp.getDate()).slice(-2)+"/"+("0"+(dp.getMonth()+1)).slice(-2)+"/"+dp.getFullYear()}catch(e){}}
-h+='<div class="fg" style="margin:0"><label>Gender</label>'+spInlineEdit("Gender",d.gender||"","gender")+'</div>';
-h+='<div class="fg" style="margin:0"><label>Date of Birth</label>'+spInlineEdit("Date of Birth",dobDisp||"","dateOfBirth")+'</div>';
-h+='<div class="fg" style="margin:0"><label>Phone</label>'+spInlineEdit("Phone",d.phone||contact.phone||"","phone")+'</div>';
+h+='<div class="fg" style="margin:0"><label>Gender</label>'+spInlineEdit("Gender",d.gender||"","gender","select",["","Male","Female","Non-Binary","Other","Prefer not to say"])+'</div>';
+h+='<div class="fg" style="margin:0"><label>Date of Birth</label>'+spInlineEdit("Date of Birth",dobDisp||"","dateOfBirth","date")+'</div>';
+h+='<div class="fg" style="margin:0"><label>Phone</label>'+spInlineEdit("Phone",d.phone||contact.phone||"","phone","tel")+'</div>';
 h+='</div>';
 h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
 h+='<div class="fg" style="margin:0"><label>Email</label>'+spInlineEdit("Email",d.email||contact.email||"","email","email")+'</div>';
 h+='<div class="fg" style="margin:0"><label>Suburb</label>'+spInlineEdit("Suburb",d.suburb||"","suburb")+'</div>';
 h+='<div class="fg" style="margin:0"><label>KM Allowance</label><input value="'+(d.kmAllowance?d.kmAllowance+" km/wk":"—")+'" disabled style="opacity:.7"></div>';
 h+='</div>';
-h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">GENDER OF SUPPORT WORKER</div>';
-h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
-h+='<div class="fg" style="margin:0"><label>Gender of Support Workers</label>'+spInlineEdit("Gender of Support Workers",d.genderOfWorkers||"","genderOfWorkers")+'</div>';
-h+='<div class="fg" style="margin:0"><label>Personal Care</label><input value="'+(d.personalCare||"—")+'" disabled style="opacity:.7"></div>';
-h+='<div class="fg" style="margin:0"><label>Communication Aids</label><input value="'+(d.communicationAids||"—")+'" disabled style="opacity:.7"></div>';
-h+='</div>';
-// Address
-h+='<div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">\uD83D\uDCCD Address</div>';
+// Address in Personal Details
 var addrParts=[d.address,d.suburb,d.state,d.postcode].filter(function(v){return v});
 var addrFull=addrParts.length>0?addrParts.join(", "):"";
-if(canEdit){h+='<div style="display:flex;align-items:center;gap:4px"><input id="cEdit_address" type="text" value="'+(addrFull).replace(/"/g,"&quot;")+'" style="flex:1;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box"><button onclick="saveClientField(\'address\',document.getElementById(\'cEdit_address\').value)" style="padding:3px 6px;font-size:10px;background:var(--teal);color:#fff;border:none;border-radius:4px;cursor:pointer" title="Save">\uD83D\uDCBE</button></div>'}
-else{h+='<div style="font-size:12px;color:var(--text);font-weight:600">'+(addrFull||"No address on file")+'</div>'}
+h+='<div class="fg" style="margin:0 0 10px"><label>Address</label>'+spInlineEdit("Address",addrFull,"address")+'</div>';
+h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">SUPPORT REQUIREMENTS</div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
+h+='<div class="fg" style="margin:0"><label>Gender of Support Workers</label>'+spInlineEdit("Gender of Support Workers",d.genderOfWorkers||"","genderOfWorkers","select",["","Male","Female","No Preference","Same Gender as Client"])+'</div>';
+h+='<div class="fg" style="margin:0"><label>Personal Care</label><input value="'+(d.personalCare||"—")+'" disabled style="opacity:.7"></div>';
+h+='<div class="fg" style="margin:0"><label>Communication Aids</label><input value="'+(d.communicationAids||"—")+'" disabled style="opacity:.7"></div>';
 h+='</div>';
 // Type of Disability
 h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)">TYPE OF DISABILITY</div>';
@@ -4891,21 +4975,16 @@ h+='</div>'}
 // Allergies & Alerts
 if(d.hasAllergies==="Yes"||d.allergiesAlerts){
 h+='<div style="padding:10px;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">⚠️ Allergies & Alerts</div><div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+(d.allergiesAlerts||"Yes — see details in Support Plan")+'</div></div>'}
-// Known Triggers
-if(d.knownTriggers){
-h+='<div style="padding:10px;background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--orange);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">⚡ Known Triggers</div><div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+d.knownTriggers+'</div></div>'}
+// Known Triggers — hidden from Details tab (available in Support Plan)
+// Item 8: Removed per requirement
 // PBSP
 if(d.pbspYesNo==="Yes"){
 h+='<div style="padding:10px;background:rgba(220,38,38,.04);border:1px solid rgba(220,38,38,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:#DC2626;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🧠 Behaviour Support Plan (PBSP)</div>';
 if(d.pbspPracName)h+='<div style="font-size:12px;margin-bottom:4px"><strong>Practitioner:</strong> '+d.pbspPracName+(d.pbspPracEmail?' · <a href="mailto:'+d.pbspPracEmail+'" style="color:var(--teal)">'+d.pbspPracEmail+'</a>':'')+(d.pbspPhone?' · '+d.pbspPhone:'')+'</div>';
 if(d.pbspStrategies)h+='<div style="font-size:11px;color:var(--text);line-height:1.5;margin-top:6px;white-space:pre-wrap">'+d.pbspStrategies.substring(0,500)+(d.pbspStrategies.length>500?"...":"")+'</div>';
 h+='</div>'}
-// Required Staff Skills
-if(d.requiredSkills&&d.requiredSkills.length>0){
-h+='<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">⚡ Required Staff Skills</div><div style="display:flex;flex-wrap:wrap;gap:4px">';
-var skillColors=["#EF4444","#F59E0B","#7C3AED","#1E4BA0","#0A9396","#EC4899","#6366F1","#10B981"];
-d.requiredSkills.forEach(function(s,i){var col=skillColors[i%skillColors.length];h+='<span style="padding:3px 10px;border-radius:8px;font-size:10px;font-weight:700;background:'+col+'12;color:'+col+';border:1px solid '+col+'25">'+s+'</span>'});
-h+='</div></div>'}
+// Required Staff Skills — hidden from Details tab (available in Support Plan)
+// Item 8: Removed per requirement
 // Emergency Contact
 if(d.emergencyContact||d.emergencyPhone){
 h+='<div style="padding:10px;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🚨 Emergency Contact</div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">';
@@ -4915,15 +4994,93 @@ if(d.emergencyPhone)h+='<a href="tel:'+d.emergencyPhone+'" style="font-size:12px
 if(d.emergencyEmail)h+='<a href="mailto:'+d.emergencyEmail+'" style="font-size:12px;color:var(--teal);font-weight:600;text-decoration:none">📧 '+d.emergencyEmail+'</a>';
 h+='</div></div>'}
 // Plan Expiry — HIDDEN (Item #6)
-el.innerHTML=h}
+// Photo Gallery — Item 10
+h+='<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">';
+h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">📸 Photo Gallery</div>';
+if(canEdit)h+='<label class="btn btn-teal" style="padding:4px 10px;font-size:10px;cursor:pointer"><input type="file" accept="image/*" multiple style="display:none" onchange="_uploadGalleryPhotos(this.files)">+ Add Photos</label>';
+h+='</div>';
+h+='<div id="clientPhotoGallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px"></div>';
+h+='</div>';
+el.innerHTML=h;
+// Load gallery photos after render
+_loadClientGallery(d.name||"")}
 
 function saveClientField(field,value,clientName){
 var name=clientName||(selectedConv&&selectedConv._clientData&&selectedConv._clientData.name)||"";
 apiCall("PATCH","/api/clients/update-field",{clientName:name,field:field,value:value})
 .then(function(d){
 if(d.error){showToast("Save failed: "+d.error,"error");return}
-showToast(field+" updated","success");
+showToast(field+" saved","success");
 }).catch(function(e){showToast("Save failed: "+e.message,"error")})}
+
+// Age calculator from DOB date picker
+function _updateAgeFromDOB(isoDate){
+if(!isoDate)return;
+var dp=new Date(isoDate);if(isNaN(dp))return;
+var ageDiff=Date.now()-dp.getTime();var ageDate=new Date(ageDiff);
+var age=Math.abs(ageDate.getUTCFullYear()-1970);
+var el=document.getElementById("clientAgeDisp");if(el)el.value=age+" yrs"}
+
+// Client photo upload
+function _uploadClientPhoto(file){
+if(!file)return;
+var clientName=(selectedConv&&selectedConv._clientData&&selectedConv._clientData.name)||"";
+if(!clientName){showToast("No client name","error");return}
+var fd=new FormData();fd.append("photo",file);fd.append("clientName",clientName);
+showToast("Uploading photo...","info");
+fetch("/api/clients/photo",{method:"POST",headers:{"Authorization":"Bearer "+token},body:fd}).then(function(r){return r.json()}).then(function(d){
+if(d.error){showToast("Upload failed: "+d.error,"error");return}
+showToast("Photo uploaded!","success");
+// Refresh client details
+if(selectedConv&&selectedConv._clientData)selectedConv._clientData.photoUrl=d.url;
+var el=document.getElementById("ndisClientDetails");
+if(el&&selectedConv&&selectedConv._clientData)renderNDISClientCard(el,selectedConv._clientData,selectedConv)
+}).catch(function(e){showToast("Upload failed: "+e.message,"error")})}
+
+// Photo gallery — Item 10
+function _loadClientGallery(clientName){
+var el=document.getElementById("clientPhotoGallery");if(!el||!clientName)return;
+apiCall("GET","/api/clients/photos?clientName="+encodeURIComponent(clientName)).then(function(photos){
+if(!photos||photos.length===0){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--dim);font-size:11px;font-style:italic">No photos uploaded yet</div>';return}
+var h="";
+photos.forEach(function(p,i){
+h+='<div onclick="_openPhotoViewer('+i+')" style="aspect-ratio:1;border-radius:var(--rs);overflow:hidden;cursor:pointer;border:1px solid var(--border);transition:all .15s" onmouseover="this.style.borderColor=\'var(--teal)\';this.style.transform=\'scale(1.04)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.transform=\'scale(1)\'">';
+h+='<img src="'+p.url+'" style="width:100%;height:100%;object-fit:cover" alt="'+(p.name||"Photo")+'">';
+h+='</div>'});
+el.innerHTML=h;
+window._clientPhotos=photos}).catch(function(){el.innerHTML='<div style="grid-column:1/-1;color:var(--dim);font-size:11px;text-align:center;padding:12px">Could not load photos</div>'})}
+
+function _uploadGalleryPhotos(files){
+if(!files||!files.length)return;
+var clientName=(selectedConv&&selectedConv._clientData&&selectedConv._clientData.name)||"";
+if(!clientName){showToast("No client","error");return}
+var uploaded=0;
+Array.prototype.forEach.call(files,function(file){
+var fd=new FormData();fd.append("photo",file);fd.append("clientName",clientName);
+fetch("/api/clients/photo",{method:"POST",headers:{"Authorization":"Bearer "+token},body:fd}).then(function(r){return r.json()}).then(function(d){
+uploaded++;if(uploaded>=files.length){showToast(uploaded+" photo(s) uploaded","success");_loadClientGallery(clientName)}
+}).catch(function(){uploaded++;if(uploaded>=files.length)_loadClientGallery(clientName)})})}
+
+function _openPhotoViewer(idx){
+var photos=window._clientPhotos||[];var p=photos[idx];if(!p)return;
+var overlay=document.createElement("div");overlay.id="photoViewerOverlay";
+overlay.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px";
+overlay.onclick=function(e){if(e.target===overlay)overlay.remove()};
+var h='<div style="position:relative;max-width:90vw;max-height:90vh">';
+h+='<img src="'+p.url+'" style="max-width:90vw;max-height:85vh;object-fit:contain;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.5)">';
+h+='<button onclick="document.getElementById(\'photoViewerOverlay\').remove()" style="position:absolute;top:-12px;right:-12px;width:32px;height:32px;border-radius:50%;background:var(--surface);border:1px solid var(--border);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.2)">✕</button>';
+if(photos.length>1){
+h+='<button onclick="event.stopPropagation();_navPhoto(-1,'+idx+')" style="position:absolute;left:-16px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)">◀</button>';
+h+='<button onclick="event.stopPropagation();_navPhoto(1,'+idx+')" style="position:absolute;right:-16px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)">▶</button>'}
+h+='<div style="text-align:center;margin-top:8px;font-size:11px;color:rgba(255,255,255,.7)">'+(idx+1)+' of '+photos.length+'</div>';
+h+='</div>';
+overlay.innerHTML=h;document.body.appendChild(overlay)}
+
+function _navPhoto(dir,currentIdx){
+var photos=window._clientPhotos||[];
+var newIdx=(currentIdx+dir+photos.length)%photos.length;
+var ov=document.getElementById("photoViewerOverlay");if(ov)ov.remove();
+_openPhotoViewer(newIdx)}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 //  CLIENT SUPPORT PLAN — Full Frontend Implementation
@@ -6520,19 +6677,22 @@ function loadNDISClientPlan(clientName){
 var el=document.getElementById("ndisPlanContent");if(!el)return;
 apiCall("GET","/api/clients/support-plan?name="+encodeURIComponent(clientName)).then(function(spData){
 var ndis=spData.stakeholders&&spData.stakeholders.ndisPlan||{};
+var sh=spData.stakeholders||{};
+// Item 11: Extract stakeholder contact details for PM & SC linking
+function _mergeStakeholderData(target){
+if(ndis.startDate)target.planStartDate=ndis.startDate;
+if(ndis.expiryDate)target.planExpiry=ndis.expiryDate;
+if(ndis.planType)target.ndisType=ndis.planType;
+if(ndis.ndisNumber)target.ndisNumber=ndis.ndisNumber;
+var pm=sh.planManager||{};if(pm.email)target.planManagerEmail=pm.email;if(pm.phone)target.planManagerPhone=pm.phone;if(pm.company)target.planManagerCompany=pm.company;
+var sc=sh.supportCoordinator||{};if(sc.email)target.supportCoordinatorEmail=sc.email;if(sc.phone)target.supportCoordinatorPhone=sc.phone;if(sc.company)target.supportCoordinatorCompany=sc.company}
 var d=selectedConv&&selectedConv._clientData;
 if(!d){return apiCall("GET","/api/client-details?name="+encodeURIComponent(clientName)).then(function(data){
 if(data.error){el.innerHTML='<div style="color:var(--red);padding:12px">'+data.error+'</div>';return}
 if(selectedConv)selectedConv._clientData=data;
-if(ndis.startDate)data.planStartDate=ndis.startDate;
-if(ndis.expiryDate)data.planExpiry=ndis.expiryDate;
-if(ndis.planType)data.ndisType=ndis.planType;
-if(ndis.ndisNumber)data.ndisNumber=ndis.ndisNumber;
+_mergeStakeholderData(data);
 renderNDISPlan(el,data)})}
-if(ndis.startDate)d.planStartDate=ndis.startDate;
-if(ndis.expiryDate)d.planExpiry=ndis.expiryDate;
-if(ndis.planType)d.ndisType=ndis.planType;
-if(ndis.ndisNumber)d.ndisNumber=ndis.ndisNumber;
+_mergeStakeholderData(d);
 renderNDISPlan(el,d)}).catch(function(e){el.innerHTML='<div style="color:var(--red);padding:12px">'+e.message+'</div>'})}
 
 function renderNDISPlan(el,d){
@@ -6554,10 +6714,34 @@ var expBg=daysLeft<0?"rgba(239,68,68,.04)":daysLeft<90?"rgba(245,158,11,.04)":"r
 var expBorder=daysLeft<0?"rgba(239,68,68,.15)":daysLeft<90?"rgba(245,158,11,.15)":"rgba(16,185,129,.15)";
 h+='<div style="padding:14px;background:'+expBg+';border:1px solid '+expBorder+';border-radius:var(--rs);text-align:center"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Plan Expiry</div><div style="font-size:14px;font-weight:700;color:'+expColor+'">'+expDisp+'</div>'+(daysLeft!==999?'<div style="font-size:9px;font-weight:600;color:'+expColor+';margin-top:2px">'+(daysLeft<0?Math.abs(daysLeft)+"d overdue":daysLeft+"d remaining")+'</div>':'')+'</div>';
 h+='</div>';
-// Plan manager & SC
+// Plan manager & SC — linked stakeholder cards with contact details (Item 11)
 h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">';
-h+='<div style="padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px">💼 Plan Manager</div><div style="font-size:13px;font-weight:700;color:var(--text)">'+(d.planManager||"Self-managed / NDIA-managed")+'</div></div>';
-h+='<div style="padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px">🤝 Support Coordinator</div><div style="font-size:13px;font-weight:700;color:var(--text)">'+(d.supportCoordinator||"Not assigned")+'</div></div>';
+// Plan Manager card
+var pmName=d.planManager||"";var pmEmail=d.planManagerEmail||"";var pmPhone=d.planManagerPhone||"";var pmCompany=d.planManagerCompany||"";
+h+='<div style="padding:14px;background:rgba(124,58,237,.04);border:1px solid rgba(124,58,237,.15);border-left:4px solid #7C3AED;border-radius:var(--rs)">';
+h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:32px;height:32px;border-radius:50%;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:14px">💼</div><div><div style="font-size:9px;font-weight:700;color:#7C3AED;text-transform:uppercase;letter-spacing:.5px">Plan Manager</div><div style="font-size:13px;font-weight:700;color:var(--text)">'+(pmName||"Self-managed / NDIA-managed")+'</div></div></div>';
+if(pmName){
+if(pmEmail)h+='<div style="font-size:11px;margin-bottom:3px"><a href="mailto:'+pmEmail+'" style="color:var(--teal);text-decoration:none">📧 '+pmEmail+'</a></div>';
+if(pmPhone)h+='<div style="font-size:11px;margin-bottom:3px"><a href="tel:'+pmPhone+'" style="color:var(--text);text-decoration:none">📱 '+pmPhone+'</a></div>';
+if(pmCompany)h+='<div style="font-size:10px;color:var(--muted)">🏢 '+pmCompany+'</div>';
+if(pmPhone||pmEmail){h+='<div style="display:flex;gap:4px;margin-top:8px">';
+if(pmPhone)h+='<button onclick="dialerNumber=\''+pmPhone.replace(/'/g,"")+'\';openDialer()" style="flex:1;padding:5px;background:rgba(10,147,150,.06);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);cursor:pointer;font-size:10px;font-weight:700;color:var(--teal);font-family:inherit">Call</button>';
+if(pmEmail)h+='<a href="mailto:'+pmEmail+'" style="flex:1;padding:5px;background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.15);border-radius:var(--rs);font-size:10px;font-weight:700;color:#7C3AED;font-family:inherit;text-decoration:none;text-align:center">Email</a>';
+h+='</div>'}}
+h+='</div>';
+// Support Coordinator card
+var scName=d.supportCoordinator||"";var scEmail=d.supportCoordinatorEmail||"";var scPhone=d.supportCoordinatorPhone||"";var scCompany=d.supportCoordinatorCompany||"";
+h+='<div style="padding:14px;background:rgba(10,147,150,.04);border:1px solid rgba(10,147,150,.15);border-left:4px solid var(--teal);border-radius:var(--rs)">';
+h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:32px;height:32px;border-radius:50%;background:rgba(10,147,150,.12);display:flex;align-items:center;justify-content:center;font-size:14px">🤝</div><div><div style="font-size:9px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.5px">Support Coordinator</div><div style="font-size:13px;font-weight:700;color:var(--text)">'+(scName||"Not assigned")+'</div></div></div>';
+if(scName){
+if(scEmail)h+='<div style="font-size:11px;margin-bottom:3px"><a href="mailto:'+scEmail+'" style="color:var(--teal);text-decoration:none">📧 '+scEmail+'</a></div>';
+if(scPhone)h+='<div style="font-size:11px;margin-bottom:3px"><a href="tel:'+scPhone+'" style="color:var(--text);text-decoration:none">📱 '+scPhone+'</a></div>';
+if(scCompany)h+='<div style="font-size:10px;color:var(--muted)">🏢 '+scCompany+'</div>';
+if(scPhone||scEmail){h+='<div style="display:flex;gap:4px;margin-top:8px">';
+if(scPhone)h+='<button onclick="dialerNumber=\''+scPhone.replace(/'/g,"")+'\';openDialer()" style="flex:1;padding:5px;background:rgba(10,147,150,.06);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);cursor:pointer;font-size:10px;font-weight:700;color:var(--teal);font-family:inherit">Call</button>';
+if(scEmail)h+='<a href="mailto:'+scEmail+'" style="flex:1;padding:5px;background:rgba(10,147,150,.06);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);font-size:10px;font-weight:700;color:var(--teal);font-family:inherit;text-decoration:none;text-align:center">Email</a>';
+h+='</div>'}}
+h+='</div>';
 h+='</div>';
 el.innerHTML=h}
 
@@ -6594,11 +6778,14 @@ var upcoming=0;var past=0;
 records.forEach(function(ev){if(!ev.startDate)return;var d=new Date(ev.startDate);if(d>=today)upcoming++;else past++});
 
 var h='';
-// Stats row
-h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">';
-h+='<div style="padding:12px;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:var(--rs);text-align:center"><div style="font-size:20px;font-weight:800;color:#3B82F6">'+records.length+'</div><div style="font-size:10px;font-weight:600;color:var(--muted)">Total Events</div></div>';
-h+='<div style="padding:12px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:var(--rs);text-align:center"><div style="font-size:20px;font-weight:800;color:var(--green)">'+upcoming+'</div><div style="font-size:10px;font-weight:600;color:var(--muted)">Upcoming</div></div>';
-h+='<div style="padding:12px;background:rgba(156,163,175,.06);border:1px solid rgba(156,163,175,.15);border-radius:var(--rs);text-align:center"><div style="font-size:20px;font-weight:800;color:var(--muted)">'+past+'</div><div style="font-size:10px;font-weight:600;color:var(--muted)">Past</div></div>';
+// Stats row + Add Event button
+h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">';
+h+='<div style="display:flex;gap:10px;flex:1">';
+h+='<div style="flex:1;padding:12px;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:var(--rs);text-align:center"><div style="font-size:20px;font-weight:800;color:#3B82F6">'+records.length+'</div><div style="font-size:10px;font-weight:600;color:var(--muted)">Total Events</div></div>';
+h+='<div style="flex:1;padding:12px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:var(--rs);text-align:center"><div style="font-size:20px;font-weight:800;color:var(--green)">'+upcoming+'</div><div style="font-size:10px;font-weight:600;color:var(--muted)">Upcoming</div></div>';
+h+='<div style="flex:1;padding:12px;background:rgba(156,163,175,.06);border:1px solid rgba(156,163,175,.15);border-radius:var(--rs);text-align:center"><div style="font-size:20px;font-weight:800;color:var(--muted)">'+past+'</div><div style="font-size:10px;font-weight:600;color:var(--muted)">Past</div></div>';
+h+='</div>';
+h+='<button onclick="openCalCreateForm()" class="btn btn-teal" style="margin-left:12px;padding:8px 16px;font-size:12px;white-space:nowrap">+ Add Event</button>';
 h+='</div>';
 
 // Month nav
@@ -6736,9 +6923,89 @@ h+='<a href="'+f.url+'" target="_blank" rel="noopener" style="display:flex;align
 h+='</div>';
 }
 
+// Edit & Delete buttons
+h+='<div style="display:flex;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">';
+h+='<button onclick="openCalEditForm('+idx+')" class="btn btn-teal" style="flex:1;padding:8px">Edit Event</button>';
+h+='<button onclick="deleteCalEvent(\''+ev.id+'\')" class="btn btn-d" style="padding:8px">Delete</button>';
+h+='</div>';
 h+='</div></div>';
 overlay.innerHTML=h;document.body.appendChild(overlay);
 }
+
+// Calendar CRUD — Item 12
+function openCalCreateForm(){
+var clientName=window._calClientName||"";
+var overlay=document.createElement("div");overlay.id="calCreateOverlay";
+overlay.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px";
+overlay.onclick=function(e){if(e.target===overlay)overlay.remove()};
+var h='<div style="background:var(--surface);border-radius:12px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">';
+h+='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><div style="font-size:15px;font-weight:700;color:var(--text)">New Calendar Event</div><button onclick="document.getElementById(\'calCreateOverlay\').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button></div>';
+h+='<div style="padding:20px">';
+h+='<div class="fg"><label>Event Name</label><input id="calNewName" placeholder="e.g. Doctor Visit"></div>';
+h+='<div class="fg"><label>Type of Appointment</label><select id="calNewType" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);font-size:13px;font-family:inherit"><option value="">— Select —</option><option>Medical</option><option>Real Estate Inspection</option><option>Client Shopping</option><option>NDIS</option><option>Family Visit</option><option>Therapy</option><option>Community Access</option><option>Review Meeting</option><option>Other</option></select></div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="fg"><label>Start Date & Time</label><input id="calNewStart" type="datetime-local"></div><div class="fg"><label>End Date & Time</label><input id="calNewEnd" type="datetime-local"></div></div>';
+h+='<div class="fg"><label>Address / Suburb</label><input id="calNewAddr" placeholder="Address"></div>';
+h+='<div class="fg"><label>Details of Appointment</label><textarea id="calNewDetails" rows="3" placeholder="Details..."></textarea></div>';
+h+='<div class="fg"><label>Instructions for Support Workers</label><textarea id="calNewSW" rows="2" placeholder="SW instructions..."></textarea></div>';
+h+='<button onclick="_saveCalEvent()" class="btn btn-p" style="width:100%;margin-top:8px">Create Event</button>';
+h+='</div></div>';
+overlay.innerHTML=h;document.body.appendChild(overlay)}
+
+function _saveCalEvent(){
+var clientName=window._calClientName||"";
+var payload={clientName:clientName,eventName:document.getElementById("calNewName").value,appointmentType:document.getElementById("calNewType").value,startDate:document.getElementById("calNewStart").value?new Date(document.getElementById("calNewStart").value).toISOString():null,endDate:document.getElementById("calNewEnd").value?new Date(document.getElementById("calNewEnd").value).toISOString():null,address:document.getElementById("calNewAddr").value,details:document.getElementById("calNewDetails").value,swInstructions:document.getElementById("calNewSW").value,status:"Scheduled"};
+apiCall("POST","/api/clients/calendar",payload).then(function(d){
+if(d.error){showToast("Failed: "+d.error,"error");return}
+showToast("Event created","success");
+var ov=document.getElementById("calCreateOverlay");if(ov)ov.remove();
+loadNDISClientCalendar(clientName)
+}).catch(function(e){showToast("Error: "+e.message,"error")})}
+
+function openCalEditForm(idx){
+var ev=(window._calEvents||[])[idx];if(!ev)return;
+var ov=document.getElementById("calEventOverlay");if(ov)ov.remove();
+var clientName=window._calClientName||"";
+var overlay=document.createElement("div");overlay.id="calEditOverlay";
+overlay.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px";
+overlay.onclick=function(e){if(e.target===overlay)overlay.remove()};
+// Format datetime-local values
+var startVal="";if(ev.startDate){try{var sd=new Date(ev.startDate);startVal=sd.toISOString().slice(0,16)}catch(e){}}
+var endVal="";if(ev.endDate){try{var ed=new Date(ev.endDate);endVal=ed.toISOString().slice(0,16)}catch(e){}}
+var h='<div style="background:var(--surface);border-radius:12px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">';
+h+='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><div style="font-size:15px;font-weight:700;color:var(--text)">Edit Event</div><button onclick="document.getElementById(\'calEditOverlay\').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button></div>';
+h+='<div style="padding:20px">';
+h+='<div class="fg"><label>Event Name</label><input id="calEditName" value="'+(ev.eventName||"").replace(/"/g,"&quot;")+'"></div>';
+h+='<div class="fg"><label>Type of Appointment</label><select id="calEditType" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);font-size:13px;font-family:inherit">';
+["","Medical","Real Estate Inspection","Client Shopping","NDIS","Family Visit","Therapy","Community Access","Review Meeting","Other"].forEach(function(t){h+='<option'+(t===(ev.appointmentType||"")?' selected':'')+'>'+t+'</option>'});
+h+='</select></div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="fg"><label>Start Date & Time</label><input id="calEditStart" type="datetime-local" value="'+startVal+'"></div><div class="fg"><label>End Date & Time</label><input id="calEditEnd" type="datetime-local" value="'+endVal+'"></div></div>';
+h+='<div class="fg"><label>Address / Suburb</label><input id="calEditAddr" value="'+(ev.address||"").replace(/"/g,"&quot;")+'"></div>';
+h+='<div class="fg"><label>Details</label><textarea id="calEditDetails" rows="3">'+(ev.details||"")+'</textarea></div>';
+h+='<div class="fg"><label>SW Instructions</label><textarea id="calEditSW" rows="2">'+(ev.swInstructions||"")+'</textarea></div>';
+h+='<div class="fg"><label>Status</label><select id="calEditStatus" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);font-size:13px;font-family:inherit">';
+["Scheduled","Confirmed","In Progress","Completed","Cancelled"].forEach(function(s){h+='<option'+(s===(ev.status||"")?' selected':'')+'>'+s+'</option>'});
+h+='</select></div>';
+h+='<button onclick="_updateCalEvent(\''+ev.id+'\')" class="btn btn-p" style="width:100%;margin-top:8px">Save Changes</button>';
+h+='</div></div>';
+overlay.innerHTML=h;document.body.appendChild(overlay)}
+
+function _updateCalEvent(eventId){
+var payload={eventName:document.getElementById("calEditName").value,appointmentType:document.getElementById("calEditType").value,startDate:document.getElementById("calEditStart").value?new Date(document.getElementById("calEditStart").value).toISOString():null,endDate:document.getElementById("calEditEnd").value?new Date(document.getElementById("calEditEnd").value).toISOString():null,address:document.getElementById("calEditAddr").value,details:document.getElementById("calEditDetails").value,swInstructions:document.getElementById("calEditSW").value,status:document.getElementById("calEditStatus").value};
+apiCall("PATCH","/api/clients/calendar/"+eventId,payload).then(function(d){
+if(d.error){showToast("Failed: "+d.error,"error");return}
+showToast("Event updated","success");
+var ov=document.getElementById("calEditOverlay");if(ov)ov.remove();
+loadNDISClientCalendar(window._calClientName||"")
+}).catch(function(e){showToast("Error: "+e.message,"error")})}
+
+function deleteCalEvent(eventId){
+if(!confirm("Delete this calendar event?"))return;
+apiCall("DELETE","/api/clients/calendar/"+eventId).then(function(d){
+if(d.error){showToast("Failed: "+d.error,"error");return}
+showToast("Event deleted","success");
+var ov=document.getElementById("calEventOverlay");if(ov)ov.remove();
+loadNDISClientCalendar(window._calClientName||"")
+}).catch(function(e){showToast("Error: "+e.message,"error")})}
 
 function loadNDISClientBudgets(clientName){
 var el=document.getElementById("budgetContent");if(!el)return;

@@ -4,6 +4,15 @@ var twilio = require('twilio');
 var { authenticate } = require('../../middleware/auth');
 var { db } = require('../../db/sqlite');
 var env = require('../../config/env');
+var { createClient } = require('@supabase/supabase-js');
+
+// Supabase client for transcript persistence
+var _sbVoice = null;
+try {
+  var _sbUrl = (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, '');
+  var _sbKey = (process.env.SUPABASE_SERVICE_KEY || '').trim();
+  if (_sbUrl && _sbKey) _sbVoice = createClient(_sbUrl, _sbKey, { auth: { autoRefreshToken: false, persistSession: false } });
+} catch (e) { /* Supabase optional */ }
 
 var router = express.Router();
 
@@ -938,6 +947,36 @@ router.post('/elevenlabs/post-call', function(req, res) {
         if (transcriptText && !aiSummary) setTimeout(function() { generateCallSummary(sid, io); }, 2000);
       }
     }
+  }
+
+  // ── Save transcript to Supabase (async, non-blocking) ──
+  if (_sbVoice && transcriptText) {
+    var transcriptRow = {
+      call_sid: "el_" + convId,
+      conversation_id: convId,
+      caller_phone: callerPhone || "Unknown",
+      transcript: transcriptText,
+      summary: aiSummary || null,
+      duration_secs: Math.round(callDuration),
+      source: "elevenlabs",
+      call_direction: "inbound",
+      created_at: startTime
+    };
+    _sbVoice.from("transcripts").upsert(transcriptRow, { onConflict: "call_sid" })
+      .then(function(res) {
+        if (res.error) console.error("EL→Supabase transcript error:", res.error.message);
+        else console.log("EL→Supabase transcript saved for", convId);
+      }).catch(function(e) { console.error("EL→Supabase transcript catch:", e.message); });
+
+    // Also write to contact_history for timeline view
+    _sbVoice.from("contact_history").insert({
+      contact_name: callerPhone || "Unknown",
+      type: "ai_call",
+      direction: "inbound",
+      notes: (aiSummary ? "AI Summary: " + aiSummary + "\n\n" : "") + "Transcript:\n" + transcriptText.substring(0, 2000),
+      duration: Math.round(callDuration),
+      created_at: startTime
+    }).then(function() {}).catch(function() {});
   }
 });
 

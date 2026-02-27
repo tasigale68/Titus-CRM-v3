@@ -320,4 +320,71 @@ router.post('/attachment', uploadGeneral.array('files', 5), function (req, res) 
   });
 });
 
+// ═══════════════════════════════════════════════════════════
+//  GET /api/chat/unread-count — total unread messages for badge
+// ═══════════════════════════════════════════════════════════
+router.get('/unread-count', function (req, res) {
+  var email = (req.user.email || '').toLowerCase();
+  var tenantId = getTenantId(req);
+
+  var params = { contains: { members: [email] }, order: 'created_at.desc' };
+  if (tenantId) params.eq = { tenant_id: tenantId };
+
+  sb.query('chat_conversations', 'GET', params).then(function (convos) {
+    if (!convos || convos.length === 0) return res.json({ count: 0 });
+
+    var promises = convos.map(function (conv) {
+      return sb.query('chat_messages', 'GET', { eq: { conversation_id: conv.id } }).then(function (msgs) {
+        var unread = 0;
+        (msgs || []).forEach(function (m) {
+          var readBy = m.read_by || [];
+          if (readBy.indexOf(email) < 0 && (m.sender_id || '').toLowerCase() !== email) unread++;
+        });
+        return unread;
+      });
+    });
+
+    return Promise.all(promises).then(function (counts) {
+      var total = counts.reduce(function (a, b) { return a + b; }, 0);
+      res.json({ count: total });
+    });
+  }).catch(function (e) {
+    console.error('[CHAT] unread-count error:', e.message);
+    res.json({ count: 0 });
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+//  GET /api/chat/resolve-names — resolve emails to full names
+// ═══════════════════════════════════════════════════════════
+router.get('/resolve-names', function (req, res) {
+  var emails = (req.query.emails || '').split(',').filter(function (e) { return e.trim(); });
+  if (emails.length === 0) return res.json({});
+
+  var nameMap = {};
+  // Try SQLite users table first
+  emails.forEach(function (email) {
+    try {
+      var user = db.prepare("SELECT name FROM users WHERE LOWER(email) = ?").get(email.toLowerCase().trim());
+      if (user && user.name) nameMap[email.toLowerCase().trim()] = user.name;
+    } catch (e) { /* ignore */ }
+  });
+
+  // For any unresolved, try Supabase contacts
+  var unresolved = emails.filter(function (e) { return !nameMap[e.toLowerCase().trim()]; });
+  if (unresolved.length === 0 || !sb) return res.json(nameMap);
+
+  sb.query('contacts', 'GET', { limit: 500 }).then(function (contacts) {
+    (contacts || []).forEach(function (c) {
+      var cEmail = (c.email || '').toLowerCase();
+      if (cEmail && !nameMap[cEmail]) {
+        nameMap[cEmail] = c.full_name || c.first_name || '';
+      }
+    });
+    res.json(nameMap);
+  }).catch(function () {
+    res.json(nameMap);
+  });
+});
+
 module.exports = router;

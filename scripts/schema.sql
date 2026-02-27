@@ -963,6 +963,25 @@ CREATE TABLE IF NOT EXISTS airtable_id_map (
 
 CREATE INDEX IF NOT EXISTS idx_id_map_table ON airtable_id_map(supabase_table);
 
+-- ─── TRANSCRIPTS (ElevenLabs / Twilio call transcripts) ─────
+CREATE TABLE IF NOT EXISTS transcripts (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  call_sid TEXT UNIQUE,
+  conversation_id TEXT,
+  caller_phone TEXT,
+  transcript TEXT,
+  summary TEXT,
+  duration_secs INTEGER DEFAULT 0,
+  source TEXT DEFAULT 'elevenlabs',
+  call_direction TEXT DEFAULT 'inbound',
+  tenant_id UUID REFERENCES tenants(id),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_transcripts_sid ON transcripts(call_sid);
+CREATE INDEX IF NOT EXISTS idx_transcripts_phone ON transcripts(caller_phone);
+
 -- ─── AUTO-UPDATE updated_at TRIGGER ──────────────────────────
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$

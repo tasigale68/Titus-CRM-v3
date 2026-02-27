@@ -561,20 +561,63 @@ router.delete('/full-support-plan/file', function (req, res) {
 });
 
 // ═══════════════════════════════════════════════════════════
-//  GET /api/clients/calendar — client calendar events
+//  GET /api/clients/calendar — client calendar events (Supabase primary + Airtable fallback)
 // ═══════════════════════════════════════════════════════════
 router.get('/calendar', function (req, res) {
-  if (!env.airtable.apiKey || !env.airtable.baseId) return res.json({ records: [] });
   var clientName = req.query.name || '';
   if (!clientName) return res.json({ records: [] });
 
+  // Try Supabase first
+  if (supabase) {
+    supabase.from('client_calendar').select('*')
+      .ilike('client_name', clientName)
+      .order('start_datetime', { ascending: false, nullsFirst: false })
+      .limit(500)
+      .then(function (sbRes) {
+        if (sbRes.error) throw new Error(sbRes.error.message);
+        var rows = sbRes.data || [];
+        if (rows.length > 0) {
+          var matched = rows.map(function (r) {
+            return {
+              id: r.id,
+              airtable_id: r.airtable_id || '',
+              uniqueRef: r.unique_ref || '',
+              clientName: r.client_name || '',
+              eventName: r.event_name || '',
+              appointmentType: r.appointment_type || '',
+              startDate: r.start_datetime || '',
+              endDate: r.end_datetime || '',
+              address: r.address || '',
+              details: r.details || '',
+              swInstructions: r.sw_instructions || '',
+              createdBy: r.created_by || '',
+              createdDate: r.created_date || r.created_at || '',
+              status: r.status || '',
+              silOrCas: r.sil_or_cas || '',
+              files: r.files || []
+            };
+          });
+          console.log('[CALENDAR] Supabase: ' + matched.length + ' records for ' + clientName);
+          return res.json({ records: matched });
+        }
+        throw new Error('empty');
+      }).catch(function (e) {
+        if (e.message !== 'empty') console.warn('[CALENDAR] Supabase error, falling back:', e.message);
+        _fetchCalendarFromAirtable(clientName, res);
+      });
+  } else {
+    _fetchCalendarFromAirtable(clientName, res);
+  }
+});
+
+function _fetchCalendarFromAirtable(clientName, res) {
+  if (!env.airtable.apiKey || !env.airtable.baseId) return res.json({ records: [] });
   airtable.fetchAllFromTable('Client Calendar').then(function (records) {
     var matched = [];
     (records || []).forEach(function (r) {
       var f = r.fields || {};
       var cn = arrayVal(f['Client Name'] || f['Client Name (from Client Name)'] || f['Client Name (from Client)'] || f['Full Name (from Client)'] || f['Name (from Client)'] || f['Client'] || '');
       if (cn.toLowerCase() === clientName.toLowerCase()) {
-        if (matched.length === 0) console.log('Client Calendar fields:', Object.keys(f).join(', '));
         matched.push({
           id: r.id,
           uniqueRef: f['Unique Ref'] || '',
@@ -594,18 +637,124 @@ router.get('/calendar', function (req, res) {
         });
       }
     });
-    // Sort by start date descending (most recent first)
     matched.sort(function (a, b) {
       var da = a.startDate ? new Date(a.startDate) : new Date(0);
       var dbv = b.startDate ? new Date(b.startDate) : new Date(0);
       return dbv - da;
     });
-    console.log('Client Calendar: Found ' + matched.length + ' records for ' + clientName);
+    console.log('[CALENDAR] Airtable: ' + matched.length + ' records for ' + clientName);
     res.json({ records: matched });
   }).catch(function (e) {
-    console.error('Client Calendar error:', e.message);
+    console.error('[CALENDAR] error:', e.message);
     res.status(500).json({ error: e.message, records: [] });
   });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  POST /api/clients/calendar — create calendar event (Supabase + Airtable dual write)
+// ═══════════════════════════════════════════════════════════
+router.post('/calendar', function (req, res) {
+  var b = req.body;
+  var clientName = b.clientName || '';
+  if (!clientName) return res.status(400).json({ error: 'clientName required' });
+
+  if (supabase) {
+    var sbRow = {
+      client_name: clientName,
+      event_name: b.eventName || '',
+      appointment_type: b.appointmentType || '',
+      start_datetime: b.startDate || null,
+      end_datetime: b.endDate || null,
+      address: b.address || '',
+      details: b.details || '',
+      sw_instructions: b.swInstructions || '',
+      created_by: (req.user && req.user.name) || '',
+      created_date: new Date().toISOString(),
+      status: b.status || 'Scheduled'
+    };
+    supabase.from('client_calendar').insert(sbRow).select()
+      .then(function (sbRes) {
+        if (sbRes.error) throw new Error(sbRes.error.message);
+        var row = (sbRes.data && sbRes.data[0]) || {};
+        res.json({ ok: true, event: { id: row.id } });
+      }).catch(function (e) {
+        console.error('[CALENDAR] create error:', e.message);
+        res.status(500).json({ error: e.message });
+      });
+  } else {
+    // Airtable only
+    var fields = {};
+    if (b.eventName) fields['Event Name'] = b.eventName;
+    if (b.appointmentType) fields['Type of Appointment'] = b.appointmentType;
+    if (b.startDate) fields['START: Date & Time of Appointment'] = b.startDate;
+    if (b.endDate) fields['END: Date & Time of Appointment'] = b.endDate;
+    if (b.address) fields['Address & Suburb of Appointment'] = b.address;
+    if (b.details) fields['Details of Appointment'] = b.details;
+    if (b.swInstructions) fields['Instructions for Support Workers'] = b.swInstructions;
+    if (b.status) fields['Status of Appointment'] = b.status || 'Scheduled';
+    airtable.rawFetch('Client Calendar', 'POST', '', { records: [{ fields: fields }] })
+      .then(function (data) {
+        var rec = (data.records && data.records[0]) || {};
+        res.json({ ok: true, event: { id: rec.id } });
+      }).catch(function (e) { res.status(500).json({ error: e.message }); });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+//  PATCH /api/clients/calendar/:id — update calendar event
+// ═══════════════════════════════════════════════════════════
+router.patch('/calendar/:id', function (req, res) {
+  var id = req.params.id;
+  var b = req.body;
+
+  if (supabase && id.length > 20 && id.indexOf('rec') !== 0) {
+    var sbUpdate = {};
+    if (b.eventName) sbUpdate.event_name = b.eventName;
+    if (b.appointmentType) sbUpdate.appointment_type = b.appointmentType;
+    if (b.startDate) sbUpdate.start_datetime = b.startDate;
+    if (b.endDate) sbUpdate.end_datetime = b.endDate;
+    if (b.address) sbUpdate.address = b.address;
+    if (b.details) sbUpdate.details = b.details;
+    if (b.swInstructions) sbUpdate.sw_instructions = b.swInstructions;
+    if (b.status) sbUpdate.status = b.status;
+    sbUpdate.updated_at = new Date().toISOString();
+    supabase.from('client_calendar').update(sbUpdate).eq('id', id)
+      .then(function (sbRes) {
+        if (sbRes.error) return res.json({ error: sbRes.error.message });
+        res.json({ ok: true });
+      }).catch(function (e) { res.json({ error: e.message }); });
+  } else {
+    var fields = {};
+    if (b.eventName) fields['Event Name'] = b.eventName;
+    if (b.appointmentType) fields['Type of Appointment'] = b.appointmentType;
+    if (b.startDate) fields['START: Date & Time of Appointment'] = b.startDate;
+    if (b.endDate) fields['END: Date & Time of Appointment'] = b.endDate;
+    if (b.address) fields['Address & Suburb of Appointment'] = b.address;
+    if (b.details) fields['Details of Appointment'] = b.details;
+    if (b.status) fields['Status of Appointment'] = b.status;
+    airtable.rawFetch('Client Calendar', 'PATCH', '/' + id, { fields: fields })
+      .then(function () { res.json({ ok: true }); })
+      .catch(function (e) { res.json({ error: e.message }); });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+//  DELETE /api/clients/calendar/:id — delete calendar event
+// ═══════════════════════════════════════════════════════════
+router.delete('/calendar/:id', function (req, res) {
+  var id = req.params.id;
+
+  if (supabase && id.length > 20 && id.indexOf('rec') !== 0) {
+    supabase.from('client_calendar').delete().eq('id', id)
+      .then(function (sbRes) {
+        if (sbRes.error) return res.json({ error: sbRes.error.message });
+        res.json({ ok: true });
+      }).catch(function (e) { res.json({ error: e.message }); });
+  } else {
+    airtable.rawFetch('Client Calendar', 'DELETE', '/' + id)
+      .then(function () { res.json({ ok: true }); })
+      .catch(function (e) { res.json({ error: e.message }); });
+  }
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -985,7 +1134,7 @@ router.get('/docs', function (req, res) {
           updatedBy: f['Updated by'] || '',
           attachmentSummary: f['Attachment Summary'] || '',
           statusOfDoc: f['Status of Doc'] || '',
-          visibility: f['Visibility'] || 'both',
+          visibility: f['Visible to'] || f['Visibility'] || f['Visible To'] || 'both',
           files: files
         };
       });
@@ -1001,12 +1150,47 @@ router.patch('/docs/visibility', function(req, res) {
   var docId = req.body.docId;
   var visibility = req.body.visibility;
   if (!docId || !visibility) return res.status(400).json({ error: 'docId and visibility required' });
-  airtable.rawFetch(CLIENT_DOCS_TABLE, 'PATCH', '/' + docId, {
-    fields: { "Visibility": visibility }
-  }).then(function(data) {
-    if (data.error) return res.json({ error: data.error.message || 'Update failed' });
-    res.json({ ok: true });
-  }).catch(function(e) { res.json({ error: e.message }); });
+
+  // Try multiple field names — Airtable column might be "Visible to" or "Visibility"
+  var fieldNames = ["Visible to", "Visibility", "Visible To"];
+  var attempted = 0;
+
+  function tryField(idx) {
+    if (idx >= fieldNames.length) return res.json({ error: 'Could not update visibility — field not found in Airtable' });
+    var fields = {};
+    fields[fieldNames[idx]] = visibility;
+    airtable.rawFetch(CLIENT_DOCS_TABLE, 'PATCH', '/' + docId, { fields: fields })
+      .then(function(data) {
+        if (data.error && data.error.message && data.error.message.indexOf('Unknown field') >= 0) {
+          // Try next field name
+          return tryField(idx + 1);
+        }
+        if (data.error) return res.json({ error: data.error.message || 'Update failed' });
+        // Also update in Supabase if available
+        if (supabase) {
+          supabase.from('client_docs').update({ visibility: visibility }).eq('airtable_id', docId)
+            .then(function() {}).catch(function() {});
+        }
+        res.json({ ok: true });
+      })
+      .catch(function(e) { res.json({ error: e.message }); });
+  }
+
+  // Item 14: Handle both Airtable IDs (rec_xxx) and Supabase UUIDs
+  if (docId.length > 20 && docId.indexOf('rec') !== 0) {
+    // This is a Supabase UUID — update directly in Supabase
+    if (supabase) {
+      supabase.from('client_docs').update({ visibility: visibility }).eq('id', docId)
+        .then(function(sbRes) {
+          if (sbRes.error) return res.json({ error: sbRes.error.message });
+          res.json({ ok: true });
+        }).catch(function(e) { res.json({ error: e.message }); });
+    } else {
+      res.json({ error: 'Supabase not configured for UUID-based docs' });
+    }
+  } else {
+    tryField(0);
+  }
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -1125,6 +1309,59 @@ router.patch('/update-field', function(req, res) {
         .then(function() {}).catch(function() {});
     }
   }
+});
+
+// ═══════════════════════════════════════════════════════════
+//  POST /api/clients/photo — upload client profile photo to Supabase Storage
+// ═══════════════════════════════════════════════════════════
+router.post('/photo', uploadGeneral.single('photo'), function (req, res) {
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+  var clientName = req.body.clientName || '';
+  if (!clientName) return res.status(400).json({ error: 'clientName required' });
+
+  var bucket = 'titus-documents';
+  var safeName = clientName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+  var ext = (req.file.originalname || '').split('.').pop() || 'jpg';
+  var filePath = 'client-photos/' + safeName + '/' + Date.now() + '.' + ext;
+
+  supabase.storage.from(bucket).upload(filePath, req.file.buffer || require('fs').readFileSync(req.file.path), {
+    contentType: req.file.mimetype || 'image/jpeg',
+    upsert: true
+  }).then(function (uploadRes) {
+    if (uploadRes.error) return res.status(500).json({ error: uploadRes.error.message });
+
+    var publicUrl = (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, '') + '/storage/v1/object/public/' + bucket + '/' + filePath;
+
+    // Update client record with photo URL
+    supabase.from('clients').update({ photo_url: publicUrl })
+      .or('client_name.ilike.' + clientName + ',full_name.ilike.' + clientName)
+      .then(function () {}).catch(function () {});
+
+    res.json({ url: publicUrl, path: filePath });
+  }).catch(function (e) {
+    res.status(500).json({ error: e.message });
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+//  GET /api/clients/photos — get all photos for a client
+// ═══════════════════════════════════════════════════════════
+router.get('/photos', function (req, res) {
+  var clientName = req.query.clientName || '';
+  if (!clientName) return res.json([]);
+
+  var bucket = 'titus-documents';
+  var safeName = clientName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+  var prefix = 'client-photos/' + safeName + '/';
+
+  supabase.storage.from(bucket).list(prefix).then(function (listRes) {
+    if (listRes.error) return res.json([]);
+    var baseUrl = (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, '') + '/storage/v1/object/public/' + bucket + '/';
+    var photos = (listRes.data || []).map(function (f) {
+      return { name: f.name, url: baseUrl + prefix + f.name, created: f.created_at || '' };
+    });
+    res.json(photos);
+  }).catch(function () { res.json([]); });
 });
 
 module.exports = router;
