@@ -11,4 +11,6 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["node", "src/server.js"]
+# No CMD — Railway sets the start command per service:
+#   Web server:  node src/server.js
+#   Sync worker: node worker.js
