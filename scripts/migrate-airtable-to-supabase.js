@@ -86,9 +86,10 @@ function upsertBatch(tableName, rows) {
   for (var i = 0; i < rows.length; i += 200) {
     batches.push(rows.slice(i, i + 200));
   }
+  // Use on_conflict=airtable_id so PostgREST knows which column to merge on
   return batches.reduce(function(chain, batch) {
     return chain.then(function() {
-      return supabaseRequest(tableName, 'POST', batch);
+      return supabaseRequest(tableName + '?on_conflict=airtable_id', 'POST', batch);
     });
   }, Promise.resolve());
 }
@@ -97,6 +98,20 @@ function upsertBatch(tableName, rows) {
 function av(v) { return Array.isArray(v) ? v[0] || '' : v || ''; }
 function numVal(v) { return parseFloat(Array.isArray(v) ? v[0] : v) || 0; }
 function arrVal(v) { return Array.isArray(v) ? v : (v ? [v] : []); }
+// Sanitize dates — returns null for invalid/empty values
+function safeDate(v) {
+  if (!v) return null;
+  var s = Array.isArray(v) ? v[0] : v;
+  if (!s || typeof s !== 'string') return null;
+  s = s.trim();
+  if (!s || s.length < 6) return null;
+  // Accept ISO dates (YYYY-MM-DD) and common formats
+  var d = new Date(s);
+  if (isNaN(d.getTime())) return null;
+  // Return ISO date string for DATE columns, full ISO for TIMESTAMPTZ
+  if (s.includes('T') || s.includes(' ')) return d.toISOString();
+  return d.toISOString().split('T')[0];
+}
 function jsonAttachments(v) {
   if (!Array.isArray(v)) return [];
   return v.map(function(a) {
@@ -120,7 +135,7 @@ var MAPPERS = {
       suburb: f['Suburb'] || '',
       state: f['State'] || '',
       postcode: f['Postcode'] || '',
-      dob: f['DOB'] || f['Date of Birth'] || null,
+      dob: safeDate(f['DOB'] || f['Date of Birth']),
       type_of_contact: f['Type of Contact (Single Select)'] || '',
       type_of_employment: f['Type of Employment'] || '',
       job_title: f['Job Title'] || '',
@@ -152,7 +167,7 @@ var MAPPERS = {
       suburb: av(f['Suburb'] || f['Location'] || ''),
       location: f['Location'] || '',
       sil_or_cas: av(f['SIL or CAS?'] || f['SIL or CAS - Client'] || ''),
-      date_of_birth: f['Date of Birth'] || f['DOB'] || null,
+      date_of_birth: safeDate(f['Date of Birth'] || f['DOB']),
       gender: f['Gender'] || '',
       address: av(f['Address'] || f['Home Address'] || f['Street Address'] || ''),
       home_address: f['Home Address'] || '',
@@ -175,8 +190,8 @@ var MAPPERS = {
       support_coordinator_phone: av(f['Phone (from Support Coordinator )'] || ''),
       support_coordinator_company: av(f['Company Name (from Support Coordinator Link)'] || f['Organisation (from Support Coordinator Link)'] || ''),
       ndis_plan_type: av(f['Type of NDIS Plan Grouped'] || f['Type of NDIS Plan'] || ''),
-      ndis_plan_start_date: f['NDIS Plan Start Date'] || null,
-      ndis_plan_expiry_date: f['NDIS Plan Expiry Date'] || null,
+      ndis_plan_start_date: safeDate(f['NDIS Plan Start Date']),
+      ndis_plan_expiry_date: safeDate(f['NDIS Plan Expiry Date']),
       core_budget_sil: numVal(f['Core Budget (SIL)']),
       core_budget_community_access: numVal(f['Core Budget (Community Access)']),
       core_budget_transport: numVal(f['Core Budget (Transport)']),
@@ -230,7 +245,7 @@ var MAPPERS = {
       source: av(f['Source'] || f['Lead Source'] || ''),
       stage: av(f['Stage'] || f['Lead Stage'] || f['Status'] || 'Enquiry'),
       status: f['Status'] || 'New',
-      date: f['Date'] || f['Created'] || null,
+      date: safeDate(f['Date'] || f['Created']),
       notes: f['Notes'] || '',
       comments: f['Comments'] || '',
       suburb: av(f['Suburb'] || f['City'] || ''),
@@ -260,8 +275,8 @@ var MAPPERS = {
       client_full_name: av(f['Client Full Name'] || ''),
       staff_name: av(f['Staff Name'] || ''),
       staff_email: f['Staff Email'] || '',
-      start_shift: f['Start Shift'] || null,
-      end_shift: f['End Shift'] || null,
+      start_shift: safeDate(f['Start Shift']),
+      end_shift: safeDate(f['End Shift']),
       day_type: f['Day Type'] || '',
       total_hours_decimal: numVal(f['Total Hours (Decimal)']),
       total_hours_hmm: f['Total Hours (H:MM)'] || '',
@@ -283,8 +298,8 @@ var MAPPERS = {
       airtable_id: r.id,
       support_worker_name: f['Support Workers Name'] || '',
       client_name: av(f['Client Name'] || ''),
-      start_datetime: f['Start Date and Time'] || null,
-      end_datetime: f['End Date and Time'] || null,
+      start_datetime: safeDate(f['Start Date and Time']),
+      end_datetime: safeDate(f['End Date and Time']),
       notes_summary: f['Notes/Summary'] || '',
       total_hours: f['Total Hours'] || '',
       transport: f['Transport'] || '',
@@ -298,7 +313,7 @@ var MAPPERS = {
       airtable_id: r.id,
       unique_ir_ref: f['Unique IR #'] || '',
       person_completing: f['Person completing IR'] || '',
-      incident_datetime: f['Date & Time of Incident'] || null,
+      incident_datetime: safeDate(f['Date & Time of Incident']),
       description: f['Description'] || '',
       severity: f['Severity'] || 'Minor',
       status: f['Status'] || 'Open',
@@ -334,8 +349,8 @@ var MAPPERS = {
       from_which_budget: f['from which Budget?'] || f['from which Budget'] || '',
       line_items: f['Line Items from SOS Agreement'] || '',
       line_items_uploaded: f['Line Items from SOS Agreement uploaded'] || false,
-      plan_start_date: f['Plan Start Date'] || f['Plan Start'] || null,
-      plan_end_date: f['Plan End Date'] || f['Plan End'] || null,
+      plan_start_date: safeDate(f['Plan Start Date'] || f['Plan Start']),
+      plan_end_date: safeDate(f['Plan End Date'] || f['Plan End']),
       plan_manager: f['Plan Manager'] || '',
       ndis_number: av(f['NDIS Number'] || f['NDIS #'] || ''),
       notes: f['Notes'] || ''
@@ -352,11 +367,11 @@ var MAPPERS = {
       assignee: av(f['Assignee'] || f['Assigned To'] || f['Full Name (from Assigned to Email)'] || ''),
       status: av(f['Status'] || f['Task Status'] || 'Not Started'),
       priority: av(f['Priority'] || f['Task Priority'] || 'Medium'),
-      due_date: f['Due Date'] || f['Due Date for task to be completed'] || null,
-      date_completed: f['Date Completed'] || null,
+      due_date: safeDate(f['Due Date'] || f['Due Date for task to be completed']),
+      date_completed: safeDate(f['Date Completed']),
       project_name: av(f['Project'] || f['Project Name'] || ''),
       created_by: av(f['Created By'] || ''),
-      created_date: f['Created Date  & Time 2025'] || f['Created Date'] || null,
+      created_date: safeDate(f['Created Date  & Time 2025'] || f['Created Date']),
       type_of_update: av(f['Type of Update (Multi-select)'] || f['Type of Update'] || ''),
       method_of_contact: f['Method of Contact'] || '',
       description: f['Detailed Description'] || '',
@@ -366,7 +381,7 @@ var MAPPERS = {
       actions_taken: f['Actions taken to Complete task'] || '',
       is_recurring: f['Recurring Task?'] || '',
       recurring_frequency: f['Frequency of Recurring Task'] || '',
-      next_due_date: f['Next Due Date to occur'] || null
+      next_due_date: safeDate(f['Next Due Date to occur'])
     };
   },
 
@@ -392,7 +407,7 @@ var MAPPERS = {
       airtable_id: r.id,
       unique_receipt_id: f['Unique ID'] || '',
       supplier_name: f['Supplier Name'] || '',
-      purchase_date: f['Purchase Date'] || null,
+      purchase_date: safeDate(f['Purchase Date']),
       purchase_date_formatted: f['Purchase Date (Formula)'] || '',
       total_amount: numVal(f['Total Receipt Amount']),
       gst_amount: numVal(f['GST Amount']),
