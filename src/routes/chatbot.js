@@ -273,7 +273,6 @@ router.get('/knowledge', function(req, res) {
   var tenantId = req.tenant.id;
 
   sb.query('knowledge_base', 'GET', scopeQuery({
-    select: 'id,filename,category,created_at,file_url',
     order: 'created_at.desc'
   }, tenantId)).then(function(rows) {
     res.json(rows || []);
@@ -309,17 +308,14 @@ router.post('/knowledge', upload.single('file'), function(req, res) {
   var contentType = req.file.mimetype || 'application/octet-stream';
 
   sb.storageUpload('titus-knowledge', storagePath, fileBuffer, contentType).then(function() {
-    var fileUrl = sb.storageUrl('titus-knowledge', storagePath);
-
     // Insert into knowledge_base table
     return sb.insert('knowledge_base', {
       tenant_id: tenantId,
       filename: filename,
       category: category,
       content_text: contentText,
-      file_url: fileUrl,
       uploaded_by: userId,
-      created_at: new Date().toISOString()
+      uploaded_at: new Date().toISOString()
     });
   }).then(function(rows) {
     // Clean up temp file
@@ -330,8 +326,7 @@ router.post('/knowledge', upload.single('file'), function(req, res) {
       id: doc.id,
       filename: doc.filename,
       category: doc.category,
-      file_url: doc.file_url,
-      created_at: doc.created_at
+      uploaded_at: doc.uploaded_at
     });
   }).catch(function(err) {
     // Clean up temp file on error
