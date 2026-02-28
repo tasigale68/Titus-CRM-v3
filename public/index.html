@@ -618,7 +618,6 @@ button:not(.sb-item):not(.sb-sub-item):not(.sb-collapse-btn){cursor:pointer}
 <div class="mid-tabs" id="midTabs"><button class="mid-tab on" data-filter="all">All</button><button class="mid-tab" data-filter="calls">📞 Calls</button><button class="mid-tab" data-filter="sms">💬 SMS</button><button class="mid-tab" data-filter="chats">💬 Chats</button></div>
 <div class="conv-list" id="midList"></div>
 </div>
-<div id="panelResizer" style="width:5px;cursor:col-resize;background:transparent;flex-shrink:0;position:relative;z-index:10" onmousedown="_startPanelResize(event)"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:3px;height:32px;border-radius:2px;background:var(--border);opacity:.5;transition:opacity .15s"></div></div>
 <div class="right-panel" id="rightPanel">
 <div class="rp-empty" id="rpEmpty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--light)"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Select a conversation to view details</div>
 </div>
@@ -810,8 +809,8 @@ var token=localStorage.getItem("titus_token");var currentUser=null;try{currentUs
 var calls=[],smsList=[],emailList=[],participants=[],contacts=[],users=[],conversations=[],clientsList=[];var currentView="myDetails",selectedConv=null,convFilter="all";var socket=io();
 var chatConversations=[],selectedChatConv=null,chatMessages=[],_chatLoaded=false,_chatUsers=null;
 var dialerNumber="",dialerContactName="";
-var contactFilter=[];var contactGenderFilter="";var contactSuburbFilter="";var contactStatusFilter="Active Contact";
 var staffListFilter={type:"",gender:""};
+var contactFilter=[];var contactGenderFilter="";var contactSuburbFilter="";var contactStatusFilter="Active Contact";
 var AU_TIMEZONES={QLD:"Australia/Brisbane",NSW:"Australia/Sydney",VIC:"Australia/Melbourne",SA:"Australia/Adelaide",NT:"Australia/Darwin",WA:"Australia/Perth",TAS:"Australia/Hobart",ACT:"Australia/Sydney"};
 function getAppTimezone(){return window._appTimezone||localStorage.getItem("titus_timezone")||"QLD"}
 function fmtTimeInTZ(iso){if(!iso)return"";try{return new Date(iso).toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit",hour12:true,timeZone:AU_TIMEZONES[getAppTimezone()]||"Australia/Brisbane"})}catch(e){return""}}
@@ -1368,7 +1367,6 @@ if(map&&typeof map==="object")window._chatNameMap=map;
 // Also add current user
 if(currentUser&&currentUser.email)window._chatNameMap[currentUser.email.toLowerCase()]=currentUser.name||currentUser.email;
 }).catch(function(){})}
-
 function openMessengerPopup(){
 if(_messengerOpen){var el=document.getElementById("messengerPopup");if(el)el.remove();_messengerOpen=false;return}
 _messengerOpen=true;
@@ -1405,14 +1403,13 @@ var dispTitle=c.title||c.name||"Chat";
 if(dispTitle.indexOf("@")>=0&&window._chatNameMap){var parts=dispTitle.split(",").map(function(p){p=p.trim();var resolved=window._chatNameMap[p.toLowerCase()];return resolved||p});dispTitle=parts.join(", ")}
 h+='<div onclick="openMsgThread(\''+c.id+'\')" style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;display:flex;align-items:center;gap:10px" onmouseover="this.style.background=\'var(--surface2)\'" onmouseout="this.style.background=\'none\'">';
 h+='<div style="width:36px;height:36px;border-radius:50%;background:rgba(10,147,150,.1);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">'+getInitials(dispTitle)+'</div>';
-h+='<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:'+(c.unreadCount>0?"700":"600")+';color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+dispTitle+'</span>';
+h+='<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+dispTitle+'</span>';
 h+='<span style="font-size:9px;color:var(--muted);white-space:nowrap;margin-left:4px">'+timeStr+'</span></div>';
 h+='<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+lastMsg+'</div></div>';
-if(c.unreadCount>0)h+='<span style="background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;flex-shrink:0;min-width:16px;text-align:center">'+c.unreadCount+'</span>';
+if(c.unreadCount>0)h+='<span style="background:var(--teal);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;flex-shrink:0">'+c.unreadCount+'</span>';
 h+='</div>'});
 list.innerHTML=h
 }).catch(function(){var list=document.getElementById("msgConvList");if(list)list.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:11px">Could not load conversations</div>'})}
-var _msgTab="chats";
 function loadWorkerChannels(){
 apiCall("GET","/api/messenger/admin/all-channels").then(function(channels){
 var list=document.getElementById("msgConvList");if(!list)return;
@@ -1521,48 +1518,32 @@ var msgs=data.messages||data||[];
 var title=data.title||data.name||"Chat";
 // Resolve email-based title to name
 if(title&&title.indexOf("@")>=0&&window._chatNameMap){var resolved=window._chatNameMap[title.toLowerCase()];if(resolved)title=resolved}
-var h='<div style="padding:10px 16px;background:linear-gradient(135deg,#0f172a,#1e293b);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0">';
-h+='<button onclick="loadMessengerConversations();document.getElementById(\'msgThreadView\').remove();document.getElementById(\'msgConvList\').style.display=\'block\'" style="background:none;border:none;font-size:16px;cursor:pointer;color:rgba(255,255,255,.7)">←</button>';
-h+='<div style="width:28px;height:28px;border-radius:50%;background:rgba(10,147,150,.3);color:#5eead4;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">'+getInitials(title)+'</div>';
-h+='<span style="font-size:13px;font-weight:700;color:#f0f9ff">'+title+'</span></div>';
-h+='<div id="msgThreadMsgs" style="flex:1;overflow-y:auto;padding:12px;background:var(--surface2)">';
-var lastDateStr="";
+var h='<div style="padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0">';
+h+='<button onclick="loadMessengerConversations();document.getElementById(\'msgThreadView\').remove();document.getElementById(\'msgConvList\').style.display=\'block\'" style="background:none;border:none;font-size:16px;cursor:pointer;color:var(--muted)">←</button>';
+h+='<span style="font-size:13px;font-weight:700;color:var(--text)">'+title+'</span></div>';
+h+='<div id="msgThreadMsgs" style="flex:1;overflow-y:auto;padding:12px">';
 (Array.isArray(msgs)?msgs:[]).forEach(function(m){
 var isMe=(m.sender_email||"").toLowerCase()===(currentUser&&currentUser.email||"").toLowerCase();
 var timeStr=m.created_at?TitusDate.formatTime(m.created_at):"";
-var dateStr=m.created_at?TitusDate.format(m.created_at):"";
-// Date divider
-if(dateStr&&dateStr!==lastDateStr){lastDateStr=dateStr;h+='<div style="text-align:center;margin:12px 0 8px"><span style="font-size:9px;font-weight:600;color:var(--muted);background:var(--surface);padding:3px 12px;border-radius:10px;border:1px solid var(--border)">'+dateStr+'</span></div>'}
-// Resolve sender name from email
-var senderName=m.sender_name||"";
-if(senderName&&senderName.indexOf("@")>=0&&window._chatNameMap){var rn=window._chatNameMap[senderName.toLowerCase()];if(rn)senderName=rn}
-if(!senderName)senderName=m.sender_email||"";
-h+='<div style="display:flex;flex-direction:column;align-items:'+(isMe?"flex-end":"flex-start")+';margin-bottom:10px">';
-if(!isMe)h+='<div style="font-size:9px;font-weight:600;color:var(--teal);margin-bottom:2px;margin-left:4px">'+senderName+'</div>';
-h+='<div style="max-width:80%;padding:10px 14px;border-radius:'+(isMe?"16px 16px 4px 16px":"16px 16px 16px 4px")+';font-size:12px;line-height:1.5;background:'+(isMe?"linear-gradient(135deg,#0d9488,#0f766e)":"var(--surface)")+';color:'+(isMe?"#fff":"var(--text)")+';box-shadow:0 1px 3px rgba(0,0,0,.06);border:1px solid '+(isMe?"transparent":"var(--border)")+'">';
-if(m.content)h+=m.content;
+h+='<div style="display:flex;flex-direction:column;align-items:'+(isMe?"flex-end":"flex-start")+';margin-bottom:8px">';
+h+='<div style="font-size:9px;color:var(--muted);margin-bottom:2px">'+(m.sender_name||"")+(timeStr?" · "+timeStr:"")+'</div>';
+h+='<div style="max-width:80%;padding:8px 12px;border-radius:12px;font-size:12px;background:'+(isMe?"var(--teal)":"var(--surface2)")+';color:'+(isMe?"#fff":"var(--text)")+'">'+(m.content||"")+'</div>';
 // Parse attachments — handle both JSON string and array
 var attachArr=[];
 if(m.attachments){
 if(typeof m.attachments==="string"){try{attachArr=JSON.parse(m.attachments)}catch(ex){}}
 else if(Array.isArray(m.attachments)){attachArr=m.attachments}
 }
-if(attachArr.length>0){attachArr.forEach(function(a){
-var isImg=a.type&&a.type.indexOf("image")>=0;
-if(isImg){h+='<div style="margin-top:6px"><a href="'+(a.url||"")+'" target="_blank"><img src="'+(a.url||"")+'" style="max-width:200px;max-height:150px;border-radius:8px;display:block" onerror="this.style.display=\'none\'"></a></div>'}
-else{h+='<div style="margin-top:4px"><a href="'+(a.url||"")+'" target="_blank" style="font-size:10px;color:'+(isMe?"#d1fae5":"var(--teal)")+';text-decoration:none;display:flex;align-items:center;gap:4px">📎 '+(a.name||"Attachment")+'</a></div>'}
-})}
-h+='</div>';
-h+='<div style="font-size:8px;color:var(--dim);margin-top:2px;margin-'+(isMe?"right":"left")+':4px">'+timeStr+'</div>';
+if(attachArr.length>0){attachArr.forEach(function(a){h+='<a href="'+(a.url||"")+'" target="_blank" style="font-size:10px;color:var(--teal);margin-top:2px">📎 '+(a.name||"Attachment")+'</a>'})}
 h+='</div>'});
 h+='</div>';
 // Compose area
-h+='<div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0;background:var(--surface)">';
+h+='<div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0">';
 h+='<label style="cursor:pointer;display:flex;align-items:center"><input type="file" id="msgAttachInput" style="display:none" multiple onchange="msgAttachFiles(this.files)"><span style="font-size:18px" title="Attach">📎</span></label>';
-h+='<input id="msgComposeInput" placeholder="Type a message..." style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:20px;font-size:12px;font-family:inherit;background:var(--surface2);outline:none" onkeydown="if(event.key===\'Enter\')sendMsgFromPopup(\''+convId+'\')">';
-h+='<button onclick="sendMsgFromPopup(\''+convId+'\')" style="padding:6px 14px;font-size:12px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:20px;cursor:pointer;font-family:inherit">Send</button></div>';
-var convList=document.getElementById("msgConvList");if(convList)convList.style.display="none";
+h+='<input id="msgComposeInput" placeholder="Type a message..." style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:20px;font-size:12px;font-family:inherit;background:var(--surface);outline:none" onkeydown="if(event.key===\'Enter\')sendMsgFromPopup(\''+convId+'\')">';
+h+='<button onclick="sendMsgFromPopup(\''+convId+'\')" style="padding:6px 12px;font-size:12px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:20px;cursor:pointer;font-family:inherit">Send</button></div>';
 var existing=document.getElementById("msgThreadView");if(existing)existing.remove();
+var convList=document.getElementById("msgConvList");if(convList)convList.style.display="none";
 var threadDiv=document.createElement("div");threadDiv.id="msgThreadView";threadDiv.style.cssText="display:flex;flex-direction:column;flex:1;overflow:hidden";
 threadDiv.innerHTML=h;popup.appendChild(threadDiv);
 setTimeout(function(){var area=document.getElementById("msgThreadMsgs");if(area)area.scrollTop=area.scrollHeight},100);
@@ -2544,23 +2525,14 @@ if(viewLabel==="staff"){
 }
 if(!searchVal)return true;
 return(c.name||"").toLowerCase().indexOf(searchVal)>=0||(c.phone||"").indexOf(searchVal)>=0||(c.email||"").toLowerCase().indexOf(searchVal)>=0||(c.suburb||"").toLowerCase().indexOf(searchVal)>=0});
-var html='';
-if(viewLabel==="staff"){
-html+='<div style="padding:8px 12px 4px;display:flex;gap:4px;flex-wrap:wrap">';
-var _sfBtns=[{label:"All",type:"",gender:""},{label:"Employees",type:"Employee",gender:""},{label:"Contractors",type:"Contractor",gender:""},{label:"Male",type:"",gender:"Male"},{label:"Female",type:"",gender:"Female"}];
-_sfBtns.forEach(function(b){var isActive=(staffListFilter.type===b.type&&staffListFilter.gender===b.gender);
-html+='<button onclick="setStaffFilter(\''+b.type+'\',\''+b.gender+'\')" style="padding:4px 10px;font-size:10px;font-weight:700;border-radius:12px;border:1px solid '+(isActive?'var(--teal)':'var(--border)')+';background:'+(isActive?'rgba(10,147,150,.1)':'var(--surface2)')+';color:'+(isActive?'var(--teal)':'var(--muted)')+';cursor:pointer;font-family:inherit;transition:all .12s">'+b.label+'</button>'});
-html+='</div>';
-}
-html+='<div style="padding:4px 12px 8px"><div style="font-size:10px;color:var(--dim);text-align:center">'+filtered.length+' '+viewLabel+'</div></div>';
+var html='<div style="padding:8px 12px"><div style="font-size:10px;color:var(--dim);text-align:center">'+filtered.length+' '+viewLabel+'</div></div>';
 if(filtered.length===0){html+='<div class="empty-state" style="padding:20px">No '+viewLabel+' found.</div>'}
 filtered.forEach(function(c){
 var isOn=selectedConv&&selectedConv.id===c.id;
-var _isContractor=(c.contactType||"").indexOf("Contractor")>=0||(c.contactType||"").indexOf("contractor")>=0;
-html+='<div class="conv-item'+(isOn?" on":"")+'" data-contact-id="'+(c.id||c.airtable_id||"")+'" style="'+(_isContractor&&viewLabel==="staff"?"border-left:3px solid var(--teal)":"")+'">';
+html+='<div class="conv-item'+(isOn?" on":"")+'" data-contact-id="'+(c.id||c.airtable_id||"")+'">';
 html+='<div class="conv-avatar" style="overflow:hidden">'+(c.photo&&c.photo.length>0?'<img src="'+(c.photo[0].thumbnailUrl||c.photo[0].url)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':getInitials(c.name))+'</div>';
 html+='<div class="conv-body">';
-html+='<div class="conv-name">'+(c.name||"Unnamed")+(_isContractor&&viewLabel==="staff"?'<span style="padding:2px 6px;border-radius:8px;font-size:9px;font-weight:700;background:rgba(10,147,150,.1);color:var(--teal);border:1px solid rgba(10,147,150,.2);margin-left:6px">Contractor</span>':'')+'</div>';
+html+='<div class="conv-name">'+(c.name||"Unnamed")+'</div>';
 html+='<div class="conv-sub">'+(c.phone||"No phone")+'</div>';
 if(c.contactType)html+='<div class="contact-type-badge '+getContactTypeCss(c.contactType)+'">'+c.contactType+'</div>';
 if(c.statusOfContact)html+='<span style="font-size:9px;font-weight:600;margin-left:4px;padding:1px 6px;border-radius:8px;'+(c.statusOfContact.toLowerCase().indexOf("active")>=0&&c.statusOfContact.toLowerCase().indexOf("inactive")<0?"background:rgba(16,185,129,.08);color:var(--green)":"background:rgba(239,68,68,.06);color:var(--red)")+'">'+c.statusOfContact+'</span>';
@@ -2590,10 +2562,7 @@ function renderComplianceSection(compFields,contactId){
     h+='<div style="padding:6px 8px;background:'+bg+';border:1px solid '+border+';border-radius:var(--rs)">';
     h+='<div style="display:flex;align-items:center;justify-content:space-between"><div style="font-size:9px;font-weight:600;color:var(--muted)">'+f.label+'</div>';
     if(contactId&&docType){
-      h+='<div style="display:flex;align-items:center;gap:4px">';
-      h+='<button onclick="viewComplianceDoc(\''+f.label+'\',\''+contactId+'\')" style="font-size:8px;font-weight:700;color:var(--royal);cursor:pointer;background:rgba(30,75,160,.08);border:1px solid rgba(30,75,160,.15);border-radius:3px;padding:1px 5px;font-family:inherit" title="View '+f.label+' document">VIEW</button>';
       h+='<label style="font-size:8px;font-weight:700;color:var(--teal);cursor:pointer;display:flex;align-items:center;gap:2px" title="Upload '+f.label+'">📎<input type="file" accept="image/*,.pdf" style="display:none" onchange="uploadCompDoc(this,\''+contactId+'\',\''+docType+'\',\''+f.label+'\')">Upload</label>';
-      h+='</div>';
     }
     h+='</div>';
     if(dateVal){
@@ -2729,16 +2698,6 @@ html+='<div style="flex:1;overflow-y:auto;padding:20px">';
 if(activeTab==="details"){
 // Photo above fields if staff
 if(isStaff&&!isNDISClient&&c.photo&&c.photo.length>0){var photoUrl=c.photo[0].thumbnailUrl||c.photo[0].url;html+='<div style="text-align:center;margin-bottom:12px"><img src="'+photoUrl+'" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--teal);box-shadow:0 2px 8px rgba(0,0,0,.15)" alt="Photo"></div>'}
-// CV/Resume, SW Profile, AI CV Summary links (below photo)
-if(isStaff&&!isNDISClient){
-var _profHasCv=c.cvResume&&c.cvResume.length>0;var _profSaved=c.cvAiSummary||"";
-var hasDocs=(c.swProfile&&c.swProfile.length>0)||(c.cvResume&&c.cvResume.length>0);
-if(hasDocs){html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">';
-if(c.cvResume&&c.cvResume.length>0){var _pCv=c.cvResume[0];html+='<a href="'+_pCv.url+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(30,75,160,.04);border:1px solid rgba(30,75,160,.15);border-radius:var(--rs);text-decoration:none;transition:all .12s" onmouseover="this.style.background=\'rgba(30,75,160,.1)\'" onmouseout="this.style.background=\'rgba(30,75,160,.04)\'"><span style="font-size:16px">📋</span><div><div style="font-size:11px;font-weight:700;color:var(--royal)">CV / Resume</div><div style="font-size:9px;color:var(--muted)">'+(_pCv.name||"View")+'</div></div></a>'}
-if(c.swProfile&&c.swProfile.length>0){var _pSw=c.swProfile[0];html+='<a href="'+_pSw.url+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(10,147,150,.04);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);text-decoration:none;transition:all .12s" onmouseover="this.style.background=\'rgba(10,147,150,.1)\'" onmouseout="this.style.background=\'rgba(10,147,150,.04)\'"><span style="font-size:16px">📄</span><div><div style="font-size:11px;font-weight:700;color:var(--teal)">SW Profile</div><div style="font-size:9px;color:var(--muted)">'+(_pSw.name||"View")+'</div></div></a>'}
-html+='</div>'}
-html+='<button onclick="'+(_profSaved?'showCvSummaryModal()':'generateCVSummary()')+'" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(59,130,246,.06));border:1px solid rgba(124,58,237,.15);border-radius:var(--rs);cursor:'+(_profHasCv?'pointer':'default')+';font-family:inherit;text-align:left;transition:all .12s;width:100%;margin-bottom:12px"'+(!_profHasCv?' disabled':'')+'><span style="font-size:16px">🤖</span><div><div style="font-size:11px;font-weight:700;color:#7C3AED">'+(_profSaved?"View AI CV Summary":"Generate AI CV Summary")+'</div><div style="font-size:9px;color:var(--muted)">'+(_profHasCv?(_profSaved?"Click to view summary":"Analyse CV with Claude AI"):"Upload CV first")+'</div></div></button>';
-}
 if(isNDISClient){
 // ── NDIS CLIENT DETAILS — loads from Clients table ──
 // Determine client name: try linked field, then full name, then firstName+lastName
@@ -2872,28 +2831,53 @@ html+=renderComplianceSection(compFieldsR,c.airtable_id||c.id);
 html+='<div style="padding:10px;background:rgba(36,84,160,.04);border:1px solid rgba(36,84,160,.12);border-radius:var(--rs);text-align:center;color:var(--muted);font-size:11px">ℹ️ To update your personal details, please contact your Team Leader</div>';
 }else{
 // FULL VIEW — superadmin sees everything
-// CV/SW Profile/AI Summary now in profile header above
-// Item 27: autosave indicator
-html+='<div id="staffAutoSaveStatus" style="font-size:10px;color:var(--green);font-weight:600;margin-bottom:6px;min-height:14px"></div>';
+// SW Profile + CV/Resume — moved to top
+var hasDocs=(c.swProfile&&c.swProfile.length>0)||(c.cvResume&&c.cvResume.length>0);
+if(hasDocs){html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">';
+if(c.swProfile&&c.swProfile.length>0){var sp=c.swProfile[0];html+='<a href="'+sp.url+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(10,147,150,.04);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);text-decoration:none;transition:all .12s" onmouseover="this.style.background=\'rgba(10,147,150,.1)\'" onmouseout="this.style.background=\'rgba(10,147,150,.04)\'"><span style="font-size:20px">📄</span><div><div style="font-size:12px;font-weight:700;color:var(--teal)">SW Profile</div><div style="font-size:9px;color:var(--muted)">'+sp.name+(sp.size?' · '+(sp.size>1048576?(sp.size/1048576).toFixed(1)+'MB':(sp.size/1024).toFixed(0)+'KB'):'')+'</div></div></a>'}
+if(c.cvResume&&c.cvResume.length>0){var cv=c.cvResume[0];html+='<a href="'+cv.url+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(30,75,160,.04);border:1px solid rgba(30,75,160,.15);border-radius:var(--rs);text-decoration:none;transition:all .12s" onmouseover="this.style.background=\'rgba(30,75,160,.1)\'" onmouseout="this.style.background=\'rgba(30,75,160,.04)\'"><span style="font-size:20px">📋</span><div><div style="font-size:12px;font-weight:700;color:var(--royal)">CV / Resume</div><div style="font-size:9px;color:var(--muted)">'+cv.name+(cv.size?' · '+(cv.size>1048576?(cv.size/1048576).toFixed(1)+'MB':(cv.size/1024).toFixed(0)+'KB'):'')+'</div></div></a>'}
+html+='</div>'}
+// AI CV Summary card (staff)
+html+='<div style="padding:14px;background:linear-gradient(135deg,rgba(124,58,237,.03),rgba(59,130,246,.03));border:1px solid rgba(124,58,237,.12);border-radius:var(--rs);margin-bottom:12px">';
+html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="display:flex;align-items:center;gap:6px"><span style="font-size:16px">🤖</span><span style="font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.4px">AI CV Summary</span></div>';
+if(c.cvResume&&c.cvResume.length>0){
+var savedSummary2=c.cvAiSummary||"";
+html+='<button id="cvSummaryBtn" onclick="generateCVSummary()" style="font-size:10px;font-weight:700;padding:5px 12px;border-radius:6px;border:1px solid rgba(124,58,237,.3);background:rgba(124,58,237,.08);color:#7C3AED;cursor:pointer;transition:all .12s" onmouseenter="this.style.background=\'#7C3AED\';this.style.color=\'#fff\'" onmouseleave="this.style.background=\'rgba(124,58,237,.08)\';this.style.color=\'#7C3AED\'">'+(savedSummary2?'🔄 Regenerate':'✨ Generate')+'</button>';
+}
+html+='</div>';
+html+='<div id="cvSummaryContent">';
+var savedSummary2=c.cvAiSummary||"";
+if(savedSummary2){
+var sHtml2=savedSummary2.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/^### (.+)$/gm,'<div style="font-size:12px;font-weight:800;color:#7C3AED;margin-top:10px;margin-bottom:4px">$1</div>').replace(/^## (.+)$/gm,'<div style="font-size:12px;font-weight:800;color:#7C3AED;margin-top:10px;margin-bottom:4px">$1</div>').replace(/^# (.+)$/gm,'<div style="font-size:13px;font-weight:800;color:#7C3AED;margin-top:10px;margin-bottom:4px">$1</div>').replace(/^- (.+)$/gm,'<div style="padding-left:12px;position:relative;margin:2px 0"><span style="position:absolute;left:0">•</span> $1</div>').replace(/\n{2,}/g,'<div style="height:6px"></div>').replace(/\n/g,'<br>');
+html+='<div style="font-size:11px;line-height:1.6;color:var(--text)">'+sHtml2+'</div>';
+}else if(!c.cvResume||c.cvResume.length===0){
+html+='<div style="font-size:11px;color:var(--dim);font-style:italic">Upload a CV/Resume to generate an AI summary</div>';
+}else{
+html+='<div style="font-size:11px;color:var(--dim)">Click Generate to analyse '+(c.name||"this person")+'\'s CV with AI</div>';
+}
+html+='</div></div>';
 // First Name + Last Name + Cultural Ethnicity (3 columns)
-html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>First Name</label><input id="editFirstName" value="'+(c.firstName||"")+'" onblur="_staffAutoSave(\'firstName\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div><div class="fg" style="margin:0"><label>Last Name</label><input id="editLastName" value="'+(c.lastName||"")+'" onblur="_staffAutoSave(\'lastName\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div><div class="fg" style="margin:0"><label>Cultural Ethnicity</label><input value="'+(c.cultureEthnicity||"")+'" disabled style="opacity:.7"></div></div>';
-// Item 29: Address directly under First/Last Name
-html+='<div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📍 Address</div>';
-html+='<div class="fg" style="margin:0 0 6px"><input id="editAddress" value="'+(c.homeAddress||"")+'" placeholder="Street Address" style="font-size:12px;padding:6px 8px" onblur="_staffAutoSave(\'homeAddress\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div>';
-html+='<div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px"><input id="editSuburb" value="'+(c.suburb||"")+'" placeholder="Suburb" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit" onblur="_staffAutoSave(\'suburb\',this.value,\''+(c.id||c.airtable_id||"")+'\')"><input id="editState" value="'+(c.state||"")+'" placeholder="State" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit" onblur="_staffAutoSave(\'state\',this.value,\''+(c.id||c.airtable_id||"")+'\')"><input id="editPostcode" value="'+(c.postcode||"")+'" placeholder="Postcode" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit" onblur="_staffAutoSave(\'postcode\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div></div>';
-// Gender + DOB (date picker) + Age (auto-calc) — Items 8, 26
-var dobVal=c.dob||"";var dobIso="";var ageDisplay="";if(dobVal){try{var dp;if(dobVal.indexOf("/")>=0){var pts=dobVal.split("/");if(pts.length===3){var yr=pts[2];if(yr.length===2)yr=(parseInt(yr)>50?"19":"20")+yr;dp=new Date(yr+"-"+pts[1]+"-"+pts[0])}}else{dp=new Date(dobVal)}if(dp&&!isNaN(dp)){dobIso=dp.toISOString().split("T")[0];var ageDiff=Date.now()-dp.getTime();var ageDate=new Date(ageDiff);ageDisplay=Math.abs(ageDate.getUTCFullYear()-1970)+" yrs"}}catch(e){}}
-var genderOpts=["","Male","Female","Non-Binary","Other","Prefer not to say"];var genderSelect='<select id="editGender" onchange="_staffAutoSave(\'gender\',this.value,\''+(c.id||c.airtable_id||"")+'\')" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);color:var(--text);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">';genderOpts.forEach(function(g){genderSelect+='<option value="'+g+'"'+(c.gender===g?" selected":"")+'>'+( g||"— Select —")+'</option>'});genderSelect+='</select>';
-html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Gender</label>'+genderSelect+'</div><div class="fg" style="margin:0"><label>Date of Birth</label><input id="editDob" type="date" value="'+dobIso+'" onchange="_staffAutoSave(\'dob\',this.value,\''+(c.id||c.airtable_id||"")+'\');_staffUpdateAge(this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:13px;font-family:inherit;background:var(--surface);color:var(--text)"></div><div class="fg" style="margin:0"><label>Age</label><input id="staffAgeDisp" value="'+ageDisplay+'" disabled style="opacity:.7;font-weight:700"></div></div>';
-// Organisation + ABN for contractors
-if(isContractor){html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Organisation</label><input id="editOrg" value="'+(c.organisation||"")+'" onblur="_staffAutoSave(\'organisation\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div><div class="fg" style="margin:0"><label>ABN <span id="abnStatusBadge"></span></label><div style="display:flex;gap:4px"><input id="editAbn" value="'+(c.abn||"")+'" placeholder="11-digit ABN" style="font-family:JetBrains Mono,monospace;flex:1" oninput="formatABNInput(this)" onblur="_staffAutoSave(\'abn\',this.value,\''+(c.id||c.airtable_id||"")+'\')"><button onclick="lookupABN()" style="padding:6px 10px;font-size:10px;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit;white-space:nowrap" title="Verify ABN with Australian Business Register">🔍 Verify</button></div></div></div>';html+='<div id="abnLookupResult" style="display:none;margin-bottom:8px;padding:10px 12px;border-radius:var(--rs);font-size:12px"></div>'}else{html+='<input type="hidden" id="editOrg" value="'+(c.organisation||"")+'"><input type="hidden" id="editAbn" value="'+(c.abn||"")+'">'}
-// Item 27: no SAVE button — autosave handles everything
-// Item 25: hiding document signing email
-html+='<input type="hidden" id="editSigningEmail" value="'+(c.signingEmail||c.email||"")+'">';
-// Item 28: Type/Job Title/Status moved to 3rd column at top
+html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>First Name</label><input id="editFirstName" value="'+(c.firstName||"")+'"></div><div class="fg" style="margin:0"><label>Last Name</label><input id="editLastName" value="'+(c.lastName||"")+'"></div><div class="fg" style="margin:0"><label>Cultural Ethnicity</label><input value="'+(c.cultureEthnicity||"")+'" disabled style="opacity:.7"></div></div>';
+// Type of Contact + Job Title + Status of Contact (3 columns)
 html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Type of Contact</label>'+contactTypeSelect(c.contactType||"")+'</div><div class="fg" style="margin:0"><label>Job Title</label><input value="'+(c.jobTitle||"")+'" disabled style="opacity:.7"></div><div class="fg" style="margin:0"><label>Status of Contact</label>'+statusOfContactSelect(c.statusOfContact||"")+'</div></div>';
-// Phone + Email
-html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Phone</label><input id="editPhone" type="tel" value="'+(c.phone||"")+'" placeholder="+61400000000" onblur="_staffAutoSave(\'phone\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div><div class="fg" style="margin:0"><label>Email</label><input id="editEmail" type="email" value="'+(c.email||"")+'" onblur="_staffAutoSave(\'email\',this.value,\''+(c.id||c.airtable_id||"")+'\')"></div></div>';
+// Phone + Email + Signing Email
+html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Phone</label><input id="editPhone" type="tel" value="'+(c.phone||"")+'" placeholder="+61400000000"></div><div class="fg" style="margin:0"><label>Email</label><input id="editEmail" type="email" value="'+(c.email||"")+'"></div></div>';
+html+='<div style="margin-bottom:8px;padding:10px 12px;background:rgba(30,75,160,.04);border:1px solid rgba(30,75,160,.15);border-radius:var(--rs)">';
+html+='<div style="font-size:9px;font-weight:700;color:var(--royal);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:6px">✍️ Document Signing Email <span style="font-size:9px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">(used when sending agreements for e-signature)</span></div>';
+html+='<input id="editSigningEmail" type="email" value="'+(c.signingEmail||c.email||"")+'" placeholder="Leave blank to use main email above" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:13px;font-family:inherit;background:var(--surface);color:var(--text);box-sizing:border-box">';
+html+='</div>';
+// Organisation + ABN for contractors
+if(isContractor){html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Organisation</label><input id="editOrg" value="'+(c.organisation||"")+'"></div><div class="fg" style="margin:0"><label>ABN <span id="abnStatusBadge"></span></label><div style="display:flex;gap:4px"><input id="editAbn" value="'+(c.abn||"")+'" placeholder="11-digit ABN" style="font-family:JetBrains Mono,monospace;flex:1" oninput="formatABNInput(this)"><button onclick="lookupABN()" style="padding:6px 10px;font-size:10px;font-weight:700;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit;white-space:nowrap" title="Verify ABN with Australian Business Register">🔍 Verify</button></div></div></div>';html+='<div id="abnLookupResult" style="display:none;margin-bottom:8px;padding:10px 12px;border-radius:var(--rs);font-size:12px"></div>'}else{html+='<input type="hidden" id="editOrg" value="'+(c.organisation||"")+'"><input type="hidden" id="editAbn" value="'+(c.abn||"")+'">'}
+// Gender + DOB + Age
+var dobVal=c.dob||"";var dobDisplay="";var ageDisplay="";if(dobVal){try{var dp;if(dobVal.indexOf("/")>=0){var pts=dobVal.split("/");if(pts.length===3){var yr=pts[2];if(yr.length===2)yr="20"+yr;dp=new Date(yr+"-"+pts[1]+"-"+pts[0])}}else{dp=new Date(dobVal)}if(dp&&!isNaN(dp)){dobDisplay=("0"+dp.getDate()).slice(-2)+"/"+("0"+(dp.getMonth()+1)).slice(-2)+"/"+String(dp.getFullYear()).slice(-2);var ageDiff=Date.now()-dp.getTime();var ageDate=new Date(ageDiff);ageDisplay=Math.abs(ageDate.getUTCFullYear()-1970)+" yrs"}}catch(e){dobDisplay=dobVal}}
+var genderOpts=["","Male","Female","Non-Binary","Other","Prefer not to say"];var genderSelect='<select id="editGender" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);color:var(--text);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">';genderOpts.forEach(function(g){genderSelect+='<option value="'+g+'"'+(c.gender===g?" selected":"")+'>'+( g||"— Select —")+'</option>'});genderSelect+='</select>';
+html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px"><div class="fg" style="margin:0"><label>Gender</label>'+genderSelect+'</div><div class="fg" style="margin:0"><label>Date of Birth</label><input value="'+dobDisplay+'" disabled style="opacity:.7"></div><div class="fg" style="margin:0"><label>Age</label><input value="'+ageDisplay+'" disabled style="opacity:.7"></div></div>';
+// Save button
+html+='<div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn btn-p" style="width:auto;padding:6px 14px;font-size:12px" onclick="saveContact(\''+(c.id||c.airtable_id||"")+'\')">'+(c.id==="new"?"Create Contact":"Save Changes")+'</button></div>';
+// Address
+html+='<div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📍 Address</div>';
+html+='<div class="fg" style="margin:0 0 6px"><input id="editAddress" value="'+(c.homeAddress||"")+'" placeholder="Street Address" style="font-size:12px;padding:6px 8px"></div>';
+html+='<div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:6px"><input id="editSuburb" value="'+(c.suburb||"")+'" placeholder="Suburb" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit"><input id="editState" value="'+(c.state||"")+'" placeholder="State" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit"><input id="editPostcode" value="'+(c.postcode||"")+'" placeholder="Postcode" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit"></div></div>';
 // Emergency contact
 if(c.emergencyContact||c.emergencyPhone)html+='<div style="padding:10px;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🚨 Emergency Contact</div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span style="font-size:13px;font-weight:600;color:var(--text)">'+(c.emergencyContact||"Not set")+'</span>'+(c.emergencyRelationship?'<span style="font-size:11px;color:var(--muted)">('+c.emergencyRelationship+')</span>':'')+(c.emergencyPhone?'<a href="tel:'+c.emergencyPhone+'" style="font-size:12px;color:var(--teal);font-family:JetBrains Mono,monospace;font-weight:600;text-decoration:none">📞 '+c.emergencyPhone+'</a>':'')+(c.emergencyEmail?'<a href="mailto:'+c.emergencyEmail+'" style="font-size:11px;color:var(--muted);text-decoration:none">✉️ '+c.emergencyEmail+'</a>':'')+'</div></div>';
 // Compliance — superadmin view with upload buttons
@@ -4871,134 +4855,21 @@ el.innerHTML='<div style="padding:16px;text-align:center;color:var(--muted)"><di
 renderNDISClientCard(el,d,contact)
 }).catch(function(e){el.innerHTML='<div style="color:var(--red);padding:12px;text-align:center">Error: '+e.message+'</div>'})}
 
-function renderNDISClientCard(el,d,contact){
-if(selectedConv)selectedConv._clientData=d;
 var _user=JSON.parse(localStorage.getItem("titus_user")||"{}");
-var canEdit=["superadmin","roster_officer","team_leader"].indexOf((_user.role||"").toLowerCase())>=0;
+var _canEditClient=["superadmin","roster_officer","team_leader"].indexOf((_user.role||"").toLowerCase())>=0;
 function spInlineEdit(label,value,fieldKey,type,options){
-if(!canEdit)return'<div style="font-size:12px;font-weight:600;color:var(--text)">'+(value||"\u2014")+'</div>';
-// Autosave on blur — no save button needed
+if(!_canEditClient)return'<div style="font-size:12px;font-weight:600;color:var(--text)">'+(value||"\u2014")+'</div>';
 var inputStyle="flex:1;padding:5px 8px;border:1px solid var(--border);border-radius:4px;font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box;transition:border .15s";
 var blurHandler="this.style.borderColor=\'var(--teal)\';var _el=this;saveClientField(\'"+fieldKey+"\',this.value);setTimeout(function(){_el.style.borderColor=\'var(--border)\'},1500)";
-// Dropdown select
 if(type==="select"&&options){
 var sel='<select id="cEdit_'+fieldKey+'" onchange="'+blurHandler+'" style="'+inputStyle+';cursor:pointer">';
 options.forEach(function(opt){sel+='<option value="'+opt+'"'+(value===opt?" selected":"")+'>'+opt+'</option>'});
 sel+='</select>';return sel}
-// Date picker with age calculation
 if(type==="date"){
 var isoVal="";if(value){try{var parts=value.split("/");if(parts.length===3){var yr=parts[2];if(yr.length===2)yr="20"+yr;isoVal=yr+"-"+parts[1].padStart(2,"0")+"-"+parts[0].padStart(2,"0")}else{var dp=new Date(value);if(!isNaN(dp))isoVal=dp.toISOString().split("T")[0]}}catch(ex){isoVal=value}}
 return'<input id="cEdit_'+fieldKey+'" type="date" value="'+isoVal+'" onchange="'+blurHandler+';_updateAgeFromDOB(this.value)" style="'+inputStyle+'">'}
-// Tel / email types
 var inputType=type||"text";
 return'<input id="cEdit_'+fieldKey+'" type="'+inputType+'" value="'+(value||"").replace(/"/g,"&quot;")+'" onblur="'+blurHandler+'" style="'+inputStyle+'" placeholder="'+(label||"")+'">'}
-var h='';
-// Profile photo + status banner row
-var photoUrl=d.photoUrl||d.photo_url||"";
-h+='<div style="display:flex;gap:16px;margin-bottom:14px;align-items:flex-start">';
-// Profile photo
-h+='<div style="flex-shrink:0;position:relative">';
-if(photoUrl){h+='<img src="'+photoUrl+'" style="width:80px;height:80px;object-fit:cover;border-radius:12px;border:2px solid var(--teal);box-shadow:0 2px 8px rgba(0,0,0,.1)" alt="Photo">'}
-else{h+='<div style="width:80px;height:80px;border-radius:12px;border:2px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--dim);font-weight:700">'+getInitials(d.name||"")+'</div>'}
-if(canEdit){h+='<label style="position:absolute;bottom:-4px;right:-4px;width:24px;height:24px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;border:2px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.15)" title="Upload photo"><input type="file" accept="image/*" style="display:none" onchange="_uploadClientPhoto(this.files[0])">📷</label>'}
-h+='</div>';
-h+='<div style="flex:1">';
-// Status badges
-var acctType=(d.accountType||"").toLowerCase();
-var statusColor=acctType.indexOf("active")>=0?"var(--green)":acctType.indexOf("prospect")>=0?"var(--orange)":"var(--red)";
-var statusBg=acctType.indexOf("active")>=0?"rgba(16,185,129,.06)":acctType.indexOf("prospect")>=0?"rgba(245,158,11,.06)":"rgba(239,68,68,.06)";
-var statusBorder=acctType.indexOf("active")>=0?"rgba(16,185,129,.15)":acctType.indexOf("prospect")>=0?"rgba(245,158,11,.15)":"rgba(239,68,68,.15)";
-h+='<div style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:4px">'+(d.name||"Unnamed Client")+'</div>';
-h+='<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">';
-h+='<span style="padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:'+statusBg+';color:'+statusColor+';border:1px solid '+statusBorder+'">'+(d.accountType||"Unknown")+'</span>';
-h+='<span style="padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(30,75,160,.06);color:var(--royal);border:1px solid rgba(30,75,160,.15)">'+(d.silOrCas||"—")+'</span>';
-if(d.serviceType)h+='<span style="font-size:10px;color:var(--muted);font-weight:600">'+d.serviceType+'</span>';
-h+='</div>';
-h+='<div style="font-size:11px;color:var(--muted);margin-top:4px">Fields auto-save when you click away</div>';
-h+='</div></div>';
-// Core info grid
-h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
-h+='<div class="fg" style="margin:0"><label>NDIS Number</label>'+spInlineEdit("NDIS Number",d.ndisNumber||"","ndisNumber")+'</div>';
-h+='<div class="fg" style="margin:0"><label>Support Ratio</label><input value="'+(d.supportRatio||"—")+'" disabled style="opacity:.7"></div>';
-h+='<div class="fg" style="margin:0"><label>Age</label><input id="clientAgeDisp" value="'+(d.age?d.age+" yrs":"—")+'" disabled style="opacity:.7"></div>';
-h+='</div>';
-h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
-var dobDisp=d.dateOfBirth||"";
-if(dobDisp){try{var dp=new Date(dobDisp);if(!isNaN(dp))dobDisp=("0"+dp.getDate()).slice(-2)+"/"+("0"+(dp.getMonth()+1)).slice(-2)+"/"+dp.getFullYear()}catch(e){}}
-h+='<div class="fg" style="margin:0"><label>Gender</label>'+spInlineEdit("Gender",d.gender||"","gender","select",["","Male","Female","Non-Binary","Other","Prefer not to say"])+'</div>';
-h+='<div class="fg" style="margin:0"><label>Date of Birth</label>'+spInlineEdit("Date of Birth",dobDisp||"","dateOfBirth","date")+'</div>';
-h+='<div class="fg" style="margin:0"><label>Phone</label>'+spInlineEdit("Phone",d.phone||contact.phone||"","phone","tel")+'</div>';
-h+='</div>';
-h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
-h+='<div class="fg" style="margin:0"><label>Email</label>'+spInlineEdit("Email",d.email||contact.email||"","email","email")+'</div>';
-h+='<div class="fg" style="margin:0"><label>Suburb</label>'+spInlineEdit("Suburb",d.suburb||"","suburb")+'</div>';
-h+='<div class="fg" style="margin:0"><label>KM Allowance</label><input value="'+(d.kmAllowance?d.kmAllowance+" km/wk":"—")+'" disabled style="opacity:.7"></div>';
-h+='</div>';
-// Address in Personal Details
-var addrParts=[d.address,d.suburb,d.state,d.postcode].filter(function(v){return v});
-var addrFull=addrParts.length>0?addrParts.join(", "):"";
-h+='<div class="fg" style="margin:0 0 10px"><label>Address</label>'+spInlineEdit("Address",addrFull,"address")+'</div>';
-h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
-h+='<div class="fg" style="margin:0"><label>Gender of Support Workers</label>'+spInlineEdit("Gender of Support Workers",d.genderOfWorkers||"","genderOfWorkers","select",["","Male","Female","No Preference","Same Gender as Client"])+'</div>';
-h+='<div class="fg" style="margin:0"><label>Personal Care</label><input value="'+(d.personalCare||"—")+'" disabled style="opacity:.7"></div>';
-h+='<div class="fg" style="margin:0"><label>Communication Aids</label><input value="'+(d.communicationAids||"—")+'" disabled style="opacity:.7"></div>';
-h+='</div>';
-// Type of Disability
-if(d.typeOfDisability||canEdit){
-h+='<div style="padding:10px;background:rgba(124,58,237,.04);border:1px solid rgba(124,58,237,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:#7C3AED;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">\uD83E\uDDE9 Type of Disability</div>';
-if(canEdit){h+='<div style="display:flex;align-items:flex-start;gap:4px"><textarea id="cEdit_typeOfDisability" style="flex:1;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box;min-height:40px;resize:vertical">'+(d.typeOfDisability||"").replace(/</g,"&lt;")+'</textarea><button onclick="saveClientField(\'typeOfDisability\',document.getElementById(\'cEdit_typeOfDisability\').value)" style="padding:3px 6px;font-size:10px;background:var(--teal);color:#fff;border:none;border-radius:4px;cursor:pointer;margin-top:2px" title="Save">\uD83D\uDCBE</button></div>'}
-else{h+='<div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+d.typeOfDisability+'</div>'}
-h+='</div>'}
-// General Background Info
-if(d.generalBackground){
-h+='<div style="padding:10px;background:rgba(30,75,160,.04);border:1px solid rgba(30,75,160,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--royal);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📋 General Background</div><div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+d.generalBackground+'</div></div>'}
-// NDIS Goals
-if(d.ndisGoals||canEdit){
-h+='<div style="padding:10px;background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">\uD83C\uDFAF NDIS Client Goals</div>';
-if(canEdit){h+='<div style="display:flex;align-items:flex-start;gap:4px"><textarea id="cEdit_ndisGoals" style="flex:1;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px;font-family:inherit;background:var(--surface2);box-sizing:border-box;min-height:40px;resize:vertical">'+(d.ndisGoals||"").replace(/</g,"&lt;")+'</textarea><button onclick="saveClientField(\'ndisGoals\',document.getElementById(\'cEdit_ndisGoals\').value)" style="padding:3px 6px;font-size:10px;background:var(--teal);color:#fff;border:none;border-radius:4px;cursor:pointer;margin-top:2px" title="Save">\uD83D\uDCBE</button></div>'}
-else{h+='<div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+d.ndisGoals+'</div>'}
-h+='</div>'}
-// Allergies & Alerts
-if(d.hasAllergies==="Yes"||d.allergiesAlerts){
-h+='<div style="padding:10px;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">⚠️ Allergies & Alerts</div><div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+(d.allergiesAlerts||"Yes — see details in Support Plan")+'</div></div>'}
-// Known Triggers — hidden from Details tab (available in Support Plan)
-// Item 8: Removed per requirement
-// PBSP
-if(d.pbspYesNo==="Yes"){
-h+='<div style="padding:10px;background:rgba(220,38,38,.04);border:1px solid rgba(220,38,38,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:#DC2626;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🧠 Behaviour Support Plan (PBSP)</div>';
-if(d.pbspPracName)h+='<div style="font-size:12px;margin-bottom:4px"><strong>Practitioner:</strong> '+d.pbspPracName+(d.pbspPracEmail?' · <a href="mailto:'+d.pbspPracEmail+'" style="color:var(--teal)">'+d.pbspPracEmail+'</a>':'')+(d.pbspPhone?' · '+d.pbspPhone:'')+'</div>';
-if(d.pbspStrategies)h+='<div style="font-size:11px;color:var(--text);line-height:1.5;margin-top:6px;white-space:pre-wrap">'+d.pbspStrategies.substring(0,500)+(d.pbspStrategies.length>500?"...":"")+'</div>';
-h+='</div>'}
-// Required Staff Skills — hidden from Details tab (available in Support Plan)
-// Item 8: Removed per requirement
-// Emergency Contact
-if(d.emergencyContact||d.emergencyPhone){
-h+='<div style="padding:10px;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🚨 Emergency Contact</div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">';
-h+='<span style="font-size:13px;font-weight:600;color:var(--text)">'+(d.emergencyContact||"Not set")+'</span>';
-if(d.emergencyRelationship)h+='<span style="font-size:11px;color:var(--muted)">('+d.emergencyRelationship+')</span>';
-if(d.emergencyPhone)h+='<a href="tel:'+d.emergencyPhone+'" style="font-size:12px;color:var(--teal);font-family:JetBrains Mono,monospace;font-weight:600;text-decoration:none">📞 '+d.emergencyPhone+'</a>';
-if(d.emergencyEmail)h+='<a href="mailto:'+d.emergencyEmail+'" style="font-size:12px;color:var(--teal);font-weight:600;text-decoration:none">📧 '+d.emergencyEmail+'</a>';
-h+='</div></div>'}
-// Plan Expiry
-if(d.planExpiry){
-var expDate;try{expDate=new Date(d.planExpiry)}catch(e){}
-var daysLeft=expDate?Math.ceil((expDate-new Date())/(1000*60*60*24)):999;
-var expColor=daysLeft<0?"var(--red)":daysLeft<90?"var(--orange)":"var(--green)";
-var expBg=daysLeft<0?"rgba(239,68,68,.06)":daysLeft<90?"rgba(245,158,11,.06)":"rgba(16,185,129,.06)";
-var expBorder=daysLeft<0?"rgba(239,68,68,.15)":daysLeft<90?"rgba(245,158,11,.15)":"rgba(16,185,129,.15)";
-var expDisp=TitusDate.format(d.planExpiry)
-var expStatus=daysLeft<0?"EXPIRED — "+Math.abs(daysLeft)+" days ago":daysLeft<90?"⚠️ "+daysLeft+" days remaining":"✅ "+daysLeft+" days remaining";
-h+='<div style="padding:10px;background:'+expBg+';border:1px solid '+expBorder+';border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:'+expColor+';text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">📅 NDIS Plan Expiry</div><div style="display:flex;align-items:center;gap:12px"><span style="font-size:14px;font-weight:700;color:'+expColor+'">'+expDisp+'</span><span style="font-size:11px;color:'+expColor+';font-weight:600">'+expStatus+'</span></div></div>'}
-// Photo Gallery — Item 10
-h+='<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">';
-h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">📸 Photo Gallery</div>';
-if(canEdit)h+='<label class="btn btn-teal" style="padding:4px 10px;font-size:10px;cursor:pointer"><input type="file" accept="image/*" multiple style="display:none" onchange="_uploadGalleryPhotos(this.files)">+ Add Photos</label>';
-h+='</div>';
-h+='<div id="clientPhotoGallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px"></div>';
-h+='</div>';
-el.innerHTML=h;
-// Load gallery photos after render
-_loadClientGallery(d.name||"")}
 
 function saveClientField(field,value,clientName){
 var name=clientName||(selectedConv&&selectedConv._clientData&&selectedConv._clientData.name)||"";
@@ -5026,13 +4897,12 @@ showToast("Uploading photo...","info");
 fetch("/api/clients/photo",{method:"POST",headers:{"Authorization":"Bearer "+token},body:fd}).then(function(r){return r.json()}).then(function(d){
 if(d.error){showToast("Upload failed: "+d.error,"error");return}
 showToast("Photo uploaded!","success");
-// Refresh client details
 if(selectedConv&&selectedConv._clientData)selectedConv._clientData.photoUrl=d.url;
 var el=document.getElementById("ndisClientDetails");
 if(el&&selectedConv&&selectedConv._clientData)renderNDISClientCard(el,selectedConv._clientData,selectedConv)
 }).catch(function(e){showToast("Upload failed: "+e.message,"error")})}
 
-// Photo gallery — Item 10
+// Photo gallery
 function _loadClientGallery(clientName){
 var el=document.getElementById("clientPhotoGallery");if(!el||!clientName)return;
 apiCall("GET","/api/clients/photos?clientName="+encodeURIComponent(clientName)).then(function(photos){
@@ -5063,10 +4933,10 @@ overlay.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:r
 overlay.onclick=function(e){if(e.target===overlay)overlay.remove()};
 var h='<div style="position:relative;max-width:90vw;max-height:90vh">';
 h+='<img src="'+p.url+'" style="max-width:90vw;max-height:85vh;object-fit:contain;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.5)">';
-h+='<button onclick="document.getElementById(\'photoViewerOverlay\').remove()" style="position:absolute;top:-12px;right:-12px;width:32px;height:32px;border-radius:50%;background:var(--surface);border:1px solid var(--border);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.2)">✕</button>';
+h+='<button onclick="document.getElementById(\'photoViewerOverlay\').remove()" style="position:absolute;top:-12px;right:-12px;width:32px;height:32px;border-radius:50%;background:var(--surface);border:1px solid var(--border);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.2)">\u2715</button>';
 if(photos.length>1){
-h+='<button onclick="event.stopPropagation();_navPhoto(-1,'+idx+')" style="position:absolute;left:-16px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)">◀</button>';
-h+='<button onclick="event.stopPropagation();_navPhoto(1,'+idx+')" style="position:absolute;right:-16px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)">▶</button>'}
+h+='<button onclick="event.stopPropagation();_navPhoto(-1,'+idx+')" style="position:absolute;left:-16px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)">\u25C0</button>';
+h+='<button onclick="event.stopPropagation();_navPhoto(1,'+idx+')" style="position:absolute;right:-16px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)">\u25B6</button>'}
 h+='<div style="text-align:center;margin-top:8px;font-size:11px;color:rgba(255,255,255,.7)">'+(idx+1)+' of '+photos.length+'</div>';
 h+='</div>';
 overlay.innerHTML=h;document.body.appendChild(overlay)}
@@ -5076,6 +4946,93 @@ var photos=window._clientPhotos||[];
 var newIdx=(currentIdx+dir+photos.length)%photos.length;
 var ov=document.getElementById("photoViewerOverlay");if(ov)ov.remove();
 _openPhotoViewer(newIdx)}
+
+function renderNDISClientCard(el,d,contact){
+if(selectedConv)selectedConv._clientData=d;
+var h='';
+// Account status banner
+var acctType=(d.accountType||"").toLowerCase();
+var statusColor=acctType.indexOf("active")>=0?"var(--green)":acctType.indexOf("prospect")>=0?"var(--orange)":"var(--red)";
+var statusBg=acctType.indexOf("active")>=0?"rgba(16,185,129,.06)":acctType.indexOf("prospect")>=0?"rgba(245,158,11,.06)":"rgba(239,68,68,.06)";
+var statusBorder=acctType.indexOf("active")>=0?"rgba(16,185,129,.15)":acctType.indexOf("prospect")>=0?"rgba(245,158,11,.15)":"rgba(239,68,68,.15)";
+h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">';
+h+='<span style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;background:'+statusBg+';color:'+statusColor+';border:1px solid '+statusBorder+'">'+(d.accountType||"Unknown")+'</span>';
+h+='<span style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;background:rgba(30,75,160,.06);color:var(--royal);border:1px solid rgba(30,75,160,.15)">'+(d.silOrCas||"—")+'</span>';
+h+='<span style="font-size:11px;color:var(--muted);font-weight:600">'+(d.serviceType||"")+'</span>';
+h+='</div>';
+// Personal info grid
+h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
+h+='<div class="fg" style="margin:0"><label>Client Name</label><input value="'+(d.name||"")+'" disabled style="opacity:.7;font-weight:700"></div>';
+h+='<div class="fg" style="margin:0"><label>NDIS Number</label><input value="'+(d.ndisNumber||"—")+'" disabled style="opacity:.7;font-family:JetBrains Mono,monospace;font-weight:600;color:var(--royal)"></div>';
+h+='<div class="fg" style="margin:0"><label>Age</label><input value="'+(d.age?d.age+" yrs":"—")+'" disabled style="opacity:.7"></div>';
+h+='</div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
+var dobDisp=d.dateOfBirth||"";
+if(dobDisp){try{var dp=new Date(dobDisp);if(!isNaN(dp))dobDisp=("0"+dp.getDate()).slice(-2)+"/"+("0"+(dp.getMonth()+1)).slice(-2)+"/"+dp.getFullYear()}catch(e){}}
+h+='<div class="fg" style="margin:0"><label>Gender</label><input value="'+(d.gender||"—")+'" disabled style="opacity:.7"></div>';
+h+='<div class="fg" style="margin:0"><label>Date of Birth</label><input value="'+(dobDisp||"—")+'" disabled style="opacity:.7"></div>';
+h+='<div class="fg" style="margin:0"><label>Phone</label><input value="'+(d.phone||contact.phone||"—")+'" disabled style="opacity:.7"></div>';
+h+='</div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
+h+='<div class="fg" style="margin:0"><label>Email</label><input value="'+(d.email||contact.email||"—")+'" disabled style="opacity:.7"></div>';
+h+='<div class="fg" style="margin:0"><label>Suburb</label><input value="'+(d.suburb||"—")+'" disabled style="opacity:.7"></div>';
+h+='<div class="fg" style="margin:0"><label>KM Allowance</label><input value="'+(d.kmAllowance?d.kmAllowance+" km/wk":"—")+'" disabled style="opacity:.7"></div>';
+h+='</div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">';
+h+='<div class="fg" style="margin:0"><label>Gender of Support Workers</label><input value="'+(d.genderOfWorkers||"—")+'" disabled style="opacity:.7"></div>';
+h+='<div class="fg" style="margin:0"><label>Personal Care</label><input value="'+(d.personalCare||"—")+'" disabled style="opacity:.7"></div>';
+h+='<div class="fg" style="margin:0"><label>Communication Aids</label><input value="'+(d.communicationAids||"—")+'" disabled style="opacity:.7"></div>';
+h+='</div>';
+// Address
+h+='<div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📍 Address</div>';
+var addrParts=[d.address,d.suburb,d.state,d.postcode].filter(function(v){return v});
+h+='<div style="font-size:12px;color:var(--text);font-weight:600">'+(addrParts.length>0?addrParts.join(", "):"No address on file")+'</div></div>';
+// Type of Disability
+if(d.typeOfDisability){
+h+='<div style="padding:10px;background:rgba(124,58,237,.04);border:1px solid rgba(124,58,237,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:#7C3AED;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🧩 Type of Disability</div><div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+d.typeOfDisability+'</div></div>'}
+// General Background Info
+if(d.generalBackground){
+h+='<div style="padding:10px;background:rgba(30,75,160,.04);border:1px solid rgba(30,75,160,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--royal);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📋 General Background</div><div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+d.generalBackground+'</div></div>'}
+// NDIS Goals
+if(d.ndisGoals){
+h+='<div style="padding:10px;background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🎯 NDIS Client Goals</div><div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+d.ndisGoals+'</div></div>'}
+// Allergies & Alerts
+if(d.hasAllergies==="Yes"||d.allergiesAlerts){
+h+='<div style="padding:10px;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">⚠️ Allergies & Alerts</div><div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+(d.allergiesAlerts||"Yes — see details in Support Plan")+'</div></div>'}
+// Known Triggers
+if(d.knownTriggers){
+h+='<div style="padding:10px;background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--orange);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">⚡ Known Triggers</div><div style="font-size:12px;color:var(--text);line-height:1.5;white-space:pre-wrap">'+d.knownTriggers+'</div></div>'}
+// PBSP
+if(d.pbspYesNo==="Yes"){
+h+='<div style="padding:10px;background:rgba(220,38,38,.04);border:1px solid rgba(220,38,38,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:#DC2626;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🧠 Behaviour Support Plan (PBSP)</div>';
+if(d.pbspPracName)h+='<div style="font-size:12px;margin-bottom:4px"><strong>Practitioner:</strong> '+d.pbspPracName+(d.pbspPracEmail?' · <a href="mailto:'+d.pbspPracEmail+'" style="color:var(--teal)">'+d.pbspPracEmail+'</a>':'')+(d.pbspPhone?' · '+d.pbspPhone:'')+'</div>';
+if(d.pbspStrategies)h+='<div style="font-size:11px;color:var(--text);line-height:1.5;margin-top:6px;white-space:pre-wrap">'+d.pbspStrategies.substring(0,500)+(d.pbspStrategies.length>500?"...":"")+'</div>';
+h+='</div>'}
+// Required Staff Skills
+if(d.requiredSkills&&d.requiredSkills.length>0){
+h+='<div style="margin-bottom:12px"><div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">⚡ Required Staff Skills</div><div style="display:flex;flex-wrap:wrap;gap:4px">';
+var skillColors=["#EF4444","#F59E0B","#7C3AED","#1E4BA0","#0A9396","#EC4899","#6366F1","#10B981"];
+d.requiredSkills.forEach(function(s,i){var col=skillColors[i%skillColors.length];h+='<span style="padding:3px 10px;border-radius:8px;font-size:10px;font-weight:700;background:'+col+'12;color:'+col+';border:1px solid '+col+'25">'+s+'</span>'});
+h+='</div></div>'}
+// Emergency Contact
+if(d.emergencyContact||d.emergencyPhone){
+h+='<div style="padding:10px;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🚨 Emergency Contact</div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">';
+h+='<span style="font-size:13px;font-weight:600;color:var(--text)">'+(d.emergencyContact||"Not set")+'</span>';
+if(d.emergencyRelationship)h+='<span style="font-size:11px;color:var(--muted)">('+d.emergencyRelationship+')</span>';
+if(d.emergencyPhone)h+='<a href="tel:'+d.emergencyPhone+'" style="font-size:12px;color:var(--teal);font-family:JetBrains Mono,monospace;font-weight:600;text-decoration:none">📞 '+d.emergencyPhone+'</a>';
+if(d.emergencyEmail)h+='<a href="mailto:'+d.emergencyEmail+'" style="font-size:12px;color:var(--teal);font-weight:600;text-decoration:none">📧 '+d.emergencyEmail+'</a>';
+h+='</div></div>'}
+// Plan Expiry
+if(d.planExpiry){
+var expDate;try{expDate=new Date(d.planExpiry)}catch(e){}
+var daysLeft=expDate?Math.ceil((expDate-new Date())/(1000*60*60*24)):999;
+var expColor=daysLeft<0?"var(--red)":daysLeft<90?"var(--orange)":"var(--green)";
+var expBg=daysLeft<0?"rgba(239,68,68,.06)":daysLeft<90?"rgba(245,158,11,.06)":"rgba(16,185,129,.06)";
+var expBorder=daysLeft<0?"rgba(239,68,68,.15)":daysLeft<90?"rgba(245,158,11,.15)":"rgba(16,185,129,.15)";
+var expDisp=TitusDate.format(d.planExpiry)
+var expStatus=daysLeft<0?"EXPIRED — "+Math.abs(daysLeft)+" days ago":daysLeft<90?"⚠️ "+daysLeft+" days remaining":"✅ "+daysLeft+" days remaining";
+h+='<div style="padding:10px;background:'+expBg+';border:1px solid '+expBorder+';border-radius:var(--rs);margin-bottom:10px"><div style="font-size:10px;font-weight:600;color:'+expColor+';text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">📅 NDIS Plan Expiry</div><div style="display:flex;align-items:center;gap:12px"><span style="font-size:14px;font-weight:700;color:'+expColor+'">'+expDisp+'</span><span style="font-size:11px;color:'+expColor+';font-weight:600">'+expStatus+'</span></div></div>'}
+el.innerHTML=h}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 //  CLIENT SUPPORT PLAN — Full Frontend Implementation
@@ -6709,34 +6666,10 @@ var expBg=daysLeft<0?"rgba(239,68,68,.04)":daysLeft<90?"rgba(245,158,11,.04)":"r
 var expBorder=daysLeft<0?"rgba(239,68,68,.15)":daysLeft<90?"rgba(245,158,11,.15)":"rgba(16,185,129,.15)";
 h+='<div style="padding:14px;background:'+expBg+';border:1px solid '+expBorder+';border-radius:var(--rs);text-align:center"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Plan Expiry</div><div style="font-size:14px;font-weight:700;color:'+expColor+'">'+expDisp+'</div>'+(daysLeft!==999?'<div style="font-size:9px;font-weight:600;color:'+expColor+';margin-top:2px">'+(daysLeft<0?Math.abs(daysLeft)+"d overdue":daysLeft+"d remaining")+'</div>':'')+'</div>';
 h+='</div>';
-// Plan manager & SC — linked stakeholder cards with contact details (Item 11)
+// Plan manager & SC
 h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">';
-// Plan Manager card
-var pmName=d.planManager||"";var pmEmail=d.planManagerEmail||"";var pmPhone=d.planManagerPhone||"";var pmCompany=d.planManagerCompany||"";
-h+='<div style="padding:14px;background:rgba(124,58,237,.04);border:1px solid rgba(124,58,237,.15);border-left:4px solid #7C3AED;border-radius:var(--rs)">';
-h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:32px;height:32px;border-radius:50%;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:14px">💼</div><div><div style="font-size:9px;font-weight:700;color:#7C3AED;text-transform:uppercase;letter-spacing:.5px">Plan Manager</div><div style="font-size:13px;font-weight:700;color:var(--text)">'+(pmName||"Self-managed / NDIA-managed")+'</div></div></div>';
-if(pmName){
-if(pmEmail)h+='<div style="font-size:11px;margin-bottom:3px"><a href="mailto:'+pmEmail+'" style="color:var(--teal);text-decoration:none">📧 '+pmEmail+'</a></div>';
-if(pmPhone)h+='<div style="font-size:11px;margin-bottom:3px"><a href="tel:'+pmPhone+'" style="color:var(--text);text-decoration:none">📱 '+pmPhone+'</a></div>';
-if(pmCompany)h+='<div style="font-size:10px;color:var(--muted)">🏢 '+pmCompany+'</div>';
-if(pmPhone||pmEmail){h+='<div style="display:flex;gap:4px;margin-top:8px">';
-if(pmPhone)h+='<button onclick="dialerNumber=\''+pmPhone.replace(/'/g,"")+'\';openDialer()" style="flex:1;padding:5px;background:rgba(10,147,150,.06);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);cursor:pointer;font-size:10px;font-weight:700;color:var(--teal);font-family:inherit">Call</button>';
-if(pmEmail)h+='<a href="mailto:'+pmEmail+'" style="flex:1;padding:5px;background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.15);border-radius:var(--rs);font-size:10px;font-weight:700;color:#7C3AED;font-family:inherit;text-decoration:none;text-align:center">Email</a>';
-h+='</div>'}}
-h+='</div>';
-// Support Coordinator card
-var scName=d.supportCoordinator||"";var scEmail=d.supportCoordinatorEmail||"";var scPhone=d.supportCoordinatorPhone||"";var scCompany=d.supportCoordinatorCompany||"";
-h+='<div style="padding:14px;background:rgba(10,147,150,.04);border:1px solid rgba(10,147,150,.15);border-left:4px solid var(--teal);border-radius:var(--rs)">';
-h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:32px;height:32px;border-radius:50%;background:rgba(10,147,150,.12);display:flex;align-items:center;justify-content:center;font-size:14px">🤝</div><div><div style="font-size:9px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.5px">Support Coordinator</div><div style="font-size:13px;font-weight:700;color:var(--text)">'+(scName||"Not assigned")+'</div></div></div>';
-if(scName){
-if(scEmail)h+='<div style="font-size:11px;margin-bottom:3px"><a href="mailto:'+scEmail+'" style="color:var(--teal);text-decoration:none">📧 '+scEmail+'</a></div>';
-if(scPhone)h+='<div style="font-size:11px;margin-bottom:3px"><a href="tel:'+scPhone+'" style="color:var(--text);text-decoration:none">📱 '+scPhone+'</a></div>';
-if(scCompany)h+='<div style="font-size:10px;color:var(--muted)">🏢 '+scCompany+'</div>';
-if(scPhone||scEmail){h+='<div style="display:flex;gap:4px;margin-top:8px">';
-if(scPhone)h+='<button onclick="dialerNumber=\''+scPhone.replace(/'/g,"")+'\';openDialer()" style="flex:1;padding:5px;background:rgba(10,147,150,.06);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);cursor:pointer;font-size:10px;font-weight:700;color:var(--teal);font-family:inherit">Call</button>';
-if(scEmail)h+='<a href="mailto:'+scEmail+'" style="flex:1;padding:5px;background:rgba(10,147,150,.06);border:1px solid rgba(10,147,150,.15);border-radius:var(--rs);font-size:10px;font-weight:700;color:var(--teal);font-family:inherit;text-decoration:none;text-align:center">Email</a>';
-h+='</div>'}}
-h+='</div>';
+h+='<div style="padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px">💼 Plan Manager</div><div style="font-size:13px;font-weight:700;color:var(--text)">'+(d.planManager||"Self-managed / NDIA-managed")+'</div></div>';
+h+='<div style="padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs)"><div style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px">🤝 Support Coordinator</div><div style="font-size:13px;font-weight:700;color:var(--text)">'+(d.supportCoordinator||"Not assigned")+'</div></div>';
 h+='</div>';
 el.innerHTML=h}
 
@@ -6773,14 +6706,11 @@ var upcoming=0;var past=0;
 records.forEach(function(ev){if(!ev.startDate)return;var d=new Date(ev.startDate);if(d>=today)upcoming++;else past++});
 
 var h='';
-// Stats row + Add Event button
-h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">';
-h+='<div style="display:flex;gap:10px;flex:1">';
-h+='<div style="flex:1;padding:12px;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:var(--rs);text-align:center"><div style="font-size:20px;font-weight:800;color:#3B82F6">'+records.length+'</div><div style="font-size:10px;font-weight:600;color:var(--muted)">Total Events</div></div>';
-h+='<div style="flex:1;padding:12px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:var(--rs);text-align:center"><div style="font-size:20px;font-weight:800;color:var(--green)">'+upcoming+'</div><div style="font-size:10px;font-weight:600;color:var(--muted)">Upcoming</div></div>';
-h+='<div style="flex:1;padding:12px;background:rgba(156,163,175,.06);border:1px solid rgba(156,163,175,.15);border-radius:var(--rs);text-align:center"><div style="font-size:20px;font-weight:800;color:var(--muted)">'+past+'</div><div style="font-size:10px;font-weight:600;color:var(--muted)">Past</div></div>';
-h+='</div>';
-h+='<button onclick="openCalCreateForm()" class="btn btn-teal" style="margin-left:12px;padding:8px 16px;font-size:12px;white-space:nowrap">+ Add Event</button>';
+// Stats row
+h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">';
+h+='<div style="padding:12px;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:var(--rs);text-align:center"><div style="font-size:20px;font-weight:800;color:#3B82F6">'+records.length+'</div><div style="font-size:10px;font-weight:600;color:var(--muted)">Total Events</div></div>';
+h+='<div style="padding:12px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:var(--rs);text-align:center"><div style="font-size:20px;font-weight:800;color:var(--green)">'+upcoming+'</div><div style="font-size:10px;font-weight:600;color:var(--muted)">Upcoming</div></div>';
+h+='<div style="padding:12px;background:rgba(156,163,175,.06);border:1px solid rgba(156,163,175,.15);border-radius:var(--rs);text-align:center"><div style="font-size:20px;font-weight:800;color:var(--muted)">'+past+'</div><div style="font-size:10px;font-weight:600;color:var(--muted)">Past</div></div>';
 h+='</div>';
 
 // Month nav
@@ -6918,26 +6848,20 @@ h+='<a href="'+f.url+'" target="_blank" rel="noopener" style="display:flex;align
 h+='</div>';
 }
 
-// Edit & Delete buttons
-h+='<div style="display:flex;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">';
-h+='<button onclick="openCalEditForm('+idx+')" class="btn btn-teal" style="flex:1;padding:8px">Edit Event</button>';
-h+='<button onclick="deleteCalEvent(\''+ev.id+'\')" class="btn btn-d" style="padding:8px">Delete</button>';
-h+='</div>';
 h+='</div></div>';
 overlay.innerHTML=h;document.body.appendChild(overlay);
 }
-
-// Calendar CRUD — Item 12
+// Calendar CRUD
 function openCalCreateForm(){
 var clientName=window._calClientName||"";
 var overlay=document.createElement("div");overlay.id="calCreateOverlay";
 overlay.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px";
 overlay.onclick=function(e){if(e.target===overlay)overlay.remove()};
 var h='<div style="background:var(--surface);border-radius:12px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">';
-h+='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><div style="font-size:15px;font-weight:700;color:var(--text)">New Calendar Event</div><button onclick="document.getElementById(\'calCreateOverlay\').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button></div>';
+h+='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><div style="font-size:15px;font-weight:700;color:var(--text)">New Calendar Event</div><button onclick="document.getElementById(\'calCreateOverlay\').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">\u2715</button></div>';
 h+='<div style="padding:20px">';
 h+='<div class="fg"><label>Event Name</label><input id="calNewName" placeholder="e.g. Doctor Visit"></div>';
-h+='<div class="fg"><label>Type of Appointment</label><select id="calNewType" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);font-size:13px;font-family:inherit"><option value="">— Select —</option><option>Medical</option><option>Real Estate Inspection</option><option>Client Shopping</option><option>NDIS</option><option>Family Visit</option><option>Therapy</option><option>Community Access</option><option>Review Meeting</option><option>Other</option></select></div>';
+h+='<div class="fg"><label>Type of Appointment</label><select id="calNewType" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);font-size:13px;font-family:inherit"><option value="">\u2014 Select \u2014</option><option>Medical</option><option>Real Estate Inspection</option><option>Client Shopping</option><option>NDIS</option><option>Family Visit</option><option>Therapy</option><option>Community Access</option><option>Review Meeting</option><option>Other</option></select></div>';
 h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="fg"><label>Start Date & Time</label><input id="calNewStart" type="datetime-local"></div><div class="fg"><label>End Date & Time</label><input id="calNewEnd" type="datetime-local"></div></div>';
 h+='<div class="fg"><label>Address / Suburb</label><input id="calNewAddr" placeholder="Address"></div>';
 h+='<div class="fg"><label>Details of Appointment</label><textarea id="calNewDetails" rows="3" placeholder="Details..."></textarea></div>';
@@ -6963,11 +6887,10 @@ var clientName=window._calClientName||"";
 var overlay=document.createElement("div");overlay.id="calEditOverlay";
 overlay.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px";
 overlay.onclick=function(e){if(e.target===overlay)overlay.remove()};
-// Format datetime-local values
 var startVal="";if(ev.startDate){try{var sd=new Date(ev.startDate);startVal=sd.toISOString().slice(0,16)}catch(e){}}
 var endVal="";if(ev.endDate){try{var ed=new Date(ev.endDate);endVal=ed.toISOString().slice(0,16)}catch(e){}}
 var h='<div style="background:var(--surface);border-radius:12px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">';
-h+='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><div style="font-size:15px;font-weight:700;color:var(--text)">Edit Event</div><button onclick="document.getElementById(\'calEditOverlay\').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button></div>';
+h+='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><div style="font-size:15px;font-weight:700;color:var(--text)">Edit Event</div><button onclick="document.getElementById(\'calEditOverlay\').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">\u2715</button></div>';
 h+='<div style="padding:20px">';
 h+='<div class="fg"><label>Event Name</label><input id="calEditName" value="'+(ev.eventName||"").replace(/"/g,"&quot;")+'"></div>';
 h+='<div class="fg"><label>Type of Appointment</label><select id="calEditType" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);font-size:13px;font-family:inherit">';
@@ -7001,6 +6924,7 @@ showToast("Event deleted","success");
 var ov=document.getElementById("calEventOverlay");if(ov)ov.remove();
 loadNDISClientCalendar(window._calClientName||"")
 }).catch(function(e){showToast("Error: "+e.message,"error")})}
+
 
 function loadNDISClientBudgets(clientName){
 var el=document.getElementById("budgetContent");if(!el)return;
@@ -8173,6 +8097,28 @@ html+='<button class="btn" onclick="createNewContactWithType(\''+t.replace(/'/g,
 html+='</div></div></div>';rp.innerHTML=html}
 function createNewContactWithType(type){selectedConv={id:"new",name:"",firstName:"",lastName:"",phone:"+61400000000",email:"",contactType:type,statusOfContact:"Active Contact",organisation:"",homeAddress:"",suburb:"",state:"",postcode:"",abn:"",notes:"",gender:"",linkedToClient:""};renderContactDetail()}
 /* ═══ AI CV SUMMARY ═══ */
+// ── Show AI CV Summary Modal ──
+function showCvSummaryModal(){
+  var c=selectedConv;if(!c||!c.cvAiSummary)return;
+  var summary=c.cvAiSummary;
+  var sHtml=summary.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/^### (.+)$/gm,'<div style="font-size:13px;font-weight:800;color:#7C3AED;margin-top:12px;margin-bottom:4px">$1</div>').replace(/^## (.+)$/gm,'<div style="font-size:13px;font-weight:800;color:#7C3AED;margin-top:12px;margin-bottom:4px">$1</div>').replace(/^# (.+)$/gm,'<div style="font-size:14px;font-weight:800;color:#7C3AED;margin-top:12px;margin-bottom:4px">$1</div>').replace(/^- (.+)$/gm,'<div style="padding-left:14px;position:relative;margin:3px 0"><span style="position:absolute;left:0">\u2022</span> $1</div>').replace(/\n{2,}/g,'<div style="height:8px"></div>').replace(/\n/g,'<br>');
+  var ov=document.createElement("div");ov.id="cvSummaryOverlay";
+  ov.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:9999;display:flex;justify-content:flex-end";
+  ov.onclick=function(e){if(e.target===ov){panel.style.transform='translateX(100%)';setTimeout(function(){ov.remove()},200)}};
+  var panel=document.createElement("div");
+  panel.style.cssText="width:480px;max-width:90vw;height:100%;background:var(--surface);box-shadow:-4px 0 24px rgba(0,0,0,.15);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease";
+  var h='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">\uD83E\uDD16</span><span style="font-size:15px;font-weight:700;color:var(--text)">AI CV Summary</span></div>';
+  h+='<button onclick="var o=document.getElementById(\'cvSummaryOverlay\');if(o){o.querySelector(\'div\').style.transform=\'translateX(100%)\';setTimeout(function(){o.remove()},200)}" style="padding:4px 10px;font-size:16px;background:transparent;border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--muted)">&times;</button></div>';
+  h+='<div style="font-size:12px;font-weight:600;color:var(--muted);padding:12px 20px 0;flex-shrink:0">'+(c.name||"")+'</div>';
+  h+='<div style="padding:12px 20px;overflow-y:auto;flex:1"><div style="font-size:12px;line-height:1.7;color:var(--text)">'+sHtml+'</div></div>';
+  h+='<div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0">';
+  h+='<button onclick="document.getElementById(\'cvSummaryOverlay\').remove();generateCVSummary()" style="padding:6px 14px;font-size:11px;font-weight:700;background:rgba(124,58,237,.08);color:#7C3AED;border:1px solid rgba(124,58,237,.2);border-radius:var(--rs);cursor:pointer;font-family:inherit">\uD83D\uDD04 Regenerate</button>';
+  h+='<button onclick="var o=document.getElementById(\'cvSummaryOverlay\');if(o){o.querySelector(\'div\').style.transform=\'translateX(100%)\';setTimeout(function(){o.remove()},200)}" style="padding:6px 14px;font-size:11px;font-weight:600;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit">Close</button>';
+  h+='</div>';
+  panel.innerHTML=h;ov.appendChild(panel);document.body.appendChild(ov);
+  setTimeout(function(){panel.style.transform='translateX(0)'},10);
+}
+
 function generateCVSummary(){
   var c=selectedConv;if(!c)return;
   // Check for CV from contact record or from recruitment data
@@ -8227,29 +8173,6 @@ function generateCVSummary(){
     content.innerHTML='<div style="font-size:11px;color:var(--red);padding:8px 0">❌ Failed: '+(e.message||"Unknown error")+'</div>';
     if(btn){btn.disabled=false;btn.innerHTML="✨ Retry";btn.style.background="rgba(124,58,237,.08)";btn.style.color="#7C3AED"}
   });
-}
-
-// ── Show AI CV Summary Modal ──
-function showCvSummaryModal(){
-  var c=selectedConv;if(!c||!c.cvAiSummary)return;
-  var summary=c.cvAiSummary;
-  var sHtml=summary.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/^### (.+)$/gm,'<div style="font-size:13px;font-weight:800;color:#7C3AED;margin-top:12px;margin-bottom:4px">$1</div>').replace(/^## (.+)$/gm,'<div style="font-size:13px;font-weight:800;color:#7C3AED;margin-top:12px;margin-bottom:4px">$1</div>').replace(/^# (.+)$/gm,'<div style="font-size:14px;font-weight:800;color:#7C3AED;margin-top:12px;margin-bottom:4px">$1</div>').replace(/^- (.+)$/gm,'<div style="padding-left:14px;position:relative;margin:3px 0"><span style="position:absolute;left:0">•</span> $1</div>').replace(/\n{2,}/g,'<div style="height:8px"></div>').replace(/\n/g,'<br>');
-  // Item 23: slide-over panel instead of centered modal
-  var ov=document.createElement("div");ov.id="cvSummaryOverlay";
-  ov.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:9999;display:flex;justify-content:flex-end";
-  ov.onclick=function(e){if(e.target===ov){panel.style.transform='translateX(100%)';setTimeout(function(){ov.remove()},200)}};
-  var panel=document.createElement("div");
-  panel.style.cssText="width:480px;max-width:90vw;height:100%;background:var(--surface);box-shadow:-4px 0 24px rgba(0,0,0,.15);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease";
-  var h='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">🤖</span><span style="font-size:15px;font-weight:700;color:var(--text)">AI CV Summary</span></div>';
-  h+='<button onclick="var o=document.getElementById(\'cvSummaryOverlay\');if(o){o.querySelector(\'div\').style.transform=\'translateX(100%)\';setTimeout(function(){o.remove()},200)}" style="padding:4px 10px;font-size:16px;background:transparent;border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--muted)">&times;</button></div>';
-  h+='<div style="font-size:12px;font-weight:600;color:var(--muted);padding:12px 20px 0;flex-shrink:0">'+(c.name||"")+'</div>';
-  h+='<div style="padding:12px 20px;overflow-y:auto;flex:1"><div style="font-size:12px;line-height:1.7;color:var(--text)">'+sHtml+'</div></div>';
-  h+='<div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0">';
-  h+='<button onclick="document.getElementById(\'cvSummaryOverlay\').remove();generateCVSummary()" style="padding:6px 14px;font-size:11px;font-weight:700;background:rgba(124,58,237,.08);color:#7C3AED;border:1px solid rgba(124,58,237,.2);border-radius:var(--rs);cursor:pointer;font-family:inherit">🔄 Regenerate</button>';
-  h+='<button onclick="var o=document.getElementById(\'cvSummaryOverlay\');if(o){o.querySelector(\'div\').style.transform=\'translateX(100%)\';setTimeout(function(){o.remove()},200)}" style="padding:6px 14px;font-size:11px;font-weight:600;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit">Close</button>';
-  h+='</div>';
-  panel.innerHTML=h;ov.appendChild(panel);document.body.appendChild(ov);
-  setTimeout(function(){panel.style.transform='translateX(0)'},10);
 }
 
 // ── ABN Validation & Lookup ──
@@ -8308,7 +8231,7 @@ var fn=(document.getElementById("editFirstName")||{}).value||"";
 var ln=(document.getElementById("editLastName")||{}).value||"";
 data.name=(fn+" "+ln).trim()}
 apiCall("PUT","/api/contacts/"+contactId,data).then(function(r){
-if(r&&r.error){if(el)el.innerHTML='<span style="color:var(--red)">Save failed — retry?</span>';return}
+if(r&&r.error){if(el)el.innerHTML='<span style="color:var(--red)">Save failed \u2014 retry?</span>';return}
 if(el){el.innerHTML='<span style="color:var(--green)">Saved</span>';setTimeout(function(){if(el)el.innerHTML=""},2000)}
 // Update local contact data
 if(selectedConv){for(var k in data){selectedConv[k]=data[k]}}
@@ -8325,7 +8248,7 @@ e.preventDefault();
 var mid=document.getElementById("midPanel");var right=document.getElementById("rightPanel");var resizer=document.getElementById("panelResizer");
 if(!mid||!right)return;
 var container=mid.parentElement;var startX=e.clientX;var startMidW=mid.offsetWidth;
-resizer.querySelector("div").style.opacity="1";resizer.querySelector("div").style.background="var(--teal)";
+if(resizer&&resizer.querySelector("div")){resizer.querySelector("div").style.opacity="1";resizer.querySelector("div").style.background="var(--teal)"}
 document.body.style.cursor="col-resize";document.body.style.userSelect="none";
 function onMove(ev){
 var dx=ev.clientX-startX;var newW=Math.max(200,Math.min(startMidW+dx,container.offsetWidth-300));
@@ -8333,7 +8256,7 @@ mid.style.width=newW+"px";mid.style.minWidth=newW+"px";mid.style.maxWidth=newW+"
 right.style.flex="1"}
 function onUp(){document.removeEventListener("mousemove",onMove);document.removeEventListener("mouseup",onUp);
 document.body.style.cursor="";document.body.style.userSelect="";
-resizer.querySelector("div").style.opacity=".5";resizer.querySelector("div").style.background="var(--border)"}
+if(resizer&&resizer.querySelector("div")){resizer.querySelector("div").style.opacity=".5";resizer.querySelector("div").style.background="var(--border)"}}
 document.addEventListener("mousemove",onMove);document.addEventListener("mouseup",onUp)}
 function saveContact(id){var firstName=(document.getElementById("editFirstName")||{}).value||"";var lastName=(document.getElementById("editLastName")||{}).value||"";var data={firstName:firstName,lastName:lastName,name:(firstName+" "+lastName).trim()||(document.getElementById("editName")||{}).value||"",phone:document.getElementById("editPhone").value.replace(/[^+0-9]/g,""),email:(document.getElementById("editEmail")||{}).value||"",signingEmail:(document.getElementById("editSigningEmail")||{}).value||"",organisation:(document.getElementById("editOrg")||{}).value||"",homeAddress:(document.getElementById("editAddress")||{}).value||"",suburb:(document.getElementById("editSuburb")||{}).value||"",state:(document.getElementById("editState")||{}).value||"",postcode:(document.getElementById("editPostcode")||{}).value||"",abn:((document.getElementById("editAbn")||{}).value||"").replace(/\s/g,""),notes:(document.getElementById("editNotes")||{}).value||"",statusOfContact:(document.getElementById("editStatus")||{}).value||"",gender:(document.getElementById("editGender")||{}).value||""};if(selectedConv&&selectedConv.contactType)data.contactType=selectedConv.contactType;var editCT=(document.getElementById("editContactType")||{}).value;if(editCT)data.contactType=editCT;if(abnLookupData&&abnLookupData.valid&&data.abn&&data.abn===abnLookupData.abn){var _af=buildABNAirtableFields(abnLookupData);if(_af.abnEntityName)data.abnEntityName=_af.abnEntityName;if(_af.abnStatus)data.abnStatus=_af.abnStatus;data.gstRegistered=_af.gstRegistered;data.abnLastVerified=_af.abnLastVerified}
 // Duplicate email check — block saves with duplicate email addresses
@@ -11128,7 +11051,6 @@ function loadStaffRosters(staffId) {
     shifts.forEach(function(s) {
       var startD = s.startShift || s.start_shift || "";
       var endD = s.endShift || s.end_shift || "";
-      // Item 20: DD/MM/YYYY date format
       var date = "\u2014";
       if(startD){try{var dp=new Date(startD);if(!isNaN(dp))date=("0"+dp.getDate()).slice(-2)+"/"+("0"+(dp.getMonth()+1)).slice(-2)+"/"+dp.getFullYear()}catch(e){date=startD.split("T")[0]}}
       var startT = startD ? (startD.split("T")[1] || "").substring(0,5) || "" : "\u2014";
@@ -18318,6 +18240,21 @@ var NDIS_CATALOGUE = [
 
 var DCS_DISTRIBUTION_EMAILS = ['ndisaccounts@deltacommunity.com.au','rina@deltacommunity.com.au','rosters@deltacommunity.com.au','accounts@deltacommunity.com.au','gus@deltacommunity.com.au'];
 
+function setDocVisibility(docId, vis) {
+  apiCall("PATCH", "/api/clients/docs/visibility", { docId: docId, visibility: vis })
+    .then(function(d) {
+      if (d.error) { showToast("Failed: " + d.error, "error"); return; }
+      showToast("Visibility updated", "success");
+      var c = selectedConv && selectedConv._clientData;
+      if (c) loadClientDocs(c.id, c.name);
+      else if (selectedConv) {
+        var cn = selectedConv.linkedToClient || selectedConv.name || "";
+        if (Array.isArray(cn)) cn = cn[0] || "";
+        loadClientDocs(selectedConv.id, cn);
+      }
+    }).catch(function(e) { showToast("Failed: " + e.message, "error"); });
+}
+
 function loadClientDocs(contactId, clientName){
 var el=document.getElementById("clientDocsLoading");
 if(!el){el=document.getElementById("clientDocsContent")}
@@ -18377,15 +18314,6 @@ h+='<div style="font-size:13px;font-weight:700;color:var(--text)">'+(d.docType||
 h+='<span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;background:'+statusBg+';color:'+statusColor+'">'+(d.statusOfDoc||"—")+'</span>';
 if(d.uniqueRef)h+='<span style="font-size:9px;font-family:monospace;color:var(--muted);background:var(--surface2);padding:2px 6px;border-radius:4px">#'+d.uniqueRef+'</span>';
 h+='</div>';
-var vis = d.visibility || "both";
-h += '<div style="margin-top:6px;display:flex;gap:4px;align-items:center">';
-h += '<span style="font-size:9px;font-weight:600;color:var(--muted)">Visible to:</span>';
-["employee","contractor","both","admin_only"].forEach(function(v){
-  var labels = {employee:"Employee",contractor:"Contractor",both:"Both",admin_only:"Admin Only"};
-  var isActive = vis === v;
-  h += '<button class="docVisBtn" data-docid="'+d.id+'" data-vis="'+v+'" style="padding:2px 8px;font-size:9px;font-weight:'+(isActive?"700":"500")+';border-radius:6px;border:1px solid '+(isActive?"var(--teal)":"var(--border)")+';background:'+(isActive?"rgba(10,147,150,.1)":"var(--surface2)")+';color:'+(isActive?"var(--teal)":"var(--muted)")+';cursor:pointer;font-family:inherit">'+labels[v]+'</button>';
-});
-h += '</div>';
 if(expiryDisplay)h+='<div style="font-size:10px;color:var(--muted);margin-top:3px">Expiry: '+expiryDisplay+'</div>';
 if(d.lastUpdated){
 var lu=new Date(d.lastUpdated);
@@ -18426,30 +18354,9 @@ el.querySelectorAll(".clientDocEditBtn").forEach(function(btn){
     );
   });
 });
-// Wire up visibility buttons
-el.querySelectorAll(".docVisBtn").forEach(function(btn){
-  btn.addEventListener("click",function(){
-    setDocVisibility(btn.getAttribute("data-docid"), btn.getAttribute("data-vis"));
-  });
-});
 }).catch(function(e){
 el.innerHTML='<div style="text-align:center;padding:20px;color:var(--red)">Failed to load: '+e.message+'</div>';
 });
-}
-
-function setDocVisibility(docId, vis) {
-  apiCall("PATCH", "/api/clients/docs/visibility", { docId: docId, visibility: vis })
-    .then(function(d) {
-      if (d.error) { showToast("Failed: " + d.error, "error"); return; }
-      showToast("Visibility updated", "success");
-      var c = selectedConv && selectedConv._clientData;
-      if (c) loadClientDocs(c.id, c.name);
-      else if (selectedConv) {
-        var cn = selectedConv.linkedToClient || selectedConv.name || "";
-        if (Array.isArray(cn)) cn = cn[0] || "";
-        loadClientDocs(selectedConv.id, cn);
-      }
-    }).catch(function(e) { showToast("Failed: " + e.message, "error"); });
 }
 
 function copyDocLink(url){
@@ -20274,82 +20181,13 @@ h+='</tr>'});
 if(recentSorted.length===0)h+='<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted)">No leads yet</td></tr>';
 h+='</tbody></table></div></div>';
 h+='</div>';rp.innerHTML=h}
-function renderLeads(){
-var rp=document.getElementById("rightPanel");
-// Highlight submenu
-document.querySelectorAll("#leadsSub .sb-sub-item").forEach(function(b){b.classList.remove("on")});
-var active=document.querySelector('#leadsSub [data-subview="'+leadsSubView+'"]');if(active)active.classList.add("on");
-if(!leadsLoaded){leadsLoaded=true;
-rp.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)"><div style="text-align:center"><div class="spin" style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 12px"></div><div style="font-size:13px;font-weight:600">Loading leads...</div></div></div>';
-apiCall("GET","/api/leads").then(function(d){leadsData=d||[];
-// Auto-close leads older than 60 days (move to LOST if not already Won/Lost)
-var now=new Date();leadsData.forEach(function(r){
-if(r.stage==="WON"||r.stage==="LOST")return;
-var ld=r.date?new Date(r.date):null;if(!ld||isNaN(ld))return;
-var daysDiff=Math.floor((now-ld)/(1000*60*60*24));
-if(daysDiff>60){r.stage="LOST";r._autoLost=true;
-if(r.airtableId)apiCall("PATCH","/api/leads/"+r.airtableId,{stage:"LOST"}).catch(function(){})}
-});
-if(leadsSubView==="overview")renderLeadsOverview();else if(leadsSubView==="list")renderLeadsList(rp);else renderLeadsKanban(rp)}).catch(function(){leadsData=[];renderLeadsList(rp)});return}
-if(leadsSubView==="overview")renderLeadsOverview();else if(leadsSubView==="list")renderLeadsList(rp);else renderLeadsKanban(rp)}
-
-var leadsScFilter="";
-var leadsStageFilterVal="";
-function renderLeadsList(rp){
-var h='<div style="padding:24px;overflow-y:auto;height:100%">';
-h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div><div style="font-size:18px;font-weight:700;color:var(--text)">Leads</div><div style="font-size:11px;color:var(--muted)">'+leadsData.length+' leads</div></div>';
-h+='<div style="display:flex;gap:6px"><button class="btn btn-p btn-sm" onclick="openAddLeadSlideOver()">+ Add New</button><button class="btn btn-teal btn-sm" onclick="setLeadsView(\'kanban\')">📌 Kanban</button></div></div>';
-// Search + SC email filter row
-h+='<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">';
-h+='<input id="leadsSearch" oninput="filterLeadsList()" placeholder="Search leads by name, disability, SC..." style="flex:1;min-width:250px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none">';
-// Stage filter dropdown
-h+='<select id="leadsStageFilter" onchange="leadsStageFilterVal=this.value;filterLeadsList()" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none;min-width:140px;color:var(--text)">';
-h+='<option value="">All Stages</option>';
-leadsStages.forEach(function(st){var cnt=leadsData.filter(function(r){return(r.stage||"Enquiry")===st}).length;h+='<option value="'+st+'"'+(leadsStageFilterVal===st?' selected':'')+'>'+st+' ('+cnt+')</option>'});
-h+='</select>';
-if(leadsStageFilterVal||leadsScFilter)h+='<button onclick="leadsStageFilterVal=\'\';leadsScFilter=\'\';filterLeadsList();var sf=document.getElementById(\'leadsStageFilter\');if(sf)sf.value=\'\'" style="padding:6px 10px;font-size:11px;font-weight:600;color:var(--error);background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">✕ Clear</button>';
-h+='</div>';
-// Table
-h+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
-h+='<thead><tr style="border-bottom:2px solid var(--border)">';
-["Ref #","Created","Client Name","Disability","SC Email","Stage"].forEach(function(col){
-h+='<th style="padding:8px 6px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">'+col+'</th>'});
-h+='</tr></thead><tbody id="leadsTbody">';
-leadsData.forEach(function(r,idx){
-var col=leadsColors[r.stage||"Enquiry"]||"var(--muted)";
-var createdStr=r.createdAt?TitusDate.format(r.createdAt):(r.date?TitusDate.format(r.date):"");
-h+='<tr data-lidx="'+idx+'" data-stage="'+(r.stage||"Enquiry")+'" style="border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'" onclick="openLeadDetail('+idx+')">';
-h+='<td style="padding:8px 6px;font-size:10px;color:var(--dim)">'+(r.refNum||"")+'</td>';
-h+='<td style="padding:8px 6px;font-size:10px;white-space:nowrap;color:var(--muted)">'+createdStr+'</td>';
-h+='<td style="padding:8px 6px;font-weight:700;color:var(--text)">'+(r.name||"—")+(r._autoLost?' <span style="font-size:8px;color:var(--error);font-weight:600">⏰ Auto-closed</span>':"")+'</td>';
-h+='<td style="padding:8px 6px;font-size:11px;color:var(--text)">'+(r.disabilityType||"—")+'</td>';
-h+='<td style="padding:8px 6px;font-size:10px;color:var(--muted);font-family:JetBrains Mono,monospace">'+(r.scEmail?'<a href="mailto:'+r.scEmail+'" onclick="event.stopPropagation()" style="color:var(--teal);text-decoration:none">'+r.scEmail+'</a>':"—")+'</td>';
-h+='<td style="padding:8px 6px"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:'+col+'12;color:'+col+';border:1px solid '+col+'25">'+(r.stage||"Enquiry")+'</span></td>';
-h+='</tr>'});
-if(leadsData.length===0)h+='</tbody></table></div><div style="padding:30px;text-align:center;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">✅</div><div style="font-size:13px;font-weight:600">No leads found</div><div style="font-size:11px;margin-top:4px">Leads will load from the Leads table in Airtable</div></div>';
-else h+='</tbody></table></div>';
-h+='</div>';rp.innerHTML=h}
-
-function filterLeadsList(){
-var q=(document.getElementById("leadsSearch")||{}).value||"";q=q.toLowerCase();
-var stgF=leadsStageFilterVal||"";
-document.querySelectorAll("#leadsTbody tr").forEach(function(row){
-var idx=parseInt(row.getAttribute("data-lidx"));var r=leadsData[idx];if(!r){row.style.display="none";return}
-var matchText=!q||(r.name||"").toLowerCase().indexOf(q)>=0||(r.disabilityType||"").toLowerCase().indexOf(q)>=0||(r.scName||"").toLowerCase().indexOf(q)>=0||(r.scEmail||"").toLowerCase().indexOf(q)>=0||(r.source||"").toLowerCase().indexOf(q)>=0;
-var matchStage=!stgF||(r.stage||"Enquiry")===stgF;
-row.style.display=(matchText&&matchStage)?"":"none"})}
-
-function updateLeadStage(idx,newStage){
-var r=leadsData[idx];if(!r)return;r.stage=newStage;
-if(r.airtableId)apiCall("PATCH","/api/leads/"+r.airtableId,{stage:newStage}).catch(function(){})}
-
 // ─── Add New Lead Slide-Over ───
 function openAddLeadSlideOver(){
 var existing=document.getElementById("addLeadSlideOver");if(existing)existing.remove();
 var overlay=document.createElement("div");overlay.id="addLeadSlideOver";
 overlay.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;justify-content:flex-end";
 overlay.onclick=function(e){if(e.target===overlay)overlay.remove()};
-var vttBtn=function(id){return '<button type="button" onclick="startVoiceToText(\''+id+'\')" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:2px 6px;font-size:11px;background:rgba(239,68,68,.08);color:#EF4444;border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);cursor:pointer;font-family:inherit" title="Voice to text">🎤</button>'};
+var vttBtn=function(id){return '<button type="button" onclick="startVoiceToText(\''+id+'\')" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:2px 6px;font-size:11px;background:rgba(239,68,68,.08);color:#EF4444;border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);cursor:pointer;font-family:inherit" title="Voice to text">\uD83C\uDF99 Voice</button>'};
 var fld=function(id,label,type){
   type=type||"text";
   if(type==="select"){
@@ -20358,7 +20196,7 @@ var fld=function(id,label,type){
   return '<div style="position:relative"><label style="font-size:10px;font-weight:600;color:var(--muted)">'+label+'</label><input id="'+id+'" type="'+type+'" style="width:100%;padding:8px 30px 8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;margin-top:3px" />'+vttBtn(id)+'</div>';
 };
 var h='<div style="width:460px;max-width:90vw;height:100%;background:var(--surface);box-shadow:-8px 0 30px rgba(0,0,0,.15);display:flex;flex-direction:column;animation:slideInRight .25s ease">';
-h+='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><div style="font-size:16px;font-weight:700;color:var(--text)">+ Add New Lead</div><button onclick="document.getElementById(\'addLeadSlideOver\').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button></div>';
+h+='<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><div style="font-size:16px;font-weight:700;color:var(--text)">+ Add New Lead</div><button onclick="document.getElementById(\'addLeadSlideOver\').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">\u2715</button></div>';
 h+='<div style="flex:1;overflow-y:auto;padding:20px">';
 h+='<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Client Details</div>';
 h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">';
@@ -20407,10 +20245,79 @@ apiCall("POST","/api/leads/create",payload).then(function(d){
 }).catch(function(e){showToast("Failed: "+e.message,"error")});
 }
 
+function renderLeads(){
+var rp=document.getElementById("rightPanel");
+// Highlight submenu
+document.querySelectorAll("#leadsSub .sb-sub-item").forEach(function(b){b.classList.remove("on")});
+var active=document.querySelector('#leadsSub [data-subview="'+leadsSubView+'"]');if(active)active.classList.add("on");
+if(!leadsLoaded){leadsLoaded=true;
+rp.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)"><div style="text-align:center"><div class="spin" style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;margin:0 auto 12px"></div><div style="font-size:13px;font-weight:600">Loading leads...</div></div></div>';
+apiCall("GET","/api/leads").then(function(d){leadsData=d||[];
+// Auto-close leads older than 60 days (move to LOST if not already Won/Lost)
+var now=new Date();leadsData.forEach(function(r){
+if(r.stage==="WON"||r.stage==="LOST")return;
+var ld=r.date?new Date(r.date):null;if(!ld||isNaN(ld))return;
+var daysDiff=Math.floor((now-ld)/(1000*60*60*24));
+if(daysDiff>60){r.stage="LOST";r._autoLost=true;
+if(r.airtableId)apiCall("PATCH","/api/leads/"+r.airtableId,{stage:"LOST"}).catch(function(){})}
+});
+if(leadsSubView==="overview")renderLeadsOverview();else if(leadsSubView==="list")renderLeadsList(rp);else renderLeadsKanban(rp)}).catch(function(){leadsData=[];renderLeadsList(rp)});return}
+if(leadsSubView==="overview")renderLeadsOverview();else if(leadsSubView==="list")renderLeadsList(rp);else renderLeadsKanban(rp)}
+
+var leadsScFilter="";
+var leadsStageFilterVal="";
+function renderLeadsList(rp){
+var h='<div style="padding:24px;overflow-y:auto;height:100%">';
+h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div><div style="font-size:18px;font-weight:700;color:var(--text)">Leads</div><div style="font-size:11px;color:var(--muted)">'+leadsData.length+' leads</div></div>';
+h+='<div style="display:flex;gap:6px"><button class="btn btn-teal btn-sm" onclick="setLeadsView(\'kanban\')">📌 Kanban</button></div></div>';
+// Search + SC email filter row
+h+='<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">';
+h+='<input id="leadsSearch" oninput="filterLeadsList()" placeholder="Search leads by name, disability, SC..." style="flex:1;min-width:250px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none">';
+// Stage filter dropdown
+h+='<select id="leadsStageFilter" onchange="leadsStageFilterVal=this.value;filterLeadsList()" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--surface2);outline:none;min-width:140px;color:var(--text)">';
+h+='<option value="">All Stages</option>';
+leadsStages.forEach(function(st){var cnt=leadsData.filter(function(r){return(r.stage||"Enquiry")===st}).length;h+='<option value="'+st+'"'+(leadsStageFilterVal===st?' selected':'')+'>'+st+' ('+cnt+')</option>'});
+h+='</select>';
+if(leadsStageFilterVal||leadsScFilter)h+='<button onclick="leadsStageFilterVal=\'\';leadsScFilter=\'\';filterLeadsList();var sf=document.getElementById(\'leadsStageFilter\');if(sf)sf.value=\'\'" style="padding:6px 10px;font-size:11px;font-weight:600;color:var(--error);background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">✕ Clear</button>';
+h+='</div>';
+// Table
+h+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+h+='<thead><tr style="border-bottom:2px solid var(--border)">';
+["Ref #","Created","Client Name","Disability","SC Email","Stage"].forEach(function(col){
+h+='<th style="padding:8px 6px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">'+col+'</th>'});
+h+='</tr></thead><tbody id="leadsTbody">';
+leadsData.forEach(function(r,idx){
+var col=leadsColors[r.stage||"Enquiry"]||"var(--muted)";
+var createdStr=r.createdAt?TitusDate.format(r.createdAt):(r.date?TitusDate.format(r.date):"");
+h+='<tr data-lidx="'+idx+'" data-stage="'+(r.stage||"Enquiry")+'" style="border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer" onmouseover="this.style.background=\'var(--tealLight)\'" onmouseout="this.style.background=\'none\'" onclick="openLeadDetail('+idx+')">';
+h+='<td style="padding:8px 6px;font-size:10px;color:var(--dim)">'+(r.refNum||"")+'</td>';
+h+='<td style="padding:8px 6px;font-size:10px;white-space:nowrap;color:var(--muted)">'+createdStr+'</td>';
+h+='<td style="padding:8px 6px;font-weight:700;color:var(--text)">'+(r.name||"—")+(r._autoLost?' <span style="font-size:8px;color:var(--error);font-weight:600">⏰ Auto-closed</span>':"")+'</td>';
+h+='<td style="padding:8px 6px;font-size:11px;color:var(--text)">'+(r.disabilityType||"—")+'</td>';
+h+='<td style="padding:8px 6px;font-size:10px;color:var(--muted);font-family:JetBrains Mono,monospace">'+(r.scEmail?'<a href="mailto:'+r.scEmail+'" onclick="event.stopPropagation()" style="color:var(--teal);text-decoration:none">'+r.scEmail+'</a>':"—")+'</td>';
+h+='<td style="padding:8px 6px"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:'+col+'12;color:'+col+';border:1px solid '+col+'25">'+(r.stage||"Enquiry")+'</span></td>';
+h+='</tr>'});
+if(leadsData.length===0)h+='</tbody></table></div><div style="padding:30px;text-align:center;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">✅</div><div style="font-size:13px;font-weight:600">No leads found</div><div style="font-size:11px;margin-top:4px">Leads will load from the Leads table in Airtable</div></div>';
+else h+='</tbody></table></div>';
+h+='</div>';rp.innerHTML=h}
+
+function filterLeadsList(){
+var q=(document.getElementById("leadsSearch")||{}).value||"";q=q.toLowerCase();
+var stgF=leadsStageFilterVal||"";
+document.querySelectorAll("#leadsTbody tr").forEach(function(row){
+var idx=parseInt(row.getAttribute("data-lidx"));var r=leadsData[idx];if(!r){row.style.display="none";return}
+var matchText=!q||(r.name||"").toLowerCase().indexOf(q)>=0||(r.disabilityType||"").toLowerCase().indexOf(q)>=0||(r.scName||"").toLowerCase().indexOf(q)>=0||(r.scEmail||"").toLowerCase().indexOf(q)>=0||(r.source||"").toLowerCase().indexOf(q)>=0;
+var matchStage=!stgF||(r.stage||"Enquiry")===stgF;
+row.style.display=(matchText&&matchStage)?"":"none"})}
+
+function updateLeadStage(idx,newStage){
+var r=leadsData[idx];if(!r)return;r.stage=newStage;
+if(r.airtableId)apiCall("PATCH","/api/leads/"+r.airtableId,{stage:newStage}).catch(function(){})}
+
 function renderLeadsKanban(rp){
 var h='<div style="padding:24px;overflow-y:auto;height:100%">';
 h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div><div style="font-size:18px;font-weight:700;color:var(--text)">Leads Pipeline</div><div style="font-size:11px;color:var(--muted)">Drag and drop to update lead stages</div></div>';
-h+='<div style="display:flex;gap:6px"><button class="btn btn-p btn-sm" onclick="openAddLeadSlideOver()">+ Add New</button><button class="btn btn-teal btn-sm" onclick="setLeadsView(\'list\')">📋 List</button></div></div>';
+h+='<div style="display:flex;gap:6px"><button class="btn btn-teal btn-sm" onclick="setLeadsView(\'list\')">📋 List</button></div></div>';
 h+='<div class="kanban-wrap">';
 leadsStages.forEach(function(stage){
 var col=leadsColors[stage];
@@ -23127,7 +23034,6 @@ function initTwilioDevice() {
     setTimeout(initTwilioDevice, 2000);
     return;
   }
-  // Token endpoint: backend route is /api/voice/dialer/token
   apiCall("GET", "/api/voice/dialer/token").then(function(data) {
     if (!data.token) { console.error("Twilio token API response:", JSON.stringify(data)); updateSoftphoneStatus("offline"); return; }
     twilioIdentity = data.identity;
