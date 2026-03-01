@@ -79,7 +79,10 @@ function fetchAllRecords(table, view) {
 
 // ─── Supabase PostgREST helpers ──────────────────────────────
 function supabasePost(tableName, rows) {
-  var url = SUPABASE_REST_URL + '/' + tableName;
+  // Use on_conflict=airtable_id for tables that have airtable_id column (upsert)
+  // sync_metadata uses table_name as unique key instead
+  var conflictCol = tableName === 'sync_metadata' ? 'table_name' : 'airtable_id';
+  var url = SUPABASE_REST_URL + '/' + tableName + '?on_conflict=' + conflictCol;
   return fetch(url, {
     method: 'POST',
     headers: {
@@ -649,65 +652,30 @@ FIELD_MAPS.staff_availability = {
   notes: 'Notes'
 };
 
-FIELD_MAPS.roc_participants = {
-  // Mostly JSONB-based table — extract common fields
-  client_name: function(f) { return av(f['Client Name'] || f['Participant Name'] || ''); },
-  property_name: function(f) { return av(f['Property Name'] || f['SIL Property'] || ''); }
-};
+// roc_participants — JSONB-only table, no mapped columns beyond base
+// All fields go into data JSONB via fallback generic handler
+// (no FIELD_MAPS entry = all fields stored in data)
 
-FIELD_MAPS.roc_shifts = {
-  // Mostly JSONB-based table — extract common fields
-  staff_name: function(f) { return av(f['Staff Name'] || ''); },
-  start_time: function(f) { return safeDate(f['Start Time'] || f['Start']); },
-  end_time: function(f) { return safeDate(f['End Time'] || f['End']); },
-  day: ['Day', 'Day of Week'],
-  shift_type: ['Shift Type', 'Type']
-};
+// roc_shifts — JSONB-only table, all fields stored in data
 
 FIELD_MAPS.client_sleep_chart = {
-  client_name: function(f) { return av(f['Client Name'] || ''); },
-  date: function(f) { return safeDate(f['Date']); },
-  bedtime: ['Bedtime', 'Time to Bed'],
-  wake_time: ['Wake Time', 'Time Awake'],
-  notes: 'Notes'
+  client_name: function(f) { return av(f['Client Name'] || ''); }
 };
 
 FIELD_MAPS.bowel_chart = {
-  client_name: function(f) { return av(f['Client Name'] || ''); },
-  date: function(f) { return safeDate(f['Date']); },
-  time: 'Time',
-  type: ['Type', 'Bristol Type'],
-  notes: 'Notes'
+  client_name: function(f) { return av(f['Client Name'] || ''); }
 };
 
 FIELD_MAPS.fluid_intake_diary = {
-  client_name: function(f) { return av(f['Client Name'] || ''); },
-  date: function(f) { return safeDate(f['Date']); },
-  time: 'Time',
-  fluid_type: ['Fluid Type', 'Type'],
-  amount_ml: function(f) { return numVal(f['Amount (ml)'] || f['Amount']); },
-  notes: 'Notes'
+  client_name: function(f) { return av(f['Client Name'] || ''); }
 };
 
 FIELD_MAPS.client_consumables = {
-  client_name: function(f) { return av(f['Client Name'] || ''); },
-  item_name: ['Item Name', 'Item', 'Product'],
-  quantity: function(f) { return numVal(f['Quantity'] || f['Qty']); },
-  date: function(f) { return safeDate(f['Date']); },
-  notes: 'Notes'
+  client_name: function(f) { return av(f['Client Name'] || ''); }
 };
 
 FIELD_MAPS.client_behaviours = {
-  client_name: function(f) { return av(f['Client Name'] || ''); },
-  date: function(f) { return safeDate(f['Date'] || f['Date & Time']); },
-  behaviour_type: ['Behaviour Type', 'Type'],
-  severity: ['Severity', 'Level'],
-  duration: ['Duration', 'Duration (mins)'],
-  trigger: ['Trigger', 'Antecedent'],
-  response: ['Response', 'Staff Response'],
-  outcome: 'Outcome',
-  notes: 'Notes',
-  staff_name: ['Staff Name', 'Recorded By']
+  client_name: function(f) { return av(f['Client Name'] || ''); }
 };
 
 FIELD_MAPS.document_signing_requests = {
@@ -721,14 +689,7 @@ FIELD_MAPS.document_signing_requests = {
   signed_date: function(f) { return safeDate(f['Signed Date'] || f['Date Signed']); }
 };
 
-FIELD_MAPS.employment_documents = {
-  staff_name: ['Staff Name', 'Name', 'Full Name'],
-  staff_email: ['Staff Email', 'Email'],
-  document_type: ['Document Type', 'Type'],
-  status: 'Status',
-  expiry_date: function(f) { return safeDate(f['Expiry Date'] || f['Expiry']); },
-  files: function(f) { return jsonAttachments(f['Files'] || f['Attachments'] || f['Document']); }
-};
+// employment_documents — JSONB-only table, all fields stored in data
 
 FIELD_MAPS.client_docs = {
   unique_ref: 'Unique Ref',
@@ -742,12 +703,7 @@ FIELD_MAPS.client_docs = {
   files: function(f) { return jsonAttachments(f['Files'] || f['Attachments'] || f['Document']); }
 };
 
-FIELD_MAPS.company_files = {
-  name: ['Name', 'File Name', 'Title'],
-  category: ['Category', 'Type', 'Folder'],
-  description: 'Description',
-  files: function(f) { return jsonAttachments(f['Files'] || f['Attachments'] || f['Document']); }
-};
+// company_files — JSONB-only table, all fields stored in data
 
 FIELD_MAPS.ndis_price_guide = {
   support_item_number: function(f) { return (f['Support Item Number'] || '').trim(); },
@@ -766,12 +722,7 @@ FIELD_MAPS.chat_conversations = {
   members: function(f) { return f['Members'] || []; }
 };
 
-FIELD_MAPS.chat_members = {
-  // Mostly JSONB — pull common fields
-  member_name: ['Member Name', 'Name', 'Full Name'],
-  member_email: ['Member Email', 'Email'],
-  role: 'Role'
-};
+// chat_members — JSONB-only table, all fields stored in data
 
 FIELD_MAPS.chat_messages = {
   sender_name: ['Sender Name', 'From', 'Name'],
