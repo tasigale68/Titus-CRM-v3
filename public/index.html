@@ -621,6 +621,7 @@ button:not(.sb-item):not(.sb-sub-item):not(.sb-collapse-btn){cursor:pointer}
 <button class="sb-sub-item phase2-nav" id="navAutomations" data-view="intelligence" data-subview="automations" onclick="setIntelView('automations')" style="display:none"><span class="sb-item-label">⚙️ Automation Settings</span></button>
 </div>
 <button class="sb-item" data-view="admin" id="navAdmin" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="sb-item-label">Admin</span></button>
+<button class="sb-item" data-view="dbEditor" id="navDbEditor" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg><span class="sb-item-label">Database</span></button>
 </div>
 <div class="sb-footer"><div style="text-align:center;padding:4px 0 8px;font-size:9px"><a href="/privacy.html" target="_blank" style="color:rgba(255,255,255,.25);text-decoration:none">Privacy</a> · <a href="/terms.html" target="_blank" style="color:rgba(255,255,255,.25);text-decoration:none">Terms</a></div><div class="sb-user"><div class="sb-avatar" id="userAvatar"></div><div class="sb-user-info"><div class="sb-user-name" id="userName"></div><div class="sb-user-status" id="userAvailStatus" onclick="cycleAvailability()" style="cursor:pointer" title="Click to change status">🟢 Available</div></div><button class="sb-signout" id="logoutBtn">Sign Out</button></div></div>
 </div>
@@ -1185,7 +1186,7 @@ if(currentUser.role!=="superadmin"){var _cwF=document.getElementById("navCallWor
 function showDashboard(){document.title="Titus CRM — Dashboard";document.getElementById("loginScreen").style.display="none";document.getElementById("dashboard").style.display="grid";document.getElementById("fabDial").style.display="flex";document.getElementById("fabSms").style.display="none";
 // Show Denise AI Agent FAB for all authenticated users
 var aiBtn=document.getElementById("fabAi");if(aiBtn){if(currentUser){aiBtn.style.display="flex"}else{aiBtn.style.display="none"}}
-var initials=(currentUser.name||currentUser.email).substring(0,2).toUpperCase();document.getElementById("userAvatar").textContent=initials;document.getElementById("userName").textContent=currentUser.name||currentUser.email;if(currentUser.role==="superadmin"||canView("admin"))document.getElementById("navAdmin").style.display="flex";if(currentUser.role==="superadmin"){var cwNav=document.getElementById("navCallWorkflow");if(cwNav)cwNav.style.display="flex";}applySidebarPermissions();
+var initials=(currentUser.name||currentUser.email).substring(0,2).toUpperCase();document.getElementById("userAvatar").textContent=initials;document.getElementById("userName").textContent=currentUser.name||currentUser.email;if(currentUser.role==="superadmin"||canView("admin"))document.getElementById("navAdmin").style.display="flex";if(currentUser.role==="superadmin"){var cwNav=document.getElementById("navCallWorkflow");if(cwNav)cwNav.style.display="flex";}if(currentUser.role==="superadmin"){var _dbe=document.getElementById("navDbEditor");if(_dbe)_dbe.style.display="flex";}applySidebarPermissions();
 // Office users default to Contacts Overview instead of My Details
 var _officeRoles=["superadmin","director","admin","team_leader","roster_officer","manager","ceo","office_staff"];
 if(currentUser&&_officeRoles.indexOf(currentUser.role)>=0&&canView("contacts_overview")){currentView="contactsOverview";contactsSubView="overview"}
@@ -1334,7 +1335,8 @@ ddHtml+='</div></div></div></div>';
 if(contactFilter.length>0||contactGenderFilter||contactSuburbFilter||contactStatusFilter!=="Active Contact"){
 ddHtml+='<div style="margin-top:8px"><button onclick="contactFilter=[];contactGenderFilter=\'\';contactSuburbFilter=\'\';contactStatusFilter=\'Active Contact\';render()" style="width:100%;padding:6px;font-size:11px;font-weight:600;color:var(--red);background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);cursor:pointer;font-family:inherit">✕ Clear All Filters</button></div>';
 }
-document.getElementById("midTabs").innerHTML=ddHtml;renderContactsList();renderContactDetail()}}else if(currentView==="dialer"){openDialer();currentView="conversations";render()}else if(currentView==="agent"){toggleAiChatbot();currentView="conversations";render()}else if(currentView==="tasks"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderTasks()}else if(currentView==="callWorkflow"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderCallWorkflow()}else if(currentView==="reports"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderReportsMenu()}else if(currentView==="dashboard"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderDashboardOverhaul()}else if(currentView==="admin"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAdmin()}else if(currentView==="recruit"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderRecruit()}else if(currentView==="leadsOverview"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderLeadsOverview()}else if(currentView==="leads"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderLeads()}else if(currentView==="accommodation"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAccommodation()}else if(currentView==="scheduler"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderScheduler()}else if(currentView==="clientBudget"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderClientBudget()}else if(currentView==="roc"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderRoC()}else if(currentView==="timeAttendance"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderTimeAttendance()}else if(currentView==="registers"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderPlaceholder("Registers","📋","Document registers and compliance tracking coming soon.")}else if(currentView==="files"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderCompanyFiles()}else if(currentView==="auditLog"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAuditLog()}else if(currentView==="supportTickets"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSupportTickets()}else if(currentView==="incidentRegister"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderIncidentRegister()}else if(currentView==="continuousImprovement"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderContinuousImprovement()}else if(currentView==="progressNotes"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderProgressNotesEnhanced()}else if(currentView==="sendClientAgreement"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSendDocPage("client")}else if(currentView==="sendEmploymentContract"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSendDocPage("employment")}else if(currentView==="sendContractorAgreement"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSendDocPage("contractor")}else if(currentView==="aiRoster"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAIRoster()}else if(currentView==="cancellations"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderCancellations()}else if(currentView==="handover"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderHandover()}else if(currentView==="payroll"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderPayroll()}else if(currentView==="sleepReport"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSleepReport()}else if(currentView==="reconciliation"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderReconciliation()}else if(currentView==="kmReport"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderKmReport()}else if(currentView==="newsletters"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderNewsletters()}else if(currentView==="loginActivity"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderLoginActivity()}else if(currentView==="automations"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAutomations()}else if(currentView==="complianceReports"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderComplianceReports()}else if(currentView==="shiftcareComparison"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderShiftCareComparison()}}
+document.getElementById("midTabs").innerHTML=ddHtml;renderContactsList();renderContactDetail()}}else if(currentView==="dialer"){openDialer();currentView="conversations";render()}else if(currentView==="agent"){toggleAiChatbot();currentView="conversations";render()}else if(currentView==="tasks"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderTasks()}else if(currentView==="callWorkflow"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderCallWorkflow()}else if(currentView==="reports"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderReportsMenu()}else if(currentView==="dashboard"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderDashboardOverhaul()}else if(currentView==="admin"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAdmin()}else if(currentView==="recruit"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderRecruit()}else if(currentView==="leadsOverview"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderLeadsOverview()}else if(currentView==="leads"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderLeads()}else if(currentView==="accommodation"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAccommodation()}else if(currentView==="scheduler"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderScheduler()}else if(currentView==="clientBudget"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderClientBudget()}else if(currentView==="roc"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderRoC()}else if(currentView==="timeAttendance"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderTimeAttendance()}else if(currentView==="registers"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderPlaceholder("Registers","📋","Document registers and compliance tracking coming soon.")}else if(currentView==="files"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderCompanyFiles()}else if(currentView==="auditLog"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAuditLog()}else if(currentView==="supportTickets"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSupportTickets()}else if(currentView==="incidentRegister"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderIncidentRegister()}else if(currentView==="continuousImprovement"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderContinuousImprovement()}else if(currentView==="progressNotes"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderProgressNotesEnhanced()}else if(currentView==="sendClientAgreement"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSendDocPage("client")}else if(currentView==="sendEmploymentContract"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSendDocPage("employment")}else if(currentView==="sendContractorAgreement"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSendDocPage("contractor")}else if(currentView==="aiRoster"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAIRoster()}else if(currentView==="cancellations"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderCancellations()}else if(currentView==="handover"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderHandover()}else if(currentView==="payroll"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderPayroll()}else if(currentView==="sleepReport"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderSleepReport()}else if(currentView==="reconciliation"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderReconciliation()}else if(currentView==="kmReport"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderKmReport()}else if(currentView==="newsletters"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderNewsletters()}else if(currentView==="loginActivity"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderLoginActivity()}else if(currentView==="automations"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderAutomations()}else if(currentView==="complianceReports"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderComplianceReports()}else if(currentView==="shiftcareComparison"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderShiftCareComparison()}else if(currentView==="dbEditor"){midPanel.style.display="none";rightPanel.style.gridColumn="2 / -1";renderDbEditor()}}
+if(currentView==="dbEditor"){var _dbeBtn=document.querySelector('.sb-item[data-view="dbEditor"]');if(_dbeBtn)_dbeBtn.classList.add("on")}
 // Phase 2 Intelligence sidebar highlight (Intelligence menu is hidden, but keep for direct view dispatch)
 var intelViews=["aiRoster","newsletters","loginActivity","automations"];
 if(intelViews.indexOf(currentView)>=0){var intelBtn=document.querySelector('.sb-item[data-view="intelligence"]');if(intelBtn){intelBtn.classList.add("on");intelBtn.style.display="flex"}var intelSub=document.getElementById("intelSub");if(intelSub){intelSub.style.display="block";if(!intelSub.classList.contains("open"))intelSub.classList.add("open")}document.querySelectorAll("#intelSub .sb-sub-item").forEach(function(b){b.classList.remove("on")});var activeIS=document.querySelector('#intelSub [data-subview="'+currentView+'"]');if(activeIS)activeIS.classList.add("on")}
@@ -25138,6 +25140,282 @@ apiCall("PATCH","/api/invoices/"+invoiceId+"/status",{status:"Rejected",reason:r
 if(d.success){showToast("Invoice rejected","success")}
 else{showToast(d.error||"Failed","error")}
 }).catch(function(e){showToast("Error: "+e.message,"error")});
+}
+
+// ═══════════════════════════════════════════════════════════
+// DATABASE EDITOR — Superadmin Only
+// ═══════════════════════════════════════════════════════════
+window._dbEditor = { tables: [], selectedTable: null, schema: [], rows: [], total: 0, page: 1, perPage: 50, pages: 0, search: '', tableFilter: '' };
+
+function renderDbEditor() {
+  var rp = document.getElementById("rightPanel");
+  var db = window._dbEditor;
+  var h = '<div style="padding:20px 28px;max-width:100%;overflow-x:hidden">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
+  h += '<div><h2 style="margin:0;font-size:18px;font-weight:700;color:var(--text)">Database Editor</h2>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">Direct Supabase table browser — superadmin only</div></div>';
+  h += '</div>';
+  h += '<div style="display:flex;gap:16px;align-items:flex-start">';
+  // Left panel — table list
+  h += '<div style="width:220px;min-width:220px;max-height:calc(100vh - 160px);overflow-y:auto;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface2)">';
+  h += '<div style="padding:8px;border-bottom:1px solid var(--border)"><input id="dbTableFilter" placeholder="Filter tables..." value="' + (db.tableFilter || '') + '" oninput="window._dbEditor.tableFilter=this.value;dbRenderTableList()" style="width:100%;padding:6px 10px;font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;outline:none;box-sizing:border-box"></div>';
+  h += '<div id="dbTableList" style="padding:4px"></div>';
+  h += '</div>';
+  // Right panel — data grid
+  h += '<div style="flex:1;min-width:0;max-height:calc(100vh - 160px);overflow:auto">';
+  if (!db.selectedTable) {
+    h += '<div style="text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:32px;margin-bottom:12px">Select a table from the left to browse data</div></div>';
+  } else {
+    h += '<div id="dbDataPanel"></div>';
+  }
+  h += '</div>';
+  h += '</div></div>';
+  rp.innerHTML = h;
+  // Load tables if not loaded
+  if (db.tables.length === 0) {
+    apiCall('GET', '/api/admin/db/tables').then(function(data) {
+      db.tables = Array.isArray(data) ? data.sort() : [];
+      dbRenderTableList();
+    }).catch(function(e) { document.getElementById('dbTableList').innerHTML = '<div style="padding:12px;font-size:11px;color:var(--red)">Error loading tables: ' + e.message + '</div>'; });
+  } else {
+    dbRenderTableList();
+  }
+  if (db.selectedTable) dbLoadTableData();
+}
+
+function dbRenderTableList() {
+  var db = window._dbEditor;
+  var el = document.getElementById('dbTableList');
+  if (!el) return;
+  var filter = (db.tableFilter || '').toLowerCase();
+  var filtered = db.tables.filter(function(t) { return !filter || t.toLowerCase().indexOf(filter) >= 0; });
+  var h = '';
+  filtered.forEach(function(t) {
+    var isOn = db.selectedTable === t;
+    h += '<button onclick="dbSelectTable(\'' + t + '\')" style="display:block;width:100%;text-align:left;padding:7px 10px;font-size:11px;font-weight:' + (isOn ? '700' : '500') + ';color:' + (isOn ? 'var(--teal)' : 'var(--text)') + ';background:' + (isOn ? 'rgba(10,147,150,.08)' : 'transparent') + ';border:none;border-left:3px solid ' + (isOn ? 'var(--teal)' : 'transparent') + ';cursor:pointer;font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + t + '</button>';
+  });
+  if (filtered.length === 0) h = '<div style="padding:12px;font-size:11px;color:var(--muted)">No tables match filter</div>';
+  el.innerHTML = h;
+}
+
+function dbSelectTable(table) {
+  var db = window._dbEditor;
+  db.selectedTable = table;
+  db.page = 1;
+  db.search = '';
+  db.schema = [];
+  db.rows = [];
+  renderDbEditor();
+}
+
+function dbLoadTableData() {
+  var db = window._dbEditor;
+  if (!db.selectedTable) return;
+  var panel = document.getElementById('dbDataPanel');
+  if (panel) panel.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Loading...</div>';
+  // Load schema and data in parallel
+  var schemaP = db.schema.length > 0 ? Promise.resolve(db.schema) : apiCall('GET', '/api/admin/db/' + db.selectedTable + '/schema');
+  var dataP = apiCall('GET', '/api/admin/db/' + db.selectedTable + '?page=' + db.page + '&per_page=' + db.perPage + (db.search ? '&search=' + encodeURIComponent(db.search) : ''));
+  Promise.all([schemaP, dataP]).then(function(results) {
+    db.schema = Array.isArray(results[0]) ? results[0] : [];
+    var data = results[1] || {};
+    db.rows = data.rows || [];
+    db.total = data.total || 0;
+    db.pages = data.pages || 0;
+    dbRenderDataGrid();
+  }).catch(function(e) {
+    if (panel) panel.innerHTML = '<div style="padding:20px;color:var(--red);font-size:12px">Error: ' + e.message + '</div>';
+  });
+}
+
+function dbRenderDataGrid() {
+  var db = window._dbEditor;
+  var panel = document.getElementById('dbDataPanel');
+  if (!panel) return;
+  // Determine visible columns (skip data jsonb, limit to first 10)
+  var cols = db.schema.filter(function(c) { return c.column_name !== 'data'; });
+  var displayCols = cols.slice(0, 10);
+  var h = '';
+  // Toolbar
+  h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">';
+  h += '<div style="font-size:14px;font-weight:700;color:var(--text)">' + db.selectedTable + '</div>';
+  h += '<span style="font-size:10px;color:var(--muted);background:var(--surface2);padding:2px 8px;border-radius:8px">' + db.total + ' rows</span>';
+  h += '<div style="flex:1"></div>';
+  h += '<input id="dbSearch" placeholder="Search..." value="' + (db.search || '') + '" onkeydown="if(event.key===\'Enter\'){window._dbEditor.search=this.value;window._dbEditor.page=1;dbLoadTableData()}" style="padding:6px 10px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;outline:none;width:200px">';
+  h += '<button onclick="dbOpenAddModal()" style="padding:6px 14px;font-size:11px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit">+ Add Row</button>';
+  h += '<button onclick="window._dbEditor.tables=[];window._dbEditor.schema=[];dbLoadTableData()" style="padding:6px 10px;font-size:11px;font-weight:600;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit" title="Refresh">Refresh</button>';
+  h += '</div>';
+  // Table
+  if (db.rows.length === 0) {
+    h += '<div style="text-align:center;padding:40px;color:var(--muted);font-size:12px">No rows found' + (db.search ? ' matching "' + db.search + '"' : '') + '</div>';
+  } else {
+    h += '<div style="overflow-x:auto;border:1px solid var(--border);border-radius:var(--rs)">';
+    h += '<table style="width:100%;border-collapse:collapse;font-size:11px">';
+    h += '<thead><tr style="background:var(--surface2)">';
+    h += '<th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);white-space:nowrap">Actions</th>';
+    displayCols.forEach(function(c) {
+      h += '<th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);white-space:nowrap">' + c.column_name + '</th>';
+    });
+    h += '</tr></thead><tbody>';
+    db.rows.forEach(function(row, idx) {
+      h += '<tr style="border-bottom:1px solid var(--border);' + (idx % 2 === 0 ? '' : 'background:rgba(255,255,255,.02)') + '">';
+      // Actions
+      h += '<td style="padding:6px 10px;white-space:nowrap">';
+      h += '<button onclick="dbOpenEditModal(' + idx + ')" style="padding:3px 8px;font-size:10px;font-weight:600;background:rgba(36,84,160,.08);color:var(--royal);border:1px solid rgba(36,84,160,.15);border-radius:4px;cursor:pointer;font-family:inherit;margin-right:4px">Edit</button>';
+      h += '<button onclick="dbConfirmDelete(\'' + (row.id || '') + '\')" style="padding:3px 8px;font-size:10px;font-weight:600;background:rgba(239,68,68,.06);color:var(--red);border:1px solid rgba(239,68,68,.15);border-radius:4px;cursor:pointer;font-family:inherit">Del</button>';
+      h += '</td>';
+      displayCols.forEach(function(c) {
+        var val = row[c.column_name];
+        var display = '';
+        if (val === null || val === undefined) {
+          display = '<span style="color:var(--muted);font-style:italic">null</span>';
+        } else if (typeof val === 'object') {
+          display = '<span style="color:var(--muted);font-size:10px">{JSON}</span>';
+        } else {
+          display = String(val);
+          if (display.length > 60) display = display.substring(0, 60) + '...';
+          display = display.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+        h += '<td style="padding:6px 10px;color:var(--text);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + String(val || '').replace(/"/g, '&quot;').substring(0, 200) + '">' + display + '</td>';
+      });
+      h += '</tr>';
+    });
+    h += '</tbody></table></div>';
+  }
+  // Pagination
+  if (db.pages > 1) {
+    h += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px">';
+    h += '<button onclick="window._dbEditor.page=1;dbLoadTableData()" ' + (db.page <= 1 ? 'disabled' : '') + ' style="padding:4px 10px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit;color:var(--text)">First</button>';
+    h += '<button onclick="window._dbEditor.page--;dbLoadTableData()" ' + (db.page <= 1 ? 'disabled' : '') + ' style="padding:4px 10px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit;color:var(--text)">Prev</button>';
+    h += '<span style="font-size:11px;color:var(--muted)">Page ' + db.page + ' of ' + db.pages + '</span>';
+    h += '<button onclick="window._dbEditor.page++;dbLoadTableData()" ' + (db.page >= db.pages ? 'disabled' : '') + ' style="padding:4px 10px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit;color:var(--text)">Next</button>';
+    h += '<button onclick="window._dbEditor.page=' + db.pages + ';dbLoadTableData()" ' + (db.page >= db.pages ? 'disabled' : '') + ' style="padding:4px 10px;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit;color:var(--text)">Last</button>';
+    h += '</div>';
+  }
+  panel.innerHTML = h;
+}
+
+function dbFieldInput(col, val) {
+  var name = col.column_name;
+  var type = col.data_type || 'text';
+  var v = val !== null && val !== undefined ? val : '';
+  if (name === 'id' || name === 'created_at' || name === 'updated_at') {
+    return '<input name="' + name + '" value="' + String(v).replace(/"/g, '&quot;') + '" readonly style="width:100%;padding:6px 10px;font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--muted);font-family:inherit;outline:none;box-sizing:border-box;opacity:.6">';
+  }
+  if (type === 'boolean') {
+    return '<select name="' + name + '" style="width:100%;padding:6px 10px;font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;outline:none;box-sizing:border-box"><option value=""' + (v === '' || v === null ? ' selected' : '') + '>null</option><option value="true"' + (v === true || v === 'true' ? ' selected' : '') + '>true</option><option value="false"' + (v === false || v === 'false' ? ' selected' : '') + '>false</option></select>';
+  }
+  if (type === 'jsonb' || type === 'json') {
+    var jv = typeof v === 'object' ? JSON.stringify(v, null, 2) : String(v);
+    return '<textarea name="' + name + '" rows="4" style="width:100%;padding:6px 10px;font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:monospace;outline:none;box-sizing:border-box;resize:vertical">' + jv.replace(/</g, '&lt;') + '</textarea>';
+  }
+  if (type.indexOf('text') >= 0 && String(v).length > 100) {
+    return '<textarea name="' + name + '" rows="3" style="width:100%;padding:6px 10px;font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;resize:vertical">' + String(v).replace(/</g, '&lt;') + '</textarea>';
+  }
+  var inputType = 'text';
+  if (type.indexOf('int') >= 0 || type === 'numeric' || type === 'real' || type === 'double precision') inputType = 'number';
+  if (type.indexOf('timestamp') >= 0 || type === 'date') inputType = 'datetime-local';
+  return '<input name="' + name + '" type="' + inputType + '" value="' + String(v).replace(/"/g, '&quot;') + '" style="width:100%;padding:6px 10px;font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;outline:none;box-sizing:border-box">';
+}
+
+function dbOpenAddModal() {
+  var db = window._dbEditor;
+  if (!db.schema.length) return;
+  var cols = db.schema.filter(function(c) { return c.column_name !== 'id' && c.column_name !== 'created_at' && c.column_name !== 'updated_at'; });
+  var h = '<div id="dbModal" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center" onclick="if(event.target===this)this.remove()">';
+  h += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;width:560px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">';
+  h += '<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">';
+  h += '<div style="font-size:14px;font-weight:700;color:var(--text)">Add Row to ' + db.selectedTable + '</div>';
+  h += '<button onclick="document.getElementById(\'dbModal\').remove()" style="background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer">&times;</button>';
+  h += '</div>';
+  h += '<form id="dbAddForm" onsubmit="dbSubmitAdd(event)" style="padding:16px 20px">';
+  cols.forEach(function(c) {
+    h += '<div style="margin-bottom:10px"><label style="display:block;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">' + c.column_name + ' <span style="font-weight:400;text-transform:none;opacity:.6">(' + c.data_type + (c.is_nullable === 'YES' ? ', nullable' : '') + ')</span></label>';
+    h += dbFieldInput(c, '') + '</div>';
+  });
+  h += '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">';
+  h += '<button type="button" onclick="document.getElementById(\'dbModal\').remove()" style="padding:8px 18px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit">Cancel</button>';
+  h += '<button type="submit" style="padding:8px 18px;font-size:12px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit">Create</button>';
+  h += '</div></form></div></div>';
+  document.body.insertAdjacentHTML('beforeend', h);
+}
+
+function dbSubmitAdd(e) {
+  e.preventDefault();
+  var db = window._dbEditor;
+  var form = document.getElementById('dbAddForm');
+  var body = {};
+  db.schema.forEach(function(c) {
+    if (c.column_name === 'id' || c.column_name === 'created_at' || c.column_name === 'updated_at') return;
+    var el = form.querySelector('[name="' + c.column_name + '"]');
+    if (!el) return;
+    var val = el.value;
+    if (val === '' || val === 'null') return;
+    if (c.data_type === 'boolean') { body[c.column_name] = val === 'true'; return; }
+    if (c.data_type === 'jsonb' || c.data_type === 'json') { try { body[c.column_name] = JSON.parse(val); } catch(x) { body[c.column_name] = val; } return; }
+    if (c.data_type.indexOf('int') >= 0 || c.data_type === 'numeric') { body[c.column_name] = Number(val); return; }
+    body[c.column_name] = val;
+  });
+  apiCall('POST', '/api/admin/db/' + db.selectedTable, body).then(function() {
+    document.getElementById('dbModal').remove();
+    showToast('Row created', 'success');
+    dbLoadTableData();
+  }).catch(function(err) { showToast('Error: ' + err.message, 'error'); });
+}
+
+function dbOpenEditModal(idx) {
+  var db = window._dbEditor;
+  var row = db.rows[idx];
+  if (!row) return;
+  var h = '<div id="dbModal" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center" onclick="if(event.target===this)this.remove()">';
+  h += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;width:560px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)">';
+  h += '<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">';
+  h += '<div style="font-size:14px;font-weight:700;color:var(--text)">Edit Row — ' + (row.id || 'unknown') + '</div>';
+  h += '<button onclick="document.getElementById(\'dbModal\').remove()" style="background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer">&times;</button>';
+  h += '</div>';
+  h += '<form id="dbEditForm" onsubmit="dbSubmitEdit(event,\'' + (row.id || '') + '\')" style="padding:16px 20px">';
+  db.schema.forEach(function(c) {
+    var val = row[c.column_name];
+    h += '<div style="margin-bottom:10px"><label style="display:block;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">' + c.column_name + ' <span style="font-weight:400;text-transform:none;opacity:.6">(' + c.data_type + ')</span></label>';
+    h += dbFieldInput(c, val) + '</div>';
+  });
+  h += '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">';
+  h += '<button type="button" onclick="document.getElementById(\'dbModal\').remove()" style="padding:8px 18px;font-size:12px;font-weight:600;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit">Cancel</button>';
+  h += '<button type="submit" style="padding:8px 18px;font-size:12px;font-weight:600;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit">Save</button>';
+  h += '</div></form></div></div>';
+  document.body.insertAdjacentHTML('beforeend', h);
+}
+
+function dbSubmitEdit(e, id) {
+  e.preventDefault();
+  var db = window._dbEditor;
+  var form = document.getElementById('dbEditForm');
+  var body = {};
+  db.schema.forEach(function(c) {
+    if (c.column_name === 'id' || c.column_name === 'created_at' || c.column_name === 'updated_at') return;
+    var el = form.querySelector('[name="' + c.column_name + '"]');
+    if (!el) return;
+    var val = el.value;
+    if (val === '') { body[c.column_name] = null; return; }
+    if (c.data_type === 'boolean') { body[c.column_name] = val === 'true'; return; }
+    if (c.data_type === 'jsonb' || c.data_type === 'json') { try { body[c.column_name] = JSON.parse(val); } catch(x) { body[c.column_name] = val; } return; }
+    if (c.data_type.indexOf('int') >= 0 || c.data_type === 'numeric') { body[c.column_name] = Number(val); return; }
+    body[c.column_name] = val;
+  });
+  apiCall('PATCH', '/api/admin/db/' + db.selectedTable + '/' + id, body).then(function() {
+    document.getElementById('dbModal').remove();
+    showToast('Row updated', 'success');
+    dbLoadTableData();
+  }).catch(function(err) { showToast('Error: ' + err.message, 'error'); });
+}
+
+function dbConfirmDelete(id) {
+  if (!confirm('Delete this row? This cannot be undone.')) return;
+  var db = window._dbEditor;
+  apiCall('DELETE', '/api/admin/db/' + db.selectedTable + '/' + id).then(function() {
+    showToast('Row deleted', 'success');
+    dbLoadTableData();
+  }).catch(function(err) { showToast('Error: ' + err.message, 'error'); });
 }
 
 </script>
