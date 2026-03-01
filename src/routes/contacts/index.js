@@ -188,7 +188,8 @@ function mapClientToContact(row) {
     lastName: name.split(' ').slice(1).join(' ') || '',
     phone: row.phone || row.mobile || d['Phone'] || d['Mobile'] || d['Phone Number'] || '',
     email: row.email || d['Email'] || d['Email Address'] || '',
-    contactType: contactType, statusOfContact: at,
+    contactType: contactType,
+    statusOfContact: at === 'Inactive' ? 'Inactive Contact' : (at === 'Prospect' ? 'Active Contact' : (at && at !== 'Active' ? at : 'Active Contact')),
     gender: d['Client Gender'] || d['Gender'] || '',
     suburb: row.suburb || d['Suburb'] || d['Location'] || '',
     state: row.state || d['State'] || '',
@@ -198,19 +199,11 @@ function mapClientToContact(row) {
   };
 }
 
-// Allowed type_of_contact values for the main contacts overview
-var ALLOWED_CONTACT_TYPES = [
+// Staff type_of_contact values
+var STAFF_CONTACT_TYPES = [
   'Employee',
-  'Independant Contractor',   // DB spelling (matches Airtable original)
-  'Support Coordinator',
-  'Jobseeker',                // DB value for "Job Seeker"
-  'Child Safety Officer',
-  'Public Guardian (OPG)',    // DB value for "Public Guardian"
-  'Public Trustee',           // DB value for "Public Trust"
-  'Nominee or Guardian',      // DB value for "Nominee"
-  'Nominee or Guardian ',     // Some records have trailing space
-  'Behaviour Practitioner',
-  'Plan Manager'
+  'Independent Contractor',
+  'Jobseeker'
 ];
 
 // ═══════════════════════════════════════════════════════════
@@ -222,7 +215,7 @@ router.get('/', function (req, res) {
 
   var typeFilter = (req.query.type || '').toLowerCase();
 
-  // ─── Clients submenu: NDIS Client + Active, alphabetical A-Z ───
+  // ─── Clients submenu: NDIS Client (Active) + NDIS Client (Prospect) ───
   if (typeFilter === 'client' || typeFilter === 'ndis client') {
     sb.query('clients', 'GET', {
       select: '*',
@@ -233,9 +226,10 @@ router.get('/', function (req, res) {
         if (!r.client_name || !r.client_name.trim()) return false;
         var d = r.data || {};
         var at = d['Account Type:  Active or Inactive or Propsect'] || d['Account Type'] || '';
-        return !at || at === 'Active';
+        // Include Active, Prospect, and empty (assumed active). Exclude Inactive.
+        return at !== 'Inactive';
       }).map(mapClientToContact);
-      console.log('[Contacts] Clients submenu: ' + records.length + ' active clients');
+      console.log('[Contacts] Clients submenu: ' + records.length + ' clients (active + prospect)');
       res.json(records);
     }).catch(function (err) {
       console.error('[Contacts] Clients fetch error:', err.message);
@@ -244,11 +238,11 @@ router.get('/', function (req, res) {
     return;
   }
 
-  // ─── Staff submenu: Employee + Independant Contractor, Active, alphabetical A-Z ───
+  // ─── Staff submenu: Employee + Independent Contractor + Jobseeker, Active only ───
   if (typeFilter === 'staff' || typeFilter === 'employee') {
     sb.query('contacts', 'GET', {
       select: '*',
-      in_: { type_of_contact: ['Employee', 'Independant Contractor'] },
+      in_: { type_of_contact: STAFF_CONTACT_TYPES },
       order: 'full_name.asc',
       limit: 5000
     }).then(function (rows) {
@@ -264,11 +258,10 @@ router.get('/', function (req, res) {
     return;
   }
 
-  // ─── Main contacts overview: allowed types + active only ───
+  // ─── All Contacts: fetch ALL contacts + ALL clients, frontend handles status filter ───
   Promise.all([
     sb.query('contacts', 'GET', {
       select: '*',
-      in_: { type_of_contact: ALLOWED_CONTACT_TYPES },
       order: 'full_name.asc',
       limit: 5000
     }),
@@ -281,17 +274,14 @@ router.get('/', function (req, res) {
     var contactRows = results[0] || [];
     var clientRows = results[1] || [];
 
-    // Filter contacts: active only
-    var contacts = contactRows.filter(isActiveContact).map(function (r) {
+    // Map all contacts (no status pre-filter — frontend handles status dropdown)
+    var contacts = contactRows.map(function (r) {
       return mapAirtableRecord(supabaseContactToAirtable(r));
     });
 
-    // Filter clients: active only (no account type = presumed active)
+    // Map all clients with name
     var clients = clientRows.filter(function (r) {
-      if (!r.client_name || !r.client_name.trim()) return false;
-      var d = r.data || {};
-      var at = d['Account Type:  Active or Inactive or Propsect'] || d['Account Type'] || '';
-      return !at || at === 'Active';
+      return r.client_name && r.client_name.trim();
     }).map(mapClientToContact);
 
     var records = contacts.concat(clients);
@@ -303,7 +293,7 @@ router.get('/', function (req, res) {
       });
     }
 
-    console.log('[Contacts] Main view: ' + contacts.length + ' contacts + ' + clients.length + ' clients = ' + records.length + ' total');
+    console.log('[Contacts] All view: ' + contacts.length + ' contacts + ' + clients.length + ' clients = ' + records.length + ' total');
     res.json(records);
   }).catch(function (err) {
     console.error('[Contacts] Main fetch error:', err.message);

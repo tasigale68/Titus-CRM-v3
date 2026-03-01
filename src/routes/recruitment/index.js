@@ -118,7 +118,7 @@ function recruitReplacePlaceholders(template, candidate) {
   var firstName = f["First Name"] || (f["Full Name"] || "").split(" ")[0] || "there";
   var email = f["Email"] || "";
   var empType = f["Type of Employment"] || "";
-  var empLabel = empType === "Independant Contractor" ? "Contractor Agreement" : "Employment Contract";
+  var empLabel = empType === "Independent Contractor" ? "Contractor Agreement" : "Employment Contract";
   var abn = f["What is your ABN #"] || "";
   var gst = f["Do you have GST Registration with your ABN?"] || "No";
   return template
@@ -715,7 +715,7 @@ router.post('/send-contract', function(req, res) {
     var candidateName = f["Full Name"] || f["First Name"] || "";
     var toEmail = f["Email"] || "";
     var empType = f["Type of Employment"] || "";
-    var templateKey = empType === "Independant Contractor" ? "CONTRACT_CONTRACTOR" : "CONTRACT_EMPLOYED";
+    var templateKey = empType === "Independent Contractor" ? "CONTRACT_CONTRACTOR" : "CONTRACT_EMPLOYED";
     var emailTpl = RECRUIT_EMAIL_TEMPLATES[templateKey];
     var subject = recruitReplacePlaceholders(emailTpl.subject, f);
     var body = recruitReplacePlaceholders(emailTpl.body, f) + RECRUIT_EMAIL_SIGNATURE;
