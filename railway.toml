@@ -3,9 +3,8 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-# startCommand is NOT set here — each Railway service sets its own
-# in the dashboard Settings → Custom Start Command:
-#   Web server:  node src/server.js
-#   Sync worker: node worker.js
+startCommand = "node src/server.js"
+# Airtable sync worker DISABLED — migration to Supabase completed 2026-03-01
+# No separate worker service needed
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3

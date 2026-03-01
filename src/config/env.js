@@ -47,8 +47,8 @@ module.exports = {
     serviceKey: process.env.SUPABASE_SERVICE_KEY,
   },
 
-  // Database toggle: 'airtable' (default) or 'supabase'
-  database: process.env.DATABASE || 'airtable',
+  // Database toggle: 'supabase' (default) — Airtable sync disabled 2026-03-01
+  database: process.env.DATABASE || 'supabase',
 
   // Railway deployment
   railway: {
