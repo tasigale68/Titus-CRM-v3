@@ -36,6 +36,7 @@ const messengerRoutes = require('./routes/messenger');
 const tenantRoutes = require('./routes/tenants');
 const pricingRoutes = require('./routes/pricing');
 const adminTenantsRoutes = require('./routes/admin/tenants');
+const adminDbRoutes = require('./routes/admin/db');
 const signingRoutes = require('./routes/signing');
 const portalRoutes = require('./routes/portal');
 const payrollRoutes = require('./routes/payroll');
@@ -112,7 +113,8 @@ var cfAirtable = require('./services/database');
 
 app.get('/api/company-files', cfAuth, function (req, res) {
   var env = require('./config/env');
-  if (!env.airtable.apiKey || !env.airtable.baseId) return res.json({ files: [] });
+  var dbMode = (process.env.DATABASE || 'supabase').toLowerCase();
+  if (dbMode === 'airtable' && (!env.airtable.apiKey || !env.airtable.baseId)) return res.json({ files: [] });
   var statusFilter = req.query.status || 'All';
   var categoryFilter = req.query.category || '';
   var formula = '';
@@ -149,7 +151,8 @@ app.get('/api/company-files', cfAuth, function (req, res) {
 
 app.patch('/api/company-files/:id', cfAuth, function (req, res) {
   var env = require('./config/env');
-  if (!env.airtable.apiKey || !env.airtable.baseId) return res.status(500).json({ error: 'Airtable not configured' });
+  var dbMode = (process.env.DATABASE || 'supabase').toLowerCase();
+  if (dbMode === 'airtable' && (!env.airtable.apiKey || !env.airtable.baseId)) return res.status(500).json({ error: 'Database not configured' });
   var fields = {};
   if (req.body.status) fields['Status'] = req.body.status;
   if (req.body.name) fields['Name'] = req.body.name;
@@ -412,6 +415,7 @@ app.get('/api/invoices', invoiceAuth, function (req, res) {
 app.use('/api/tenant', tenantRoutes);
 app.use('/api/pricing', pricingRoutes);
 app.use('/api/admin/tenants', adminTenantsRoutes);
+app.use('/api/admin/db', adminDbRoutes);
 app.use('/api/signing', signingRoutes);
 app.use('/api/sign', signingRoutes);         // Public signing routes
 app.use('/api/portal', portalRoutes);

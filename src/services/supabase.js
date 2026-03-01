@@ -56,7 +56,9 @@ var TABLE_MAP = {
   'Client Media': 'client_media',
   'Weekly Stakeholder Reports': 'weekly_stakeholder_reports',
   'Candidate Interactions': 'candidate_interactions',
-  'Roster of Care': 'roc_shifts'
+  'Roster of Care': 'roc_shifts',
+  'Contractor Invoices': 'independent_contractor_invoices',
+  'Independent Contractor Invoices': 'independent_contractor_invoices'
 };
 
 function resolveTable(airtableName) {

@@ -4,10 +4,12 @@ module.exports = {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
 
-  // Airtable (primary database - temporary, Supabase migration planned)
+  // Airtable — DEPRECATED, migrated to Supabase
+  // Guards still check env.airtable.apiKey; set truthy when Supabase is configured
+  // so existing route guards pass without modification
   airtable: {
-    apiKey: process.env.AIRTABLE_API_KEY,
-    baseId: process.env.AIRTABLE_BASE_ID || 'appg3Cz7mEsGA6IOI',
+    apiKey: process.env.AIRTABLE_API_KEY || (process.env.SUPABASE_SERVICE_KEY ? '__supabase__' : ''),
+    baseId: process.env.AIRTABLE_BASE_ID || (process.env.SUPABASE_URL ? '__supabase__' : '') || 'appg3Cz7mEsGA6IOI',
   },
 
   // Twilio (calls, SMS, WebRTC)

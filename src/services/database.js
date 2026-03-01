@@ -10,7 +10,7 @@
 //   'supabase'  — use Supabase only
 // ═══════════════════════════════════════════════════════════════
 
-var DATABASE = (process.env.DATABASE || 'airtable').toLowerCase();
+var DATABASE = (process.env.DATABASE || 'supabase').toLowerCase();
 
 var service;
 
