@@ -135,76 +135,180 @@ function tryCreate(tableName, fieldsToSend) {
     });
 }
 
+// ─── Supabase direct helpers ─────────────────────────────────
+// Merge Supabase flat columns back into Airtable-style fields for mapAirtableRecord
+function supabaseContactToAirtable(row) {
+  var d = {};
+  if (row.data) {
+    var dataKeys = Object.keys(row.data);
+    for (var i = 0; i < dataKeys.length; i++) d[dataKeys[i]] = row.data[dataKeys[i]];
+  }
+  if (row.full_name) d['Full Name'] = row.full_name;
+  if (row.first_name) d['First Name'] = row.first_name;
+  if (row.last_name) d['Last Name'] = row.last_name;
+  if (row.email) d['Email'] = row.email;
+  if (row.phone) d['Phone'] = row.phone;
+  if (row.mobile) d['Mobile'] = row.mobile;
+  if (row.formatted_mobile) d['Formatted Mobile'] = row.formatted_mobile;
+  if (row.address) d['Home Address'] = row.address;
+  if (row.suburb) d['Suburb'] = row.suburb;
+  if (row.state) d['State'] = row.state;
+  if (row.postcode) d['Postcode'] = row.postcode;
+  if (row.dob) d['Date of Birth'] = row.dob;
+  if (row.type_of_contact) d['Type of Contact (Single Select)'] = row.type_of_contact;
+  if (row.type_of_employment) d['Type of Employment'] = row.type_of_employment;
+  if (row.job_title) d['Job Title'] = row.job_title;
+  if (row.photo_url) d['PIC - SW Photo'] = [{ url: row.photo_url }];
+  if (row.emergency_contact) d['Emergency Contact Name'] = row.emergency_contact;
+  if (row.emergency_phone) d['Day Time Number (Emergency Contact)'] = row.emergency_phone;
+  return { id: row.id, fields: d };
+}
+
+// Check if a Supabase contact row is "active" based on data JSONB
+function isActiveContact(row) {
+  var d = row.data || {};
+  var status = d['Status of Contact'] || '';
+  if (!status) return true; // No status field = treat as active
+  return status === 'Active Contact';
+}
+
+// Map a Supabase clients row to the contact format the frontend expects
+function mapClientToContact(row) {
+  var d = row.data || {};
+  var name = row.client_name || row.full_name || '';
+  if (Array.isArray(name)) name = name[0] || '';
+  var at = d['Account Type:  Active or Inactive or Propsect'] || d['Account Type'] || '';
+  var contactType = 'NDIS Client (Active)';
+  if (at.toLowerCase().indexOf('prospect') >= 0) contactType = 'NDIS Client (Prospect)';
+  else if (at.toLowerCase().indexOf('inactive') >= 0) contactType = 'NDIS Client (Inactive)';
+  return {
+    id: row.id, airtable_id: row.airtable_id || row.id,
+    name: name,
+    firstName: name.split(' ')[0] || '',
+    lastName: name.split(' ').slice(1).join(' ') || '',
+    phone: row.phone || row.mobile || d['Phone'] || d['Mobile'] || d['Phone Number'] || '',
+    email: row.email || d['Email'] || d['Email Address'] || '',
+    contactType: contactType, statusOfContact: at,
+    gender: d['Client Gender'] || d['Gender'] || '',
+    suburb: row.suburb || d['Suburb'] || d['Location'] || '',
+    state: row.state || d['State'] || '',
+    postcode: row.postcode || d['Postcode'] || '',
+    organisation: '', notes: '', photo: [], linkedToClient: '',
+    allFields: d,
+  };
+}
+
+// Allowed type_of_contact values for the main contacts overview
+var ALLOWED_CONTACT_TYPES = [
+  'Employee',
+  'Independant Contractor',   // DB spelling (matches Airtable original)
+  'Support Coordinator',
+  'Jobseeker',                // DB value for "Job Seeker"
+  'Child Safety Officer',
+  'Public Guardian (OPG)',    // DB value for "Public Guardian"
+  'Public Trustee',           // DB value for "Public Trust"
+  'Nominee or Guardian',      // DB value for "Nominee"
+  'Nominee or Guardian ',     // Some records have trailing space
+  'Behaviour Practitioner',
+  'Plan Manager'
+];
+
 // ═══════════════════════════════════════════════════════════
-//  GET /api/contacts — list all contacts (paginated from Airtable)
+//  GET /api/contacts — list contacts (Supabase direct queries)
 // ═══════════════════════════════════════════════════════════
 router.get('/', function (req, res) {
-  if (!env.airtable.apiKey || !env.airtable.baseId) return res.json([]);
-
   var fullUser = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.user_id);
   var perms = fullUser ? getUserPermissions(fullUser) : { client_filter: 'all' };
 
-  var allRecords = [];
-  function fetchPage(offset) {
-    var pgParams = '?pageSize=100';
-    pgParams += '&sort%5B0%5D%5Bfield%5D=Full%20Name&sort%5B0%5D%5Bdirection%5D=asc';
-    if (AIRTABLE_VIEW_NAME) pgParams += '&view=' + encodeURIComponent(AIRTABLE_VIEW_NAME);
-    if (offset) pgParams += '&offset=' + encodeURIComponent(offset);
-    return airtable.rawFetch(AIRTABLE_TABLE_NAME, 'GET', pgParams).then(function (data) {
-      if (data.error) { console.error('Airtable error:', data.error); return; }
-      if (data.records && data.records.length > 0) {
-        allRecords = allRecords.concat(data.records.map(mapAirtableRecord));
-      }
-      if (data.offset) return fetchPage(data.offset);
+  var typeFilter = (req.query.type || '').toLowerCase();
+
+  // ─── Clients submenu: NDIS Client + Active, alphabetical A-Z ───
+  if (typeFilter === 'client' || typeFilter === 'ndis client') {
+    sb.query('clients', 'GET', {
+      select: '*',
+      order: 'client_name.asc',
+      limit: 5000
+    }).then(function (rows) {
+      var records = (rows || []).filter(function (r) {
+        if (!r.client_name || !r.client_name.trim()) return false;
+        var d = r.data || {};
+        var at = d['Account Type:  Active or Inactive or Propsect'] || d['Account Type'] || '';
+        return !at || at === 'Active';
+      }).map(mapClientToContact);
+      console.log('[Contacts] Clients submenu: ' + records.length + ' active clients');
+      res.json(records);
+    }).catch(function (err) {
+      console.error('[Contacts] Clients fetch error:', err.message);
+      res.json([]);
     });
+    return;
   }
 
-  fetchPage(null).then(function () {
-    var records = allRecords;
-    console.log('Airtable: Loaded ' + records.length + ' contacts from ' + (AIRTABLE_VIEW_NAME || 'default view'));
+  // ─── Staff submenu: Employee + Independant Contractor, Active, alphabetical A-Z ───
+  if (typeFilter === 'staff' || typeFilter === 'employee') {
+    sb.query('contacts', 'GET', {
+      select: '*',
+      in_: { type_of_contact: ['Employee', 'Independant Contractor'] },
+      order: 'full_name.asc',
+      limit: 5000
+    }).then(function (rows) {
+      var records = (rows || []).filter(isActiveContact).map(function (r) {
+        return mapAirtableRecord(supabaseContactToAirtable(r));
+      });
+      console.log('[Contacts] Staff submenu: ' + records.length + ' active staff');
+      res.json(records);
+    }).catch(function (err) {
+      console.error('[Contacts] Staff fetch error:', err.message);
+      res.json([]);
+    });
+    return;
+  }
 
-    // Remove NDIS Client contacts (they come from Clients table)
-    records = records.filter(function (r) {
-      return (r.contactType || '').toLowerCase().indexOf('ndis client') < 0;
+  // ─── Main contacts overview: allowed types + active only ───
+  Promise.all([
+    sb.query('contacts', 'GET', {
+      select: '*',
+      in_: { type_of_contact: ALLOWED_CONTACT_TYPES },
+      order: 'full_name.asc',
+      limit: 5000
+    }),
+    sb.query('clients', 'GET', {
+      select: '*',
+      order: 'client_name.asc',
+      limit: 5000
+    })
+  ]).then(function (results) {
+    var contactRows = results[0] || [];
+    var clientRows = results[1] || [];
+
+    // Filter contacts: active only
+    var contacts = contactRows.filter(isActiveContact).map(function (r) {
+      return mapAirtableRecord(supabaseContactToAirtable(r));
     });
 
-    // Merge in clients from Clients table
-    function arrayVal(v) { return Array.isArray(v) ? v[0] || '' : v || ''; }
-    airtable.fetchAllFromTableView('Clients', 'Client Active View').then(function (clientRecords) {
-      var clientContacts = (clientRecords || []).map(function (r) {
-        var f = r.fields || {};
-        var name = arrayVal(f['Client Name'] || f['Full Name'] || '');
-        var at = arrayVal(f['Account Type: Active or Inactive or Propsect'] || f['Account Type: Active or Inactive or Prospect'] || f['Account Type'] || '');
-        var contactType = 'NDIS Client (Active)';
-        if (at.toLowerCase().indexOf('prospect') >= 0) contactType = 'NDIS Client (Prospect)';
-        else if (at.toLowerCase().indexOf('inactive') >= 0) contactType = 'NDIS Client (Inactive)';
-        return {
-          id: r.id, airtable_id: r.id, name: name,
-          firstName: name.split(' ')[0] || '', lastName: name.split(' ').slice(1).join(' ') || '',
-          phone: arrayVal(f['Phone'] || f['Mobile'] || f['Phone Number'] || ''),
-          email: arrayVal(f['Email'] || f['Email Address'] || ''),
-          contactType: contactType, statusOfContact: at,
-          gender: arrayVal(f['Gender'] || ''),
-          suburb: arrayVal(f['Suburb'] || f['Location'] || ''),
-          state: arrayVal(f['State'] || ''), postcode: arrayVal(f['Postcode'] || ''),
-          organisation: '', notes: '', photo: [], allFields: f,
-        };
-      }).filter(function (c) { return c.name; });
+    // Filter clients: active only (no account type = presumed active)
+    var clients = clientRows.filter(function (r) {
+      if (!r.client_name || !r.client_name.trim()) return false;
+      var d = r.data || {};
+      var at = d['Account Type:  Active or Inactive or Propsect'] || d['Account Type'] || '';
+      return !at || at === 'Active';
+    }).map(mapClientToContact);
 
-      records = records.concat(clientContacts);
+    var records = contacts.concat(clients);
 
-      // Apply ?type= filter
-      var typeFilter = req.query.type;
-      if (typeFilter) {
-        var tfl = typeFilter.toLowerCase();
-        records = records.filter(function (r) { return (r.contactType || '').toLowerCase().indexOf(tfl) >= 0; });
-      }
-      res.json(records);
-    }).catch(function (e) {
-      console.error('Clients table merge error:', e.message);
-      res.json(records);
-    });
-  }).catch(function (err) { console.error('Airtable fetch error:', err); res.json([]); });
+    // Apply any additional ?type= filter for specific contact types
+    if (typeFilter && typeFilter !== 'all') {
+      records = records.filter(function (r) {
+        return (r.contactType || '').toLowerCase().indexOf(typeFilter) >= 0;
+      });
+    }
+
+    console.log('[Contacts] Main view: ' + contacts.length + ' contacts + ' + clients.length + ' clients = ' + records.length + ' total');
+    res.json(records);
+  }).catch(function (err) {
+    console.error('[Contacts] Main fetch error:', err.message);
+    res.json([]);
+  });
 });
 
 // ═══ GET /api/contacts/debug-fields ═══
