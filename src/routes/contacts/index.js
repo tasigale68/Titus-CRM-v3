@@ -161,15 +161,17 @@ function supabaseContactToAirtable(row) {
   if (row.photo_url) d['PIC - SW Photo'] = [{ url: row.photo_url }];
   if (row.emergency_contact) d['Emergency Contact Name'] = row.emergency_contact;
   if (row.emergency_phone) d['Day Time Number (Emergency Contact)'] = row.emergency_phone;
+  if (row.status) d['Status of Contact'] = row.status === 'Active' ? 'Active Contact' : 'Inactive Contact';
+  if (row.ndis_number) d['NDIS Number'] = row.ndis_number;
+  if (row.department) d['Department'] = row.department;
+  if (row.team) d['Team'] = row.team;
+  if (row.training_status) d['Training Status'] = row.training_status;
   return { id: row.id, fields: d };
 }
 
-// Check if a Supabase contact row is "active" based on data JSONB
+// Check if a Supabase contact row is "active" based on status column
 function isActiveContact(row) {
-  var d = row.data || {};
-  var status = d['Status of Contact'] || '';
-  if (!status) return true; // No status field = treat as active
-  return status === 'Active Contact';
+  return row.status === 'Active';
 }
 
 // Map a Supabase clients row to the contact format the frontend expects
@@ -177,10 +179,10 @@ function mapClientToContact(row) {
   var d = row.data || {};
   var name = row.client_name || row.full_name || '';
   if (Array.isArray(name)) name = name[0] || '';
-  var at = d['Account Type:  Active or Inactive or Propsect'] || d['Account Type'] || '';
+  var at = row.account_type || '';
   var contactType = 'NDIS Client (Active)';
-  if (at.toLowerCase().indexOf('prospect') >= 0) contactType = 'NDIS Client (Prospect)';
-  else if (at.toLowerCase().indexOf('inactive') >= 0) contactType = 'NDIS Client (Inactive)';
+  if (at === 'Prospect') contactType = 'NDIS Client (Prospect)';
+  else if (at === 'Inactive') contactType = 'NDIS Client (Inactive)';
   return {
     id: row.id, airtable_id: row.airtable_id || row.id,
     name: name,
@@ -189,7 +191,7 @@ function mapClientToContact(row) {
     phone: row.phone || row.mobile || d['Phone'] || d['Mobile'] || d['Phone Number'] || '',
     email: row.email || d['Email'] || d['Email Address'] || '',
     contactType: contactType,
-    statusOfContact: at === 'Inactive' ? 'Inactive Contact' : (at === 'Prospect' ? 'Active Contact' : (at && at !== 'Active' ? at : 'Active Contact')),
+    statusOfContact: at === 'Inactive' ? 'Inactive Contact' : 'Active Contact',
     gender: d['Client Gender'] || d['Gender'] || '',
     suburb: row.suburb || d['Suburb'] || d['Location'] || '',
     state: row.state || d['State'] || '',
@@ -219,15 +221,12 @@ router.get('/', function (req, res) {
   if (typeFilter === 'client' || typeFilter === 'ndis client') {
     sb.query('clients', 'GET', {
       select: '*',
+      in_: { account_type: ['Active', 'Prospect'] },
       order: 'client_name.asc',
       limit: 5000
     }).then(function (rows) {
       var records = (rows || []).filter(function (r) {
-        if (!r.client_name || !r.client_name.trim()) return false;
-        var d = r.data || {};
-        var at = d['Account Type:  Active or Inactive or Propsect'] || d['Account Type'] || '';
-        // Include Active, Prospect, and empty (assumed active). Exclude Inactive.
-        return at !== 'Inactive';
+        return r.client_name && r.client_name.trim();
       }).map(mapClientToContact);
       console.log('[Contacts] Clients submenu: ' + records.length + ' clients (active + prospect)');
       res.json(records);
@@ -242,11 +241,12 @@ router.get('/', function (req, res) {
   if (typeFilter === 'staff' || typeFilter === 'employee') {
     sb.query('contacts', 'GET', {
       select: '*',
+      eq: { status: 'Active' },
       in_: { type_of_contact: STAFF_CONTACT_TYPES },
       order: 'full_name.asc',
       limit: 5000
     }).then(function (rows) {
-      var records = (rows || []).filter(isActiveContact).map(function (r) {
+      var records = (rows || []).map(function (r) {
         return mapAirtableRecord(supabaseContactToAirtable(r));
       });
       console.log('[Contacts] Staff submenu: ' + records.length + ' active staff');
@@ -258,15 +258,17 @@ router.get('/', function (req, res) {
     return;
   }
 
-  // ─── All Contacts: fetch ALL contacts + ALL clients, frontend handles status filter ───
+  // ─── All Contacts: fetch Active contacts + Active/Prospect clients ───
   Promise.all([
     sb.query('contacts', 'GET', {
       select: '*',
+      eq: { status: 'Active' },
       order: 'full_name.asc',
       limit: 5000
     }),
     sb.query('clients', 'GET', {
       select: '*',
+      in_: { account_type: ['Active', 'Prospect'] },
       order: 'client_name.asc',
       limit: 5000
     })
@@ -274,12 +276,10 @@ router.get('/', function (req, res) {
     var contactRows = results[0] || [];
     var clientRows = results[1] || [];
 
-    // Map all contacts (no status pre-filter — frontend handles status dropdown)
     var contacts = contactRows.map(function (r) {
       return mapAirtableRecord(supabaseContactToAirtable(r));
     });
 
-    // Map all clients with name
     var clients = clientRows.filter(function (r) {
       return r.client_name && r.client_name.trim();
     }).map(mapClientToContact);
@@ -716,47 +716,178 @@ router.get('/distance', function (req, res) {
   }).catch(function () { res.json({ estimated: null, mapsUrl: mapsUrl, note: 'Distance API error' }); });
 });
 
+// ─── Direct column names for Supabase contacts table ───
+var DIRECT_COLUMNS = {
+  firstName: 'first_name', lastName: 'last_name', name: 'full_name',
+  email: 'email', phone: 'phone', mobile: 'mobile', formattedMobile: 'formatted_mobile',
+  homeAddress: 'address', suburb: 'suburb', state: 'state', postcode: 'postcode',
+  dob: 'dob', contactType: 'type_of_contact', typeOfEmployment: 'type_of_employment',
+  jobTitle: 'job_title', department: 'department', team: 'team',
+  trainingStatus: 'training_status', photoUrl: 'photo_url',
+  emergencyContact: 'emergency_contact', emergencyPhone: 'emergency_phone',
+  ndisNumber: 'ndis_number'
+};
+
+// Map request body fields to Supabase row + data JSONB
+function buildSupabasePayload(body) {
+  var row = {};
+  var data = {};
+
+  // Direct columns
+  if (body.firstName !== undefined) row.first_name = body.firstName;
+  if (body.lastName !== undefined) row.last_name = body.lastName;
+  if (body.name !== undefined) row.full_name = body.name;
+  if (body.email !== undefined) row.email = body.email;
+  if (body.phone !== undefined) row.mobile = body.phone;
+  if (body.mobile !== undefined) row.mobile = body.mobile;
+  if (body.formattedMobile !== undefined) row.formatted_mobile = body.formattedMobile;
+  if (body.homeAddress !== undefined) row.address = body.homeAddress;
+  if (body.suburb !== undefined) row.suburb = body.suburb;
+  if (body.state !== undefined) row.state = body.state;
+  if (body.postcode !== undefined) row.postcode = body.postcode;
+  if (body.dob !== undefined) row.dob = body.dob;
+  if (body.contactType !== undefined) row.type_of_contact = body.contactType;
+  if (body.typeOfEmployment !== undefined) row.type_of_employment = body.typeOfEmployment;
+  if (body.jobTitle !== undefined) row.job_title = body.jobTitle;
+  if (body.department !== undefined) row.department = body.department;
+  if (body.team !== undefined) row.team = body.team;
+  if (body.trainingStatus !== undefined) row.training_status = body.trainingStatus;
+  if (body.photoUrl !== undefined) row.photo_url = body.photoUrl;
+  if (body.emergencyContact !== undefined) row.emergency_contact = body.emergencyContact;
+  if (body.emergencyPhone !== undefined) row.emergency_phone = body.emergencyPhone;
+  if (body.ndisNumber !== undefined) row.ndis_number = body.ndisNumber;
+
+  // Status mapping
+  if (body.statusOfContact !== undefined) {
+    var statusMap = { 'Active Contact': 'Active', 'Inactive Contact': 'Inactive', 'Active': 'Active', 'Inactive': 'Inactive' };
+    row.status = statusMap[body.statusOfContact] || 'Active';
+  }
+
+  // Extended fields → data JSONB
+  var extFields = [
+    'gender', 'signingEmail', 'organisation', 'abn', 'abnEntityName', 'abnStatus',
+    'gstRegistered', 'abnLastVerified', 'notes', 'cultureEthnicity', 'languagesSpoken',
+    'emergencyContactRelationship', 'emergencyDaytimeNumber', 'emergencyAfterHoursNumber',
+    'managementNotes', 'directorNotes', 'hobbies', 'interests', 'medicalDisclosure',
+    'vehicleDetails', 'vehicleYear', 'summaryOfExperience', 'qualifications',
+    'referralSource', 'availabilityActive', 'availabilitySleepovers',
+    'canDoSleepovers', 'canDoPersonalCare', 'abnNumber', 'hasGstRegistration',
+    'publicLiabilityInsurance', 'publicLiabilityExpiry', 'auslanSignLanguage',
+    'partnerSpouseInfo', 'kidsInfo', 'favouriteCoffee', 'favouriteHoliday',
+    'otherBackgroundInfo', 'employmentStartDate', 'secondaryEmployment',
+    'detailsOfOtherEmployment',
+    'ndisWorkerScreeningCard', 'ndisWsExpiry', 'ndisWsStatus',
+    'driversLicense', 'driversLicenseExpiry', 'wwccBlueCard', 'wwccExpiry',
+    'firstAidCert', 'firstAidExpiry', 'cprCert', 'cprExpiry',
+    'carInsurance', 'carInsuranceExpiry', 'medicationAdminCert', 'medicationExpiry',
+    'diabetesTrainingCert', 'diabetesExpiry', 'infectionControlExpiry',
+    'handHygieneExpiry', 'teamTeachCert', 'teamTeachDate',
+    'covid19TrainingExpiry', 'dutyOfCareExpiry', 'handlingPatientDataExpiry',
+    'mentalHealthTrainingExpiry', 'mealtimeManagementExpiry',
+    'welcomeToDeltaDate', 'welcomeToDeltaExpiry', 'governanceOperationsDate',
+    'progressNotesTrainingDate', 'medicationsAdminDate', 'inductionCompletionDate',
+    'gaCompletionDate', 'gaDate', 'gaFeedback', 'gaComments', 'gaOutcome',
+    'dateApplied', 'jobAppliedFor', 'stageInRecruitment', 'cvAiSummary'
+  ];
+
+  // camelCase to Airtable-style field name map
+  var fieldNameMap = {
+    gender: 'Gender', signingEmail: 'Signing Email', organisation: 'Organisation',
+    abn: 'ABN', abnEntityName: 'ABN Entity Name', abnStatus: 'ABN Status',
+    gstRegistered: 'GST Registered', abnLastVerified: 'ABN Last Verified',
+    notes: 'Notes', cultureEthnicity: 'Cultural Ethnicity', languagesSpoken: 'Languages Spoken',
+    emergencyContactRelationship: 'Relationship to you (Emergency Contact)',
+    emergencyDaytimeNumber: 'Day Time Number (Emergency Contact)',
+    emergencyAfterHoursNumber: 'After Hours Number (Emergency Contact)',
+    managementNotes: 'Management Notes', directorNotes: 'Director Notes',
+    hobbies: 'Hobbies', interests: 'Interests', medicalDisclosure: 'Medical Disclosure',
+    vehicleDetails: 'Vehicle Details', vehicleYear: 'Vehicle Year',
+    summaryOfExperience: 'Summary of Experience', qualifications: 'Qualifications',
+    referralSource: 'Referral Source', availabilityActive: 'Availability Active',
+    availabilitySleepovers: 'Availability Sleepovers',
+    canDoSleepovers: 'Can Do Sleepovers', canDoPersonalCare: 'Can Do Personal Care',
+    abnNumber: 'ABN Number', hasGstRegistration: 'Has GST Registration',
+    publicLiabilityInsurance: 'Public Liability Insurance',
+    publicLiabilityExpiry: 'Public Liability Expiry',
+    auslanSignLanguage: 'Auslan Sign Language',
+    partnerSpouseInfo: 'Partner/Spouse Info', kidsInfo: 'Kids Info',
+    favouriteCoffee: 'Favourite Coffee', favouriteHoliday: 'Favourite Holiday',
+    otherBackgroundInfo: 'Other Background Info',
+    employmentStartDate: 'Employment Start Date',
+    secondaryEmployment: 'Secondary Employment',
+    detailsOfOtherEmployment: 'Details of Other Employment',
+    ndisWorkerScreeningCard: 'NDIS Worker Screening Card',
+    ndisWsExpiry: 'NDIS WS Expiry date (formula)', ndisWsStatus: 'NDIS WS Status',
+    driversLicense: 'Drivers License', driversLicenseExpiry: 'D/License Expiry formula',
+    wwccBlueCard: 'WWCC B/C', wwccExpiry: 'WWCC B/C Expiry formula',
+    firstAidCert: 'First Aid Certificate',
+    firstAidExpiry: 'First Aid Expiry Date (dd/mm/yy formula)',
+    cprCert: 'CPR Certificate', cprExpiry: 'CPR Expiry Date (formula)',
+    carInsurance: 'Car Insurance', carInsuranceExpiry: 'Car Insurance Expiry',
+    medicationAdminCert: 'Medication Admin Certificate',
+    medicationExpiry: 'Medication Admin Expiry',
+    diabetesTrainingCert: 'Diabetes Training Certificate',
+    diabetesExpiry: 'Diabetes Training Expiry',
+    infectionControlExpiry: 'Infection Control Expiry',
+    handHygieneExpiry: 'Hand Hygiene Expiry',
+    teamTeachCert: 'Team Teach Certificate', teamTeachDate: 'Team Teach Date',
+    covid19TrainingExpiry: 'COVID-19 Training Expiry',
+    dutyOfCareExpiry: 'Duty of Care Expiry',
+    handlingPatientDataExpiry: 'Handling Patient Data Expiry',
+    mentalHealthTrainingExpiry: 'Mental Health Training Expiry',
+    mealtimeManagementExpiry: 'Mealtime Management Expiry',
+    welcomeToDeltaDate: 'Welcome to Delta Date',
+    welcomeToDeltaExpiry: 'Welcome to Delta Expiry',
+    governanceOperationsDate: 'Governance & Operations Date',
+    progressNotesTrainingDate: 'Progress Notes Training Date',
+    medicationsAdminDate: 'Medications Admin Date',
+    inductionCompletionDate: 'Induction Completion Date',
+    gaCompletionDate: 'GA Completion Date', gaDate: 'GA Date',
+    gaFeedback: 'GA Feedback', gaComments: 'GA Comments', gaOutcome: 'GA Outcome',
+    dateApplied: 'Date Applied', jobAppliedFor: 'Applied for which Role?',
+    stageInRecruitment: 'Stage In Recruitment', cvAiSummary: 'CV Ai Summary'
+  };
+
+  extFields.forEach(function (key) {
+    if (body[key] !== undefined) {
+      var fieldName = fieldNameMap[key] || key;
+      data[fieldName] = body[key];
+    }
+  });
+
+  // Also accept raw extraFields object for legacy frontend compatibility
+  if (body.extraFields && typeof body.extraFields === 'object') {
+    Object.keys(body.extraFields).forEach(function (k) {
+      if (body.extraFields[k] !== undefined) data[k] = body.extraFields[k];
+    });
+  }
+
+  // Also accept allFields for bulk field updates
+  if (body.allFields && typeof body.allFields === 'object') {
+    Object.keys(body.allFields).forEach(function (k) {
+      if (body.allFields[k] !== undefined) data[k] = body.allFields[k];
+    });
+  }
+
+  if (Object.keys(data).length > 0) row.data = data;
+  return row;
+}
+
 // ═══ POST /api/contacts — create contact ═══
 router.post('/', function (req, res) {
-  if (!env.airtable.apiKey) return res.status(500).json({ error: 'Airtable not configured' });
-
-  var fields = {};
-  if (req.body.firstName) fields['First Name'] = req.body.firstName;
-  if (req.body.lastName) fields['Last Name'] = req.body.lastName;
-  if (req.body.name && !req.body.firstName && !req.body.lastName) fields['Full Name'] = req.body.name;
-  if (req.body.phone) fields['Mobile'] = req.body.phone;
-  if (req.body.email) fields['Email'] = req.body.email;
-  if (req.body.contactType) fields['Type of Contact (Single Select)'] = req.body.contactType;
-
-  var validStatuses = ['Active Contact', 'Draft', 'Inactive Contact', 'Archive (Gus only)'];
-  if (req.body.statusOfContact) {
-    fields['Status of Contact'] = validStatuses.indexOf(req.body.statusOfContact) >= 0 ? req.body.statusOfContact : 'Active Contact';
+  var payload = buildSupabasePayload(req.body);
+  if (!payload.full_name && req.body.firstName) {
+    payload.full_name = ((req.body.firstName || '') + ' ' + (req.body.lastName || '')).trim();
   }
-  if (req.body.gender) fields['Gender'] = req.body.gender;
-  if (req.body.organisation) fields['Organisation'] = req.body.organisation;
-  if (req.body.linkedToClient && Array.isArray(req.body.linkedToClient)) fields['Linked to Client'] = req.body.linkedToClient;
-  if (req.body.homeAddress) fields['Home Address'] = req.body.homeAddress;
-  if (req.body.suburb) fields['Suburb'] = req.body.suburb;
-  if (req.body.state) fields['State'] = req.body.state;
-  if (req.body.postcode) fields['Postcode'] = req.body.postcode;
-  if (req.body.abn) fields['ABN'] = req.body.abn;
-  if (req.body.notes) fields['Notes'] = req.body.notes;
-  if (req.body.signingEmail) fields['Signing Email'] = req.body.signingEmail;
-  if (req.body.jobAppliedFor) fields['Applied for which Role?'] = req.body.jobAppliedFor;
-  if (req.body.stageInRecruitment) fields['Stage-in-Recruitment'] = req.body.stageInRecruitment;
+  if (!payload.status) payload.status = 'Active';
 
-  if (req.body.extraFields && typeof req.body.extraFields === 'object') {
-    var ef = req.body.extraFields;
-    var safeExtra = ['Info Video Watched', 'Michael Call Completed', 'EOI Form Submitted', 'Video Interview Completed', 'Offer Sent Externally', 'Onboarded Externally', 'Recruitment Entry Notes', 'Application Date', 'Stage-in-Recruitment', 'Full Name'];
-    safeExtra.forEach(function (k) { if (ef[k] !== undefined) fields[k] = ef[k]; });
-  }
-
-  airtable.rawFetch(AIRTABLE_TABLE_NAME, 'POST', '', { records: [{ fields: fields }] })
-    .then(function (data) {
-      if (data.error) return res.status(400).json({ error: (data.error.message || JSON.stringify(data.error)) });
-      if (!data.records || !data.records[0]) return res.status(400).json({ error: 'No record returned from Airtable' });
-      var _newRec = mapAirtableRecord(data.records[0]);
-      logAudit(req.user, 'create_contact', 'Contact', data.records[0].id, _newRec.name || fields['Full Name'] || fields['First Name'] || 'New Contact', 'Created', '', JSON.stringify(Object.keys(fields)));
+  // Merge any existing data fields for the insert
+  sb.insert('contacts', payload)
+    .then(function (rows) {
+      if (!rows || rows.length === 0) return res.status(400).json({ error: 'No record created' });
+      var newRow = rows[0];
+      var _newRec = mapAirtableRecord(supabaseContactToAirtable(newRow));
+      logAudit(req.user, 'create_contact', 'Contact', newRow.id, _newRec.name || payload.full_name || 'New Contact', 'Created', '', JSON.stringify(Object.keys(payload)));
       res.json({ success: true, record: _newRec });
     })
     .catch(function (err) { res.status(500).json({ error: err.message }); });
@@ -764,82 +895,63 @@ router.post('/', function (req, res) {
 
 // ═══ GET /api/contacts/:id ═══
 router.get('/:id', function (req, res) {
-  if (!env.airtable.apiKey) return res.status(500).json({ error: 'Airtable not configured' });
-  airtable.rawFetch(AIRTABLE_TABLE_NAME, 'GET', '/' + req.params.id)
-    .then(function (data) {
-      if (data && data.error) return res.status(404).json({ error: data.error.message || 'Not found' });
-      res.json({ record: mapAirtableRecord(data) });
+  sb.query('contacts', 'GET', { select: '*', eq: { id: req.params.id }, limit: 1 })
+    .then(function (rows) {
+      if (!rows || rows.length === 0) return res.status(404).json({ error: 'Not found' });
+      res.json({ record: mapAirtableRecord(supabaseContactToAirtable(rows[0])) });
     })
     .catch(function (err) { res.status(500).json({ error: err.message }); });
 });
 
 // ═══ PUT /api/contacts/:id ═══
 router.put('/:id', function (req, res) {
-  if (!env.airtable.apiKey) return res.status(500).json({ error: 'Airtable not configured' });
-  var fields = {};
-  if (req.body.firstName !== undefined && req.body.firstName !== '') fields['First Name'] = req.body.firstName;
-  if (req.body.lastName !== undefined && req.body.lastName !== '') fields['Last Name'] = req.body.lastName;
-  if (req.body.name !== undefined && req.body.firstName === undefined && req.body.lastName === undefined) fields['Full Name'] = req.body.name;
-  if (req.body.phone !== undefined && req.body.phone !== '') fields['Mobile'] = req.body.phone;
-  if (req.body.email !== undefined && req.body.email !== '') fields['Email'] = req.body.email;
-  if (req.body.statusOfContact !== undefined && req.body.statusOfContact !== '') {
-    var validPutStatuses = ['Active Contact', 'Draft', 'Inactive Contact', 'Archive (Gus only)'];
-    fields['Status of Contact'] = validPutStatuses.indexOf(req.body.statusOfContact) >= 0 ? req.body.statusOfContact : 'Active Contact';
-  }
-  if (req.body.contactType !== undefined && req.body.contactType !== '') fields['Type of Contact (Single Select)'] = req.body.contactType;
-  if (req.body.gender && req.body.gender !== '') fields['Gender'] = req.body.gender;
-  if (req.body.homeAddress && req.body.homeAddress !== '') fields['Home Address'] = req.body.homeAddress;
-  if (req.body.suburb && req.body.suburb !== '') fields['Suburb'] = req.body.suburb;
-  if (req.body.state && req.body.state !== '') fields['State'] = req.body.state;
-  if (req.body.postcode && req.body.postcode !== '') fields['Postcode'] = req.body.postcode;
-  if (req.body.abn && req.body.abn !== '') fields['ABN'] = req.body.abn;
-  if (req.body.abnEntityName !== undefined && req.body.abnEntityName !== '') fields['ABN Entity Name'] = req.body.abnEntityName;
-  if (req.body.abnStatus !== undefined && req.body.abnStatus !== '') fields['ABN Status'] = req.body.abnStatus;
-  if (req.body.gstRegistered !== undefined) fields['GST Registered'] = req.body.gstRegistered;
-  if (req.body.abnLastVerified !== undefined && req.body.abnLastVerified !== '') fields['ABN Last Verified'] = req.body.abnLastVerified;
-  if (req.body.notes !== undefined) fields['Notes'] = req.body.notes;
-  if (req.body.organisation && req.body.organisation !== '') fields['Organisation'] = req.body.organisation;
-  if (req.body.signingEmail && req.body.signingEmail !== '') fields['Signing Email'] = req.body.signingEmail;
-  if (req.body.dateApplied && req.body.dateApplied !== '') fields['Date Applied'] = req.body.dateApplied;
-  if (req.body.jobAppliedFor && req.body.jobAppliedFor !== '') fields['Applied for which Role?'] = req.body.jobAppliedFor;
-  if (req.body.stageInRecruitment && req.body.stageInRecruitment !== '') fields['Stage In Recruitment'] = req.body.stageInRecruitment;
-  if (req.body.cvAiSummary !== undefined) fields['CV Ai Summary'] = req.body.cvAiSummary;
+  // First fetch the existing record to merge data JSONB
+  sb.query('contacts', 'GET', { select: '*', eq: { id: req.params.id }, limit: 1 })
+    .then(function (existing) {
+      if (!existing || existing.length === 0) return res.status(404).json({ error: 'Not found' });
+      var existingRow = existing[0];
+      var payload = buildSupabasePayload(req.body);
 
-  if (Object.keys(fields).length === 0) return res.json({ success: true, record: {} });
-
-  var _auditFields = JSON.parse(JSON.stringify(fields));
-  var _auditUser = req.user;
-  var _auditId = req.params.id;
-  var _auditLabel = req.body.name || req.body.firstName || '';
-
-  airtable.rawFetch(AIRTABLE_TABLE_NAME, 'PATCH', '/' + req.params.id, { fields: fields })
-    .then(function (data) {
-      if (data && data.error) return res.status(400).json({ error: (data.error.message || data.error.type || JSON.stringify(data.error)) });
-      try {
-        var _mapped = mapAirtableRecord(data);
-        var _afKeys = Object.keys(_auditFields);
-        for (var _ai = 0; _ai < _afKeys.length; _ai++) {
-          logAudit(_auditUser, 'update_contact', 'Contact', _auditId, _mapped.name || _auditLabel || _auditId, _afKeys[_ai], '', String(_auditFields[_afKeys[_ai]] || ''));
-        }
-        res.json({ success: true, record: _mapped });
-      } catch (mapErr) {
-        res.json({ success: true, record: { id: req.params.id } });
+      // Merge data JSONB — don't overwrite, merge keys
+      if (payload.data) {
+        var mergedData = Object.assign({}, existingRow.data || {}, payload.data);
+        payload.data = mergedData;
       }
+
+      // Update full_name if first/last changed
+      if (payload.first_name || payload.last_name) {
+        var fn = payload.first_name || existingRow.first_name || '';
+        var ln = payload.last_name || existingRow.last_name || '';
+        payload.full_name = (fn + ' ' + ln).trim();
+      }
+
+      if (Object.keys(payload).length === 0) return res.json({ success: true, record: {} });
+
+      var _auditLabel = req.body.name || req.body.firstName || '';
+
+      return sb.update('contacts', { eq: { id: req.params.id } }, payload)
+        .then(function (rows) {
+          var updated = (rows && rows[0]) || {};
+          var _mapped = mapAirtableRecord(supabaseContactToAirtable(updated));
+          var _afKeys = Object.keys(payload);
+          for (var _ai = 0; _ai < _afKeys.length; _ai++) {
+            logAudit(req.user, 'update_contact', 'Contact', req.params.id, _mapped.name || _auditLabel || req.params.id, _afKeys[_ai], '', String(payload[_afKeys[_ai]] || ''));
+          }
+          res.json({ success: true, record: _mapped });
+        });
     })
     .catch(function (err) { res.status(500).json({ error: err.message }); });
 });
 
-// ═══ DELETE /api/contacts/:id ═══
+// ═══ DELETE /api/contacts/:id — soft delete (set Inactive) ═══
 router.delete('/:id', function (req, res) {
-  if (!env.airtable.apiKey) return res.status(500).json({ error: 'Airtable not configured' });
   var _delId = req.params.id;
   var _delUser = req.user;
   var _delLabel = req.query.name || _delId;
 
-  airtable.rawFetch(AIRTABLE_TABLE_NAME, 'DELETE', '/' + _delId)
-    .then(function (data) {
-      if (data.error) return res.status(400).json({ error: data.error.message });
-      logAudit(_delUser, 'delete_contact', 'Contact', _delId, _delLabel, 'Deleted', _delLabel, '');
+  sb.update('contacts', { eq: { id: _delId } }, { status: 'Inactive' })
+    .then(function () {
+      logAudit(_delUser, 'delete_contact', 'Contact', _delId, _delLabel, 'Set Inactive', _delLabel, '');
       res.json({ success: true });
     })
     .catch(function (err) { res.status(500).json({ error: err.message }); });

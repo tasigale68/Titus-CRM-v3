@@ -1,37 +1,85 @@
-# Changes: Data Filtering Fix for Clients/Staff/Contacts Views
+# Changes: Supabase Data Sync — 1 March 2026
 
-## Database Fix
-- Updated 46 records in `contacts.type_of_contact` from "Independant Contractor" to "Independent Contractor"
+## Supabase Data Changes
+
+### Clients Table (142 records)
+- Set `account_type = 'Active'` for 41 clients (from CSV authoritative list)
+- Set `account_type = 'Prospect'` for 7 clients (from CSV authoritative list)
+- Set `account_type = 'Inactive'` for 94 remaining clients
+- Handled 14 duplicate client records (kept richest data version, marked dupes Inactive)
+- ALL 142 records now have a populated `account_type` column (was empty for all)
+
+### Contacts Table (1585 records after inserts)
+- Matched 190 unique active contacts from CSV against existing DB records
+- Set `status = 'Active'` and correct `type_of_contact` for all 190 matched contacts
+- Set `status = 'Inactive'` for all 1395 remaining contacts
+- Inserted 141 new contact records for CSV names not found in DB
+- No records deleted — all deactivated contacts marked Inactive only
+
+### Active Contacts by Type (190 total)
+- Employee: 84
+- Independent Contractor: 12
+- Jobseeker: 35
+- Support Coordinator: 34
+- Plan Manager: 13
+- Public Guardian (OPG): 6
+- Public Trustee: 1
+- Child Safety Officer: 4
+- Nominee or Guardian: 1
+
+### Notes on CSV Matching
+- Used case-insensitive TRIM matching for name comparison
+- Handled double-space names (e.g., "Tasi  Gale" matched to "Tasi Gale")
+- Handled deduplicated names (e.g., "Justine Justine Williams")
+- "Andy Kebri" appeared twice in Employee CSV — kept one Active, duplicate Inactive
+- "PAUL AKINSEYE" appeared twice in Jobseeker CSV — kept one Active
+- "Plan Manager" appeared twice in Plan Manager CSV — single record matched
 
 ## Backend: `src/routes/contacts/index.js`
-- Renamed `ALLOWED_CONTACT_TYPES` to `STAFF_CONTACT_TYPES` with correct values: `['Employee', 'Independent Contractor', 'Jobseeker']`
-- Added `supabaseContactToAirtable()` helper to merge flat Supabase columns back into Airtable-style `{id, fields}` format
-- Added `isActiveContact()` helper using `data->>'Status of Contact'` JSONB field (not the useless `status` column)
-- Fixed `mapClientToContact()` to map account types to correct statusOfContact values:
-  - Active → "Active Contact"
-  - Inactive → "Inactive Contact"
-  - Prospect → "Active Contact"
-- **Clients query** (`?type=client`): Changed filter from `at === 'Active'` to `at !== 'Inactive'` so Prospects are included
-- **Staff query** (`?type=staff`): Added 'Jobseeker' to staff types, fixed "Independant" → "Independent" spelling
-- **All Contacts query** (no type param): Removed type pre-filtering so ALL contact types are returned; removed status pre-filtering so frontend dropdown works correctly
 
-## Backend: `src/routes/recruitment/index.js`
-- Fixed 2 occurrences of "Independant Contractor" → "Independent Contractor" (lines 121, 718)
+### Filtering Logic Rewrite
+- `isActiveContact()` now uses `status` column (not JSONB `data['Status of Contact']`)
+- `mapClientToContact()` now uses `account_type` column (not JSONB data field)
+- **Clients query**: Uses `account_type IN ('Active', 'Prospect')` at DB level
+- **Staff query**: Uses `status = 'Active'` AND `type_of_contact IN (...)` at DB level
+- **All Contacts query**: Uses `status = 'Active'` for contacts + `account_type IN ('Active', 'Prospect')` for clients
+
+### CRUD Operations Rewrite (Airtable → Supabase)
+- `POST /api/contacts` now writes directly to Supabase (was Airtable)
+- `GET /api/contacts/:id` now reads from Supabase (was Airtable)
+- `PUT /api/contacts/:id` now updates Supabase with data JSONB merge (was Airtable)
+- `DELETE /api/contacts/:id` now soft-deletes by setting `status = 'Inactive'` (was Airtable hard delete)
+
+### All Fields Editable
+- Added `buildSupabasePayload()` function to map frontend field names to Supabase columns + data JSONB
+- Direct columns: full_name, first_name, last_name, email, phone, mobile, formatted_mobile, address, suburb, state, postcode, dob, type_of_contact, type_of_employment, job_title, department, team, training_status, photo_url, emergency_contact, emergency_phone, ndis_number
+- Extended fields stored in `data` JSONB: gender, signingEmail, organisation, abn, abnEntityName, abnStatus, gstRegistered, notes, cultureEthnicity, languagesSpoken, emergencyContactRelationship, emergencyDaytimeNumber, emergencyAfterHoursNumber, managementNotes, directorNotes, hobbies, interests, medicalDisclosure, vehicleDetails, vehicleYear, summaryOfExperience, qualifications, referralSource, availabilityActive, availabilitySleepovers, canDoSleepovers, canDoPersonalCare, publicLiabilityInsurance, publicLiabilityExpiry, auslanSignLanguage, partnerSpouseInfo, kidsInfo, favouriteCoffee, favouriteHoliday, otherBackgroundInfo, employmentStartDate
+- Compliance/certification fields in `data` JSONB: ndisWorkerScreeningCard, ndisWsExpiry, ndisWsStatus, driversLicense, driversLicenseExpiry, wwccBlueCard, wwccExpiry, firstAidCert, firstAidExpiry, cprCert, cprExpiry, carInsurance, carInsuranceExpiry, medicationAdminCert, medicationExpiry, diabetesTrainingCert, diabetesExpiry, infectionControlExpiry, handHygieneExpiry, teamTeachCert, teamTeachDate, covid19TrainingExpiry, dutyOfCareExpiry, handlingPatientDataExpiry, mentalHealthTrainingExpiry, mealtimeManagementExpiry, welcomeToDeltaDate, welcomeToDeltaExpiry, governanceOperationsDate, progressNotesTrainingDate, medicationsAdminDate, inductionCompletionDate, gaCompletionDate, gaDate, gaFeedback, gaComments, gaOutcome
+
+### Mapper Enhancements
+- `supabaseContactToAirtable()` now maps status, ndis_number, department, team, training_status columns
+- PUT endpoint merges `data` JSONB (doesn't overwrite existing keys)
 
 ## Frontend: `public/index.html`
-- Replaced all "Independant Contractor" → "Independent Contractor" (~15 occurrences)
-- Replaced all `.indexOf("independant")` → `.indexOf("independent")` (~7 occurrences)
-- Added active status filter to `renderFilteredContactList()` so Clients and Staff views only show active contacts
-- Fixed duplicate "Independent Contractor" entry in contact type color map
-- Added missing contact type colors: Support Coordinator, Plan Manager, Behaviour Practitioner, Child Safety Officer, Public Guardian, Public Trustee, Nominee or Guardian
-- Fixed contractor signing `contactTypes` array to remove duplicate entry
 
-## Intentionally Unchanged
-- Airtable field/table name references in JSONB data lookups (e.g., `'SW Independant Contractor Rates'`) — these match original Airtable names stored in the database
+### Status Filter
+- Reduced status dropdown options from 4 to 2: "Active Contact", "Inactive Contact"
+- Updated `statusOfContactSelect()` dropdown to match
+
+### Editable Fields
+- Cultural Ethnicity: changed from `disabled` to editable with `id="editCultureEthnicity"`
+- Job Title: changed from `disabled` to editable with `id="editJobTitle"`
+- Date of Birth: changed from `disabled` to editable with `id="editDob"` (DD/MM/YYYY format)
+- `saveContact()` function now collects jobTitle, dob, cultureEthnicity fields
+
+### No Layout Changes
+- All changes are data-filtering and field-editability only
+- No CSS, HTML structure, grid layouts, or styling modifications
+- LAYOUT_LOCK.md compliant
 
 ## Verification Results
-- All Contacts view: 1000 contacts + 136 clients = 1136 total (frontend filters by status dropdown)
-- Clients view: 78 shown (71 Active + 7 Prospect, excludes 58 Inactive)
-- Staff view: 148 active (98 Employee + 14 Independent Contractor + 36 Jobseeker)
-- No "Independant" spelling remaining in type_of_contact column
-- No CSS/layout changes (LAYOUT_LOCK.md compliant)
+- All Contacts view: 190 contacts + 48 clients = 238 total
+- Clients view: 48 (41 Active + 7 Prospect)
+- Staff view: 131 (84 Employee + 12 Independent Contractor + 35 Jobseeker)
+- 0 invalid type_of_contact values on active contacts
+- All modules load without errors
