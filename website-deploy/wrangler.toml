@@ -9,6 +9,6 @@ routes = [
   { pattern = "demo.titus-crm.com", custom_domain = true }
 ]
 
-[assets]
-directory = "./"
-binding = "ASSETS"
+rules = [
+  { type = "Text", globs = ["**/*.html"] }
+]
