@@ -66,12 +66,12 @@ function seedUsers() {
   dirStmt.run('rina@deltacommunity.com.au', hashPassword('1234'), 'Rina');
   console.log('Seeded/synced user: rina@deltacommunity.com.au (director)');
 
-  // Demo tenant users (demo.tituscrm.com)
+  // Demo tenant users (demo.titus-crm.com)
   var demoUsers = [
-    { email: 'director@demo.tituscrm.com', name: 'Sarah Mitchell', role: 'director' },
-    { email: 'teamlead@demo.tituscrm.com', name: 'James Cooper', role: 'team_leader' },
-    { email: 'roster@demo.tituscrm.com', name: 'Emily Nguyen', role: 'roster_officer' },
-    { email: 'worker@demo.tituscrm.com', name: 'Ben Taylor', role: 'support_worker' }
+    { email: 'director@demo.titus-crm.com', name: 'Sarah Mitchell', role: 'director' },
+    { email: 'teamlead@demo.titus-crm.com', name: 'James Cooper', role: 'team_leader' },
+    { email: 'roster@demo.titus-crm.com', name: 'Emily Nguyen', role: 'roster_officer' },
+    { email: 'worker@demo.titus-crm.com', name: 'Ben Taylor', role: 'support_worker' }
   ];
   var demoPw = hashPassword('TitusDemo2026!');
   demoUsers.forEach(function(u) {

@@ -1,6 +1,6 @@
 // Titus CRM — Cloudflare Worker with hostname-based routing
 // www.titus-crm.com  → serve marketing site (static assets)
-// demo.tituscrm.com  → reverse proxy to Railway backend
+// demo.titus-crm.com  → reverse proxy to Railway backend
 
 const RAILWAY_ORIGIN = 'https://titus-voice-version-2-production.up.railway.app';
 
@@ -8,8 +8,8 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // demo.tituscrm.com → reverse proxy to Railway
-    if (url.hostname === 'demo.tituscrm.com') {
+    // demo.titus-crm.com → reverse proxy to Railway
+    if (url.hostname === 'demo.titus-crm.com') {
       return proxyToRailway(request, url);
     }
 
@@ -25,7 +25,7 @@ async function proxyToRailway(request, url) {
   // Clone headers, set Host to Railway's domain so it accepts the request
   const headers = new Headers(request.headers);
   headers.set('Host', new URL(RAILWAY_ORIGIN).host);
-  headers.set('X-Forwarded-Host', 'demo.tituscrm.com');
+  headers.set('X-Forwarded-Host', 'demo.titus-crm.com');
   headers.set('X-Forwarded-Proto', 'https');
 
   // Check for WebSocket upgrade (Socket.io)

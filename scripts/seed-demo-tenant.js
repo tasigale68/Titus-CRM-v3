@@ -101,8 +101,8 @@ async function main() {
       id: tenantId,
       org_name: 'Horizon Care Services',
       slug: 'demo',
-      domain: 'demo.tituscrm.com',
-      admin_email: 'director@demo.tituscrm.com',
+      domain: 'demo.titus-crm.com',
+      admin_email: 'director@demo.titus-crm.com',
       status: 'active',
       enabled_modules: JSON.stringify([
         'recruiter', 'leads', 'voice_sms', 'ai_voice', 'client_management',
@@ -128,10 +128,10 @@ async function main() {
 
   var demoPassword = hashPassword('TitusDemo2026!');
   var tenantUsers = [
-    { id: uuid(), tenant_id: tenantId, email: 'director@demo.tituscrm.com', name: 'Sarah Mitchell', role: 'director', password_hash: demoPassword, created_at: new Date().toISOString() },
-    { id: uuid(), tenant_id: tenantId, email: 'teamlead@demo.tituscrm.com', name: 'James Cooper', role: 'team_leader', password_hash: demoPassword, created_at: new Date().toISOString() },
-    { id: uuid(), tenant_id: tenantId, email: 'roster@demo.tituscrm.com', name: 'Emily Nguyen', role: 'roster_officer', password_hash: demoPassword, created_at: new Date().toISOString() },
-    { id: uuid(), tenant_id: tenantId, email: 'worker@demo.tituscrm.com', name: 'Ben Taylor', role: 'support_worker', password_hash: demoPassword, created_at: new Date().toISOString() }
+    { id: uuid(), tenant_id: tenantId, email: 'director@demo.titus-crm.com', name: 'Sarah Mitchell', role: 'director', password_hash: demoPassword, created_at: new Date().toISOString() },
+    { id: uuid(), tenant_id: tenantId, email: 'teamlead@demo.titus-crm.com', name: 'James Cooper', role: 'team_leader', password_hash: demoPassword, created_at: new Date().toISOString() },
+    { id: uuid(), tenant_id: tenantId, email: 'roster@demo.titus-crm.com', name: 'Emily Nguyen', role: 'roster_officer', password_hash: demoPassword, created_at: new Date().toISOString() },
+    { id: uuid(), tenant_id: tenantId, email: 'worker@demo.titus-crm.com', name: 'Ben Taylor', role: 'support_worker', password_hash: demoPassword, created_at: new Date().toISOString() }
   ];
 
   // Delete existing tenant_users for this tenant to avoid duplicates
@@ -145,9 +145,9 @@ async function main() {
   await sbFetch('contacts?tenant_id=eq.' + tenantId, 'DELETE');
 
   var officeStaff = [
-    { full_name: 'Sarah Mitchell', first_name: 'Sarah', last_name: 'Mitchell', email: 'director@demo.tituscrm.com', phone: '0412 345 678', suburb: 'Southport', type_of_contact: 'Office Staff', type_of_employment: 'Full Time', job_title: 'Director', department: 'Management', status: 'Active' },
-    { full_name: 'James Cooper', first_name: 'James', last_name: 'Cooper', email: 'teamlead@demo.tituscrm.com', phone: '0413 456 789', suburb: 'Broadbeach', type_of_contact: 'Office Staff', type_of_employment: 'Full Time', job_title: 'Team Leader', department: 'Operations', status: 'Active' },
-    { full_name: 'Emily Nguyen', first_name: 'Emily', last_name: 'Nguyen', email: 'roster@demo.tituscrm.com', phone: '0414 567 890', suburb: 'Robina', type_of_contact: 'Office Staff', type_of_employment: 'Full Time', job_title: 'Roster Officer', department: 'Operations', status: 'Active' }
+    { full_name: 'Sarah Mitchell', first_name: 'Sarah', last_name: 'Mitchell', email: 'director@demo.titus-crm.com', phone: '0412 345 678', suburb: 'Southport', type_of_contact: 'Office Staff', type_of_employment: 'Full Time', job_title: 'Director', department: 'Management', status: 'Active' },
+    { full_name: 'James Cooper', first_name: 'James', last_name: 'Cooper', email: 'teamlead@demo.titus-crm.com', phone: '0413 456 789', suburb: 'Broadbeach', type_of_contact: 'Office Staff', type_of_employment: 'Full Time', job_title: 'Team Leader', department: 'Operations', status: 'Active' },
+    { full_name: 'Emily Nguyen', first_name: 'Emily', last_name: 'Nguyen', email: 'roster@demo.titus-crm.com', phone: '0414 567 890', suburb: 'Robina', type_of_contact: 'Office Staff', type_of_employment: 'Full Time', job_title: 'Roster Officer', department: 'Operations', status: 'Active' }
   ];
 
   var supportWorkers = [
@@ -161,7 +161,7 @@ async function main() {
     { full_name: 'Ava Williams', first_name: 'Ava', last_name: 'Williams', email: 'ava.williams@example.com', phone: '0428 888 999', suburb: 'Mudgeeraba', type_of_employment: 'Full Time' },
     { full_name: 'Lucas Martinez', first_name: 'Lucas', last_name: 'Martinez', email: 'lucas.martinez@example.com', phone: '0429 999 000', suburb: 'Oxenford', type_of_employment: 'Part Time' },
     { full_name: 'Chloe Davis', first_name: 'Chloe', last_name: 'Davis', email: 'chloe.davis@example.com', phone: '0430 111 222', suburb: 'Pacific Pines', type_of_employment: 'Full Time' },
-    { full_name: 'Ben Taylor', first_name: 'Ben', last_name: 'Taylor', email: 'worker@demo.tituscrm.com', phone: '0431 222 333', suburb: 'Labrador', type_of_employment: 'Full Time' },
+    { full_name: 'Ben Taylor', first_name: 'Ben', last_name: 'Taylor', email: 'worker@demo.titus-crm.com', phone: '0431 222 333', suburb: 'Labrador', type_of_employment: 'Full Time' },
     { full_name: 'Isabella Nguyen', first_name: 'Isabella', last_name: 'Nguyen', email: 'isabella.nguyen@example.com', phone: '0432 333 444', suburb: 'Ashmore', type_of_employment: 'Casual' }
   ];
 
@@ -298,7 +298,7 @@ async function main() {
     { name: 'Olivia Jones', email: 'olivia.jones@example.com' },
     { name: 'Ethan Brown', email: 'ethan.brown@example.com' },
     { name: 'Ava Williams', email: 'ava.williams@example.com' },
-    { name: 'Ben Taylor', email: 'worker@demo.tituscrm.com' },
+    { name: 'Ben Taylor', email: 'worker@demo.titus-crm.com' },
     { name: 'Chloe Davis', email: 'chloe.davis@example.com' }
   ];
 
@@ -677,11 +677,11 @@ async function main() {
 
   console.log('\n=== Demo seed complete! ===');
   console.log('Tenant ID: ' + tenantId);
-  console.log('Login at: https://demo.tituscrm.com');
-  console.log('  director@demo.tituscrm.com / TitusDemo2026!');
-  console.log('  teamlead@demo.tituscrm.com / TitusDemo2026!');
-  console.log('  roster@demo.tituscrm.com   / TitusDemo2026!');
-  console.log('  worker@demo.tituscrm.com   / TitusDemo2026!');
+  console.log('Login at: https://demo.titus-crm.com');
+  console.log('  director@demo.titus-crm.com / TitusDemo2026!');
+  console.log('  teamlead@demo.titus-crm.com / TitusDemo2026!');
+  console.log('  roster@demo.titus-crm.com   / TitusDemo2026!');
+  console.log('  worker@demo.titus-crm.com   / TitusDemo2026!');
 }
 
 main().catch(function(err) {

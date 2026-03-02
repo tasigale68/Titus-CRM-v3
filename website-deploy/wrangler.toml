@@ -6,7 +6,7 @@ main = "worker.js"
 
 routes = [
   { pattern = "www.titus-crm.com", custom_domain = true },
-  { pattern = "demo.tituscrm.com", custom_domain = true }
+  { pattern = "demo.titus-crm.com", custom_domain = true }
 ]
 
 [assets]
