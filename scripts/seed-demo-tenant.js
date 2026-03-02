@@ -91,11 +91,21 @@ async function main() {
 
   var tenantId = uuid();
 
-  // Check if demo tenant already exists
+  // Check if demo tenant already exists — if so, clean all child data first (FK order)
   var existing = await query('tenants', { eq: { slug: 'demo' }, limit: 1 });
   if (existing && existing.length) {
     tenantId = existing[0].id;
-    console.log('Demo tenant already exists: ' + tenantId);
+    console.log('Demo tenant already exists: ' + tenantId + ' — cleaning old data...');
+    // Delete in FK-safe order: children before parents
+    await sbFetch('progress_notes?tenant_id=eq.' + tenantId, 'DELETE').catch(function() {});
+    await sbFetch('client_budgets?tenant_id=eq.' + tenantId, 'DELETE').catch(function() {});
+    await sbFetch('rosters?tenant_id=eq.' + tenantId, 'DELETE').catch(function() {});
+    await sbFetch('leads?tenant_id=eq.' + tenantId, 'DELETE').catch(function() {});
+    await sbFetch('sil_properties?tenant_id=eq.' + tenantId, 'DELETE').catch(function() {});
+    await sbFetch('clients?tenant_id=eq.' + tenantId, 'DELETE').catch(function() {});
+    await sbFetch('contacts?tenant_id=eq.' + tenantId, 'DELETE').catch(function() {});
+    await sbFetch('tenant_users?tenant_id=eq.' + tenantId, 'DELETE').catch(function() {});
+    console.log('Cleaned old demo data');
   } else {
     var tenantRows = await insert('tenants', {
       id: tenantId,
@@ -134,15 +144,10 @@ async function main() {
     { id: uuid(), tenant_id: tenantId, email: 'worker@demo.titus-crm.com', name: 'Ben Taylor', role: 'support_worker', password_hash: demoPassword, created_at: new Date().toISOString() }
   ];
 
-  // Delete existing tenant_users for this tenant to avoid duplicates
-  await sbFetch('tenant_users?tenant_id=eq.' + tenantId, 'DELETE');
   await insert('tenant_users', tenantUsers);
   console.log('Seeded 4 tenant_users');
 
   // ─── 3c: Contacts (15 staff) ──────────────────────────────────
-
-  // Delete existing contacts for this tenant
-  await sbFetch('contacts?tenant_id=eq.' + tenantId, 'DELETE');
 
   var officeStaff = [
     { full_name: 'Sarah Mitchell', first_name: 'Sarah', last_name: 'Mitchell', email: 'director@demo.titus-crm.com', phone: '0412 345 678', suburb: 'Southport', type_of_contact: 'Office Staff', type_of_employment: 'Full Time', job_title: 'Director', department: 'Management', status: 'Active' },
@@ -188,8 +193,6 @@ async function main() {
   console.log('Seeded ' + allContacts.length + ' contacts');
 
   // ─── 3d: Clients (8 NDIS participants) ────────────────────────
-
-  await sbFetch('clients?tenant_id=eq.' + tenantId, 'DELETE');
 
   var clientDefs = [
     { client_name: 'Ryan Peters', first_name: 'Ryan', last_name: 'Peters', ndis_number: '431 234 5678', suburb: 'Southport', sil_or_cas: 'SIL', type_of_disability: 'Intellectual Disability', gender: 'Male', dob: '1992-03-15' },
@@ -241,8 +244,6 @@ async function main() {
 
   // ─── 3e: SIL Properties (2 houses) ────────────────────────────
 
-  await sbFetch('sil_properties?tenant_id=eq.' + tenantId, 'DELETE');
-
   var prop1Id = uuid();
   var prop2Id = uuid();
   var silProperties = [
@@ -284,8 +285,6 @@ async function main() {
   console.log('Seeded 2 SIL properties');
 
   // ─── 3f: Rosters (shifts over 2 weeks) ────────────────────────
-
-  await sbFetch('rosters?tenant_id=eq.' + tenantId, 'DELETE');
 
   var now = today();
   var twoWeeksAgo = addDays(now, -14);
@@ -472,8 +471,6 @@ async function main() {
 
   // ─── 3g: Client Budgets ───────────────────────────────────────
 
-  await sbFetch('client_budgets?tenant_id=eq.' + tenantId, 'DELETE');
-
   var planStart = isoDate(addDays(today(), -180));
   var planEnd = isoDate(addDays(today(), 185));
   var budgets = [];
@@ -570,8 +567,6 @@ async function main() {
 
   // ─── 3h: Progress Notes (20 for completed shifts) ─────────────
 
-  await sbFetch('progress_notes?tenant_id=eq.' + tenantId, 'DELETE');
-
   var completedShiftIds = Object.keys(shiftIdMap);
   var noteTemplates = [
     '{client} had a positive day. Engaged well in morning routine including showering, dressing, and breakfast preparation with minimal prompting. Participated in house activities during the afternoon.',
@@ -622,8 +617,6 @@ async function main() {
 
   // ─── 3i: Leads (4 sample leads) ───────────────────────────────
 
-  await sbFetch('leads?tenant_id=eq.' + tenantId, 'DELETE');
-
   var leads = [
     {
       id: uuid(), tenant_id: tenantId,
@@ -666,7 +659,8 @@ async function main() {
       date: isoDate(addDays(today(), -45)),
       suburb: 'Palm Beach', disability_type: 'Acquired Brain Injury',
       ndis_number: '431 555 6666', service_type: 'SIL', sil_or_cas: 'SIL',
-      notes: 'Enquired about SIL vacancy. No current capacity in preferred area (southern Gold Coast). Referred to alternative provider. May revisit when Helensvale vacancy opens.'
+      notes: 'Enquired about SIL vacancy. No current capacity in preferred area (southern Gold Coast). Referred to alternative provider. May revisit when Helensvale vacancy opens.',
+      sc_name: null, sc_email: null, sc_mobile: null
     }
   ];
 
