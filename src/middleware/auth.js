@@ -66,6 +66,23 @@ function seedUsers() {
   dirStmt.run('rina@deltacommunity.com.au', hashPassword('1234'), 'Rina');
   console.log('Seeded/synced user: rina@deltacommunity.com.au (director)');
 
+  // Demo tenant users (demo.tituscrm.com)
+  var demoUsers = [
+    { email: 'director@demo.tituscrm.com', name: 'Sarah Mitchell', role: 'director' },
+    { email: 'teamlead@demo.tituscrm.com', name: 'James Cooper', role: 'team_leader' },
+    { email: 'roster@demo.tituscrm.com', name: 'Emily Nguyen', role: 'roster_officer' },
+    { email: 'worker@demo.tituscrm.com', name: 'Ben Taylor', role: 'support_worker' }
+  ];
+  var demoPw = hashPassword('TitusDemo2026!');
+  demoUsers.forEach(function(u) {
+    var stmt = db.prepare(
+      "INSERT INTO users (email, password_hash, name, role) VALUES (?, ?, ?, ?) " +
+      "ON CONFLICT(email) DO UPDATE SET password_hash = excluded.password_hash, name = excluded.name, role = excluded.role"
+    );
+    stmt.run(u.email, demoPw, u.name, u.role);
+    console.log('Seeded/synced demo user: ' + u.email + ' (' + u.role + ')');
+  });
+
   console.log('Admin users ready');
 }
 
