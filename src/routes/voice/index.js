@@ -1126,7 +1126,7 @@ router.get('/sms', authenticate, function(req, res) {
 
 // ─── SMS SEND ───
 // POST /api/voice/sms/send
-router.post('/sms/send', authenticate, function(req, res) {
+router.post('/sms/send', authenticate, async function(req, res) {
   if (!twilioClient) return res.status(500).json({ error: "Twilio not configured" });
   var toNumber = req.body.to;
   var body = req.body.body;
@@ -1136,9 +1136,37 @@ router.post('/sms/send', authenticate, function(req, res) {
   console.log("Sending " + (mediaUrls.length > 0 ? "MMS" : "SMS") + " to:", toNumber, "body:", body.substring(0, 50));
   var msgOpts = { to: toNumber, from: TWILIO_PHONE, body: body };
   if (mediaUrls.length > 0) {
-    var validUrls = mediaUrls.filter(function(u) { return u.startsWith("http"); });
-    if (validUrls.length > 0) {
-      msgOpts.mediaUrl = validUrls.slice(0, 10);
+    var resolvedUrls = [];
+    for (var i = 0; i < mediaUrls.length && i < 10; i++) {
+      var u = mediaUrls[i];
+      if (u.startsWith("http")) {
+        resolvedUrls.push(u);
+      } else if (u.startsWith("data:") && _sbVoice) {
+        // Upload base64 dataURL to Supabase storage to get a public URL for Twilio
+        try {
+          var matches = u.match(/^data:([^;]+);base64,(.+)$/);
+          if (matches) {
+            var mimeType = matches[1];
+            var ext = mimeType.split('/')[1] || 'bin';
+            var buf = Buffer.from(matches[2], 'base64');
+            var fileName = 'mms/' + Date.now() + '_' + i + '.' + ext;
+            var uploadResult = await _sbVoice.storage.from('titus-chat').upload(fileName, buf, { contentType: mimeType, upsert: true });
+            if (!uploadResult.error) {
+              var publicUrl = _sbVoice.storage.from('titus-chat').getPublicUrl(fileName);
+              if (publicUrl && publicUrl.data && publicUrl.data.publicUrl) {
+                resolvedUrls.push(publicUrl.data.publicUrl);
+              }
+            } else {
+              console.warn("[MMS] Supabase upload failed:", uploadResult.error.message);
+            }
+          }
+        } catch (uploadErr) {
+          console.warn("[MMS] Base64 upload error:", uploadErr.message);
+        }
+      }
+    }
+    if (resolvedUrls.length > 0) {
+      msgOpts.mediaUrl = resolvedUrls;
     }
   }
   twilioClient.messages.create(msgOpts).then(function(msg) {
@@ -1148,6 +1176,30 @@ router.post('/sms/send', authenticate, function(req, res) {
     res.json({ success: true, sid: msg.sid });
   }).catch(function(err) {
     console.error("SMS/MMS error:", err.message);
+    res.status(500).json({ error: err.message });
+  });
+});
+
+// ─── WHATSAPP SEND ───
+// POST /api/whatsapp/send — Send WhatsApp message via Twilio
+router.post('/whatsapp/send', authenticate, function(req, res) {
+  if (!twilioClient) return res.status(500).json({ error: "Twilio not configured" });
+  var whatsappFrom = process.env.TWILIO_WHATSAPP_NUMBER || '';
+  if (!whatsappFrom) return res.status(500).json({ error: "WhatsApp not configured — set TWILIO_WHATSAPP_NUMBER environment variable" });
+  var toNumber = req.body.to;
+  var body = req.body.body;
+  if (!toNumber || !body) return res.status(400).json({ error: "Number and message required" });
+  toNumber = formatAUPhone(toNumber);
+  // Twilio WhatsApp requires whatsapp: prefix
+  var waTo = 'whatsapp:' + toNumber;
+  var waFrom = whatsappFrom.startsWith('whatsapp:') ? whatsappFrom : 'whatsapp:' + whatsappFrom;
+  console.log("Sending WhatsApp to:", toNumber, "body:", body.substring(0, 50));
+  twilioClient.messages.create({ to: waTo, from: waFrom, body: body }).then(function(msg) {
+    console.log("WhatsApp sent:", msg.sid);
+    db.prepare("INSERT INTO sms_messages (sid, direction, from_number, to_number, body, participant, media_urls) VALUES (?, 'outbound', ?, ?, ?, ?, '[]')").run(msg.sid, waFrom, toNumber, body, req.body.participant || "");
+    res.json({ success: true, sid: msg.sid });
+  }).catch(function(err) {
+    console.error("WhatsApp error:", err.message);
     res.status(500).json({ error: err.message });
   });
 });

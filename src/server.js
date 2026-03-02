@@ -168,6 +168,62 @@ app.patch('/api/company-files/:id', cfAuth, function (req, res) {
 });
 
 // ═══════════════════════════════════════════════════════
+//  ABN Lookup — proxy to Australian Business Register API
+// ═══════════════════════════════════════════════════════
+var { authenticate: abnAuth } = require('./middleware/auth');
+
+app.get('/api/abn-lookup', abnAuth, function (req, res) {
+  var abn = (req.query.abn || '').replace(/\s/g, '');
+  if (!abn || abn.length !== 11 || !/^\d{11}$/.test(abn)) {
+    return res.json({ error: 'Invalid ABN — must be exactly 11 digits', valid: false });
+  }
+  var guid = process.env.ABR_GUID || '';
+  if (!guid) {
+    return res.json({ error: 'ABN lookup not configured — set ABR_GUID environment variable (register free at abr.business.gov.au)', valid: false });
+  }
+  var url = 'https://abr.business.gov.au/json/AbnDetails.aspx?abn=' + abn + '&callback=c&guid=' + guid;
+  var https = require('https');
+  https.get(url, function (resp) {
+    var data = '';
+    resp.on('data', function (chunk) { data += chunk; });
+    resp.on('end', function () {
+      try {
+        // Response is JSONP: c({...}) — strip callback wrapper
+        var json = data.replace(/^c\(/, '').replace(/\)$/, '');
+        var r = JSON.parse(json);
+        if (r.Abn) {
+          var entityName = '';
+          if (r.EntityName) entityName = r.EntityName;
+          if (r.BusinessName && r.BusinessName.length > 0) entityName = entityName || r.BusinessName[0].organisationName;
+          var businessNames = (r.BusinessName || []).map(function (b) { return b.organisationName || ''; }).filter(Boolean);
+          res.json({
+            valid: true,
+            abn: r.Abn,
+            entityName: entityName || r.EntityTypeName || '',
+            entityType: r.EntityTypeName || '',
+            status: r.AbnStatus || '',
+            abnStatusEffectiveFrom: r.AbnStatusEffectiveFrom || '',
+            state: r.AddressState || '',
+            postcode: r.AddressPostcode || '',
+            gstRegistered: !!(r.Gst && r.Gst !== ''),
+            acn: r.Acn || '',
+            businessNames: businessNames
+          });
+        } else {
+          res.json({ error: r.Message || 'ABN not found', valid: false });
+        }
+      } catch (e) {
+        console.error('[ABN Lookup] Parse error:', e.message);
+        res.json({ error: 'Failed to parse ABR response', valid: false });
+      }
+    });
+  }).on('error', function (err) {
+    console.error('[ABN Lookup] Request error:', err.message);
+    res.status(500).json({ error: 'ABN lookup service unavailable', valid: false });
+  });
+});
+
+// ═══════════════════════════════════════════════════════
 //  Knowledge Base Alias — frontend calls /api/knowledge-base
 //  Chatbot has these at /api/chatbot/knowledge but paths differ
 // ═══════════════════════════════════════════════════════

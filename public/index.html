@@ -15681,8 +15681,9 @@ if(newRecordId&&fileIdx!==undefined&&fileIdx!==null&&cvFiles[fileIdx]&&cvFiles[f
   try{
     var formData=new FormData();
     formData.append("cv",cvFiles[fileIdx].file,cvFiles[fileIdx].name);
+    formData.append("recordId",newRecordId);
     console.log("[CV Upload] Uploading",cvFiles[fileIdx].name,"to record",newRecordId);
-    var uploadResp=await fetch("/api/contacts/"+newRecordId+"/upload-cv",{
+    var uploadResp=await fetch("/api/recruitment/upload-cv",{
       method:"POST",
       headers:token?{"Authorization":"Bearer "+token}:{},
       body:formData
@@ -15763,6 +15764,12 @@ var roleArea=document.getElementById("cvRoleArea");if(roleArea)roleArea.style.di
 window._recruitLoaded=false;
 // Refresh contacts in background
 apiCall("GET","/api/contacts").then(function(d){contacts=d||[];buildConversations()});
+}
+function retryCVFailed(){
+// Clear progress display and re-enable create button so user can retry failed CVs
+var prog=document.getElementById("cvCreateProgress");if(prog)prog.remove();
+var btn=document.getElementById("cvCreateBtn");if(btn){btn.style.display="";btn.disabled=false;btn.innerHTML="✅ Create All as Jobseekers";btn.style.opacity="1"}
+showToast("Ready to retry — click Create All to re-process","info");
 }
 
 // ═══ LMS STATE ═══
@@ -23024,7 +23031,7 @@ function submitResetPassword(){var email=document.getElementById("resetEmail").v
 document.getElementById("resetCode").addEventListener("keydown",function(e){if(e.key==="Enter")document.getElementById("resetNewPw").focus()});
 document.getElementById("resetConfirmPw").addEventListener("keydown",function(e){if(e.key==="Enter")submitResetPassword()});
 document.getElementById("logoutBtn").addEventListener("click",function(){if(isImpersonating()){exitImpersonation();return}apiCall("POST","/api/auth/logout",{});localStorage.removeItem("titus_token");localStorage.removeItem("titus_user");token=null;currentUser=null;showLogin()});
-document.querySelectorAll(".sb-item").forEach(function(btn){btn.addEventListener("click",function(){var view=this.getAttribute("data-view");if(view==="recruit"||view==="inbox"||view==="leads"||view==="rosters"||view==="reports"||view==="contacts")return;currentView=view;selectedConv=null;render()})});
+document.querySelectorAll(".sb-item").forEach(function(btn){btn.addEventListener("click",function(){var view=this.getAttribute("data-view");if(view==="recruit"||view==="inbox"||view==="leads"||view==="rosters"||view==="reports"||view==="contacts"||view==="messenger")return;currentView=view;selectedConv=null;render()})});
 document.querySelectorAll(".mid-tab").forEach(function(tab){tab.addEventListener("click",function(){convFilter=this.getAttribute("data-filter");document.querySelectorAll(".mid-tab").forEach(function(t){t.classList.remove("on")});this.classList.add("on");renderConvList()})});
 document.getElementById("midSearch").addEventListener("input",function(){if(currentView==="conversations")renderConvList();else if(currentView==="contacts")renderContactsList()});
 socket.on("call:incoming",function(d){calls.unshift({sid:d.sid,type:"inbound",from_number:d.from,to_number:d.to,status:"ringing",created_at:new Date().toISOString()});buildConversations();render()});
