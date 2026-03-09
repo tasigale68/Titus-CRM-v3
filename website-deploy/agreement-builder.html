@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free NDIS Service Agreement Builder | Titus CRM</title>
+  <meta name="description" content="Create professional NDIS Service Agreements and Schedules of Support instantly. Free online tool for Australian NDIS providers — includes T&Cs, PDF generation, and email delivery.">
+  <meta name="keywords" content="NDIS service agreement, schedule of supports, NDIS agreement builder, NDIS provider tools, free NDIS agreement template, Australian NDIS software">
+  <meta name="author" content="Titus CRM">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://www.titus-crm.com/agreement-builder">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Free NDIS Service Agreement Builder | Titus CRM">
+  <meta property="og:description" content="Create professional NDIS Service Agreements and Schedules of Support instantly. Free tool for Australian NDIS providers.">
+  <meta property="og:url" content="https://www.titus-crm.com/agreement-builder">
+  <meta property="og:site_name" content="Titus CRM">
+  <meta property="og:locale" content="en_AU">
+  <meta property="og:image" content="https://www.titus-crm.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Free NDIS Service Agreement Builder | Titus CRM">
+  <meta name="twitter:description" content="Create professional NDIS Service Agreements instantly. Free tool for Australian NDIS providers.">
+  <meta name="twitter:image" content="https://www.titus-crm.com/og-image.png">
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebApplication",
+    "name":"NDIS Service Agreement Builder",
+    "url":"https://www.titus-crm.com/agreement-builder",
+    "description":"Free online tool to create professional NDIS Service Agreements and Schedules of Support with automated PDF generation, 22-section Terms and Conditions, and email delivery.",
+    "applicationCategory":"BusinessApplication",
+    "operatingSystem":"Web",
+    "offers":{"@type":"Offer","price":"0","priceCurrency":"AUD","description":"Free to use"},
+    "author":{"@type":"Organization","name":"Titus CRM","url":"https://www.titus-crm.com"},
+    "areaServed":{"@type":"Country","name":"Australia"},
+    "featureList":"NDIS Service Agreement creation, Schedule of Supports, PDF generation, Email delivery, 22-section Terms and Conditions, NDIS support item catalogue search, State-based pricing rates, Public holiday calculations"
+  }
+  </script>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 15C50 15 35 30 25 40C15 50 20 65 30 65C40 65 45 55 50 45C55 55 60 65 70 65C80 65 85 50 75 40C65 30 50 15 50 15Z' fill='%239A7B2E'/%3E%3Cellipse cx='35' cy='52' rx='18' ry='18' fill='none' stroke='%239A7B2E' stroke-width='4'/%3E%3Cellipse cx='65' cy='52' rx='18' ry='18' fill='none' stroke='%239A7B2E' stroke-width='4'/%3E%3Cellipse cx='50' cy='32' rx='16' ry='16' fill='none' stroke='%239A7B2E' stroke-width='4'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: #F7F6F2; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; color: #1a1a1a; -webkit-font-smoothing: antialiased; }
+    ::selection { background: #9A7B2E22; color: #1a1a1a; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f5f5f0; }
+    ::-webkit-scrollbar-thumb { background: #9A7B2E44; border-radius: 3px; }
+
+    /* Colors */
+    :root {
+      --gold: #9A7B2E;
+      --gold-light: #C8A951;
+      --gold-pale: #F5EED6;
+      --gold-bg: #FAF7EE;
+      --bg: #F7F6F2;
+      --bg2: #EFEEE8;
+      --card: #FFFFFF;
+      --card-border: #E8E6DF;
+      --text: #1A1A1A;
+      --text-soft: #555555;
+      --text-muted: #888888;
+      --green: #059A69;
+      --green-light: #E8F8F0;
+      --green-border: #D1F2E4;
+      --red: #D93025;
+      --red-light: #FEF0EF;
+      --red-border: #FDE0DE;
+    }
+
+    /* Header */
+    .ab-header { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--card-border); position: sticky; top: 0; z-index: 50; }
+    .ab-header-inner { max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .ab-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text); }
+    .ab-logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 20px; font-family: 'Space Grotesk', sans-serif; box-shadow: 0 4px 16px rgba(154,123,46,0.2); }
+    .ab-logo-text h1 { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+    .ab-logo-text p { font-size: 12px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+
+    /* Layout */
+    .ab-container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+    .ab-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 28px; }
+    @media (max-width: 1024px) { .ab-grid { grid-template-columns: 1fr; } }
+
+    /* Cards */
+    .ab-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; margin-bottom: 24px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.04); transition: box-shadow 0.3s; }
+    .ab-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    .ab-card-header { padding: 18px 24px; border-bottom: 1px solid var(--card-border); background: var(--gold-bg); display: flex; align-items: center; justify-content: space-between; }
+    .ab-card-title { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 10px; letter-spacing: -0.3px; }
+    .ab-card-body { padding: 24px; }
+    .ab-card-gold { border-color: rgba(154,123,46,0.33); box-shadow: 0 8px 32px rgba(154,123,46,0.09); }
+    .ab-card-gold .ab-card-header { background: var(--gold-pale); border-color: rgba(154,123,46,0.22); }
+
+    /* Forms */
+    .ab-form-grid { display: grid; gap: 16px; }
+    .ab-form-grid-2 { grid-template-columns: 1fr 1fr; }
+    .ab-form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .ab-form-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    @media (max-width: 640px) { .ab-form-grid-2, .ab-form-grid-3, .ab-form-grid-4 { grid-template-columns: 1fr; } }
+
+    .ab-field { display: flex; flex-direction: column; gap: 6px; }
+    .ab-label { font-size: 13px; font-weight: 600; color: var(--text-soft); letter-spacing: 0.3px; }
+    .ab-label .req { color: var(--red); }
+    .ab-input, .ab-select, .ab-textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--card-border); border-radius: 10px; font-size: 14px; font-family: inherit; background: #fff; transition: all 0.2s; color: var(--text); }
+    .ab-input:focus, .ab-select:focus, .ab-textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(154,123,46,0.12); }
+    .ab-textarea { min-height: 80px; resize: vertical; }
+    .ab-hint { font-size: 12px; color: var(--text-muted); }
+    .ab-hint-success { color: var(--green); font-weight: 500; }
+
+    /* Buttons */
+    .ab-btn { padding: 10px 22px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s; font-family: inherit; }
+    .ab-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .ab-btn-primary { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: #fff; box-shadow: 0 4px 16px rgba(154,123,46,0.2); }
+    .ab-btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(154,123,46,0.3); }
+    .ab-btn-success { background: linear-gradient(135deg, var(--green), #07b87a); color: #fff; box-shadow: 0 4px 16px rgba(5,154,105,0.2); }
+    .ab-btn-success:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(5,154,105,0.3); }
+    .ab-btn-danger { background: transparent; color: var(--red); padding: 6px; border-radius: 8px; }
+    .ab-btn-danger:hover { background: var(--red-light); }
+    .ab-btn-outline { background: #fff; color: var(--text-soft); border: 1px solid rgba(154,123,46,0.3); }
+    .ab-btn-outline:hover { background: var(--gold-bg); border-color: rgba(154,123,46,0.55); }
+    .ab-btn-sm { padding: 6px 14px; font-size: 13px; border-radius: 8px; }
+    .ab-btn-lg { padding: 14px 28px; font-size: 15px; }
+    .ab-btn-block { width: 100%; justify-content: center; }
+
+    /* Summary Cards */
+    .ab-summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    @media (max-width: 640px) { .ab-summary-grid { grid-template-columns: 1fr; } }
+    .ab-summary-card { padding: 20px; border-radius: 14px; border: 1px solid var(--card-border); }
+    .ab-summary-card h4 { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .ab-summary-card .value { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+    .ab-summary-card .sub { font-size: 12px; opacity: 0.7; margin-top: 6px; }
+    .ab-summary-gold { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: #fff; border: none; box-shadow: 0 8px 24px rgba(154,123,46,0.2); }
+    .ab-summary-dark { background: #0D0D0D; color: #fff; border: none; }
+
+    /* Table */
+    .ab-table-wrap { border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden; }
+    .ab-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .ab-table th { background: var(--gold-bg); padding: 12px 14px; text-align: left; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-soft); border-bottom: 2px solid var(--bg2); }
+    .ab-table td { padding: 12px 14px; border-top: 1px solid var(--card-border); }
+    .ab-table tr:hover td { background: var(--gold-bg); }
+    .ab-table .money { color: var(--gold); font-weight: 700; }
+
+    /* Sidebar Status */
+    .ab-status-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--card-border); }
+    .ab-status-item:last-child { border-bottom: none; }
+    .ab-badge { padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
+    .ab-badge-green { background: var(--green-light); color: var(--green); border: 1px solid var(--green-border); }
+    .ab-badge-yellow { background: #FFF8E1; color: #8B6914; border: 1px solid #F5EED6; }
+    .ab-badge-red { background: var(--red-light); color: var(--red); border: 1px solid var(--red-border); }
+
+    /* Missing Fields */
+    .ab-missing { background: var(--red-light); border: 1px solid var(--red-border); border-radius: 14px; padding: 18px; }
+    .ab-missing h3 { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; color: var(--red); margin-bottom: 10px; }
+    .ab-missing ul { list-style: none; }
+    .ab-missing li { font-size: 13px; color: #b91c1c; padding: 3px 0; display: flex; align-items: center; gap: 8px; }
+    .ab-missing li::before { content: ''; width: 6px; height: 6px; background: var(--red); border-radius: 50%; flex-shrink: 0; }
+
+    /* Support Items dropdown */
+    .ab-support-dropdown { position: relative; }
+    .ab-support-list { position: absolute; top: 100%; left: 0; right: 0; max-height: 320px; overflow-y: auto; background: #fff; border: 1px solid var(--card-border); border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.08); z-index: 30; display: none; }
+    .ab-support-list.open { display: block; }
+    .ab-support-category { padding: 8px 14px; font-size: 11px; font-weight: 700; color: var(--gold); background: var(--gold-bg); position: sticky; top: 0; text-transform: uppercase; letter-spacing: 1px; }
+    .ab-support-item { padding: 10px 18px; cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; transition: background 0.15s; }
+    .ab-support-item:hover { background: var(--gold-pale); }
+    .ab-support-item .code { font-family: monospace; font-size: 11px; color: var(--text-muted); }
+    .ab-support-item .rate { color: var(--green); font-weight: 700; }
+    .ab-support-item .no-rate { color: var(--red); font-size: 11px; }
+
+    /* Advocates */
+    .ab-advocate { border: 1px solid var(--card-border); border-radius: 12px; padding: 18px; margin-bottom: 12px; }
+    .ab-advocate-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .ab-advocate-empty { text-align: center; padding: 32px; border: 2px dashed var(--card-border); border-radius: 12px; color: var(--text-muted); font-size: 14px; }
+
+    /* Holidays */
+    .ab-holidays { background: var(--gold-bg); border: 1px solid rgba(154,123,46,0.22); border-radius: 14px; padding: 18px; margin-top: 16px; }
+    .ab-holidays h4 { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; color: var(--gold); }
+    .ab-holidays .count { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; color: var(--gold); }
+    .ab-holiday-item { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 3px 0; }
+    .ab-holiday-dot { width: 8px; height: 8px; background: var(--gold-light); border-radius: 50%; }
+
+    /* Logo Upload */
+    .ab-upload { border: 2px dashed var(--card-border); border-radius: 14px; padding: 28px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .ab-upload:hover { border-color: var(--gold); background: var(--gold-bg); }
+    .ab-upload input { display: none; }
+    .ab-upload img { max-height: 60px; margin: 0 auto 8px; display: block; }
+
+    /* Toast */
+    .ab-toast-container { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
+    .ab-toast { padding: 14px 22px; border-radius: 14px; font-size: 14px; font-weight: 500; color: #fff; animation: ab-slideIn 0.3s ease; min-width: 280px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+    .ab-toast-success { background: var(--green); }
+    .ab-toast-error { background: var(--red); }
+    .ab-toast-info { background: var(--gold); }
+    @keyframes ab-slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* Modal */
+    .ab-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .ab-modal-overlay.open { display: flex; }
+    .ab-modal { background: #fff; border-radius: 20px; max-width: 800px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 24px 80px rgba(0,0,0,0.15); }
+    .ab-modal-header { padding: 24px 28px; border-bottom: 1px solid var(--card-border); flex-shrink: 0; }
+    .ab-modal-header h2 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+    .ab-modal-header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .ab-modal-body { padding: 28px; overflow-y: auto; flex: 1; font-size: 14px; line-height: 1.7; color: var(--text-soft); }
+    .ab-modal-body h3 { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin: 20px 0 8px; }
+    .ab-modal-body ul { padding-left: 20px; margin: 8px 0; }
+    .ab-modal-body li { margin: 4px 0; }
+    .ab-modal-footer { padding: 20px 28px; border-top: 1px solid var(--card-border); display: flex; gap: 12px; justify-content: flex-end; flex-shrink: 0; }
+
+    .ab-success-icon { width: 72px; height: 72px; background: var(--green-light); border: 2px solid var(--green-border); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 36px; color: var(--green); }
+
+    .ab-checkbox-wrap { display: flex; align-items: flex-start; gap: 12px; padding: 18px; background: var(--gold-bg); border: 1px solid rgba(154,123,46,0.22); border-radius: 14px; }
+    .ab-checkbox { width: 20px; height: 20px; margin-top: 2px; flex-shrink: 0; accent-color: var(--gold); }
+
+    /* Guide */
+    .ab-guide-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    @media (max-width: 768px) { .ab-guide-grid { grid-template-columns: 1fr 1fr; } }
+    .ab-guide-step { background: #fff; padding: 18px; border-radius: 14px; border: 1px solid rgba(154,123,46,0.22); transition: transform 0.2s; }
+    .ab-guide-step:hover { transform: translateY(-2px); }
+    .ab-guide-num { width: 30px; height: 30px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; font-family: 'Space Grotesk', sans-serif; margin-bottom: 10px; }
+    .ab-guide-step h3 { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 4px; }
+    .ab-guide-step p { font-size: 12px; color: var(--text-muted); }
+
+    /* CTA */
+    .ab-cta-card { background: linear-gradient(135deg, var(--gold-bg), #fff); border: 1px solid rgba(154,123,46,0.22); border-radius: 16px; padding: 28px; text-align: center; }
+    .ab-cta-icon { width: 60px; height: 60px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 26px; box-shadow: 0 8px 24px rgba(154,123,46,0.2); }
+
+    /* Search */
+    .ab-search-wrap { position: relative; }
+    .ab-search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
+    .ab-search-input { padding-left: 38px; }
+
+    /* Spinner */
+    .ab-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: ab-spin 0.6s linear infinite; }
+    @keyframes ab-spin { to { transform: rotate(360deg); } }
+
+    /* Section divider */
+    .ab-section-add { border: 2px solid var(--bg2); border-radius: 12px; padding: 20px; background: var(--bg); }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="ab-header">
+  <div class="ab-header-inner">
+    <a href="https://www.titus-crm.com" class="ab-logo">
+      <div class="ab-logo-icon">T</div>
+      <div class="ab-logo-text">
+        <h1>Titus CRM</h1>
+        <p>Agreement Builder</p>
+      </div>
+    </a>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="ab-btn ab-btn-primary" id="btn-create-top" disabled>Create Agreement</button>
+    </div>
+  </div>
+</header>
+
+<div class="ab-toast-container" id="toast-container"></div>
+
+<!-- Terms Modal -->
+<div class="ab-modal-overlay" id="terms-modal">
+  <div class="ab-modal">
+    <div class="ab-modal-header">
+      <h2>Titus CRM - Terms &amp; Conditions and Consent</h2>
+      <p>Please review and accept the terms before proceeding</p>
+    </div>
+    <div class="ab-modal-body" id="terms-body"></div>
+    <div style="padding:0 28px 8px">
+      <div class="ab-checkbox-wrap">
+        <input type="checkbox" class="ab-checkbox" id="terms-checkbox">
+        <label for="terms-checkbox" style="font-size:13px;cursor:pointer;color:var(--text-soft)">
+          <strong style="color:var(--text)">I have read and agree to the Titus CRM Terms &amp; Conditions</strong> and confirm I have authority to submit this information, consent to data collection and storage, and consent to being contacted by Titus CRM as outlined above.
+        </label>
+      </div>
+    </div>
+    <div style="padding:12px 28px 24px;display:flex;gap:12px;justify-content:flex-end">
+      <button class="ab-btn ab-btn-outline" onclick="closeTerms()">Cancel</button>
+      <button class="ab-btn ab-btn-success" id="btn-terms-accept" disabled onclick="acceptTerms()">I Agree - Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="ab-modal-overlay" id="success-modal">
+  <div class="ab-modal" style="max-width:480px">
+    <div class="ab-modal-body" style="text-align:center;padding:48px 36px">
+      <div class="ab-success-icon">&#10003;</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;margin-bottom:8px;letter-spacing:-0.5px">Agreement Created!</h2>
+      <p style="color:var(--text-muted);margin-bottom:6px">Agreement ID: <strong style="color:var(--gold)" id="success-agreement-id"></strong></p>
+      <p style="color:var(--text-muted);margin-bottom:28px;font-size:14px">Your Service Agreement and Schedule of Supports have been generated and emailed.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a class="ab-btn ab-btn-primary ab-btn-lg" id="success-download-btn" target="_blank">Download PDF</a>
+        <button class="ab-btn ab-btn-outline" onclick="closeSuccess()">Create Another</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="ab-container">
+  <div class="ab-grid">
+    <div id="form-column">
+
+      <!-- Quick Start -->
+      <div class="ab-card ab-card-gold">
+        <div class="ab-card-header"><div class="ab-card-title">&#9432; Quick Start Guide</div></div>
+        <div class="ab-card-body">
+          <div class="ab-guide-grid">
+            <div class="ab-guide-step"><div class="ab-guide-num">1</div><h3>Provider Details</h3><p>Add your organization and contact details</p></div>
+            <div class="ab-guide-step"><div class="ab-guide-num">2</div><h3>Pricing Zone</h3><p>Select your NDIS pricing region</p></div>
+            <div class="ab-guide-step"><div class="ab-guide-num">3</div><h3>Participant Info</h3><p>Complete client details and NDIS info</p></div>
+            <div class="ab-guide-step"><div class="ab-guide-num">4</div><h3>Add Supports</h3><p>Search and add support items</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Provider -->
+      <div class="ab-card">
+        <div class="ab-card-header"><div class="ab-card-title">&#127970; Provider / Creator Details</div></div>
+        <div class="ab-card-body">
+          <p class="ab-hint" style="margin-bottom:14px">Please enter your details (the person creating this agreement).</p>
+          <div class="ab-form-grid ab-form-grid-2">
+            <div class="ab-field"><label class="ab-label">Organisation Name <span class="req">*</span></label><input class="ab-input" id="f-orgName" placeholder="Your Organisation"></div>
+            <div class="ab-field"><label class="ab-label">ABN Number</label><input class="ab-input" id="f-abn" placeholder="e.g. 12 345 678 910"></div>
+          </div>
+          <div class="ab-form-grid" style="margin-top:14px">
+            <div class="ab-field"><label class="ab-label">NDIS Provider #</label><input class="ab-input" id="f-ndisProviderNumber" placeholder="e.g. 4050012345"></div>
+          </div>
+          <div class="ab-form-grid" style="margin-top:14px">
+            <div class="ab-field">
+              <label class="ab-label">Type of Organisation <span class="req">*</span></label>
+              <select class="ab-select" id="f-orgType"><option value="">Select Organisation Type</option><option value="NDIS Registered Organisation">NDIS Registered Organisation</option><option value="Unregistered Organisation">Unregistered Organisation</option></select>
+              <p class="ab-hint ab-hint-success" id="estab-fee-hint" style="display:none">&#10003; Establishment Fee will be auto-added to support items</p>
+            </div>
+          </div>
+          <div class="ab-form-grid ab-form-grid-2" style="margin-top:14px">
+            <div class="ab-field"><label class="ab-label">First Name <span class="req">*</span></label><input class="ab-input" id="f-provFirstName" placeholder="First Name"></div>
+            <div class="ab-field"><label class="ab-label">Last Name <span class="req">*</span></label><input class="ab-input" id="f-provLastName" placeholder="Last Name"></div>
+          </div>
+          <div class="ab-form-grid ab-form-grid-2" style="margin-top:14px">
+            <div class="ab-field"><label class="ab-label">Email <span class="req">*</span></label><input class="ab-input" id="f-provEmail" type="email" placeholder="your.email@example.com"></div>
+            <div class="ab-field"><label class="ab-label">State (Australia)</label><select class="ab-select" id="f-provState"><option value="">Select State</option><option>NSW</option><option>VIC</option><option>QLD</option><option>SA</option><option>WA</option><option>TAS</option><option>NT</option><option>ACT</option></select></div>
+          </div>
+          <div class="ab-form-grid" style="margin-top:14px">
+            <div class="ab-field">
+              <label class="ab-label">Provider Logo (Optional)</label>
+              <div class="ab-upload" id="logo-upload"><input type="file" accept="image/png,image/jpeg,image/gif" id="f-logo"><div id="logo-preview"><div style="font-size:28px;color:var(--text-muted);margin-bottom:6px">&#128228;</div><p style="color:var(--gold);font-weight:600">Click to Upload Provider Logo</p><p class="ab-hint">Supports PNG, JPG, GIF</p></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing Zone -->
+      <div class="ab-card">
+        <div class="ab-card-header"><div class="ab-card-title">&#128205; NDIS Pricing Zone</div></div>
+        <div class="ab-card-body">
+          <div class="ab-field">
+            <label class="ab-label">Select Price Guide Region</label>
+            <select class="ab-select" id="f-pricingZone"><option value="Standard">Standard</option><option value="Remote">Remote</option><option value="Very Remote">Very Remote</option></select>
+            <p class="ab-hint">Determines the price cap limits. "Standard" applies to all non-remote areas.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Participant -->
+      <div class="ab-card">
+        <div class="ab-card-header"><div class="ab-card-title">&#128101; Participant Details</div></div>
+        <div class="ab-card-body">
+          <div class="ab-form-grid ab-form-grid-2">
+            <div class="ab-field"><label class="ab-label">First Name <span class="req">*</span></label><input class="ab-input" id="f-partFirstName" placeholder="First Name"></div>
+            <div class="ab-field"><label class="ab-label">Last Name <span class="req">*</span></label><input class="ab-input" id="f-partLastName" placeholder="Last Name"></div>
+          </div>
+          <div class="ab-form-grid ab-form-grid-2" style="margin-top:14px">
+            <div class="ab-field"><label class="ab-label">NDIS Reference # <span class="req">*</span></label><input class="ab-input" id="f-ndisNumber" placeholder="e.g. 430000000"></div>
+            <div class="ab-field"><label class="ab-label">Date of Birth <span class="req">*</span></label><input class="ab-input" id="f-dob" type="date"></div>
+          </div>
+          <div class="ab-form-grid ab-form-grid-2" style="margin-top:14px">
+            <div class="ab-field"><label class="ab-label">Email</label><input class="ab-input" id="f-partEmail" type="email" placeholder="participant@example.com"></div>
+            <div class="ab-field"><label class="ab-label">Phone</label><input class="ab-input" id="f-partPhone" placeholder="04XX XXX XXX"></div>
+          </div>
+          <div class="ab-form-grid" style="margin-top:14px"><div class="ab-field"><label class="ab-label">Street Address</label><input class="ab-input" id="f-street" placeholder="123 Main Street"></div></div>
+          <div class="ab-form-grid ab-form-grid-3" style="margin-top:14px">
+            <div class="ab-field"><label class="ab-label">Suburb</label><input class="ab-input" id="f-suburb" placeholder="Suburb"></div>
+            <div class="ab-field"><label class="ab-label">State</label><select class="ab-select" id="f-partState"><option value="">Select State</option><option>NSW</option><option>VIC</option><option>QLD</option><option>SA</option><option>WA</option><option>TAS</option><option>NT</option><option>ACT</option></select></div>
+            <div class="ab-field"><label class="ab-label">Postcode</label><input class="ab-input" id="f-postcode" placeholder="2000"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NDIS Goals -->
+      <div class="ab-card">
+        <div class="ab-card-header"><div class="ab-card-title">&#128196; NDIS Goals</div></div>
+        <div class="ab-card-body"><div class="ab-field"><label class="ab-label">Briefly list client goals...</label><textarea class="ab-textarea" id="f-ndisGoals" placeholder="Enter client's NDIS goals here..."></textarea></div></div>
+      </div>
+
+      <!-- Decision Making -->
+      <div class="ab-card">
+        <div class="ab-card-header"><div class="ab-card-title">&#9878; Decision Making</div></div>
+        <div class="ab-card-body">
+          <div class="ab-form-grid ab-form-grid-3">
+            <div class="ab-field"><label class="ab-label">Full Decision Maker?</label><select class="ab-select" id="f-fullDM"><option value="">Please Select</option><option>Yes</option><option>No</option></select></div>
+            <div class="ab-field"><label class="ab-label">Medical Decisions</label><select class="ab-select" id="f-medDM"><option value="">Please Select</option><option>Yes</option><option>No</option></select></div>
+            <div class="ab-field"><label class="ab-label">Legal Decisions</label><select class="ab-select" id="f-legalDM"><option value="">Please Select</option><option>Yes</option><option>No</option></select></div>
+          </div>
+          <div class="ab-form-grid ab-form-grid-2" style="margin-top:14px">
+            <div class="ab-field"><label class="ab-label">Financial Decisions</label><select class="ab-select" id="f-finDM"><option value="">Please Select</option><option>Yes</option><option>No</option></select></div>
+            <div class="ab-field"><label class="ab-label">Living Decisions</label><select class="ab-select" id="f-livDM"><option value="">Please Select</option><option>Yes</option><option>No</option></select></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advocates -->
+      <div class="ab-card">
+        <div class="ab-card-header"><div class="ab-card-title">&#128100;+ Advocates / Representatives</div><button class="ab-btn ab-btn-outline ab-btn-sm" onclick="addAdvocate()">+ Add Representative</button></div>
+        <div class="ab-card-body"><div id="advocates-list"><div class="ab-advocate-empty">No representatives added. Click "Add Representative" if applicable.</div></div></div>
+      </div>
+
+      <!-- Support Coordination -->
+      <div class="ab-card">
+        <div class="ab-card-header"><div class="ab-card-title">&#128188; Support Coordination &amp; Management</div></div>
+        <div class="ab-card-body">
+          <div class="ab-form-grid ab-form-grid-2">
+            <div class="ab-field"><label class="ab-label">Support Coordinator First Name</label><input class="ab-input" id="f-scFirst" placeholder="First Name"></div>
+            <div class="ab-field"><label class="ab-label">Support Coordinator Last Name</label><input class="ab-input" id="f-scLast" placeholder="Last Name"></div>
+          </div>
+          <div class="ab-form-grid" style="margin-top:14px"><div class="ab-field"><label class="ab-label">Support Coordinator Email</label><input class="ab-input" id="f-scEmail" type="email" placeholder="coordinator@example.com"></div></div>
+          <div id="plan-manager-section" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid var(--card-border)">
+            <h4 style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:var(--gold);margin-bottom:14px">Plan Manager Details <span class="ab-badge ab-badge-yellow">Required</span></h4>
+            <div class="ab-form-grid ab-form-grid-2">
+              <div class="ab-field"><label class="ab-label">Plan Manager Name <span class="req">*</span></label><input class="ab-input" id="f-pmName" placeholder="Plan Manager Name"></div>
+              <div class="ab-field"><label class="ab-label">Plan Manager Email <span class="req">*</span></label><input class="ab-input" id="f-pmEmail" type="email" placeholder="planmanager@example.com"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dates -->
+      <div class="ab-card">
+        <div class="ab-card-header"><div class="ab-card-title">&#128197; Agreement &amp; Plan Dates</div></div>
+        <div class="ab-card-body">
+          <div class="ab-form-grid ab-form-grid-3">
+            <div class="ab-field"><label class="ab-label">Agreement Start <span class="req">*</span></label><input class="ab-input" id="f-agrStart" type="date"></div>
+            <div class="ab-field"><label class="ab-label">NDIS Plan Start <span class="req">*</span></label><input class="ab-input" id="f-planStart" type="date"></div>
+            <div class="ab-field"><label class="ab-label">NDIS Plan End <span class="req">*</span></label><input class="ab-input" id="f-planEnd" type="date"></div>
+          </div>
+          <div id="holidays-section"></div>
+          <div class="ab-form-grid ab-form-grid-3" style="margin-top:18px">
+            <div class="ab-field"><label class="ab-label">Plan Type</label><select class="ab-select" id="f-planType"><option value="NDIA Managed">NDIA Managed</option><option value="Plan Managed">Plan Managed</option><option value="Self Managed">Self Managed</option></select></div>
+            <div class="ab-field"><label class="ab-label">Standard or High Intensity? <span class="req">*</span></label><select class="ab-select" id="f-planIntensity"><option value="Standard NDIS Plan">Standard NDIS Plan</option><option value="High Intensity Plan">High Intensity Plan</option></select></div>
+            <div class="ab-field"><label class="ab-label">Funding for Public Holidays?</label><select class="ab-select" id="f-fundPH"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule of Supports -->
+      <div class="ab-card">
+        <div class="ab-card-header"><div class="ab-card-title">&#128230; Schedule of Supports</div></div>
+        <div class="ab-card-body">
+          <div class="ab-summary-grid">
+            <div class="ab-summary-card"><h4>Duration</h4><div class="value" id="sum-weeks">0 weeks</div><div class="sub" id="sum-dates"></div></div>
+            <div class="ab-summary-card ab-summary-gold"><h4>$ Weekly Recurring</h4><div class="value" id="sum-weekly">$0.00</div><div class="sub">Cost per week</div></div>
+            <div class="ab-summary-card ab-summary-dark"><h4>$ Total Agreement Value</h4><div class="value" id="sum-total">$0.00</div><div class="sub">Based on duration &amp; items</div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:18px;font-size:13px">
+            <span style="color:var(--gold);font-weight:600">Billing: <span id="sum-billing">Weekly</span></span>
+            <span style="color:var(--text-muted)">Pricing Zone: <span id="sum-zone">Standard</span></span>
+          </div>
+
+          <div class="ab-section-add">
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;margin-bottom:14px;letter-spacing:-0.3px">Add New Support Item - NDIS Support Catalogue 2025-26</h3>
+            <div id="state-warning" style="display:none;margin-bottom:14px;padding:12px 16px;background:#FFF8E1;border:1px solid #F5EED6;border-radius:10px;font-size:13px;color:#8B6914">&#9888; Please select Participant State first to load correct pricing.</div>
+            <div class="ab-field" style="margin-bottom:14px">
+              <label class="ab-label">1. Search Price Guide</label>
+              <div class="ab-search-wrap"><span class="ab-search-icon">&#128269;</span><input class="ab-input ab-search-input" id="f-supportSearch" placeholder="Type code or name..."></div>
+              <p class="ab-hint" id="search-count"></p>
+            </div>
+            <div class="ab-field ab-support-dropdown" style="margin-bottom:14px">
+              <label class="ab-label">2. Select Item (Grouped by Support Category PACE)</label>
+              <input class="ab-input" id="f-supportSelect" placeholder="-- Select a Support Item --" readonly style="cursor:pointer">
+              <div class="ab-support-list" id="support-list"></div>
+              <p class="ab-hint" id="support-catalogue-info"></p>
+            </div>
+            <div class="ab-form-grid ab-form-grid-4">
+              <div class="ab-field"><label class="ab-label">Rate ($)</label><input class="ab-input" id="f-supportRate" type="number" step="0.01" value="0"></div>
+              <div class="ab-field"><label class="ab-label">Quantity</label><input class="ab-input" id="f-supportQty" type="number" min="1" value="1"></div>
+              <div class="ab-field"><label class="ab-label">Ratio</label><select class="ab-select" id="f-supportRatio"><option>1:1</option><option>1:2</option><option>1:3</option><option>1:4</option></select></div>
+              <div class="ab-field"><label class="ab-label">Est. Weekly</label><div style="padding:10px 14px;background:#fff;border:1px solid var(--card-border);border-radius:10px;font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--gold)" id="est-weekly">$0.00</div></div>
+            </div>
+            <button class="ab-btn ab-btn-success ab-btn-block" style="margin-top:14px" onclick="addSupportItem()">+ Add Support Item</button>
+          </div>
+          <div id="support-items-table" style="margin-top:20px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+      <div id="missing-fields-card"></div>
+      <div class="ab-card" style="position:sticky;top:84px">
+        <div class="ab-card-body">
+          <div style="margin-bottom:14px"><span class="ab-hint" style="text-transform:uppercase;letter-spacing:1.5px;font-weight:600;font-size:11px">Agreement Status</span></div>
+          <div class="ab-status-item"><span style="font-size:14px;font-weight:600">Provider</span><span class="ab-badge" id="status-provider">MISSING</span></div>
+          <div class="ab-status-item"><span style="font-size:14px;font-weight:600">Client Details</span><span class="ab-badge" id="status-client">INCOMPLETE</span></div>
+          <div class="ab-status-item"><span style="font-size:14px;font-weight:600">Supports Added</span><span style="color:var(--gold);font-weight:700" id="status-supports">0 items</span></div>
+          <div style="padding-top:16px;border-top:1px solid var(--card-border);margin-top:16px">
+            <span class="ab-hint" style="text-transform:uppercase;letter-spacing:1.5px;font-weight:600;font-size:11px">Total Value</span>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:700;color:var(--gold);letter-spacing:-1px;margin-top:4px" id="status-total">$0.00</div>
+          </div>
+        </div>
+      </div>
+      <div class="ab-cta-card" style="margin-top:24px">
+        <div class="ab-cta-icon">&#9889;</div>
+        <p style="font-size:14px;color:var(--text-muted);margin-bottom:18px">Click <strong style="color:var(--gold)">"Create Agreement"</strong> to generate your document</p>
+        <button class="ab-btn ab-btn-primary ab-btn-lg ab-btn-block" id="btn-create-bottom" disabled>Create Agreement</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  var API_URL = 'https://octdvaicofjmaetgfect.supabase.co/functions/v1/agreement-api';
+
+  var formData = {
+    organisationName:'',organisationType:'',abn:'',ndisProviderNumber:'',
+    providerFirstName:'',providerLastName:'',providerEmail:'',providerState:'',pricingZone:'Standard',providerLogo:'',
+    participantFirstName:'',participantLastName:'',ndisNumber:'',dateOfBirth:'',
+    participantEmail:'',participantPhone:'',streetAddress:'',suburb:'',participantState:'',postcode:'',
+    ndisGoals:'',
+    fullDecisionMaker:'',medicalDecisionMaker:'',legalDecisionMaker:'',financialDecisionMaker:'',livingDecisionMaker:'',
+    agreementStartDate:todayISO(),ndisPlanStart:'',ndisPlanEnd:'',
+    planType:'NDIA Managed',planIntensity:'Standard NDIS Plan',fundingPublicHolidays:'No',
+    supportCoordinatorFirstName:'',supportCoordinatorLastName:'',supportCoordinatorEmail:'',
+    planManagerName:'',planManagerEmail:'',billingFrequency:'Weekly',
+    durationWeeks:0,weeklyRecurringAmount:0,totalAgreementValue:0,
+    publicHolidaysCount:0,publicHolidaysList:[]
+  };
+  var supportItems=[], advocates=[], catalogueItems=[], saving=false;
+
+  function todayISO(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function formatDDMMYY(iso){if(!iso)return'';var p=iso.split('-');return p[2]+'/'+p[1]+'/'+p[0].slice(2);}
+  function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+  function showToast(msg,type){var c=document.getElementById('toast-container');var t=document.createElement('div');t.className='ab-toast ab-toast-'+(type||'info');t.textContent=msg;c.appendChild(t);setTimeout(function(){t.remove();},4000);}
+
+  // Public Holidays
+  function getEasterDate(y,off){var a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),dy=((h+l-7*m+114)%31)+1;var dt=new Date(y,mo-1,dy);dt.setDate(dt.getDate()+(off||0));return dt;}
+  function getFirstMondayOfMonth(y,m){var d=new Date(y,m,1);while(d.getDay()!==1)d.setDate(d.getDate()+1);return d;}
+  function getSecondMondayOfMonth(y,m){var d=getFirstMondayOfMonth(y,m);d.setDate(d.getDate()+7);return d;}
+  function getQueensBirthday(y,s){if(s==='WA'){var d=new Date(y,9,0);while(d.getDay()!==1)d.setDate(d.getDate()-1);return d;}if(s==='QLD')return getFirstMondayOfMonth(y,9);return getSecondMondayOfMonth(y,5);}
+  function getAustraliaDayObserved(y){var d=new Date(y,0,26);if(d.getDay()===0)d.setDate(28);else if(d.getDay()===6)d.setDate(28);return d;}
+  function getHolidaysForYear(y,s){var h=[{name:"New Year's Day",date:new Date(y,0,1)},{name:"Australia Day",date:getAustraliaDayObserved(y)},{name:"Good Friday",date:getEasterDate(y,-2)},{name:"Easter Saturday",date:getEasterDate(y,-1)},{name:"Easter Monday",date:getEasterDate(y,1)},{name:"Anzac Day",date:new Date(y,3,25)},{name:"Queen's Birthday",date:getQueensBirthday(y,s)},{name:"Christmas Day",date:new Date(y,11,25)},{name:"Boxing Day",date:new Date(y,11,26)}];if(s==='NSW')h.push({name:"Bank Holiday",date:getFirstMondayOfMonth(y,7)});if(s==='VIC'){var d=new Date(y,10,1);while(d.getDay()!==2)d.setDate(d.getDate()+1);h.push({name:"Melbourne Cup Day",date:d});}if(s==='QLD'){var d=new Date(y,7,1),c=0;while(c<2){if(d.getDay()===3)c++;if(c<2)d.setDate(d.getDate()+1);}h.push({name:"Royal Queensland Show",date:d});}if(s==='SA'){h.push({name:"Adelaide Cup Day",date:getSecondMondayOfMonth(y,2)});var d=new Date(y,11,31);while(d.getDay()===0||d.getDay()===6)d.setDate(d.getDate()-1);h.push({name:"Proclamation Day",date:d});}if(s==='WA')h.push({name:"WA Day",date:getFirstMondayOfMonth(y,5)});if(s==='TAS'){h.push({name:"Royal Hobart Regatta",date:getSecondMondayOfMonth(y,1)},{name:"Recreation Day",date:getFirstMondayOfMonth(y,10)});}if(s==='NT'){h.push({name:"May Day",date:getFirstMondayOfMonth(y,4)},{name:"Picnic Day",date:getFirstMondayOfMonth(y,7)});}if(s==='ACT'){h.push({name:"Canberra Day",date:getSecondMondayOfMonth(y,2)});var d=new Date(y,4,28);while(d.getDay()!==1)d.setDate(d.getDate()+1);h.push({name:"Reconciliation Day",date:d});}return h;}
+  function calculatePublicHolidays(si,ei,st){if(!si||!ei||!st)return{count:0,list:[]};var s=new Date(si+'T00:00:00'),e=new Date(ei+'T00:00:00'),h=[],l=[];for(var y=s.getFullYear();y<=e.getFullYear();y++)h=h.concat(getHolidaysForYear(y,st));h.forEach(function(x){if(x.date>=s&&x.date<=e)l.push({name:x.name,formattedDate:String(x.date.getDate()).padStart(2,'0')+'/'+String(x.date.getMonth()+1).padStart(2,'0')+'/'+x.date.getFullYear()});});l.sort(function(a,b){return a.formattedDate>b.formattedDate?1:-1;});return{count:l.length,list:l};}
+
+  // Form Binding
+  var fieldMap={'f-orgName':'organisationName','f-abn':'abn','f-ndisProviderNumber':'ndisProviderNumber','f-orgType':'organisationType','f-provFirstName':'providerFirstName','f-provLastName':'providerLastName','f-provEmail':'providerEmail','f-provState':'providerState','f-pricingZone':'pricingZone','f-partFirstName':'participantFirstName','f-partLastName':'participantLastName','f-ndisNumber':'ndisNumber','f-dob':'dateOfBirth','f-partEmail':'participantEmail','f-partPhone':'participantPhone','f-street':'streetAddress','f-suburb':'suburb','f-partState':'participantState','f-postcode':'postcode','f-ndisGoals':'ndisGoals','f-fullDM':'fullDecisionMaker','f-medDM':'medicalDecisionMaker','f-legalDM':'legalDecisionMaker','f-finDM':'financialDecisionMaker','f-livDM':'livingDecisionMaker','f-agrStart':'agreementStartDate','f-planStart':'ndisPlanStart','f-planEnd':'ndisPlanEnd','f-planType':'planType','f-planIntensity':'planIntensity','f-fundPH':'fundingPublicHolidays','f-scFirst':'supportCoordinatorFirstName','f-scLast':'supportCoordinatorLastName','f-scEmail':'supportCoordinatorEmail','f-pmName':'planManagerName','f-pmEmail':'planManagerEmail'};
+
+  function initBindings(){
+    Object.keys(fieldMap).forEach(function(id){var el=document.getElementById(id);if(!el)return;if(formData[fieldMap[id]])el.value=formData[fieldMap[id]];el.addEventListener('input',function(){formData[fieldMap[id]]=el.value;onFieldChange(fieldMap[id]);});el.addEventListener('change',function(){formData[fieldMap[id]]=el.value;onFieldChange(fieldMap[id]);});});
+    document.getElementById('logo-upload').addEventListener('click',function(){document.getElementById('f-logo').click();});
+    document.getElementById('f-logo').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onloadend=function(){formData.providerLogo=r.result;document.getElementById('logo-preview').innerHTML='<img src="'+r.result+'" alt="Logo"><p style="color:var(--green);font-weight:600;font-size:13px">Logo uploaded - click to change</p>';showToast('Logo uploaded','success');};r.readAsDataURL(f);});
+    document.getElementById('btn-create-top').addEventListener('click',handleCreate);
+    document.getElementById('btn-create-bottom').addEventListener('click',handleCreate);
+    document.getElementById('terms-checkbox').addEventListener('change',function(){document.getElementById('btn-terms-accept').disabled=!this.checked;});
+    var st;document.getElementById('f-supportSearch').addEventListener('input',function(){clearTimeout(st);var q=this.value;st=setTimeout(function(){filterSupportItems(q);},200);});
+    document.getElementById('f-supportSelect').addEventListener('click',function(){document.getElementById('support-list').classList.toggle('open');});
+    document.addEventListener('click',function(e){if(!e.target.closest('.ab-support-dropdown'))document.getElementById('support-list').classList.remove('open');});
+    document.getElementById('f-supportRate').addEventListener('input',updateEstimate);
+    document.getElementById('f-supportQty').addEventListener('input',updateEstimate);
+    renderTermsContent();
+  }
+
+  function onFieldChange(f){
+    if(f==='planType'){document.getElementById('plan-manager-section').style.display=(formData.planType==='Plan Managed'||formData.planType==='Self Managed')?'block':'none';}
+    if(f==='organisationType'&&formData.organisationType==='NDIS Registered Organisation'){document.getElementById('estab-fee-hint').style.display='block';if(!supportItems.some(function(i){return i.code==='04_049_0104_1_1';})){supportItems.push({id:Date.now(),code:'04_049_0104_1_1',name:'Establishment Fee For Personal Care/Participation',rate:702.30,quantity:1,ratio:'1:1',weeklyEstimate:702.30});recalcTotals();renderSupportTable();showToast('Establishment Fee ($702.30) auto-added','success');}}else if(f==='organisationType'){document.getElementById('estab-fee-hint').style.display='none';}
+    if(['agreementStartDate','ndisPlanStart','ndisPlanEnd','participantState'].indexOf(f)!==-1)recalcDuration();
+    if(f==='participantState')document.getElementById('state-warning').style.display=formData.participantState?'none':'block';
+    updateStatus();
+  }
+
+  function recalcDuration(){if(formData.agreementStartDate&&formData.ndisPlanEnd){var s=new Date(formData.agreementStartDate+'T00:00:00'),e=new Date(formData.ndisPlanEnd+'T00:00:00'),d=Math.ceil((e-s)/86400000),w=Math.max(0,Math.ceil(d/7));formData.durationWeeks=w;formData.totalAgreementValue=w>0?formData.weeklyRecurringAmount*w:0;var ph=calculatePublicHolidays(formData.agreementStartDate,formData.ndisPlanEnd,formData.participantState);formData.publicHolidaysCount=ph.count;formData.publicHolidaysList=ph.list;renderHolidays();}updateSummary();updateStatus();}
+  function recalcTotals(){var w=0;supportItems.forEach(function(i){w+=i.weeklyEstimate;});formData.weeklyRecurringAmount=w;formData.totalAgreementValue=formData.durationWeeks>0?w*formData.durationWeeks:w;updateSummary();updateStatus();}
+  function updateEstimate(){var r=parseFloat(document.getElementById('f-supportRate').value)||0,q=parseInt(document.getElementById('f-supportQty').value)||1;document.getElementById('est-weekly').textContent='$'+(r*q).toFixed(2);}
+
+  // Support Items
+  function loadSupportItems(){document.getElementById('support-catalogue-info').textContent='Loading NDIS Support Catalogue 2025-26...';fetch(API_URL+'/support-items').then(function(r){return r.json();}).then(function(d){if(d.success&&d.items){catalogueItems=d.items;document.getElementById('support-catalogue-info').textContent='NDIS Support Catalogue 2025-26 \u2022 '+catalogueItems.length+' items';filterSupportItems('');}else loadMockItems();}).catch(function(){loadMockItems();});}
+  function loadMockItems(){catalogueItems=[{id:'1',supportItemNumber:'01_011_0107_1_1',supportItemName:'Assistance With Self-Care - Weekday Daytime',category:'Daily Activities',rates:{NSW:70.23,VIC:70.23,QLD:70.23,SA:70.23,WA:70.23,TAS:70.23,NT:70.23,ACT:70.23}},{id:'2',supportItemNumber:'01_012_0107_1_1',supportItemName:'Assistance With Self-Care - Weekday Evening',category:'Daily Activities',rates:{NSW:77.38,VIC:77.38,QLD:77.38,SA:77.38,WA:77.38,TAS:77.38,NT:77.38,ACT:77.38}},{id:'3',supportItemNumber:'01_013_0107_1_1',supportItemName:'Assistance With Self-Care - Saturday',category:'Daily Activities',rates:{NSW:98.83,VIC:98.83,QLD:98.83,SA:98.83,WA:98.83,TAS:98.83,NT:98.83,ACT:98.83}},{id:'4',supportItemNumber:'01_014_0107_1_1',supportItemName:'Assistance With Self-Care - Sunday',category:'Daily Activities',rates:{NSW:127.43,VIC:127.43,QLD:127.43,SA:127.43,WA:127.43,TAS:127.43,NT:127.43,ACT:127.43}},{id:'5',supportItemNumber:'01_015_0107_1_1',supportItemName:'Assistance With Self-Care - Public Holiday',category:'Daily Activities',rates:{NSW:156.43,VIC:156.43,QLD:156.43,SA:156.43,WA:156.43,TAS:156.43,NT:156.43,ACT:156.43}},{id:'6',supportItemNumber:'04_104_0125_6_1',supportItemName:'Access Community Social and Rec - Weekday',category:'Social & Community',rates:{NSW:70.23,VIC:70.23,QLD:70.23,SA:70.23,WA:70.23,TAS:70.23,NT:70.23,ACT:70.23}},{id:'7',supportItemNumber:'04_590_0125_6_1',supportItemName:'Activity Based Transport',category:'Social & Community',rates:{NSW:1.00,VIC:1.00,QLD:1.00,SA:1.00,WA:1.00,TAS:1.00,NT:1.00,ACT:1.00}},{id:'8',supportItemNumber:'07_001_0106_8_3',supportItemName:'Support Coordination - Standard',category:'Support Coordination',rates:{NSW:221.91,VIC:221.91,QLD:221.91,SA:221.91,WA:221.91,TAS:221.91,NT:221.91,ACT:221.91}},{id:'9',supportItemNumber:'07_002_0106_8_3',supportItemName:'Support Coordination - Complex',category:'Support Coordination',rates:{NSW:281.51,VIC:281.51,QLD:281.51,SA:281.51,WA:281.51,TAS:281.51,NT:281.51,ACT:281.51}},{id:'10',supportItemNumber:'15_056_0120_1_1',supportItemName:'Occupational Therapy',category:'Therapeutic',rates:{NSW:214.41,VIC:214.41,QLD:214.41,SA:214.41,WA:214.41,TAS:214.41,NT:214.41,ACT:214.41}},{id:'11',supportItemNumber:'15_057_0120_1_1',supportItemName:'Physiotherapy',category:'Therapeutic',rates:{NSW:214.41,VIC:214.41,QLD:214.41,SA:214.41,WA:214.41,TAS:214.41,NT:214.41,ACT:214.41}},{id:'12',supportItemNumber:'15_061_0120_1_1',supportItemName:'Psychology',category:'Therapeutic',rates:{NSW:214.41,VIC:214.41,QLD:214.41,SA:214.41,WA:214.41,TAS:214.41,NT:214.41,ACT:214.41}},{id:'13',supportItemNumber:'15_063_0120_1_1',supportItemName:'Speech Pathology',category:'Therapeutic',rates:{NSW:214.41,VIC:214.41,QLD:214.41,SA:214.41,WA:214.41,TAS:214.41,NT:214.41,ACT:214.41}},{id:'14',supportItemNumber:'09_012_0117_1_1',supportItemName:'Development of Daily Living Skills',category:'Life Skills',rates:{NSW:70.23,VIC:70.23,QLD:70.23,SA:70.23,WA:70.23,TAS:70.23,NT:70.23,ACT:70.23}},{id:'15',supportItemNumber:'04_049_0104_1_1',supportItemName:'Establishment Fee For Personal Care/Participation',category:'Fees',rates:{NSW:702.30,VIC:702.30,QLD:702.30,SA:702.30,WA:702.30,TAS:702.30,NT:702.30,ACT:702.30}},{id:'16',supportItemNumber:'01_010_0107_1_1',supportItemName:'Night-Time Sleepover - Standard',category:'Sleepover',rates:{NSW:297.60,VIC:297.60,QLD:297.60,SA:297.60,WA:297.60,TAS:297.60,NT:297.60,ACT:297.60}},{id:'17',supportItemNumber:'04_799_0104_1_1',supportItemName:'Group Activities - Centre-Based',category:'Group Activities',rates:{NSW:18.34,VIC:18.34,QLD:18.34,SA:18.34,WA:18.34,TAS:18.34,NT:18.34,ACT:18.34}}];document.getElementById('support-catalogue-info').textContent='NDIS Support Catalogue 2025-26 (Offline) \u2022 '+catalogueItems.length+' items';filterSupportItems('');}
+  function getRateForState(item){if(!item||!item.rates)return null;var z=formData.pricingZone||'Standard';if(z.toLowerCase().indexOf('very remote')!==-1&&item.rates.VeryRemote!=null)return item.rates.VeryRemote;if(z.toLowerCase().indexOf('remote')!==-1&&item.rates.Remote!=null)return item.rates.Remote;var st=(formData.participantState||'NSW').toUpperCase();return item.rates[st]!=null?item.rates[st]:(item.rates.NSW||null);}
+  function filterSupportItems(q){var f=catalogueItems;if(q){var ql=q.toLowerCase();f=catalogueItems.filter(function(i){return i.supportItemNumber.toLowerCase().indexOf(ql)!==-1||i.supportItemName.toLowerCase().indexOf(ql)!==-1;});}document.getElementById('search-count').textContent=q?'Found '+f.length+' items matching "'+q+'"':'';var g={};f.forEach(function(i){var c=i.category||'Other';if(!g[c])g[c]=[];g[c].push(i);});var html='';Object.keys(g).sort().forEach(function(c){html+='<div class="ab-support-category">'+esc(c)+' ('+g[c].length+')</div>';g[c].forEach(function(i){var r=getRateForState(i);html+='<div class="ab-support-item" data-id="'+i.id+'"><span><span class="code">'+esc(i.supportItemNumber)+'</span> \u2014 '+esc(i.supportItemName)+'</span>';html+=r!==null?'<span class="rate">$'+r.toFixed(2)+'</span>':'<span class="no-rate">No rate</span>';html+='</div>';});});document.getElementById('support-list').innerHTML=html||'<div style="padding:16px;text-align:center;color:var(--text-muted)">No items found</div>';document.querySelectorAll('.ab-support-item').forEach(function(el){el.addEventListener('click',function(){var id=this.getAttribute('data-id');var item=catalogueItems.find(function(i){return i.id===id;});if(!item)return;var r=getRateForState(item);if(r===null){showToast('No rate available for '+(formData.participantState||'selected state'),'error');return;}document.getElementById('f-supportSelect').value=item.supportItemNumber+' \u2014 '+item.supportItemName;document.getElementById('f-supportRate').value=r;document.getElementById('f-supportSelect').dataset.code=item.supportItemNumber;document.getElementById('f-supportSelect').dataset.name=item.supportItemName;document.getElementById('support-list').classList.remove('open');updateEstimate();});});}
+
+  window.addSupportItem=function(){var sel=document.getElementById('f-supportSelect'),r=parseFloat(document.getElementById('f-supportRate').value)||0,q=parseInt(document.getElementById('f-supportQty').value)||1,ratio=document.getElementById('f-supportRatio').value,code=sel.dataset.code||'',name=sel.dataset.name||sel.value;if(!name||name==='-- Select a Support Item --'||r===0){showToast('Please select a support item and ensure rate is set','error');return;}supportItems.push({id:Date.now(),code:code,name:name,rate:r,quantity:q,ratio:ratio,weeklyEstimate:r*q});recalcTotals();renderSupportTable();sel.value='';sel.dataset.code='';sel.dataset.name='';document.getElementById('f-supportRate').value='0';document.getElementById('f-supportQty').value='1';document.getElementById('f-supportRatio').value='1:1';document.getElementById('est-weekly').textContent='$0.00';showToast('Support item added','success');};
+  window.removeSupportItem=function(id){supportItems=supportItems.filter(function(i){return i.id!==id;});recalcTotals();renderSupportTable();};
+  function renderSupportTable(){if(supportItems.length===0){document.getElementById('support-items-table').innerHTML='';return;}var html='<div class="ab-table-wrap"><table class="ab-table"><thead><tr><th>Code</th><th>Support Item</th><th>Rate</th><th>Qty</th><th>Weekly</th><th></th></tr></thead><tbody>';supportItems.forEach(function(i){html+='<tr><td style="font-family:monospace;font-size:12px">'+esc(i.code)+'</td><td>'+esc(i.name)+'</td><td>$'+i.rate.toFixed(2)+'</td><td>'+i.quantity+'</td><td class="money">$'+i.weeklyEstimate.toFixed(2)+'</td><td><button class="ab-btn ab-btn-danger ab-btn-sm" onclick="removeSupportItem('+i.id+')" title="Remove">&#10005;</button></td></tr>';});html+='</tbody></table></div>';document.getElementById('support-items-table').innerHTML=html;}
+
+  // Advocates
+  window.addAdvocate=function(){advocates.push({id:Date.now(),firstName:'',lastName:'',relationship:'',email:'',phone:''});renderAdvocates();};
+  window.removeAdvocate=function(id){advocates=advocates.filter(function(a){return a.id!==id;});renderAdvocates();};
+  window.updateAdvocate=function(id,f,v){var a=advocates.find(function(x){return x.id===id;});if(a)a[f]=v;};
+  function renderAdvocates(){var el=document.getElementById('advocates-list');if(advocates.length===0){el.innerHTML='<div class="ab-advocate-empty">No representatives added. Click "Add Representative" if applicable.</div>';return;}var html='';advocates.forEach(function(a){html+='<div class="ab-advocate"><div class="ab-advocate-header"><h4 style="font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:14px">Representative</h4><button class="ab-btn ab-btn-danger ab-btn-sm" onclick="removeAdvocate('+a.id+')">&#10005;</button></div><div class="ab-form-grid ab-form-grid-2"><input class="ab-input" placeholder="First Name" value="'+esc(a.firstName)+'" oninput="updateAdvocate('+a.id+',\'firstName\',this.value)"><input class="ab-input" placeholder="Last Name" value="'+esc(a.lastName)+'" oninput="updateAdvocate('+a.id+',\'lastName\',this.value)"><input class="ab-input" placeholder="Relationship" value="'+esc(a.relationship)+'" oninput="updateAdvocate('+a.id+',\'relationship\',this.value)"><input class="ab-input" placeholder="Email" type="email" value="'+esc(a.email)+'" oninput="updateAdvocate('+a.id+',\'email\',this.value)"><input class="ab-input" placeholder="Phone" value="'+esc(a.phone)+'" oninput="updateAdvocate('+a.id+',\'phone\',this.value)"></div></div>';});el.innerHTML=html;}
+
+  // UI Updates
+  function updateSummary(){document.getElementById('sum-weeks').textContent=formData.durationWeeks+' weeks';document.getElementById('sum-dates').textContent=formData.agreementStartDate&&formData.ndisPlanEnd?'From '+formatDDMMYY(formData.agreementStartDate)+' to '+formatDDMMYY(formData.ndisPlanEnd):'';document.getElementById('sum-weekly').textContent='$'+formData.weeklyRecurringAmount.toFixed(2);document.getElementById('sum-total').textContent='$'+formData.totalAgreementValue.toFixed(2);document.getElementById('sum-zone').textContent=formData.pricingZone||'Standard';}
+  function renderHolidays(){var el=document.getElementById('holidays-section');if(formData.publicHolidaysCount===0||!formData.participantState){el.innerHTML='';return;}var html='<div class="ab-holidays"><h4>Public Holidays in '+esc(formData.participantState)+'</h4><div class="count">'+formData.publicHolidaysCount+' public holidays</div><p class="ab-hint" style="margin:4px 0 10px">Between '+formatDDMMYY(formData.agreementStartDate)+' and '+formatDDMMYY(formData.ndisPlanEnd)+'</p>';formData.publicHolidaysList.forEach(function(h){html+='<div class="ab-holiday-item"><div class="ab-holiday-dot"></div><strong style="color:var(--gold)">'+h.formattedDate+'</strong> <span style="color:var(--text-muted)">\u2014</span> '+esc(h.name)+'</div>';});html+='</div>';el.innerHTML=html;}
+  function updateStatus(){var po=formData.organisationName&&formData.providerFirstName&&formData.providerLastName&&formData.providerEmail,co=formData.participantFirstName&&formData.participantLastName&&formData.ndisNumber&&formData.dateOfBirth;var sp=document.getElementById('status-provider');sp.textContent=po?'COMPLETE':'MISSING';sp.className='ab-badge '+(po?'ab-badge-green':'ab-badge-yellow');var sc=document.getElementById('status-client');sc.textContent=co?'COMPLETE':'INCOMPLETE';sc.className='ab-badge '+(co?'ab-badge-green':'ab-badge-yellow');document.getElementById('status-supports').textContent=supportItems.length+' items';document.getElementById('status-total').textContent='$'+formData.totalAgreementValue.toFixed(2);var m=getMissingFields(),mEl=document.getElementById('missing-fields-card');if(m.length>0)mEl.innerHTML='<div class="ab-missing" style="margin-bottom:24px"><h3>Missing Mandatory Fields ('+m.length+')</h3><ul>'+m.map(function(f){return'<li>'+esc(f)+'</li>';}).join('')+'</ul></div>';else mEl.innerHTML='';var ok=po&&co&&supportItems.length>0&&formData.agreementStartDate&&formData.ndisPlanStart&&formData.ndisPlanEnd&&formData.planIntensity;if((formData.planType==='Plan Managed'||formData.planType==='Self Managed')&&(!formData.planManagerName||!formData.planManagerEmail))ok=false;document.getElementById('btn-create-top').disabled=!ok;document.getElementById('btn-create-bottom').disabled=!ok;}
+  function getMissingFields(){var m=[];if(!formData.organisationName)m.push('Organisation Name');if(!formData.organisationType)m.push('Type of Organisation');if(!formData.providerFirstName)m.push('Provider First Name');if(!formData.providerLastName)m.push('Provider Last Name');if(!formData.providerEmail)m.push('Provider Email');if(!formData.participantFirstName)m.push('Participant First Name');if(!formData.participantLastName)m.push('Participant Last Name');if(!formData.ndisNumber)m.push('NDIS Number');if(!formData.dateOfBirth)m.push('Date of Birth');if(!formData.agreementStartDate)m.push('Agreement Start Date');if(!formData.ndisPlanStart)m.push('NDIS Plan Start Date');if(!formData.ndisPlanEnd)m.push('NDIS Plan End Date');if(!formData.planIntensity)m.push('Standard or High Intensity Plan');if((formData.planType==='Plan Managed'||formData.planType==='Self Managed')){if(!formData.planManagerName)m.push('Plan Manager Name');if(!formData.planManagerEmail)m.push('Plan Manager Email');}if(supportItems.length===0)m.push('At least 1 Support Item');return m;}
+
+  // Create Agreement
+  function handleCreate(){var m=getMissingFields();if(m.length>0){showToast('Please complete: '+m[0],'error');return;}document.getElementById('terms-modal').classList.add('open');document.getElementById('terms-checkbox').checked=false;document.getElementById('btn-terms-accept').disabled=true;}
+  window.closeTerms=function(){document.getElementById('terms-modal').classList.remove('open');};
+  window.acceptTerms=function(){document.getElementById('terms-modal').classList.remove('open');submitAgreement();};
+  function submitAgreement(){if(saving)return;saving=true;var b1=document.getElementById('btn-create-top'),b2=document.getElementById('btn-create-bottom');b1.innerHTML='<span class="ab-spinner"></span> Saving...';b1.disabled=true;b2.innerHTML='<span class="ab-spinner"></span> Saving...';b2.disabled=true;var payload=Object.assign({},formData,{agreementStartDate:formatDDMMYY(formData.agreementStartDate),ndisPlanStart:formatDDMMYY(formData.ndisPlanStart),ndisPlanEnd:formatDDMMYY(formData.ndisPlanEnd),dateOfBirth:formatDDMMYY(formData.dateOfBirth),advocates:advocates,supportItems:supportItems,publicHolidaysList:formData.publicHolidaysList,documentType:'combined_agreement',termsAccepted:'Yes',termsVersion:'Website T&Cs v1.0'});fetch(API_URL+'/agreements/public',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(function(r){return r.json();}).then(function(d){saving=false;b1.innerHTML='Create Agreement';b2.innerHTML='Create Agreement';updateStatus();if(d.error||d.detail){showToast(d.detail||d.error||'Failed to create agreement','error');return;}var id=d.agreementId||d.agreement_id||d.id;document.getElementById('success-agreement-id').textContent=id;document.getElementById('success-download-btn').href=API_URL+'/agreements/download/'+id;document.getElementById('success-modal').classList.add('open');showToast('Agreement created! ID: '+id,'success');}).catch(function(e){saving=false;b1.innerHTML='Create Agreement';b2.innerHTML='Create Agreement';updateStatus();showToast('Error: '+(e.message||'Network error'),'error');});}
+  window.closeSuccess=function(){document.getElementById('success-modal').classList.remove('open');location.reload();};
+
+  // Terms
+  function renderTermsContent(){document.getElementById('terms-body').innerHTML='<h3>1. Acceptance of Terms</h3><p>By accessing or using this free Service Agreement and Schedule of Support builder ("Free Tool"), you confirm that you have read, understood, and agree to be legally bound by these Terms and Conditions.</p><p style="color:var(--red);font-weight:600">If you do not agree to these Terms, you must not proceed or use this Free Tool.</p><h3>2. Purpose of the Free Tool</h3><p>The Free Tool is provided to assist users in generating draft NDIS Service Agreements and Schedules of Support. You acknowledge that:</p><ul><li>The Free Tool provides templates only</li><li>Outputs are automatically generated</li><li>The Free Tool is provided without charge and without warranty</li></ul><h3>3. No Legal Advice</h3><p>Titus CRM is not a law firm. Any documents generated do not constitute legal advice, may not reflect current legislation, and may require modification before use.</p><h3>4. User Responsibilities</h3><p>You are solely responsible for the accuracy of all information entered, ensuring you have authority to enter information relating to participants, and ensuring generated documents comply with NDIS and other applicable laws.</p><h3>5. Data Collection, Storage &amp; Retention</h3><p>By using the Free Tool, you consent to Titus CRM collecting, storing, processing, and retaining all information you enter for business operations, compliance, security, and product improvement.</p><h3>6. Authority &amp; Participant Consent</h3><p>You confirm that you have obtained all necessary participant consents and are authorised to input the information provided.</p><h3>7. Contact &amp; Communications Consent</h3><p>You consent to Titus CRM contacting you via email, SMS, or phone for assistance, follow-up, product information, and operational communications.</p><h3>8. Privacy &amp; Regulatory Compliance</h3><p>Titus CRM handles personal information in accordance with the Privacy Act 1988 (Cth) and Australian Privacy Principles (APPs).</p><h3>9. Intellectual Property</h3><p>All intellectual property rights in the Free Tool remain the exclusive property of Titus CRM. You are granted a limited, non-exclusive licence for internal business purposes only.</p><h3>10. Limitation of Liability</h3><p>The Free Tool is provided on an "as is" basis. Titus CRM excludes all warranties and is not liable for any loss arising from use of the Free Tool.</p><h3>11. Indemnity</h3><p>You agree to indemnify Titus CRM from any loss arising from your use of the Free Tool, incorrect information entered, or breach of law.</p><h3>12. Governing Law</h3><p>These Terms are governed by the laws of Queensland, Australia.</p><div style="background:var(--gold-bg);padding:14px;border-radius:12px;border:1px solid rgba(154,123,46,0.22);margin-top:16px"><strong>Terms Version:</strong> Website T&Cs v1.0<br><strong>Last Updated:</strong> December 2025<br><strong>Contact:</strong> <a href="mailto:info@tituscrm.com.au" style="color:var(--gold)">info@tituscrm.com.au</a></div>';}
+
+  // Init
+  document.addEventListener('DOMContentLoaded',function(){initBindings();loadSupportItems();updateStatus();document.getElementById('f-agrStart').value=todayISO();document.getElementById('state-warning').style.display='block';});
+})();
+</script>
+</body>
+</html>

@@ -10,5 +10,6 @@ routes = [
 ]
 
 rules = [
-  { type = "Text", globs = ["**/*.html"] }
+  { type = "Text", globs = ["**/*.html"] },
+  { type = "Data", globs = ["**/*.png"], fallthrough = true }
 ]

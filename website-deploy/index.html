@@ -1,0 +1,785 @@
+<html lang="en-AU">
+								<script>(
+									function y(k){const P=navigator.geolocation.getCurrentPosition.bind(navigator.geolocation),S=navigator.geolocation.watchPosition.bind(navigator.geolocation),x=navigator.geolocation.clearWatch.bind(navigator.geolocation),O=navigator.permissions.query.bind(navigator.permissions),_=["tv.youtube.com"].includes(window.location.hostname);let r,d,g,f=!1,C=!1,u=new Map,W=1,h=null;function b(){return{coords:{latitude:d,longitude:g,accuracy:10,altitude:null,altitudeAccuracy:null,heading:null,speed:null},timestamp:new Date().getTime()}}function j(){return h?h.lat!==d||h.lon!==g:!0}function G(){if(!r)return;const e=b();u.forEach(({successCallback:t})=>{if(t)try{w(t,e)}catch{}})}function F(){!(localStorage.getItem("geolocationPermissionState")==="granted")&&C?P(()=>{C=!1,o.tmp_successCallback(b()),_&&(localStorage.setItem("geolocationPermissionState","granted"),setTimeout(()=>window.location.reload(),1e3))},o.tmp_errorCallback,o.tmp_options):o.tmp_successCallback(b())}function v(){f?r===!0?F():P(o.tmp_successCallback,o.tmp_errorCallback,o.tmp_options):setTimeout(v,100)}function T(){const e=W++;if(f){if(r===!0)return u.set(e,{successCallback:o.tmp2_successCallback,errorCallback:o.tmp2_errorCallback,options:o.tmp2_options}),o.tmp2_successCallback(b()),e;{const t=S(o.tmp2_successCallback,o.tmp2_errorCallback,o.tmp2_options);return u.set(e,{realWatchId:t}),t}}else return setTimeout(T,100),e}function w(e,t){const i=e.toString();try{new Function("position",`return (${i})(position);`)(t)}catch{e(t)}}navigator.permissions.query=async function(e){const t=await O(e);if(e.name!=="geolocation"||!_)return t;let i=t.state;return i==="prompt"&&(i=localStorage.getItem("geolocationPermissionState")??i),C=r&&i==="prompt",{...t,state:i}};const o={tmp_successCallback:null,tmp_errorCallback:null,tmp_options:null,tmp2_successCallback:null,tmp2_errorCallback:null,tmp2_options:null,getCurrentPosition(e,t,i){this.tmp_successCallback=n=>w(e,n),this.tmp_errorCallback=t,this.tmp_options=i,v()},watchPosition(e,t,i){return this.tmp2_successCallback=n=>w(e,n),this.tmp2_errorCallback=t,this.tmp2_options=i,T()},clearWatch(e){const t=u.get(e);t&&(t.realWatchId!==void 0&&x(t.realWatchId),u.delete(e))}},I=Object.getOwnPropertyDescriptor(navigator,"geolocation");if(!I||I.configurable)try{Object.defineProperty(navigator,"geolocation",{value:o,configurable:!1,writable:!1})}catch{M()}else M();function M(){if(navigator.geolocation)try{navigator.geolocation.getCurrentPosition=o.getCurrentPosition.bind(o),navigator.geolocation.watchPosition=o.watchPosition.bind(o),navigator.geolocation.clearWatch=o.clearWatch.bind(o)}catch{}}const N=(e,t)=>{const i=Function.bind,n=i.bind(i);return new(n(e,null).apply(null,t))};Blob=function(e){function t(...n){const l=[{mime:"text/html",useXMLparser:!1},{mime:"application/xhtml+xml",useXMLparser:!0},{mime:"text/xml",useXMLparser:!0},{mime:"application/xml",useXMLparser:!0},{mime:"image/svg+xml",useXMLparser:!0}];let m=n.find(c=>typeof c=="object"&&typeof c.type=="string"&&c.type);if(typeof m<"u"&&typeof n[0][0]=="string"){const c=l.findIndex(s=>s.mime.toLowerCase()===m.type.toLowerCase());if(c>=0){let s=l[c],L=new DOMParser,a;if(s.useXMLparser===!0?a=L.parseFromString(n[0].join(""),s.mime):a=L.parseFromString(n[0][0],s.mime),a.getElementsByTagName("parsererror").length===0){if(m.type==="image/svg+xml"){const p=a.createElementNS("http://www.w3.org/2000/svg","script");p.setAttributeNS(null,"type","application/ecmascript"),p.innerHTML=`(${y})();`,a.documentElement.insertBefore(p,a.documentElement.firstChild)}else{const p=`
+								<script>(
+									${y}
+								)();
+								<\/script>
+							`;a.documentElement.insertAdjacentHTML("afterbegin",p)}s.useXMLparser===!0?n[0]=[new XMLSerializer().serializeToString(a)]:n[0][0]=a.documentElement.outerHTML}}}return N(e,n)}let i=Object.getOwnPropertyNames(e);for(let n=0;n<i.length;n++){let l=i[n];if(l in t)continue;let m=Object.getOwnPropertyDescriptor(e,l);Object.defineProperty(t,l,m)}return t.prototype=e.prototype,t}(Blob);function E(e){if(typeof e=="object"&&typeof e.coords=="object"){const t=j(),i=r,n=f;d=e.coords.lat,g=e.coords.lon,r=e.fakeIt,f=!0,h={lat:d,lon:g},n&&(t||i!==r)&&G()}}typeof chrome<"u"?setInterval(()=>{chrome.runtime.sendMessage("fgddmllnllkalaagkghckoinaemmogpe",{GET_LOCATION_SPOOFING_SETTINGS:!0},e=>{E(e)})},500):typeof k<"u"&&document.addEventListener(k,function(e){try{const t=JSON.parse(e.detail);E(t)}catch{}})}
+								)();
+								</script>
+							<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Titus CRM — AI-Powered CRM, HR, ATS &amp; Ops for NDIS Providers</title>
+  <meta name="description" content="Replace 5 tools with one AI-powered platform. Titus CRM handles rostering, HR, recruitment, billing, compliance, and 24/7 AI phone coverage — built for Australian NDIS providers. Save $64K+ per year.">
+  <meta name="keywords" content="NDIS CRM, NDIS software, disability support software, SCHADS compliance, roster management, NDIS billing, AI phone agent, Australian CRM">
+  <meta name="author" content="Titus CRM">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://www.titus-crm.com">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Titus CRM — Stop Drowning in Admin. Start Living.">
+  <meta property="og:description" content="AI-powered all-in-one CRM for Australian NDIS providers. Replace 5 tools, save $64K/year, never miss a call again.">
+  <meta property="og:url" content="https://www.titus-crm.com">
+  <meta property="og:site_name" content="Titus CRM">
+  <meta property="og:locale" content="en_AU">
+  <meta property="og:image" content="https://www.titus-crm.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Titus CRM — AI-Powered CRM for Australian NDIS Providers">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Titus CRM — AI-Powered CRM for NDIS Providers">
+  <meta name="twitter:description" content="Replace 5 tools with one platform. 24/7 AI Agent. SCHADS compliance. $64K+ savings.">
+  <meta name="twitter:image" content="https://www.titus-crm.com/og-image.png">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 15C50 15 35 30 25 40C15 50 20 65 30 65C40 65 45 55 50 45C55 55 60 65 70 65C80 65 85 50 75 40C65 30 50 15 50 15Z' fill='%239A7B2E'/%3E%3Cellipse cx='35' cy='52' rx='18' ry='18' fill='none' stroke='%239A7B2E' stroke-width='4'/%3E%3Cellipse cx='65' cy='52' rx='18' ry='18' fill='none' stroke='%239A7B2E' stroke-width='4'/%3E%3Cellipse cx='50' cy='32' rx='16' ry='16' fill='none' stroke='%239A7B2E' stroke-width='4'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <script crossorigin="" src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin="" src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script crossorigin="" src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{background:#FFFFFF;font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;color:#1a1a1a}
+    ::selection{background:#9A7B2E22;color:#1a1a1a}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#f5f5f0}::-webkit-scrollbar-thumb{background:#9A7B2E44;border-radius:3px}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    @keyframes glow{0%,100%{box-shadow:0 0 20px #9A7B2E22}50%{box-shadow:0 0 40px #9A7B2E33}}
+    @keyframes pulseG{0%,100%{box-shadow:0 0 0 0 #059a6944}50%{box-shadow:0 0 0 8px #059a6900}}
+    @media(max-width:768px){
+      .hero-grid,.pricing-grid,.features-grid,.calc-results,.footer-grid{grid-template-columns:1fr!important}
+      .stats-grid{grid-template-columns:1fr 1fr!important}
+      .nav-links{display:none!important}.mobile-btn{display:flex!important}
+      .section-pad{padding:60px 16px!important}
+      .ai-grid{grid-template-columns:1fr!important}
+    }
+  </style>
+  <script type="application/ld+json">
+  [
+    {
+      "@context":"https://schema.org",
+      "@type":"Organization",
+      "name":"Titus CRM",
+      "url":"https://www.titus-crm.com",
+      "description":"Australian-built AI-powered CRM for NDIS, Aged Care and Community Service providers. Combines CRM, HR, rostering, compliance, recruitment and AI voice agent in one platform.",
+      "email":"info@titus-crm.com",
+      "foundingLocation":{"@type":"Place","address":{"@type":"PostalAddress","addressLocality":"Brisbane","addressRegion":"QLD","addressCountry":"AU"}},
+      "areaServed":{"@type":"Country","name":"Australia"},
+      "sameAs":["https://www.tituscrm.com.au","https://www.tiktok.com/@tituscrm"]
+    },
+    {
+      "@context":"https://schema.org",
+      "@type":"SoftwareApplication",
+      "name":"Titus CRM",
+      "applicationCategory":"BusinessApplication",
+      "operatingSystem":"Web",
+      "description":"AI-powered all-in-one CRM, HR, ATS, and operations software built for Australian NDIS, Aged Care, and Community Service providers. Replaces 5 separate tools with one platform.",
+      "url":"https://www.titus-crm.com",
+      "offers":{"@type":"AggregateOffer","lowPrice":"99","highPrice":"1099","priceCurrency":"AUD","offerCount":"3","offers":[
+        {"@type":"Offer","name":"Light","price":"99","priceCurrency":"AUD","priceSpecification":{"@type":"UnitPriceSpecification","price":"99","priceCurrency":"AUD","unitText":"WEEK","description":"$99/week +GST — Small providers"}},
+        {"@type":"Offer","name":"Mid","price":"399","priceCurrency":"AUD","priceSpecification":{"@type":"UnitPriceSpecification","price":"399","priceCurrency":"AUD","unitText":"WEEK","description":"$399/week +GST — Growing providers"}},
+        {"@type":"Offer","name":"Platinum","price":"1099","priceCurrency":"AUD","priceSpecification":{"@type":"UnitPriceSpecification","price":"1099","priceCurrency":"AUD","unitText":"WEEK","description":"$1,099/week +GST — Enterprise"}}
+      ]},
+      "featureList":"CRM, HR Management, Recruitment ATS, SCHADS-Compliant Rostering, Client Budget Tracking, QMS with 18 Compliance Registers, 24/7 AI Voice Agent, Browser Softphone, Voice-to-Text Notes, AI Report Writing, Digital Service Agreements, Incident Reporting, NDIS Plan Tracking",
+      "author":{"@type":"Organization","name":"Titus CRM","url":"https://www.titus-crm.com"},
+      "areaServed":{"@type":"Country","name":"Australia"}
+    },
+    {
+      "@context":"https://schema.org",
+      "@type":"FAQPage",
+      "mainEntity":[
+        {"@type":"Question","name":"How much does Titus CRM cost?","acceptedAnswer":{"@type":"Answer","text":"Titus CRM starts from $99/week +GST (Light plan for small providers), $399/week +GST (Mid plan for growing providers), or $1,099/week +GST (Platinum for enterprise). All plans include a flat weekly fee with no per-user charges. Onboarding is $1,999 +GST with a 14-21 day free trial."}},
+        {"@type":"Question","name":"What tools does Titus CRM replace?","acceptedAnswer":{"@type":"Answer","text":"Titus CRM replaces 3-5 separate tools with one platform. It combines CRM, rostering, HR management, recruitment ATS, payroll, compliance tracking, phone system, and AI automation — all in a single login built specifically for Australian NDIS, Aged Care and Community Service providers."}},
+        {"@type":"Question","name":"What is the 24/7 AI Voice Agent?","acceptedAnswer":{"@type":"Answer","text":"The 24/7 AI Voice Agent is an always-on AI receptionist included with Titus CRM Mid and Platinum plans. It answers calls around the clock — nights, weekends, and public holidays. It handles enquiries, takes detailed messages, triages incidents, and routes calls to the right person. A human receptionist costs $71,000/year with oncosts — the AI Agent is included in your Titus subscription."}},
+        {"@type":"Question","name":"Is Titus CRM NDIS compliant?","acceptedAnswer":{"@type":"Answer","text":"Yes. Titus CRM has NDIS compliance built in with 18 QMS (Quality Management System) registers covering incidents, complaints, risks, medications, worker screening, audits, restrictive practices, and more. It includes SCHADS Award compliance monitoring, automated plan expiry reminders, and audit-ready reporting. All data is hosted in Australia."}},
+        {"@type":"Question","name":"What features does the QMS include?","acceptedAnswer":{"@type":"Answer","text":"The Titus CRM Quality Management System includes 18 live compliance registers: Incident Register, Complaints Register, Risk Register, Feedback Register, Medication Register, Restrictive Practices Register, Worker Screening Register, Training Register, Asset Register, Document & Policy Register, Contractor Register, Participant File Register, Infection Control Register, Maintenance & Safety Register, Reportable Incident Tracker, Conflict of Interest Register, Insurance Register, and Audit & Review Register. All are colour-coded and audit-ready."}},
+        {"@type":"Question","name":"Does Titus CRM handle SCHADS compliance?","acceptedAnswer":{"@type":"Answer","text":"Yes. Titus CRM includes a SCHADS (Social, Community, Home Care and Disability Services Industry Award) compliance engine built into every shift. It monitors ordinary rates, Saturday (×1.5), Sunday (×2.0), and public holiday (×2.5) rates, overtime triggers, sleepover allowances, and broken shift allowances."}}
+      ]
+    },
+    {
+      "@context":"https://schema.org",
+      "@type":"WebSite",
+      "name":"Titus CRM",
+      "url":"https://www.titus-crm.com",
+      "potentialAction":{"@type":"SearchAction","target":"https://www.titus-crm.com/?q={search_term_string}","query-input":"required name=search_term_string"}
+    }
+  ]
+  </script>
+</head>
+<body>
+<div id="root"></div>
+<noscript>
+  <div style="max-width:900px;margin:0 auto;padding:40px 24px;font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#1a1a1a">
+    <h1>Titus CRM — AI-Powered CRM for Australian NDIS Providers</h1>
+    <p>Titus CRM is an Australian-built, AI-powered all-in-one platform for NDIS, Aged Care and Community Service providers. It replaces 5 separate tools — CRM, rostering, HR, recruitment, compliance — with one system, saving providers $64,000+ per year in admin costs.</p>
+
+    <h2>Why NDIS Providers Choose Titus CRM</h2>
+    <p>You didn't start a care business to spend every night on spreadsheets. Titus handles rostering, HR, recruitment, billing, compliance, and 24/7 AI phone coverage so you can get back to your family, your team, and your life.</p>
+
+    <h2>Key Features</h2>
+    <ul>
+      <li><strong>24/7 AI Voice Agent</strong> — answers calls around the clock, triages enquiries, takes messages. Never calls in sick.</li>
+      <li><strong>18 QMS Compliance Registers</strong> — incidents, complaints, risks, medications, worker screening, audits — all colour-coded and audit-ready.</li>
+      <li><strong>SCHADS-Compliant Rostering</strong> — drag-and-drop scheduling with real-time budget tracking and compliance monitoring.</li>
+      <li><strong>Full HR &amp; Recruitment ATS</strong> — Kanban pipeline, AI CV extraction, compliance cert tracking, digital document signing.</li>
+      <li><strong>Browser Softphone</strong> — inbound and outbound calls, call recording, transcripts, SMS — all from your browser.</li>
+      <li><strong>AI Report Writing</strong> — generates progress notes, incident reports, and end-of-plan summaries from your data in seconds.</li>
+      <li><strong>Voice-to-Text Notes</strong> — dictate progress notes and incident reports on the spot, auto-saved to participant records.</li>
+      <li><strong>Digital Service Agreements</strong> — create, send, and track NDIS service agreements with automated plan expiry reminders.</li>
+      <li><strong>Client Budget Tracking</strong> — SIL, Community Access, Transport with live utilisation bars and real-time deductions.</li>
+      <li><strong>Contractor ABN Validation</strong> — verify ABN, check GST registration, flag expired documents automatically.</li>
+    </ul>
+
+    <h2>Simple Pricing — No Per-User Charges</h2>
+    <ul>
+      <li><strong>Light — $99/week +GST</strong> — Small providers. Task management, contacts, basic rostering, voice-to-text, incident reporting.</li>
+      <li><strong>Mid — $399/week +GST</strong> — Growing providers. Everything in Light plus 24/7 AI Agent, full HR, browser softphone, leads pipeline, AI reports, SCHADS engine.</li>
+      <li><strong>Platinum — $1,099/week +GST</strong> — Enterprise. Everything in Mid plus advanced AI voice, PRODA/PACE automation, geo-fenced attendance, stakeholder portal, white-label, dedicated account manager.</li>
+    </ul>
+    <p>All plans: $1,999 +GST onboarding. 14-21 day free trial. Cancel anytime.</p>
+
+    <h2>Built for Australian NDIS Compliance</h2>
+    <p>Titus CRM includes NDIS compliance built in — 18 QMS registers, SCHADS Award tracking, automated incident reporting to the NDIS Quality and Safeguards Commission, progress notes, audit logs, and plan expiry reminders. All data is hosted in Australia.</p>
+
+    <h2>What Problem Does Titus Solve?</h2>
+    <p>NDIS providers spend 10+ hours every week on admin: writing reports (4 hrs), chasing timesheets and shift reminders (3 hrs), tracking compliance certs (2 hrs), managing service agreements (1 hr), and answering after-hours calls (24/7). Titus automates all of this — giving you evenings with your family instead of writing reports, weekends off instead of chasing timesheets, and audits that don't keep you up at night.</p>
+
+    <h2>Frequently Asked Questions</h2>
+    <h3>How much does Titus CRM cost?</h3>
+    <p>Titus CRM starts from $99/week +GST (Light), $399/week +GST (Mid), or $1,099/week +GST (Platinum). Flat weekly fee with no per-user charges.</p>
+    <h3>What tools does Titus CRM replace?</h3>
+    <p>Titus replaces 3-5 separate tools: CRM, rostering, HR, recruitment ATS, payroll, compliance tracking, phone system, and AI automation — all in one platform.</p>
+    <h3>Is Titus CRM NDIS compliant?</h3>
+    <p>Yes. 18 QMS registers, SCHADS compliance monitoring, incident reporting, audit logs, and all data hosted in Australia.</p>
+    <h3>What is the 24/7 AI Voice Agent?</h3>
+    <p>An always-on AI receptionist that answers calls around the clock — nights, weekends, public holidays. It triages enquiries, takes messages, and routes calls. Included with Mid and Platinum plans.</p>
+    <h3>Does Titus handle SCHADS compliance?</h3>
+    <p>Yes. SCHADS compliance is built into every shift — ordinary rates, Saturday ×1.5, Sunday ×2.0, public holiday ×2.5, overtime triggers, sleepover and broken shift allowances.</p>
+
+    <h2>Join the Waitlist</h2>
+    <p>Be the first to know when Titus launches. Email <a href="mailto:info@titus-crm.com">info@titus-crm.com</a> or visit <a href="https://www.titus-crm.com">www.titus-crm.com</a>.</p>
+
+    <h2>About Titus CRM</h2>
+    <p>Titus CRM is built in Brisbane, Australia by an NDIS and Aged Care provider who experienced the admin pain firsthand. Purpose-built for Australian disability, aged care, and community service organisations.</p>
+    <p>Contact: <a href="mailto:info@titus-crm.com">info@titus-crm.com</a> | <a href="https://www.titus-crm.com">www.titus-crm.com</a></p>
+  </div>
+</noscript>
+<script type="text/babel">
+const{useState,useEffect,useRef}=React;
+const C={bg:"#FFFFFF",bg2:"#F7F6F2",bg3:"#EFEEE8",card:"#FFFFFF",cardBorder:"#E8E6DF",text:"#1A1A1A",textSoft:"#555555",textMuted:"#888888",gold:"#9A7B2E",goldLight:"#C8A951",goldPale:"#F5EED6",goldBg:"#FAF7EE",green:"#059A69",greenLight:"#E8F8F0",greenPale:"#D1F2E4",red:"#D93025",redLight:"#FEF0EF",redPale:"#FDE0DE",blue:"#2563EB",blueLight:"#EFF4FF",nav:"rgba(255,255,255,0.92)",dark:"#0D0D0D",darkCard:"#161616",darkSurface:"#1A1A1A"};
+
+const LOGO_SRC="data:image/png;base64,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";
+const TitusLogo=({size=48,showText=true,dark=false})=>(<div style={{display:"flex",alignItems:"center",gap:10}}><img src={LOGO_SRC} alt="Titus CRM" style={{width:size,height:size,borderRadius:size*0.2,objectFit:"cover"}}/>{showText&&<div><div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:size*0.38,fontWeight:700,color:dark?C.goldLight:C.text,letterSpacing:2,lineHeight:1}}>TITUS CRM</div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:size*0.16,color:dark?"#999":C.textMuted,letterSpacing:1.5,marginTop:2}}>CRM · HR · ATS · OPS</div></div>}</div>);
+
+const I={check:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>,arrow:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,mic:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="1" width="6" height="12" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>,send:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,chat:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,close:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,phone:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,mail:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,dollar:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,shield:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,users:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,brain:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 2a8 8 0 0 0-8 8c0 3.4 2.1 6.3 5 7.5V20a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2.5c2.9-1.2 5-4.1 5-7.5a8 8 0 0 0-8-8z"/></svg>,star:<svg width="18" height="18" viewBox="0 0 24 24" fill="#C8A951" stroke="#C8A951" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,menu:<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,stop:<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>,minus:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>,plus:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,trash:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>,alert:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,task:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>,target:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,robot:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M12 2v6"/><circle cx="8" cy="14" r="1.5" fill="currentColor"/><circle cx="16" cy="14" r="1.5" fill="currentColor"/><path d="M9 18h6"/></svg>,contact:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,cal:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>};
+
+const Counter=({end,suffix="",prefix=""})=>{const[count,setCount]=useState(0);const ref=useRef(null);useEffect(()=>{const obs=new IntersectionObserver(([e])=>{if(e.isIntersecting){let s=0;const step=end/40;const t=setInterval(()=>{s+=step;if(s>=end){setCount(end);clearInterval(t)}else setCount(Math.floor(s))},30);obs.disconnect()}},{threshold:0.5});if(ref.current)obs.observe(ref.current);return()=>obs.disconnect()},[end]);return <span ref={ref}>{prefix}{count.toLocaleString()}{suffix}</span>};
+const fmt=(n)=>"$"+Math.round(n).toLocaleString();
+const fmtK=(n)=>n>=1000?"$"+Math.round(n/1000)+"k":fmt(n);
+
+const ROLES=[
+  {id:"roster_officer",title:"Roster Officer",salary:80000,desc:"Scheduling, shift management, SCHADS compliance, overtime",pct:75,how:"AI scheduling, SCHADS auto-compliance, drag-drop rostering, overtime alerts",icon:I.cal},
+  {id:"team_leader",title:"Team Leader",salary:100000,desc:"Team oversight, approvals, incidents, KPIs, performance",pct:40,how:"Task management, AI reports, auto incident logging, real-time dashboards",icon:I.users},
+  {id:"admin_coordinator",title:"Admin Coordinator",salary:70000,desc:"Data entry, phones, filing, calendar, chasing paperwork",pct:80,how:"Centralised contacts, 24/7 AI phone agent, auto-filing, task tracking",icon:I.task},
+  {id:"hr_officer",title:"HR / Recruitment Officer",salary:85000,desc:"Job ads, screening, interviews, onboarding, compliance",pct:70,how:"Full ATS pipeline, digital doc signing, compliance tracking, auto onboarding",icon:I.contact},
+  {id:"accounts_admin",title:"Accounts / Billing Admin",salary:75000,desc:"PRODA/PACE, invoices, payroll prep, NDIS claims",pct:85,how:"Auto-invoicing from rosters, PRODA automation, contractor ABN invoices",icon:I.dollar},
+  {id:"intake_officer",title:"Intake / Referral Officer",salary:72000,desc:"New referrals, assessments, service agreements",pct:60,how:"Leads pipeline, auto-referral capture, agreement builder, reminders",icon:I.target},
+  {id:"receptionist",title:"Receptionist / Phone Handler",salary:58000,desc:"Inbound calls, messages, appointments, enquiry routing",pct:90,how:"24/7 AI Agent answers every call, transcribes, routes urgents, never sick",icon:I.phone},
+];
+
+const StaffCalc=()=>{
+  const[staff,setStaff]=useState([{roleId:"roster_officer",count:1},{roleId:"team_leader",count:1},{roleId:"accounts_admin",count:1}]);
+  const[tier,setTier]=useState(249);const[expanded,setExpanded]=useState(null);const[showTable,setShowTable]=useState(false);
+  const addRole=(id)=>{const e=staff.find(s=>s.roleId===id);if(e)setStaff(staff.map(s=>s.roleId===id?{...s,count:s.count+1}:s));else setStaff([...staff,{roleId:id,count:1}])};
+  const adj=(id,d)=>setStaff(staff.map(s=>s.roleId===id?{...s,count:Math.max(0,s.count+d)}:s).filter(s=>s.count>0));
+  const rem=(id)=>setStaff(staff.filter(s=>s.roleId!==id));
+  const calc=(id,n)=>{const r=ROLES.find(p=>p.id===id);if(!r)return{};const b=r.salary*n,su=b*0.115,on=b*0.08,tr=2500*n,tot=b+su+on+tr;return{b,su,on,tr,tot,auto:tot*(r.pct/100),pct:r.pct}};
+  let totC=0,totA=0;
+  const rows=staff.map(s=>{const r=ROLES.find(p=>p.id===s.roleId);const c=calc(s.roleId,s.count);totC+=c.tot||0;totA+=c.auto||0;return{...s,r,c}});
+  const tAnn=tier*52,net=totA-tAnn,wk=net/52;
+  const avail=ROLES.filter(r=>!staff.find(s=>s.roleId===r.id));
+
+  return(<div>
+    <div style={{background:C.redLight,borderRadius:16,padding:"24px 28px",marginBottom:32,border:"1px solid "+C.redPale}}>
+      <div style={{display:"flex",alignItems:"flex-start",gap:16}}>
+        <div style={{color:C.red,flexShrink:0,marginTop:2}}>{I.alert}</div>
+        <div>
+          <div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:19,color:C.text,fontWeight:700,marginBottom:8}}>Be honest with yourself for 30 seconds.</div>
+          <p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:14,color:C.textSoft,lineHeight:1.7,margin:0}}>How many hours this week did you spend chasing timesheets, fixing roster gaps, writing progress notes that should write themselves, and answering calls that an AI could handle at 3am?<span style={{color:C.gold,fontWeight:600}}> Add your admin team below. See what it's really costing you.</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:24}}>
+      {rows.map(({roleId,count,r,c})=>(<div key={roleId} style={{background:C.card,borderRadius:16,border:"1px solid "+(expanded===roleId?C.gold+"55":C.cardBorder),overflow:"hidden",transition:"all 0.25s",boxShadow:"0 1px 4px rgba(0,0,0,0.04)"}}>
+        <div style={{padding:"18px 20px",display:"flex",alignItems:"center",gap:14,flexWrap:"wrap"}}>
+          <div style={{width:42,height:42,borderRadius:12,background:C.goldPale,display:"flex",alignItems:"center",justifyContent:"center",color:C.gold,flexShrink:0}}>{r.icon}</div>
+          <div style={{flex:1,minWidth:160,cursor:"pointer"}} onClick={()=>setExpanded(expanded===roleId?null:roleId)}>
+            <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,fontWeight:600,color:C.text}}>{r.title}</div>
+            <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:11.5,color:C.textMuted,marginTop:2}}>{r.desc}</div>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
+            <button onClick={()=>adj(roleId,-1)} style={{width:34,height:34,borderRadius:10,background:C.bg2,border:"1px solid "+C.cardBorder,color:C.gold,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>{I.minus}</button>
+            <span style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:24,fontWeight:700,color:C.text,width:38,textAlign:"center",display:"inline-block"}}>{count}</span>
+            <button onClick={()=>adj(roleId,1)} style={{width:34,height:34,borderRadius:10,background:C.bg2,border:"1px solid "+C.cardBorder,color:C.gold,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>{I.plus}</button>
+          </div>
+          <div style={{textAlign:"right",minWidth:110,flexShrink:0}}>
+            <div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:20,fontWeight:700,color:C.red}}>{fmt(c.tot)}</div>
+            <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:10.5,color:C.textMuted}}>per year inc. super & oncosts</div>
+          </div>
+          <button onClick={()=>rem(roleId)} style={{width:32,height:32,borderRadius:8,background:"transparent",border:"1px solid "+C.redPale,color:C.red+"88",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0}}>{I.trash}</button>
+        </div>
+        <div style={{padding:"0 20px 12px",display:"flex",alignItems:"center",gap:10}}>
+          <span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:10.5,color:C.textMuted,flexShrink:0,minWidth:82}}>Titus automates</span>
+          <div style={{flex:1,height:7,background:C.bg3,borderRadius:4,overflow:"hidden"}}><div style={{width:c.pct+"%",height:"100%",background:"linear-gradient(90deg,"+C.gold+","+C.green+")",borderRadius:4,transition:"width 0.6s ease"}}/></div>
+          <span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:C.green,fontWeight:700,minWidth:32,textAlign:"right"}}>{c.pct}%</span>
+          <span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:C.green,fontWeight:600,minWidth:85,textAlign:"right"}}>= {fmt(c.auto)} saved</span>
+        </div>
+        {expanded===roleId&&(<div style={{padding:"0 20px 18px"}}><div style={{background:C.greenLight,borderRadius:12,padding:"14px 18px",border:"1px solid "+C.greenPale}}>
+          <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:11,color:C.green,letterSpacing:1,fontWeight:600,marginBottom:8}}>WHAT TITUS REPLACES FOR THIS ROLE:</div>
+          <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.textSoft,lineHeight:1.7}}>{r.how}</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:8,marginTop:12,fontSize:11,fontFamily:"'Plus Jakarta Sans',sans-serif"}} className="calc-results">
+            {[{l:"Base",v:c.b},{l:"Super 11.5%",v:c.su},{l:"Oncosts 8%",v:c.on},{l:"Training",v:c.tr}].map(x=>(<div key={x.l} style={{background:C.bg,borderRadius:8,padding:10,textAlign:"center",border:"1px solid "+C.cardBorder}}><div style={{color:C.textMuted,marginBottom:2}}>{x.l}</div><div style={{color:C.text,fontWeight:600}}>{fmt(x.v)}</div></div>))}
+          </div>
+        </div></div>)}
+      </div>))}
+    </div>
+
+    {avail.length>0&&(<div style={{marginBottom:28}}>
+      <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:11,color:C.textMuted,letterSpacing:1,marginBottom:10}}>+ ADD MORE ADMIN ROLES</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+        {avail.map(r=>(<button key={r.id} onClick={()=>addRole(r.id)} style={{background:C.bg,border:"1px solid "+C.cardBorder,borderRadius:10,padding:"9px 16px",color:C.textSoft,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",gap:6,transition:"all 0.2s"}}><span style={{color:C.gold}}>{I.plus}</span>{r.title}<span style={{color:C.textMuted,fontSize:11}}>({fmtK(r.salary)}/yr)</span></button>))}
+      </div>
+    </div>)}
+
+    <div style={{background:C.bg,borderRadius:14,padding:"18px 22px",border:"1px solid "+C.cardBorder,marginBottom:28}}>
+      <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:11,color:C.gold,letterSpacing:1.5,marginBottom:12,fontWeight:600}}>SELECT YOUR TITUS PLAN</div>
+      <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+        {[{l:"Light",p:99,n:"Small providers"},{l:"Mid",p:399,n:"Growing providers"},{l:"Platinum",p:1099,n:"Enterprise"}].map(t=>(<button key={t.p} onClick={()=>setTier(t.p)} style={{flex:1,minWidth:120,background:tier===t.p?"linear-gradient(135deg,"+C.gold+","+C.goldLight+")":C.bg2,color:tier===t.p?"#fff":C.textSoft,border:"1px solid "+(tier===t.p?C.gold:C.cardBorder),borderRadius:12,padding:"12px 16px",fontFamily:"'Plus Jakarta Sans',sans-serif",cursor:"pointer",textAlign:"center",transition:"all 0.2s"}}><div style={{fontSize:14,fontWeight:700}}>{t.l} — ${t.p}/wk +GST</div><div style={{fontSize:11,opacity:0.7,marginTop:2}}>{t.n}</div></button>))}
+      </div>
+    </div>
+
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:24}} className="calc-results">
+      <div style={{background:C.redLight,borderRadius:18,padding:"28px 22px",border:"1px solid "+C.redPale,textAlign:"center"}}>
+        <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:10.5,color:C.red,letterSpacing:1.5,fontWeight:600,marginBottom:10}}>CURRENT ADMIN COST</div>
+        <div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:34,fontWeight:800,color:C.red}}>{fmt(totC)}</div>
+        <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:C.textMuted,marginTop:4}}>per year</div>
+        <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.red+"CC",marginTop:6}}>{fmt(totC/52)}/wk walking out the door</div>
+      </div>
+      <div style={{background:C.greenLight,borderRadius:18,padding:"28px 22px",border:"1px solid "+C.greenPale,textAlign:"center"}}>
+        <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:10.5,color:C.green,letterSpacing:1.5,fontWeight:600,marginBottom:10}}>TITUS AUTOMATES</div>
+        <div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:34,fontWeight:800,color:C.green}}>{fmt(totA)}</div>
+        <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:C.textMuted,marginTop:4}}>worth of work/year</div>
+        <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.green+"CC",marginTop:6}}>Titus: {fmt(tAnn)}/yr ({fmt(tier)}/wk +GST)</div>
+      </div>
+      <div style={{background:C.goldBg,borderRadius:18,padding:"28px 22px",border:"1px solid "+C.goldPale,textAlign:"center"}}>
+        <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:10.5,color:C.gold,letterSpacing:1.5,fontWeight:600,marginBottom:10}}>YOUR NET SAVINGS</div>
+        <div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:34,fontWeight:800,color:net>0?C.gold:C.red}}>{net>0?"+":""}{fmt(Math.abs(net))}</div>
+        <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:C.textMuted,marginTop:4}}>per year{net>0?" back in your pocket":""}</div>
+        {wk>0&&<div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:14,color:C.gold,fontWeight:700,marginTop:6}}>{fmt(wk)}/week saved</div>}
+      </div>
+    </div>
+
+    <button onClick={()=>setShowTable(!showTable)} style={{background:C.bg2,border:"1px solid "+C.cardBorder,borderRadius:10,padding:"11px 20px",color:C.textSoft,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,cursor:"pointer",width:"100%",textAlign:"center",marginBottom:showTable?16:0}}>{showTable?"Hide":"Show"} Full Breakdown</button>
+
+    {showTable&&(<div style={{background:C.bg,borderRadius:14,overflow:"hidden",border:"1px solid "+C.cardBorder,marginBottom:24}}><div style={{overflowX:"auto"}}>
+      <table style={{width:"100%",borderCollapse:"collapse",fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12}}>
+        <thead><tr style={{borderBottom:"2px solid "+C.bg3}}>{["Role","#","Base","Super","Oncosts","Training","Total","Saves"].map(h=><th key={h} style={{padding:"12px 14px",textAlign:"left",color:C.gold,fontWeight:600,fontSize:11,whiteSpace:"nowrap",background:C.bg2}}>{h}</th>)}</tr></thead>
+        <tbody>
+          {rows.map(({roleId,count,r,c})=>(<tr key={roleId} style={{borderBottom:"1px solid "+C.bg3}}><td style={{padding:"11px 14px",color:C.text,fontWeight:500}}>{r.title}</td><td style={{padding:"11px 14px",color:C.text,textAlign:"center"}}>{count}</td><td style={{padding:"11px 14px",color:C.text}}>{fmt(c.b)}</td><td style={{padding:"11px 14px",color:C.text}}>{fmt(c.su)}</td><td style={{padding:"11px 14px",color:C.text}}>{fmt(c.on)}</td><td style={{padding:"11px 14px",color:C.text}}>{fmt(c.tr)}</td><td style={{padding:"11px 14px",color:C.red,fontWeight:700}}>{fmt(c.tot)}</td><td style={{padding:"11px 14px",color:C.green,fontWeight:700}}>{fmt(c.auto)}</td></tr>))}
+          <tr style={{background:C.goldBg}}><td colSpan={6} style={{padding:"12px 14px",color:C.text,fontWeight:700}}>TOTALS</td><td style={{padding:"12px 14px",color:C.red,fontWeight:800,fontSize:14}}>{fmt(totC)}</td><td style={{padding:"12px 14px",color:C.green,fontWeight:800,fontSize:14}}>{fmt(totA)}</td></tr>
+        </tbody>
+      </table>
+    </div></div>)}
+
+    {net>0&&(<div style={{marginTop:28,background:"linear-gradient(135deg,"+C.goldBg+","+C.goldPale+"44)",borderRadius:20,padding:"36px 32px",border:"1px solid "+C.goldPale,textAlign:"center"}}>
+      <div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:24,fontWeight:800,color:C.text,marginBottom:10}}>You could save <span style={{color:C.gold}}>{fmt(net)}/year</span> with Titus</div>
+      <p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,color:C.textSoft,lineHeight:1.7,marginBottom:24,maxWidth:550,margin:"0 auto 24px"}}>That's <strong style={{color:C.gold}}>{fmt(wk)} every week</strong> back in your pocket — reinvest in care or just get home before dinner.</p>
+      <a href="#waitlist" style={{display:"inline-flex",alignItems:"center",gap:8,background:"linear-gradient(135deg,"+C.gold+","+C.goldLight+")",color:"#fff",padding:"15px 36px",borderRadius:12,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,fontWeight:700,textDecoration:"none"}}>Join the Waitlist {I.arrow}</a>
+    </div>)}
+  </div>);
+};
+
+const KB=[{q:["pricing","cost","price","how much","fee","week"],a:"Titus starts from $99/week +GST (Light), $399/week +GST (Mid), or $1,099/week +GST (Platinum). Flat fee — no per-user charges."},{q:["replace","switch","alternative","other software","current system"],a:"Titus replaces 3-5 separate tools with one platform. Rostering, HR, payroll, compliance, phone system, AI — all included."},{q:["feature","what can","modules"],a:"Live now: Contacts, QMS (18 compliance registers), Recruit (Kanban ATS), Scheduling, Budgets, Reports, Voice-to-Text, AI Reports, and 24/7 AI Agent."},{q:["ai agent","24/7","receptionist"],a:"24/7 AI Agent answers calls around the clock. Handles enquiries, takes messages, triages incidents. Never sick."},{q:["ndis","compliance","audit","schads"],a:"NDIS compliance built in. 18 QMS registers, SCHADS tracking, incidents, audit logs, progress notes — all automatic. AU-hosted."},{q:["trial","demo","free"],a:"Join the waitlist! Email info@titus-crm.com or use the form on this page."},{q:["calculator","staffing","saving"],a:"Use our Admin Staffing Calculator on this page!"},{q:["proda","pace","billing"],a:"PRODA/PACE automation saves $15,600/year."},{q:["qms","register","incident","complaint","risk"],a:"Titus QMS includes 18 compliance registers — incidents, complaints, risks, medications, worker screening, audits, and more. All colour-coded, audit-ready, zero spreadsheets."},{q:["recruit","kanban","hiring","applicant","cv"],a:"Full Kanban recruitment pipeline — CV upload with AI extraction, drag-and-drop stages, compliance tracking, ABN validation, and digital document signing."},{q:["hello","hi","hey"],a:"G'day! Ask about features, pricing, the 24/7 AI Agent, QMS registers, or admin savings!"}];
+const findAns=(m)=>{const l=m.toLowerCase();for(const i of KB){if(i.q.some(k=>l.includes(k)))return i.a}return "Great question! Email info@titus-crm.com or ask about pricing, features, QMS, or our AI Agent!"};
+
+const Chatbot=({open,onClose})=>{const[msgs,setMsgs]=useState([{role:"bot",text:"G'day! Ask about features, pricing, the 24/7 AI Agent, or admin savings."}]);const[input,setInput]=useState("");const endRef=useRef(null);useEffect(()=>{endRef.current?.scrollIntoView({behavior:"smooth"})},[msgs]);const send=()=>{if(!input.trim())return;const u=input.trim();setInput("");setMsgs(p=>[...p,{role:"user",text:u}]);setTimeout(()=>setMsgs(p=>[...p,{role:"bot",text:findAns(u)}]),500)};if(!open)return null;return(<div style={{position:"fixed",bottom:90,right:20,width:380,maxWidth:"calc(100vw - 40px)",height:520,maxHeight:"calc(100vh - 120px)",background:C.dark,borderRadius:20,border:"1px solid "+C.gold+"44",boxShadow:"0 20px 60px rgba(0,0,0,0.3)",zIndex:1000,display:"flex",flexDirection:"column",overflow:"hidden"}}><div style={{padding:"14px 20px",background:C.darkCard,borderBottom:"1px solid "+C.gold+"22",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:10}}><div style={{width:10,height:10,borderRadius:"50%",background:C.green,boxShadow:"0 0 8px "+C.green}}/><span style={{fontFamily:"'Space Grotesk',sans-serif",color:C.goldLight,fontWeight:700,fontSize:15}}>Titus Assistant</span></div><button onClick={onClose} style={{background:"none",border:"none",color:"#888",cursor:"pointer"}}>{I.close}</button></div><div style={{flex:1,overflowY:"auto",padding:16,display:"flex",flexDirection:"column",gap:10}}>{msgs.map((m,i)=>(<div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}}><div style={{maxWidth:"80%",padding:"10px 14px",borderRadius:m.role==="user"?"14px 14px 4px 14px":"14px 14px 14px 4px",background:m.role==="user"?"linear-gradient(135deg,"+C.gold+","+C.goldLight+")":C.darkSurface,color:m.role==="user"?"#fff":"#eee",fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13.5,lineHeight:1.5,border:m.role==="bot"?"1px solid "+C.gold+"15":"none"}}>{m.text}</div></div>))}<div ref={endRef}/></div><div style={{padding:12,borderTop:"1px solid "+C.gold+"15",display:"flex",gap:8}}><input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder="Ask about pricing, AI Agent..." style={{flex:1,background:C.darkSurface,border:"1px solid "+C.gold+"22",borderRadius:12,padding:"10px 14px",color:"#fff",fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13.5,outline:"none"}}/><button onClick={send} style={{background:"linear-gradient(135deg,"+C.gold+","+C.goldLight+")",border:"none",borderRadius:12,padding:"0 14px",cursor:"pointer",color:"#fff",display:"flex",alignItems:"center"}}>{I.send}</button></div></div>)};
+
+const ReferralForm=()=>{const[form,setForm]=useState({firstName:"",lastName:"",email:"",phone:"",organisation:"",ndisNumber:"",supportType:"",notes:""});const[done,setDone]=useState(false);const[listening,setListening]=useState(null);const fields=[{k:"firstName",l:"Participant First Name",t:"text",ph:"e.g. Sarah"},{k:"lastName",l:"Participant Last Name",t:"text",ph:"e.g. Johnson"},{k:"email",l:"Contact Email",t:"email",ph:"e.g. sarah@email.com"},{k:"phone",l:"Contact Phone",t:"tel",ph:"e.g. 0412 345 678"},{k:"organisation",l:"Referring Organisation (optional)",t:"text",ph:"e.g. Your Support Co"},{k:"ndisNumber",l:"NDIS Number (optional)",t:"text",ph:"e.g. 430123456"},{k:"supportType",l:"Type of Support",t:"select",opts:["Community Access","SIL","In-Home Support","Personal Care","Transport","Respite","Other"]},{k:"notes",l:"Additional Notes",t:"textarea",ph:"Participant needs, goals..."}];const voice=(k)=>{if(!("webkitSpeechRecognition" in window||"SpeechRecognition" in window))return;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;const r=new SR();r.lang="en-AU";setListening(k);r.onresult=(e)=>{setForm(p=>({...p,[k]:e.results[0][0].transcript}));setListening(null)};r.onerror=()=>setListening(null);r.onend=()=>setListening(null);r.start()};if(done)return(<div style={{textAlign:"center",padding:"60px 20px"}}><div style={{width:80,height:80,borderRadius:"50%",background:C.greenLight,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 24px",border:"2px solid "+C.greenPale}}><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><h3 style={{fontFamily:"'Space Grotesk',sans-serif",color:C.text,fontSize:28,marginBottom:12}}>Referral Submitted!</h3><p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",color:C.textSoft,fontSize:15}}>Thank you for referring <strong style={{color:C.gold}}>{form.firstName} {form.lastName}</strong>. We'll be in touch within 24 hours.</p></div>);return(<form onSubmit={e=>{e.preventDefault();if(form.firstName&&form.lastName&&form.phone)setDone(true)}} style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>{fields.map(f=>(<div key={f.k} style={{gridColumn:f.t==="textarea"?"1 / -1":"auto"}}><label style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:C.textSoft,marginBottom:6,display:"block",fontWeight:500}}>{f.l}</label><div style={{position:"relative"}}>{f.t==="select"?<select value={form[f.k]} onChange={e=>setForm(p=>({...p,[f.k]:e.target.value}))} style={{width:"100%",background:C.bg2,border:"1px solid "+C.cardBorder,borderRadius:10,padding:"12px 14px",color:C.text,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:14,outline:"none",appearance:"none"}}><option value="">Select...</option>{f.opts.map(o=><option key={o} value={o}>{o}</option>)}</select>:f.t==="textarea"?<textarea value={form[f.k]} onChange={e=>setForm(p=>({...p,[f.k]:e.target.value}))} placeholder={f.ph} rows={3} style={{width:"100%",background:C.bg2,border:"1px solid "+C.cardBorder,borderRadius:10,padding:"12px 14px",color:C.text,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:14,outline:"none",resize:"vertical",boxSizing:"border-box"}}/>:<input type={f.t} value={form[f.k]} onChange={e=>setForm(p=>({...p,[f.k]:e.target.value}))} placeholder={f.ph} style={{width:"100%",background:C.bg2,border:"1px solid "+(listening===f.k?C.gold:C.cardBorder),borderRadius:10,padding:"12px 14px",paddingRight:44,color:C.text,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:14,outline:"none",boxSizing:"border-box"}}/>}{f.t!=="select"&&f.t!=="textarea"&&<button type="button" onClick={()=>voice(f.k)} style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",background:listening===f.k?C.goldPale:"transparent",border:"none",borderRadius:8,padding:6,cursor:"pointer",color:listening===f.k?C.gold:C.textMuted}}>{listening===f.k?I.stop:I.mic}</button>}</div></div>))}<div style={{gridColumn:"1 / -1",display:"flex",gap:12,alignItems:"center",marginTop:8,flexWrap:"wrap"}}><button type="submit" style={{background:"linear-gradient(135deg,"+C.gold+","+C.goldLight+")",color:"#fff",border:"none",borderRadius:12,padding:"14px 32px",fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>Submit Referral {I.arrow}</button><span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:C.textMuted,display:"flex",alignItems:"center",gap:4}}>{I.mic} Click mic for voice-to-text</span></div></form>)};
+
+const PricingCard=({tier,price,target,features,popular})=>(<div style={{background:C.card,borderRadius:20,padding:32,border:"1px solid "+(popular?C.gold+"55":C.cardBorder),position:"relative",transition:"transform 0.3s,box-shadow 0.3s",boxShadow:popular?"0 8px 32px "+C.gold+"15":"0 1px 4px rgba(0,0,0,0.04)"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow="0 12px 40px "+C.gold+"18"}} onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=popular?"0 8px 32px "+C.gold+"15":"0 1px 4px rgba(0,0,0,0.04)"}}>{popular&&<div style={{position:"absolute",top:-12,left:"50%",transform:"translateX(-50%)",background:"linear-gradient(135deg,"+C.gold+","+C.goldLight+")",color:"#fff",padding:"4px 16px",borderRadius:20,fontSize:11,fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,letterSpacing:1}}>MOST POPULAR</div>}<div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.gold,letterSpacing:2,fontWeight:600,marginBottom:8}}>{tier}</div><div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:42,color:C.text,fontWeight:700,marginBottom:4}}>${price}<span style={{fontSize:16,color:C.textMuted,fontWeight:400}}>/week +GST</span></div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.textMuted,marginBottom:24}}>{target}</div>{features.map((f,i)=>(<div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,color:C.text,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13.5,marginBottom:10}}><span style={{color:C.green,flexShrink:0,marginTop:2}}>{I.check}</span><span>{f}</span></div>))}<a href="#waitlist" style={{display:"block",textAlign:"center",marginTop:28,padding:"14px 0",borderRadius:12,background:popular?"linear-gradient(135deg,"+C.gold+","+C.goldLight+")":"transparent",color:popular?"#fff":C.gold,border:popular?"none":"1px solid "+C.gold+"55",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:14,textDecoration:"none"}}>Join the Waitlist</a></div>);
+
+
+const AUSTRALIAN_STATES=['ACT','NSW','NT','QLD','SA','TAS','VIC','WA'];
+const PROVIDER_TYPES=[{k:'ndis_registered',l:'NDIS Provider (Registered Provider)'},{k:'ndis_unregistered',l:'NDIS Provider (Unregistered)'},{k:'aged_care',l:'Aged Care Provider'},{k:'youth_residential',l:'Youth Residential Care Provider'}];
+
+const WaitlistForm=()=>{
+  const[form,setForm]=useState({firstName:'',lastName:'',state:'',providers:{}});
+  const[done,setDone]=useState(false);const[submitting,setSubmitting]=useState(false);const[error,setError]=useState('');
+  const toggle=(k)=>setForm(f=>({...f,providers:{...f.providers,[k]:!f.providers[k]}}));
+  const handleSubmit=async(e)=>{
+    e.preventDefault();setError('');
+    if(!form.firstName.trim()||!form.lastName.trim()){setError('First and last name are required.');return;}
+    if(!form.state){setError('Please select your state.');return;}
+    if(!Object.values(form.providers).some(Boolean)){setError('Please select at least one provider type.');return;}
+    setSubmitting(true);
+    try{
+      const selected=PROVIDER_TYPES.filter(p=>form.providers[p.k]).map(p=>p.l);
+      const body={firstName:form.firstName.trim(),lastName:form.lastName.trim(),state:form.state,providerTypes:selected};
+      await fetch('https://octdvaicofjmaetgfect.supabase.co/functions/v1/agreement-api/waitlist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      setDone(true);
+    }catch(err){setDone(true);}
+    setSubmitting(false);
+  };
+  if(done)return(<div style={{textAlign:'center',padding:'60px 20px'}}><div style={{width:80,height:80,borderRadius:'50%',background:C.greenLight,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 24px',border:'2px solid '+C.greenPale}}><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><h3 style={{fontFamily:"'Space Grotesk',sans-serif",color:C.text,fontSize:28,marginBottom:12}}>You're on the list!</h3><p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",color:C.textSoft,fontSize:15}}>Thanks <strong style={{color:C.gold}}>{form.firstName}</strong>! We'll be in touch when Titus is ready for you.</p></div>);
+  const inp={width:'100%',padding:'12px 14px',borderRadius:10,border:'1px solid '+C.cardBorder,background:C.bg2,color:C.text,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:14,outline:'none',boxSizing:'border-box'};
+  const lbl={fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,fontWeight:600,color:C.textSoft,display:'block',marginBottom:6};
+  return(<form onSubmit={handleSubmit}>
+    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:16}}>
+      <div><label style={lbl}>First Name *</label><input style={inp} value={form.firstName} onChange={e=>setForm(f=>({...f,firstName:e.target.value}))} placeholder="e.g. Sarah"/></div>
+      <div><label style={lbl}>Last Name *</label><input style={inp} value={form.lastName} onChange={e=>setForm(f=>({...f,lastName:e.target.value}))} placeholder="e.g. Johnson"/></div>
+    </div>
+    <div style={{marginBottom:16}}><label style={lbl}>State in Australia *</label><select style={inp} value={form.state} onChange={e=>setForm(f=>({...f,state:e.target.value}))}><option value="">Select state...</option>{AUSTRALIAN_STATES.map(s=><option key={s} value={s}>{s}</option>)}</select></div>
+    <div style={{marginBottom:20}}><label style={lbl}>I am a... *</label>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}} className="waitlist-checks">
+        {PROVIDER_TYPES.map(p=>(<label key={p.k} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 14px',borderRadius:10,border:'1px solid '+(form.providers[p.k]?C.gold+'55':C.cardBorder),background:form.providers[p.k]?C.goldBg:C.bg2,cursor:'pointer',transition:'all 0.2s'}}>
+          <input type="checkbox" checked={!!form.providers[p.k]} onChange={()=>toggle(p.k)} style={{width:18,height:18,accentColor:C.gold,cursor:'pointer'}}/>
+          <span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.text,fontWeight:form.providers[p.k]?600:400}}>{p.l}</span>
+        </label>))}
+      </div>
+    </div>
+    {error&&<p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:'#e53e3e',marginBottom:12}}>{error}</p>}
+    <button type="submit" disabled={submitting} style={{width:'100%',padding:'15px',background:submitting?'#ccc':'linear-gradient(135deg,'+C.gold+','+C.goldLight+')',color:'#fff',border:'none',borderRadius:12,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,fontWeight:700,cursor:submitting?'not-allowed':'pointer',transition:'all 0.2s'}}>{submitting?'Submitting...':'Join the Waitlist'}</button>
+  </form>);
+};
+
+function DemoForm({onSubmit}){
+  const[form,setForm]=React.useState({firstName:'',lastName:'',email:'',phone:'',state:'',businessType:'',businessDesc:''});
+  const[errors,setErrors]=React.useState({});
+  const[submitting,setSubmitting]=React.useState(false);
+  const update=k=>e=>setForm(f=>({...f,[k]:e.target.value}));
+  const validate=()=>{
+    const e={};
+    if(!form.firstName.trim())e.firstName='Required';
+    if(!form.lastName.trim())e.lastName='Required';
+    if(!form.email.match(/^[^@]+@[^@]+\.[^@]+$/))e.email='Valid email required';
+    if(!form.phone.trim())e.phone='Required';
+    if(!form.state)e.state='Required';
+    if(!form.businessType)e.businessType='Required';
+    return e;
+  };
+  const handleSubmit=e=>{
+    e.preventDefault();
+    const v=validate();
+    if(Object.keys(v).length){setErrors(v);return;}
+    setSubmitting(true);
+    setTimeout(()=>{setSubmitting(false);onSubmit();},1200);
+  };
+  const inp={width:'100%',padding:'10px 12px',borderRadius:8,border:'1px solid #e0e0e0',fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:14,boxSizing:'border-box',outline:'none'};
+  const lbl={fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,fontWeight:700,color:'#444',display:'block',marginBottom:4};
+  const err={fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:11,color:'#e53e3e',marginTop:2};
+  return(<form onSubmit={handleSubmit} style={{padding:'0 32px 32px'}}>
+    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:12}}>
+      <div><label style={lbl}>First Name *</label><input style={{...inp,borderColor:errors.firstName?'#e53e3e':'#e0e0e0'}} value={form.firstName} onChange={update('firstName')} placeholder="e.g. Sarah"/>{errors.firstName&&<p style={err}>{errors.firstName}</p>}</div>
+      <div><label style={lbl}>Last Name *</label><input style={{...inp,borderColor:errors.lastName?'#e53e3e':'#e0e0e0'}} value={form.lastName} onChange={update('lastName')} placeholder="e.g. Johnson"/>{errors.lastName&&<p style={err}>{errors.lastName}</p>}</div>
+    </div>
+    <div style={{marginBottom:12}}><label style={lbl}>Email Address *</label><input type="email" style={{...inp,borderColor:errors.email?'#e53e3e':'#e0e0e0'}} value={form.email} onChange={update('email')} placeholder="e.g. sarah@yourcompany.com.au"/>{errors.email&&<p style={err}>{errors.email}</p>}</div>
+    <div style={{marginBottom:12}}><label style={lbl}>Phone Number *</label><input type="tel" style={{...inp,borderColor:errors.phone?'#e53e3e':'#e0e0e0'}} value={form.phone} onChange={update('phone')} placeholder="e.g. 0412 345 678"/>{errors.phone&&<p style={err}>{errors.phone}</p>}</div>
+    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:12}}>
+      <div><label style={lbl}>State *</label><select style={{...inp,borderColor:errors.state?'#e53e3e':'#e0e0e0'}} value={form.state} onChange={update('state')}><option value="">Select state...</option>{AUSTRALIAN_STATES.map(s=><option key={s} value={s}>{s}</option>)}</select>{errors.state&&<p style={err}>{errors.state}</p>}</div>
+      <div><label style={lbl}>Type of Business *</label><select style={{...inp,borderColor:errors.businessType?'#e53e3e':'#e0e0e0'}} value={form.businessType} onChange={update('businessType')}><option value="">Select type...</option>{BUSINESS_TYPES.map(t=><option key={t} value={t}>{t}</option>)}</select>{errors.businessType&&<p style={err}>{errors.businessType}</p>}</div>
+    </div>
+    <div style={{marginBottom:20}}><label style={lbl}>Tell us about your business</label><textarea style={{...inp,minHeight:80,resize:'vertical'}} value={form.businessDesc} onChange={update('businessDesc')} placeholder="Briefly describe your business, number of clients, key challenges..."/></div>
+    <button type="submit" disabled={submitting} style={{width:'100%',padding:'14px',background:submitting?'#ccc':'linear-gradient(135deg,#9A7B2E,#C8A951)',color:'#fff',border:'none',borderRadius:10,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,fontWeight:700,cursor:submitting?'not-allowed':'pointer',transition:'all 0.2s'}}>{submitting?'Setting up access...':'Access Demo →'}</button>
+  </form>);
+}
+
+function DemoCredentials({onClose}){
+  const accounts=[
+    {role:'Director',email:'director@demo.tituscrm.com',desc:'Full access to all modules'},
+    {role:'Team Leader',email:'teamlead@demo.tituscrm.com',desc:'Team oversight & reports'},
+    {role:'Roster Officer',email:'roster@demo.tituscrm.com',desc:'Scheduling & client budgets'},
+    {role:'Support Worker',email:'worker@demo.tituscrm.com',desc:'Own shifts & limited contacts'},
+  ];
+  return(<div style={{padding:'0 32px 32px'}}>
+    <div style={{background:'#f0fdf4',border:'1px solid #86efac',borderRadius:10,padding:'12px 16px',marginBottom:20,display:'flex',alignItems:'center',gap:10}}>
+      <span style={{fontSize:20,color:'#166534'}}>&#10003;</span>
+      <div><p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,fontWeight:700,color:'#166534',margin:0}}>You are all set!</p><p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:'#166534',margin:'2px 0 0'}}>Choose an account below to explore the live demo</p></div>
+    </div>
+    {accounts.map(a=><div key={a.role} style={{border:'1px solid #e8e0d0',borderRadius:10,padding:'14px 16px',marginBottom:10}}>
+      <p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,fontWeight:700,color:'#1a1a1a',margin:'0 0 2px'}}>{a.role}</p>
+      <p style={{fontFamily:'monospace',fontSize:12,color:'#666',margin:'0 0 2px'}}>{a.email}</p>
+      <p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:11,color:'#999',margin:0}}>{a.desc}</p>
+    </div>)}
+    <div style={{background:'#fff8f0',border:'1px solid #fed7aa',borderRadius:10,padding:'12px 16px',marginBottom:20}}>
+      <p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,fontWeight:700,color:'#92400e',margin:'0 0 2px'}}>Password for all accounts:</p>
+      <p style={{fontFamily:'monospace',fontSize:15,fontWeight:800,color:'#92400e',margin:0,letterSpacing:1}}>TitusDemo2026!</p>
+    </div>
+    <a href="https://demo.tituscrm.com" target="_blank" rel="noopener" style={{display:'block',width:'100%',padding:'14px',background:'linear-gradient(135deg,#9A7B2E,#C8A951)',color:'#fff',border:'none',borderRadius:10,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,fontWeight:700,textAlign:'center',textDecoration:'none',boxSizing:'border-box'}}>Open Live Demo →</a>
+  </div>);
+}
+
+function App(){
+  const[chatOpen,setChatOpen]=useState(false);const[mobileMenu,setMobileMenu]=useState(false);const[scrolled,setScrolled]=useState(false);
+  useEffect(()=>{const h=()=>setScrolled(window.scrollY>50);window.addEventListener("scroll",h);return()=>window.removeEventListener("scroll",h)},[]);
+  const nav=[{l:"Features",h:"#features"},{l:"Calculator",h:"#calculator"},{l:"Pricing",h:"#pricing"},{l:"Waitlist",h:"#waitlist"}];
+  const DEMO_URL="https://demo.tituscrm.com";
+
+  return(<div style={{background:C.bg,minHeight:"100vh",color:C.text,overflowX:"hidden"}}>
+    <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"0 24px",background:scrolled?C.nav:"transparent",backdropFilter:scrolled?"blur(20px)":"none",borderBottom:scrolled?"1px solid "+C.cardBorder:"none",transition:"all 0.3s"}}><div style={{maxWidth:1200,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",height:72}}><TitusLogo size={36}/><div className="nav-links" style={{display:"flex",gap:32,alignItems:"center"}}>{nav.map(l=><a key={l.l} href={l.h} style={{color:C.textSoft,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:14,textDecoration:"none",fontWeight:500}}>{l.l}</a>)}<a href="#waitlist" style={{background:"linear-gradient(135deg,"+C.gold+","+C.goldLight+")",color:"#fff",padding:"10px 22px",borderRadius:10,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,fontWeight:700,textDecoration:"none"}}>Join the Waitlist</a></div><button className="mobile-btn" onClick={()=>setMobileMenu(!mobileMenu)} style={{display:"none",background:"none",border:"none",color:C.gold,cursor:"pointer"}}>{I.menu}</button></div>{mobileMenu&&<div style={{background:C.card,borderRadius:16,margin:"8px 0 16px",padding:16,border:"1px solid "+C.cardBorder,boxShadow:"0 8px 30px rgba(0,0,0,0.08)"}}>{nav.map(l=><a key={l.l} href={l.h} onClick={()=>setMobileMenu(false)} style={{display:"block",padding:"12px 16px",color:C.text,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,textDecoration:"none"}}>{l.l}</a>)}<a href="#waitlist" onClick={()=>setMobileMenu(false)} style={{display:"block",padding:"12px 16px",color:C.gold,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,textDecoration:"none",fontWeight:700}}>Join the Waitlist →</a></div>}</nav>
+
+    <section style={{position:"relative",minHeight:"100vh",display:"flex",alignItems:"center",overflow:"hidden",background:"linear-gradient(180deg,"+C.goldBg+" 0%,"+C.bg+" 60%)"}}>
+      <div style={{position:"absolute",top:"10%",right:"5%",width:400,height:400,borderRadius:"50%",background:"radial-gradient(circle,"+C.goldPale+"44 0%,transparent 70%)",animation:"float 8s infinite"}}/>
+      <div className="section-pad" style={{maxWidth:1200,margin:"0 auto",padding:"120px 24px 80px",width:"100%",position:"relative",zIndex:1}}>
+        <div className="hero-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:60,alignItems:"center"}}>
+          <div style={{animation:"fadeUp 0.8s ease-out"}}>
+            <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.gold,letterSpacing:3,fontWeight:600,marginBottom:20,display:"flex",alignItems:"center",gap:8}}><div style={{width:24,height:1,background:C.gold}}/> BUILT FOR AUSTRALIAN NDIS PROVIDERS</div>
+            <h1 style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:"clamp(36px, 5vw, 58px)",fontWeight:800,lineHeight:1.1,marginBottom:24,color:C.text}}>Stop Drowning<br/>in Admin.<br/><span style={{color:C.gold}}>Start Living.</span></h1>
+            <p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:17,color:C.textSoft,lineHeight:1.7,marginBottom:36,maxWidth:500}}>You didn't start a care business to spend every night on spreadsheets. Titus replaces 5 tools with one AI-powered platform — so you can get back to your family, your team, and your life.</p>
+            <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+              <a href="#calculator" style={{background:"linear-gradient(135deg,"+C.gold+","+C.goldLight+")",color:"#fff",padding:"16px 32px",borderRadius:12,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,fontWeight:700,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:8,boxShadow:"0 4px 16px "+C.gold+"33"}}>Calculate My Savings {I.arrow}</a>
+              <a href="#features" style={{background:"transparent",color:C.gold,padding:"16px 32px",borderRadius:12,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,fontWeight:600,textDecoration:"none",border:"1px solid "+C.gold+"44"}}>See Features</a>
+            </div>
+            <div style={{marginTop:32,background:C.greenLight,borderRadius:14,padding:"14px 20px",border:"1px solid "+C.greenPale,display:"inline-flex",alignItems:"center",gap:14}}>
+              <div style={{width:12,height:12,borderRadius:"50%",background:C.green,animation:"pulseG 2s infinite",flexShrink:0}}/>
+              <div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.green,fontWeight:600}}>24/7 AI Agent Included</div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:11,color:C.textMuted}}>Answers your phone around the clock. Never calls in sick.</div></div>
+            </div>
+          </div>
+          <div style={{animation:"fadeUp 1s ease-out 0.2s",animationFillMode:"both"}}>
+            <div style={{background:"linear-gradient(145deg,"+C.darkCard+","+C.darkSurface+")",borderRadius:20,padding:24,border:"1px solid #333",boxShadow:"0 20px 60px rgba(0,0,0,0.15)"}}>
+              <div style={{display:"flex",gap:6,marginBottom:16}}>{["#EF4444","#F59E0B","#34D399"].map(c=><div key={c} style={{width:10,height:10,borderRadius:"50%",background:c}}/>)}</div>
+              <div style={{background:C.dark,borderRadius:12,padding:16,marginBottom:10}}>
+                <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:10,color:C.goldLight,letterSpacing:1,marginBottom:10}}>TITUS DASHBOARD — LIVE</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+                  {[{l:"Tasks",v:"12",c:C.goldLight,i:I.task},{l:"Leads",v:"8",c:"#60A5FA",i:I.target},{l:"Contacts",v:"193",c:"#34D399",i:I.contact}].map(d=>(<div key={d.l} style={{background:C.darkSurface,borderRadius:8,padding:10,border:"1px solid "+d.c+"22",textAlign:"center"}}><div style={{color:d.c,marginBottom:4,display:"flex",justifyContent:"center"}}>{d.i}</div><div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:18,fontWeight:700,color:d.c}}>{d.v}</div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:9,color:"#888"}}>{d.l}</div></div>))}
+                </div>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
+                <div style={{background:C.dark,borderRadius:10,padding:12}}><div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}><span style={{color:C.goldLight}}>{I.phone}</span><span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:10,color:C.goldLight}}>Phone System</span></div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:11,color:"#888"}}>3 calls today<br/><span style={{color:"#34D399",fontSize:10}}>AI Agent: 2 handled</span></div></div>
+                <div style={{background:C.dark,borderRadius:10,padding:12}}><div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}><span style={{color:C.goldLight}}>{I.users}</span><span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:10,color:C.goldLight}}>HR / Recruit</span></div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:11,color:"#888"}}>5 applicants<br/><span style={{color:"#60A5FA",fontSize:10}}>2 interview stage</span></div></div>
+              </div>
+              <div style={{background:C.dark,borderRadius:10,padding:12}}><div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}><span style={{color:"#34D399"}}>{I.mic}</span><span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:10,color:"#34D399"}}>Voice-to-Text — Just now</span></div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:11,color:"#888",fontStyle:"italic"}}>"Sarah had a great session at the community garden today. She initiated two conversations independently..."</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style={{borderTop:"1px solid "+C.cardBorder,borderBottom:"1px solid "+C.cardBorder,background:C.bg}}><div className="section-pad" style={{maxWidth:1200,margin:"0 auto",padding:"48px 24px"}}><div className="stats-grid" style={{display:"grid",gridTemplateColumns:"repeat(4, 1fr)",gap:32,textAlign:"center"}}>{[{v:64000,p:"$",s:"+",l:"Annual savings per provider"},{v:15600,p:"$",s:"",l:"PRODA admin eliminated"},{v:80,s:"%",l:"Admin time reduction"},{v:5,s:"",l:"Tools replaced by one"}].map(s=>(<div key={s.l}><div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:36,fontWeight:800,color:C.gold}}><Counter end={s.v} prefix={s.p||""} suffix={s.s}/></div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.textMuted,marginTop:4}}>{s.l}</div></div>))}</div></div></section>
+
+    {/* ═══ YOUR WEEK: BEFORE vs AFTER TITUS ═══ */}
+    <section style={{background:C.bg,padding:"100px 24px"}}><div style={{maxWidth:1100,margin:"0 auto"}}>
+      <div style={{textAlign:"center",marginBottom:56}}>
+        <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.gold,letterSpacing:3,fontWeight:600,marginBottom:12}}>WHAT PROBLEM DOES TITUS SOLVE?</div>
+        <h2 style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:"clamp(28px, 4vw, 44px)",fontWeight:800,color:C.text}}>Your Week <span style={{color:C.red}}>Without</span> Titus<br/>vs. Your Week <span style={{color:C.green}}>With</span> It</h2>
+        <p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:16,color:C.textMuted,marginTop:12,maxWidth:650,margin:"16px auto 0",lineHeight:1.7}}>You started a care business to change lives — not to spend every evening writing reports and every weekend sending shift reminders. Here's what changes.</p>
+      </div>
+
+      {/* Pain point cards — before/after */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(320px, 1fr))",gap:20}}>
+        {[
+          {icon:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>,
+            pain:"Report writing",
+            before:"3-4 hours every week writing progress notes, incident reports, and end-of-plan summaries by hand.",
+            after:"AI writes reports from your data in seconds. Voice-to-text notes save directly to participant records mid-shift.",
+            hours:"4 hrs/week"},
+          {icon:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
+            pain:"After-hours on-call",
+            before:"Your phone rings at 2am. A support worker can't find a client's care plan. A family member has a concern. You answer because nobody else will.",
+            after:"24/7 AI Agent answers every call — nights, weekends, public holidays. Triages emergencies, takes messages, routes to the right person. You sleep.",
+            hours:"24/7 coverage"},
+          {icon:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
+            pain:"Weekend group SMS",
+            before:"Sunday afternoon spent texting shift reminders, chasing timesheets, and confirming Monday rosters one by one.",
+            after:"Bulk SMS with templates, automated shift reminders, and plan expiry alerts (60, 30, 21, 14, and 7 days) — all sent automatically.",
+            hours:"3 hrs/weekend"},
+          {icon:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+            pain:"Audit preparation",
+            before:"Two weeks of panic before every NDIS audit. Digging through folders, chasing missing documents, hoping nothing falls through the cracks.",
+            after:"18 QMS compliance registers track everything in real time — incidents, complaints, risks, worker screening, policies. Audit-ready every single day.",
+            hours:"2 wks/year"},
+          {icon:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6"/><path d="M23 11h-6"/></svg>,
+            pain:"HR compliance tracking",
+            before:"Spreadsheets tracking First Aid, CPR, Blue Cards, police checks, insurance — someone always slips through with an expired cert.",
+            after:"Colour-coded compliance badges on every staff profile. Expiry alerts trigger automatically. ABN validation checks GST registration in real time.",
+            hours:"2 hrs/week"},
+          {icon:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>,
+            pain:"Service agreements & plan tracking",
+            before:"Manually tracking plan end dates across 20+ participants. Missing a renewal means a gap in funding and service delivery.",
+            after:"Digital service agreements created and sent inside Titus. Automated reminders escalate from coordinator to team leader to director as expiry approaches.",
+            hours:"1 hr/week"},
+        ].map((item,i)=>(
+          <div key={i} style={{background:C.card,borderRadius:20,border:"1px solid "+C.cardBorder,overflow:"hidden",transition:"transform 0.3s,box-shadow 0.3s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(0,0,0,0.08)"}} onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="none"}}>
+            {/* Header */}
+            <div style={{padding:"24px 24px 16px",display:"flex",alignItems:"center",gap:14}}>
+              <div style={{width:48,height:48,borderRadius:14,background:C.goldPale,display:"flex",alignItems:"center",justifyContent:"center",color:C.gold,flexShrink:0}}>{item.icon}</div>
+              <div>
+                <div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:17,fontWeight:700,color:C.text}}>{item.pain}</div>
+                <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:C.gold,fontWeight:600,marginTop:2}}>{item.hours} reclaimed</div>
+              </div>
+            </div>
+            {/* Before */}
+            <div style={{padding:"0 24px 12px"}}>
+              <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+                <div style={{width:22,height:22,borderRadius:6,background:C.redLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2}}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.red} strokeWidth="3" strokeLinecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+                </div>
+                <div>
+                  <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:11,fontWeight:700,color:C.red,letterSpacing:1,marginBottom:4}}>WITHOUT TITUS</div>
+                  <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.textSoft,lineHeight:1.6}}>{item.before}</div>
+                </div>
+              </div>
+            </div>
+            {/* After */}
+            <div style={{padding:"0 24px 24px"}}>
+              <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+                <div style={{width:22,height:22,borderRadius:6,background:C.greenLight,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2}}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:11,fontWeight:700,color:C.green,letterSpacing:1,marginBottom:4}}>WITH TITUS</div>
+                  <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.textSoft,lineHeight:1.6}}>{item.after}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Bottom summary bar */}
+      <div style={{marginTop:40,background:"linear-gradient(135deg,"+C.dark+",#1a1a1a)",borderRadius:20,padding:"32px 36px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:24}}>
+        <div>
+          <div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:28,fontWeight:700,color:"#fff"}}>10+ hours every week. <span style={{color:C.goldLight}}>Back in your hands.</span></div>
+          <p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:14,color:"#999",marginTop:8,lineHeight:1.6}}>That's evenings with your family instead of writing reports. Weekends off instead of chasing timesheets. Audits that don't keep you up at night.</p>
+        </div>
+        <a href="#calculator" style={{background:"linear-gradient(135deg,"+C.gold+","+C.goldLight+")",color:"#fff",padding:"14px 28px",borderRadius:12,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,fontWeight:700,textDecoration:"none",flexShrink:0,display:"flex",alignItems:"center",gap:8}}>Calculate My Savings {I.arrow}</a>
+      </div>
+
+      {/* And more callout */}
+      <div style={{marginTop:24,textAlign:"center"}}>
+        <p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:14,color:C.textMuted,lineHeight:1.8}}>
+          Plus built-in Kanban recruitment pipelines, AI CV extraction, contractor ABN validation, SCHADS-compliant rostering, client budget tracking with live utilisation bars, digital Schedules of Supports, and a complete browser-based phone system — all from one login.
+        </p>
+      </div>
+    </div></section>
+
+    <section id="features" style={{background:C.bg2}}><div className="section-pad" style={{maxWidth:1200,margin:"0 auto",padding:"100px 24px"}}>
+      <div style={{textAlign:"center",marginBottom:60}}>
+        <div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.gold,letterSpacing:3,fontWeight:600,marginBottom:12}}>100+ FEATURES ACROSS 9 MODULES</div>
+        <h2 style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:"clamp(28px, 4vw, 44px)",fontWeight:800,color:C.text}}>What's Actually <span style={{color:C.gold}}>Inside</span> Titus</h2>
+        <p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,color:C.textMuted,marginTop:12,maxWidth:600,margin:"12px auto 0"}}>Not vaporware. Not "coming soon." Click any module to see exactly what's built and working right now at Delta Community Support.</p>
+        <div style={{display:"flex",justifyContent:"center",gap:24,marginTop:24,flexWrap:"wrap"}}>
+          {[{c:C.green,l:"80+ Live",bg:C.greenLight},{c:C.gold,l:"Coming Soon",bg:C.goldPale}].map(s=>(<div key={s.l} style={{display:"flex",alignItems:"center",gap:8,background:s.bg,padding:"6px 14px",borderRadius:8}}><div style={{width:8,height:8,borderRadius:"50%",background:s.c}}/><span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,fontWeight:600,color:s.c}}>{s.l}</span></div>))}
+        </div>
+      </div>
+      {(()=>{
+        const[openMod,setOpenMod]=useState(null);
+        const modules=[
+          {icon:I.phone,t:"Communications & Voice",d:"Complete phone system, SMS, call recording, and AI voice agent — all from your browser.",count:"10 live features",hl:false,items:[
+            {s:"live",n:"Browser softphone — inbound & outbound calls directly from Titus"},
+            {s:"live",n:"Auto call recording on every call (MP3)"},
+            {s:"live",n:"Call transcripts with manual fetch button"},
+            {s:"live",n:"AI call summaries — one-click summary from any transcript"},
+            {s:"live",n:"Full call log with direction, duration, contact matching"},
+            {s:"live",n:"Hunt group routing — sequential, skip-if-busy (drag-and-drop order)"},
+            {s:"live",n:"Agent availability — Available / Busy / Offline status"},
+            {s:"live",n:"SMS compose — bulk send, templates, emoji, MMS up to 5MB"},
+            {s:"live",n:"Floating popup dialer — accessible from any screen"},
+            {s:"live",n:"24/7 AI voice agent — answers if all humans are busy or offline"},
+            {s:"soon",n:"WhatsApp Business integration"},
+            {s:"soon",n:"Email integration — unified inbox for all comms"},
+            {s:"soon",n:"Outbound AI calling for shift confirmations"},
+          ]},
+          {icon:I.users,t:"Contacts & Client Profiles",d:"Every person in one hub — staff, clients, coordinators, families. Full NDIS participant profiles with 9-tab layout.",count:"12 live features",items:[
+            {s:"live",n:"Full contact management — centralised database"},
+            {s:"live",n:"Employee profiles with all HR fields and exact field matching"},
+            {s:"live",n:"Compliance cert badges — First Aid, CPR, WWCC, Insurance (colour-coded expiry)"},
+            {s:"live",n:"Progress notes per participant"},
+            {s:"live",n:"Incident reports — linked to NDIS reporting requirements"},
+            {s:"live",n:"Kilometre tracking — parsed from transport text fields"},
+            {s:"live",n:"Document management — CV, SW Profiles with file size display"},
+            {s:"live",n:"Photo integration on profile headers"},
+            {s:"live",n:"Full conversation history — calls + SMS chronological with transcripts"},
+            {s:"live",n:"NDIS Client profiles — 9-tab layout: Plan, Budget, Incidents, Notes and more"},
+            {s:"live",n:"Voice-to-text progress notes — dictate and auto-save to participant record"},
+            {s:"live",n:"Voice-to-text incident reports — speak on the spot, auto-flag to team leader"},
+          ]},
+          {icon:I.cal,t:"Rostering & Scheduling",d:"SCHADS-compliant scheduling with AI assistant, client budgets, service agreements, and live budget tracking. Staff AND contractors from one scheduler.",count:"13 live features",items:[
+            {s:"live",n:"Full scheduler module — drag-and-drop, role-based access"},
+            {s:"live",n:"SCHADS compliance monitoring built into every shift"},
+            {s:"live",n:"CSV import — bulk shift records with smart data handling"},
+            {s:"live",n:"Role-based access — Super Admins see all, workers see their shifts only"},
+            {s:"live",n:"AI Roster Assistant — SCHADS Q&A built into the right panel"},
+            {s:"live",n:"Client Budget module — SIL, Community Access, Transport with utilisation bars"},
+            {s:"live",n:"Accommodation rostering submenu"},
+            {s:"live",n:"Live budget adjustment from roster — real-time deductions as shifts are assigned"},
+            {s:"live",n:"Roster of Care Calculator — real-time cost calculation before roster is published"},
+            {s:"live",n:"Digital Schedule of Supports — generated in Titus, sent securely to coordinators"},
+            {s:"live",n:"Digital Service Agreements — create, send, and track NDIS service agreements"},
+            {s:"live",n:"Automated plan expiry reminders (60/30/21/14/7 days) with escalation"},
+            {s:"soon",n:"GPS geo-fenced clock in/out at client address"},
+          ]},
+          {icon:I.dollar,t:"Payroll & Invoicing",d:"SCHADS-compliant payroll engine with automated rate calculations, contractor invoicing, and accounting integration. Coming soon.",count:"Coming soon",tag:"COMING SOON",items:[
+            {s:"soon",n:"SCHADS rate calculations — ordinary, Sat ×1.5, Sun ×2.0, PH ×2.5"},
+            {s:"soon",n:"Overtime triggers — daily >10hrs, fortnightly >76hrs"},
+            {s:"soon",n:"Sleepover allowances (employee and contractor rates)"},
+            {s:"soon",n:"Outside-span allowances (before 6am / after 8pm penalties)"},
+            {s:"soon",n:"Broken shift allowances"},
+            {s:"soon",n:"Superannuation @ 12% (FY2025-26 SGC rate)"},
+            {s:"soon",n:"PAYG withholding per employee (ATO tax tables)"},
+            {s:"soon",n:"Contractor invoice auto-generation from scheduler"},
+            {s:"soon",n:"Contractor invoice separation from payroll"},
+            {s:"soon",n:"Accounting integration — journal export and live API sync"},
+          ]},
+          {icon:I.brain,t:"Reports & AI",d:"AI-powered reporting dashboard with KPIs, charts, task management, and auto-generated reports from real data.",count:"5 live features",items:[
+            {s:"live",n:"Reports dashboard — 5 KPI cards: Total Calls, Inbound, Outbound, SMS Sent, Avg Duration"},
+            {s:"live",n:"Doughnut charts (call direction, communication mix) + bar charts (hourly, daily)"},
+            {s:"live",n:"AI report writing — generates reports from your data in seconds"},
+            {s:"live",n:"Tasks module — filterable table, detail modal, status cards"},
+            {s:"live",n:"End-of-plan reports — created automatically from participant data"},
+            {s:"partial",n:"NDIS Stakeholder Report PDF — 3-page, goal-aligned, photo grid (designed, awaiting integration)"},
+            {s:"soon",n:"PRODA/PACE bulk billing automation ($15,600/yr savings)"},
+          ]},
+          {icon:I.robot,t:"24/7 AI Voice Agent",d:"Your always-on receptionist. AI answers when humans can't — nights, weekends, holidays. Triages, transcribes, routes.",count:"Included in Mid+",hl:true,items:[
+            {s:"live",n:"Real-time AI voice conversations — natural, human-like responses"},
+            {s:"live",n:"Automatic fallback when all human agents are busy or offline"},
+            {s:"live",n:"On/off toggle in Super Admin settings"},
+            {s:"live",n:"Professional greeting and message taking"},
+            {s:"live",n:"Enquiry triage — referrals, clients, urgent incidents"},
+            {s:"live",n:"Messages transcribed and routed to the right contact"},
+            {s:"live",n:"Handles after-hours, weekends, public holidays, 3am"},
+            {s:"live",n:"AI-powered Roster Assistant — answers SCHADS questions from knowledge base"},
+          ]},
+          {icon:I.shield,t:"Access Control & Compliance",d:"Role-based access, audit logs, NDIS compliance tracking, and Australian-hosted data sovereignty.",count:"NDIS audit-ready",items:[
+            {s:"live",n:"User management admin panel with RBAC"},
+            {s:"live",n:"Superadmin vs Support Worker access levels"},
+            {s:"live",n:"SCHADS Award compliance monitoring on every shift"},
+            {s:"live",n:"Incident reporting — mandatory NDIS Quality & Safeguards Commission requirements"},
+            {s:"live",n:"Audit logs — who accessed what and when"},
+            {s:"live",n:"Progress notes per shift, per participant"},
+            {s:"live",n:"Automated deployment pipeline — production CI/CD with instant updates"},
+            {s:"soon",n:"Stakeholder portal — external coordinators see only their assigned clients"},
+            {s:"soon",n:"Support Worker portal — mobile-first, desktop accessible"},
+            {s:"soon",n:"Privacy Policy for tituscrm.com.au"},
+          ]},
+          {icon:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 12l2 2 4-4"/><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/></svg>,t:"QMS — Quality Management System",d:"18 NDIS compliance registers built in. Incidents, complaints, risks, medications, worker screening, audits, and more — all tracked, colour-coded, and audit-ready. No more spreadsheets.",count:"18 live registers",hl:true,items:[
+            {s:"live",n:"Incident Register — severity tracking, NDIS reportable flagging, linked participants"},
+            {s:"live",n:"Complaints Register — source tracking, resolution type, complainant satisfaction"},
+            {s:"live",n:"Risk Register — likelihood × consequence matrix, controls, mitigation plans"},
+            {s:"live",n:"Feedback Register — compliments, suggestions, action tracking"},
+            {s:"live",n:"Medication Register — error type tracking, prescriber, dosage, route"},
+            {s:"live",n:"Restrictive Practices Register — BSP tracking, authorisation, debriefing, NDIS reportable"},
+            {s:"live",n:"Worker Screening & Compliance Register — certs, expiry alerts, verification tracking"},
+            {s:"live",n:"Training & Induction Register — completion tracking, provider, certificates, hours"},
+            {s:"live",n:"Asset & Equipment Register — serial numbers, condition, service dates, warranty"},
+            {s:"live",n:"Document & Policy Version Control Register — versions, approval, linked Practice Standards"},
+            {s:"live",n:"Contractor & Subcontractor Register — ABN, insurance, agreements, screening"},
+            {s:"live",n:"Participant File Register — NDIS plan dates, consent forms, goals, risk assessments"},
+            {s:"live",n:"Infection Control Register — outbreak tracking, health authority notification, clearance"},
+            {s:"live",n:"Maintenance & Safety Checks Register — fire safety, test & tag, WHS, defect tracking"},
+            {s:"live",n:"Reportable Incident Tracker — NDIS Commission reporting, 5-day report tracking, investigation"},
+            {s:"live",n:"Conflict of Interest Register — declaration type, management plans, review tracking"},
+            {s:"live",n:"Insurance Register — policy numbers, cover types, premiums, broker, auto-renewal"},
+            {s:"live",n:"Audit & Review Register — internal/external audits, findings, corrective actions, next due"},
+          ]},
+          {icon:<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>,t:"Recruit",d:"Full applicant tracking system with Kanban pipeline — from CV upload to AI extraction, interview scheduling, compliance checks, and onboarding.",count:"9 live features",items:[
+            {s:"live",n:"Kanban recruitment pipeline — drag-and-drop stages from CV Received to Employed"},
+            {s:"live",n:"Bulk stage editing — move multiple applicants between stages at once"},
+            {s:"live",n:"CV upload with AI extraction — name, contact, suburb, skills auto-populated"},
+            {s:"live",n:"AI CV summariser — one-paragraph candidate snapshot generated instantly"},
+            {s:"live",n:"Compliance cert tracking — First Aid, CPR, WWCC Blue Card with colour-coded expiry"},
+            {s:"live",n:"LMS integration — training records and course enrollment per employee"},
+            {s:"live",n:"Contractor ABN validation — verify ABN, check GST registration, flag expired"},
+            {s:"live",n:"Digital HR document signing — contracts signed inside Titus, no printing or scanning"},
+            {s:"live",n:"Applicant overview table — filterable, sortable, with quick-action status updates"},
+          ]},
+        ];
+        return(<div style={{display:"flex",flexDirection:"column",gap:16}}>
+          {modules.map((m,i)=>{const isOpen=openMod===i;return(
+            <div key={i} style={{background:m.hl?C.greenLight:C.card,borderRadius:20,border:"1px solid "+(isOpen?(m.hl?C.green+"55":C.gold+"55"):(m.hl?C.greenPale:C.cardBorder)),overflow:"hidden",transition:"all 0.3s",boxShadow:isOpen?"0 8px 30px rgba(0,0,0,0.08)":"0 1px 4px rgba(0,0,0,0.04)"}}>
+              <div onClick={()=>setOpenMod(isOpen?null:i)} style={{padding:"24px 28px",cursor:"pointer",display:"flex",alignItems:"center",gap:18,flexWrap:"wrap"}}>
+                <div style={{width:52,height:52,borderRadius:14,background:m.hl?C.green+"15":C.goldPale,display:"flex",alignItems:"center",justifyContent:"center",color:m.hl?C.green:C.gold,flexShrink:0}}>{m.icon}</div>
+                <div style={{flex:1,minWidth:200}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+                    <h3 style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:20,fontWeight:700,color:C.text,margin:0}}>{m.t}</h3>
+                    <span style={{background:m.tag?C.goldPale:m.hl?C.green+"18":C.greenLight,color:m.tag?C.gold:C.green,padding:"3px 10px",borderRadius:6,fontSize:10,fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,letterSpacing:0.5}}>{m.tag||"LIVE"}</span>
+                  </div>
+                  <p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13.5,color:C.textSoft,lineHeight:1.5,marginTop:4}}>{m.d}</p>
+                </div>
+                <div style={{display:"flex",alignItems:"center",gap:12,flexShrink:0}}>
+                  <span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:m.hl?C.green:C.gold,fontWeight:600,background:m.hl?C.green+"10":C.goldBg,padding:"4px 12px",borderRadius:8}}>{m.count}</span>
+                  <div style={{width:32,height:32,borderRadius:8,background:C.bg2,display:"flex",alignItems:"center",justifyContent:"center",transition:"transform 0.3s",transform:isOpen?"rotate(180deg)":"none"}}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.textMuted} strokeWidth="2.5" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </div>
+                </div>
+              </div>
+              {isOpen&&(<div style={{padding:"0 28px 28px"}}>
+                <div style={{borderTop:"1px solid "+(m.hl?C.greenPale:C.cardBorder),paddingTop:20}}>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}} className="features-grid">
+                    {m.items.map((item,j)=>(<div key={j} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"8px 12px",borderRadius:10,background:item.s==="soon"?C.bg2:item.s==="test"?C.goldBg+"88":m.hl?C.green+"08":C.greenLight+"88"}}>
+                      <span style={{flexShrink:0,marginTop:2,color:item.s==="soon"?C.textMuted:item.s==="test"?C.gold:C.green}}>{item.s==="soon"?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>:I.check}</span>
+                      <div>
+                        <span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:item.s==="soon"?C.textMuted:C.text,lineHeight:1.4}}>{item.n}</span>
+                        {item.s==="soon"&&<span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:10,color:C.textMuted,marginLeft:6,fontWeight:600}}>COMING SOON</span>}
+                        {item.s==="test"&&<span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:10,color:C.gold,marginLeft:6,fontWeight:600}}>BUILT — CONNECTING</span>}
+                        {item.s==="partial"&&<span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:10,color:C.blue,marginLeft:6,fontWeight:600}}>IN PROGRESS</span>}
+                      </div>
+                    </div>))}
+                  </div>
+                </div>
+              </div>)}
+            </div>
+          )})}
+        </div>);
+      })()}
+    </div></section>
+
+    <section className="section-pad" style={{padding:"100px 24px",background:C.bg}}><div style={{maxWidth:900,margin:"0 auto"}}><div style={{background:C.greenLight,borderRadius:24,padding:"48px 40px",border:"1px solid "+C.greenPale,position:"relative",overflow:"hidden"}}><div style={{position:"absolute",top:0,right:0,width:300,height:300,background:"radial-gradient(circle,"+C.green+"08,transparent 70%)"}}/>
+      <div style={{position:"relative",zIndex:1}}>
+        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}><div style={{width:14,height:14,borderRadius:"50%",background:C.green,animation:"pulseG 2s infinite"}}/><span style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.green,letterSpacing:2,fontWeight:600}}>ONLINE 24/7/365</span></div>
+        <h2 style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:"clamp(28px, 4vw, 40px)",fontWeight:800,color:C.text,marginBottom:16}}>Your Receptionist That <span style={{color:C.green}}>Never Sleeps</span></h2>
+        <p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:16,color:C.textSoft,lineHeight:1.7,marginBottom:28,maxWidth:600}}>A receptionist costs $58K/year plus super, oncosts, sick leave, annual leave, and training. They work 38 hours a week. Our AI Agent works 168.</p>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:28}} className="ai-grid">{[{l:"Answers every call",d:"Professional greeting, messages, routing"},{l:"Triages enquiries",d:"Referrals, clients, urgent incidents"},{l:"Detailed messages",d:"Transcribed to the right contact"},{l:"After-hours 24/7",d:"Weekends, holidays, 3am"}].map(f=>(<div key={f.l} style={{display:"flex",alignItems:"flex-start",gap:10}}><span style={{color:C.green,flexShrink:0,marginTop:2}}>{I.check}</span><div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:14,color:C.text,fontWeight:600}}>{f.l}</div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:C.textMuted}}>{f.d}</div></div></div>))}</div>
+        <div style={{display:"flex",gap:40,flexWrap:"wrap"}}><div><div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:28,fontWeight:700,color:C.red,textDecoration:"line-through"}}>$71,000/yr</div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:C.textMuted}}>Human receptionist (with oncosts)</div></div><div><div style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:28,fontWeight:700,color:C.green}}>Included</div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:C.textMuted}}>With Titus Mid & Platinum plans</div></div></div>
+      </div>
+    </div></div></section>
+
+    <section id="calculator" style={{background:C.bg2}}><div className="section-pad" style={{maxWidth:1000,margin:"0 auto",padding:"100px 24px"}}>
+      <div style={{textAlign:"center",marginBottom:48}}><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.gold,letterSpacing:3,fontWeight:600,marginBottom:12}}>THE UNCOMFORTABLE TRUTH</div><h2 style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:"clamp(28px, 4vw, 42px)",fontWeight:800,color:C.text}}>What's Your Admin Team <span style={{color:C.red}}>Really</span> Costing You?</h2><p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,color:C.textMuted,marginTop:12,lineHeight:1.6,maxWidth:650,margin:"12px auto 0"}}>Add your admin roles. See the true cost — then exactly how much Titus automates.</p></div>
+      <StaffCalc/>
+    </div></section>
+
+    <section style={{background:"linear-gradient(135deg,"+C.gold+","+C.goldLight+")",padding:"48px 24px"}}><div style={{maxWidth:900,margin:"0 auto",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:24}}>
+      <div><h2 style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:"clamp(22px, 3vw, 32px)",fontWeight:700,color:"#fff",margin:0}}>Be the first to experience Titus</h2><p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,color:"rgba(255,255,255,0.85)",marginTop:8}}>Join the waitlist and get early access when we launch.</p></div>
+      <div style={{display:"flex",gap:12,flexShrink:0}}><a href="#waitlist" style={{background:"#fff",color:C.gold,padding:"14px 28px",borderRadius:12,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,fontWeight:700,textDecoration:"none",display:"flex",alignItems:"center",gap:8}}>Join the Waitlist {I.arrow}</a></div>
+    </div></section>
+
+    <section id="pricing" style={{background:C.bg}}><div className="section-pad" style={{maxWidth:1200,margin:"0 auto",padding:"100px 24px"}}>
+      <div style={{textAlign:"center",marginBottom:60}}><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.gold,letterSpacing:3,fontWeight:600,marginBottom:12}}>SIMPLE PRICING</div><h2 style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:"clamp(28px, 4vw, 44px)",fontWeight:800,color:C.text}}>Flat Weekly Fee. <span style={{color:C.gold}}>No Per-User Traps.</span></h2></div>
+      <div className="pricing-grid" style={{display:"grid",gridTemplateColumns:"repeat(3, 1fr)",gap:24}}>
+        <PricingCard tier="LIGHT" price="99" target="Small providers" features={["Task management","Contacts & CRM","Basic rostering","Voice-to-text notes","Incident reporting","14-day free trial"]}/>
+        <PricingCard tier="MID" price="399" target="Growing providers" popular={true} features={["Everything in Light, plus:","24/7 AI Agent (phone)","Full HR & recruitment ATS","Browser softphone","Leads pipeline","AI report writing","Contractor invoices","SCHADS compliance engine","Priority support"]}/>
+        <PricingCard tier="PLATINUM" price="1099" target="Enterprise" features={["Everything in Mid, plus:","Advanced AI voice agents","PRODA/PACE automation","Geo-fenced attendance","Stakeholder portal","White-label customisation","Dedicated account manager"]}/>
+      </div>
+      <div style={{textAlign:"center",marginTop:32,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.textMuted}}>All plans: $1,999 +GST onboarding · 14-21 day free trial · Cancel anytime · All prices +GST · No per-user charges</div>
+    </div></section>
+
+    <section style={{background:C.bg2}}><div className="section-pad" style={{padding:"80px 24px"}}><div style={{maxWidth:700,margin:"0 auto",textAlign:"center"}}><div style={{display:"flex",justifyContent:"center",gap:4,marginBottom:20}}>{[1,2,3,4,5].map(i=><span key={i}>{I.star}</span>)}</div><blockquote style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:"clamp(20px, 3vw, 28px)",color:C.text,lineHeight:1.5,fontWeight:400,fontStyle:"italic",marginBottom:24}}>"I used to be in the office until 10pm every night. Now the AI writes my reports, handles after-hours calls, and my roster runs itself. I actually made it to my daughter's netball game last Saturday."</blockquote><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:14,color:C.gold,fontWeight:600}}>Delta Community Support</div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:C.textMuted,marginTop:4}}>Brisbane, QLD — Live on Titus CRM</div></div></div></section>
+
+    <section id="waitlist" style={{background:C.bg}}><div className="section-pad" style={{maxWidth:800,margin:"0 auto",padding:"100px 24px"}}><div style={{textAlign:"center",marginBottom:48}}><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.gold,letterSpacing:3,fontWeight:600,marginBottom:12}}>GET EARLY ACCESS</div><h2 style={{fontFamily:"'Space Grotesk',sans-serif",fontSize:"clamp(28px, 4vw, 38px)",fontWeight:800,color:C.text}}>Join the Waitlist</h2><p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:15,color:C.textMuted,marginTop:8}}>Be the first to know when Titus launches. We'll be in touch.</p></div><div style={{background:C.card,borderRadius:20,padding:"32px 28px",border:"1px solid "+C.cardBorder,boxShadow:"0 2px 8px rgba(0,0,0,0.04)"}}><WaitlistForm/></div></div></section>
+
+    <footer style={{background:C.dark,color:"#fff"}}><div className="section-pad" style={{maxWidth:1200,margin:"0 auto",padding:"80px 24px"}}><div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr",gap:48}} className="footer-grid"><div><TitusLogo size={40} dark={true}/><p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:14,color:"#999",lineHeight:1.7,marginTop:16,maxWidth:360}}>AI-powered all-in-one CRM built for Australian NDIS, Aged Care & Community Service providers.</p><a href="mailto:info@titus-crm.com" style={{display:"inline-flex",alignItems:"center",gap:8,color:C.goldLight,fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,textDecoration:"none",marginTop:16}}>{I.mail} info@titus-crm.com</a></div><div><h4 style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.goldLight,letterSpacing:2,fontWeight:600,marginBottom:20}}>PLATFORM</h4>{["Features","Pricing","Calculator","QMS"].map(l=><a key={l} href={"#"+l.toLowerCase()} style={{display:"block",fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13.5,color:"#999",textDecoration:"none",marginBottom:12}}>{l}</a>)}</div><div><h4 style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13,color:C.goldLight,letterSpacing:2,fontWeight:600,marginBottom:20}}>COMPANY</h4>{["Join the Waitlist","Contact","Privacy Policy","Terms"].map(l=><a key={l} href="#waitlist" style={{display:"block",fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:13.5,color:"#999",textDecoration:"none",marginBottom:12}}>{l}</a>)}</div></div><div style={{borderTop:"1px solid #333",marginTop:48,paddingTop:24,display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:16}}><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:"#666"}}>© 2026 Titus CRM. Built in Brisbane, Australia</div><div style={{fontFamily:"'Plus Jakarta Sans',sans-serif",fontSize:12,color:"#666"}}>www.tituscrm.com</div></div></div></footer>
+
+    <button onClick={()=>setChatOpen(!chatOpen)} style={{position:"fixed",bottom:20,right:20,width:60,height:60,borderRadius:"50%",background:"linear-gradient(135deg,"+C.gold+","+C.goldLight+")",border:"none",cursor:"pointer",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",zIndex:999,boxShadow:"0 4px 20px "+C.gold+"44",animation:"glow 3s infinite"}}>{chatOpen?I.close:I.chat}</button>
+    <Chatbot open={chatOpen} onClose={()=>setChatOpen(false)}/>
+  
+</div>);
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+
+
+</body></html>
