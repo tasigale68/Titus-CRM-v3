@@ -2,10 +2,17 @@
 // www.titus-crm.com  → serve marketing site (imported HTML)
 // www.titus-crm.com/agreement-builder → NDIS Agreement Builder
 // demo.titus-crm.com → reverse proxy to Railway backend
+// info@titus-crm.com → inbound email stored in Supabase
 
 import SITE_HTML from './index.html';
 import AGREEMENT_HTML from './agreement-builder.html';
+import ADMIN_HTML from './administrator.html';
 import OG_IMAGE_DATA from './og-image.png';
+import LOGO_DELTA from './partners/delta-community.png';
+import LOGO_MEADOW from './partners/meadow-street.png';
+import LOGO_AMAIYA from './partners/amaiya-support.png';
+import LOGO_PINEULA from './partners/pineula.png';
+import PostalMime from 'postal-mime';
 
 const RAILWAY_ORIGIN = 'https://titus-voice-version-2-production.up.railway.app';
 
@@ -76,6 +83,51 @@ function htmlResponse(html) {
 }
 
 export default {
+  async email(message, env, ctx) {
+    const EDGE_FN = 'https://octdvaicofjmaetgfect.supabase.co/functions/v1/agreement-api';
+    const WEBHOOK_SECRET = env.EMAIL_WEBHOOK_SECRET || 'titus-email-inbound-2026';
+
+    try {
+      // Parse the raw email
+      const rawEmail = new Response(message.raw);
+      const arrayBuffer = await rawEmail.arrayBuffer();
+      const parser = new PostalMime();
+      const parsed = await parser.parse(arrayBuffer);
+
+      const fromAddress = message.from || parsed.from?.address || 'unknown';
+      const toAddress = message.to || 'info@titus-crm.com';
+      const subject = parsed.subject || '(No subject)';
+      const bodyHtml = parsed.html || (parsed.text ? `<pre style="font-family:sans-serif;white-space:pre-wrap;">${parsed.text}</pre>` : '');
+
+      // Store via edge function webhook
+      ctx.waitUntil(
+        fetch(`${EDGE_FN}/admin/email/inbound`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Webhook-Secret': WEBHOOK_SECRET,
+          },
+          body: JSON.stringify({
+            from_address: fromAddress,
+            to_address: toAddress,
+            subject,
+            body_html: bodyHtml,
+          }),
+        }).catch(err => console.error('Failed to store inbound email:', err))
+      );
+
+      // Forward to real inbox
+      await message.forward(env.FORWARD_EMAIL || 'tasigale68@gmail.com');
+    } catch (err) {
+      console.error('Email handler error:', err);
+      try {
+        await message.forward(env.FORWARD_EMAIL || 'tasigale68@gmail.com');
+      } catch (fwdErr) {
+        console.error('Forward also failed:', fwdErr);
+      }
+    }
+  },
+
   async fetch(request) {
     const url = new URL(request.url);
 
@@ -120,9 +172,31 @@ export default {
       });
     }
 
+    // Partner logos
+    const PARTNER_LOGOS = {
+      '/partners/delta-community.png': LOGO_DELTA,
+      '/partners/meadow-street.png': LOGO_MEADOW,
+      '/partners/amaiya-support.png': LOGO_AMAIYA,
+      '/partners/pineula.png': LOGO_PINEULA,
+    };
+    if (PARTNER_LOGOS[url.pathname]) {
+      return new Response(PARTNER_LOGOS[url.pathname], {
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=604800',
+          ...securityHeaders,
+        }
+      });
+    }
+
     // /agreement-builder → serve Agreement Builder page
     if (url.pathname === '/agreement-builder' || url.pathname === '/agreement-builder/') {
       return htmlResponse(AGREEMENT_HTML);
+    }
+
+    // /administrator → serve Admin Portal (noindex, password-protected)
+    if (url.pathname === '/administrator' || url.pathname === '/administrator/') {
+      return htmlResponse(ADMIN_HTML);
     }
 
     // www.titus-crm.com (and any other hostname) → serve marketing site
