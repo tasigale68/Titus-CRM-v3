@@ -13,3 +13,8 @@ rules = [
   { type = "Text", globs = ["**/*.html"] },
   { type = "Data", globs = ["**/*.png"], fallthrough = true }
 ]
+
+# Environment variables
+[vars]
+SUPABASE_URL = "https://octdvaicofjmaetgfect.supabase.co"
+FORWARD_EMAIL = "tasigale68@gmail.com"

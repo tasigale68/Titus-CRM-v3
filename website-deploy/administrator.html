@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Titus CRM — Administrator Portal</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 15C50 15 35 30 25 40C15 50 20 65 30 65C40 65 45 55 50 45C55 55 60 65 70 65C80 65 85 50 75 40C65 30 50 15 50 15Z' fill='%239A7B2E'/%3E%3Cellipse cx='35' cy='52' rx='18' ry='18' fill='none' stroke='%239A7B2E' stroke-width='4'/%3E%3Cellipse cx='65' cy='52' rx='18' ry='18' fill='none' stroke='%239A7B2E' stroke-width='4'/%3E%3Cellipse cx='50' cy='32' rx='16' ry='16' fill='none' stroke='%239A7B2E' stroke-width='4'/%3E%3C/svg%3E">
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html,body,#root{height:100%}
+    body{font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;color:#1A1A1A;background:#F7F6F2}
+    ::selection{background:#9A7B2E22;color:#1A1A1A}
+    ::-webkit-scrollbar{width:5px;height:5px}
+    ::-webkit-scrollbar-track{background:#1a1a1a}
+    ::-webkit-scrollbar-thumb{background:#9A7B2E55;border-radius:3px}
+    ::-webkit-scrollbar-thumb:hover{background:#9A7B2E99}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .fade-in{animation:fadeIn 0.25s ease}
+    .slide-in{animation:slideIn 0.2s ease}
+    textarea:focus,input:focus,select:focus{outline:none}
+    @media(max-width:768px){
+      .sidebar-desktop{display:none!important}
+      .mobile-header{display:flex!important}
+      .main-layout{flex-direction:column!important}
+      .kanban-board{overflow-x:auto!important}
+      .kanban-col{min-width:260px!important}
+      .email-split{flex-direction:column!important}
+      .email-list-panel{width:100%!important;max-height:260px!important;border-right:none!important;border-bottom:1px solid #2a2a2a!important}
+    }
+    @media(min-width:769px){
+      .mobile-header{display:none!important}
+      .mobile-nav-overlay{display:none!important}
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    // ── Colour constants ──────────────────────────────────────────────────────
+    const C = {
+      gold:      '#9A7B2E',
+      goldLight: '#C8A951',
+      goldBg:    '#9A7B2E18',
+      bg:        '#FAF7EE',
+      bg2:       '#F0EDE4',
+      sidebar:   '#0D0D0D',
+      sidebarAlt:'#1A1A1A',
+      border:    '#E5E3DD',
+      borderDark:'#2A2A2A',
+      text:      '#1A1A1A',
+      textMid:   '#555555',
+      textLight: '#888888',
+      textWhite: '#F0EFE9',
+      textDim:   '#AAAAAA',
+      red:       '#DC2626',
+      green:     '#16A34A',
+      blue:      '#2563EB',
+      orange:    '#D97706',
+      purple:    '#7C3AED',
+      teal:      '#2ECC9A',
+      cyan:      '#06B6D4',
+      gray:      '#6B7280',
+      pipeGold:  '#C9A96E',
+      pipeTeal:  '#2ECC9A',
+      pipePurple:'#8B5CF6',
+    };
+
+    // ── Pipeline & Stage definitions ────────────────────────────────────────
+    const PIPELINES = [
+      {
+        id: 1,
+        label: 'Waitlist & Launch',
+        color: C.pipeGold,
+        stages: [
+          { key: 'waitlist_joined',   label: 'Waitlist Joined',   emoji: '\uD83D\uDFE1', color: '#EAB308' },
+          { key: 'welcome_sent',      label: 'Welcome Sent',      emoji: '\uD83D\uDCE7', color: '#3B82F6' },
+          { key: 'hot_lead',          label: 'Hot Lead',          emoji: '\uD83D\uDD25', color: '#F97316' },
+          { key: 'personal_outreach', label: 'Personal Outreach', emoji: '\uD83D\uDCDE', color: '#8B5CF6' },
+          { key: 'trial_activated',   label: 'Trial Activated',   emoji: '\u2705',       color: '#22C55E' },
+          { key: 'no_show',           label: 'No Show',           emoji: '\u274C',       color: '#EF4444' },
+        ],
+      },
+      {
+        id: 2,
+        label: 'Trial to Paid',
+        color: C.pipeTeal,
+        stages: [
+          { key: 'trial_day_1_7',   label: 'Trial Day 1-7',   emoji: '\uD83D\uDFE1', color: '#EAB308' },
+          { key: 'trial_day_8_14',  label: 'Trial Day 8-14',  emoji: '\uD83D\uDD04', color: '#3B82F6' },
+          { key: 'trial_day_15_21', label: 'Trial Day 15-21', emoji: '\uD83D\uDD25', color: '#F97316' },
+          { key: 'demo_booked',     label: 'Demo Booked',     emoji: '\uD83D\uDCAC', color: '#8B5CF6' },
+          { key: 'proposal_sent',   label: 'Proposal Sent',   emoji: '\uD83D\uDCB3', color: '#06B6D4' },
+          { key: 'won_paid',        label: 'Won / Paid',      emoji: '\uD83C\uDFC6', color: '#22C55E' },
+          { key: 'lost_churned',    label: 'Lost / Churned',  emoji: '\uD83D\uDE34', color: '#EF4444' },
+          { key: 'nurture',         label: 'Nurture',         emoji: '\u23F8\uFE0F', color: '#6B7280' },
+        ],
+      },
+      {
+        id: 3,
+        label: 'Active Clients',
+        color: C.pipePurple,
+        stages: [
+          { key: 'onboarding',   label: 'Onboarding',    emoji: '\uD83D\uDFE2', color: '#3B82F6' },
+          { key: 'live_healthy', label: 'Live & Healthy', emoji: '\u2705',       color: '#22C55E' },
+          { key: 'at_risk',      label: 'At Risk',        emoji: '\u26A0\uFE0F', color: '#F97316' },
+          { key: 'upsell',       label: 'Upsell',         emoji: '\uD83D\uDCB0', color: '#8B5CF6' },
+          { key: 'advocate',     label: 'Advocate',        emoji: '\uD83C\uDFC6', color: '#EAB308' },
+          { key: 'churned',      label: 'Churned',         emoji: '\u274C',       color: '#EF4444' },
+        ],
+      },
+    ];
+
+    // Build flat lookups
+    const ALL_STAGES = PIPELINES.flatMap(p => p.stages.map(s => ({ ...s, pipeline: p.id, pipelineColor: p.color, pipelineLabel: p.label })));
+    const STAGE_MAP = Object.fromEntries(ALL_STAGES.map(s => [s.key, s]));
+    const statusColors = Object.fromEntries(ALL_STAGES.map(s => [s.key, s.color]));
+
+    function getPipelineForStage(stageKey) {
+      const s = STAGE_MAP[stageKey];
+      return s ? s.pipeline : 1;
+    }
+    function getPipelineObj(id) {
+      return PIPELINES.find(p => p.id === id) || PIPELINES[0];
+    }
+    function getStageInfo(key) {
+      return STAGE_MAP[key] || { key, label: key, emoji: '', color: C.gold, pipeline: 1, pipelineColor: C.pipeGold, pipelineLabel: 'Waitlist & Launch' };
+    }
+    function daysInStage(lead) {
+      const ref = lead.updated_at || lead.created_at;
+      if (!ref) return 0;
+      return Math.max(0, Math.floor((Date.now() - new Date(ref).getTime()) / 86400000));
+    }
+
+    const ONBOARDING_DEFAULTS = [
+      { label: 'Onboarding call scheduled', done: false },
+      { label: 'Data migration complete', done: false },
+      { label: 'SCHADS compliance configured', done: false },
+      { label: 'AI features activated', done: false },
+      { label: 'Team training completed', done: false },
+      { label: 'First live roster created', done: false },
+      { label: 'Day 7 go-live check', done: false },
+      { label: 'Fully live confirmed', done: false },
+    ];
+
+    const API = 'https://octdvaicofjmaetgfect.supabase.co/functions/v1/agreement-api';
+
+    // ── Utility ───────────────────────────────────────────────────────────────
+    function fmtDate(d) {
+      if (!d) return '—';
+      return new Date(d).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+    function fmtTime(d) {
+      if (!d) return '—';
+      return new Date(d).toLocaleString('en-AU', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    }
+    function todayStr() {
+      return new Date().toISOString().split('T')[0];
+    }
+    function joinArr(v) {
+      if (!v) return '';
+      if (Array.isArray(v)) return v.join(', ');
+      if (typeof v === 'string') {
+        try { const p = JSON.parse(v); return Array.isArray(p) ? p.join(', ') : v; } catch { return v; }
+      }
+      return String(v);
+    }
+    function weekAgo() {
+      const d = new Date();
+      d.setDate(d.getDate() - 7);
+      return d;
+    }
+
+    // ── Icon components ───────────────────────────────────────────────────────
+    const Icon = {
+      dash: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
+      leads: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+      email: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
+      export: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
+      logout: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
+      menu: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
+      close: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+      send: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
+      reply: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>,
+      compose: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
+      sort: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M7 15l5 5 5-5"/><path d="M7 9l5-5 5 5"/></svg>,
+      check: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>,
+    };
+
+    // ── Spinner ───────────────────────────────────────────────────────────────
+    function Spinner({ size = 20, color = C.gold }) {
+      return (
+        <div style={{ width: size, height: size, border: `2px solid ${color}33`, borderTopColor: color, borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
+      );
+    }
+
+    // ── Toast ─────────────────────────────────────────────────────────────────
+    function Toast({ msg, type, onClose }) {
+      useEffect(() => { const t = setTimeout(onClose, 3500); return () => clearTimeout(t); }, []);
+      const bg = type === 'error' ? C.red : type === 'success' ? C.green : C.gold;
+      return (
+        <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 9999, background: bg, color: '#fff', padding: '12px 20px', borderRadius: 8, fontFamily: 'Plus Jakarta Sans', fontSize: 14, fontWeight: 500, boxShadow: '0 4px 20px rgba(0,0,0,0.3)', maxWidth: 320, animation: 'fadeIn 0.2s ease' }}>
+          {msg}
+        </div>
+      );
+    }
+
+    // ── Login Screen ──────────────────────────────────────────────────────────
+    function LoginScreen({ onLogin }) {
+      const [pw, setPw] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState('');
+
+      async function handleSubmit(e) {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+        try {
+          const res = await fetch(`${API}/admin/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: pw }),
+          });
+          const data = await res.json();
+          if (data.success && data.token) {
+            sessionStorage.setItem('titus_admin_token', data.token);
+            onLogin(data.token);
+          } else {
+            setError(data.error || 'Invalid password. Please try again.');
+          }
+        } catch (err) {
+          setError('Connection error. Please try again.');
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      return (
+        <div style={{ minHeight: '100vh', background: `linear-gradient(135deg, ${C.sidebar} 0%, #1a1a1a 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Plus Jakarta Sans' }}>
+          <div className="fade-in" style={{ width: '100%', maxWidth: 400, padding: '0 20px' }}>
+            {/* Logo */}
+            <div style={{ textAlign: 'center', marginBottom: 40 }}>
+              <div style={{ fontFamily: 'Space Grotesk', fontSize: 32, fontWeight: 700, color: C.gold, letterSpacing: '-0.5px', marginBottom: 6 }}>
+                Titus CRM
+              </div>
+              <div style={{ color: C.textDim, fontSize: 14, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 500 }}>
+                Administrator Portal
+              </div>
+            </div>
+
+            {/* Card */}
+            <form onSubmit={handleSubmit} style={{ background: '#161616', border: `1px solid ${C.borderDark}`, borderRadius: 16, padding: 36 }}>
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ display: 'block', color: C.textDim, fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 8 }}>
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={pw}
+                  onChange={e => setPw(e.target.value)}
+                  placeholder="Enter admin password"
+                  required
+                  style={{ width: '100%', background: '#0D0D0D', border: `1px solid ${error ? C.red : '#2A2A2A'}`, borderRadius: 8, padding: '12px 14px', color: C.textWhite, fontSize: 15, fontFamily: 'Plus Jakarta Sans', transition: 'border-color 0.15s' }}
+                  onFocus={e => { if (!error) e.target.style.borderColor = C.gold; }}
+                  onBlur={e => { if (!error) e.target.style.borderColor = '#2A2A2A'; }}
+                />
+                {error && <div style={{ color: C.red, fontSize: 13, marginTop: 8 }}>{error}</div>}
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || !pw}
+                style={{ width: '100%', background: loading || !pw ? '#333' : C.gold, color: loading || !pw ? '#666' : '#fff', border: 'none', borderRadius: 8, padding: '13px', fontSize: 15, fontWeight: 600, fontFamily: 'Plus Jakarta Sans', cursor: loading || !pw ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.15s' }}
+              >
+                {loading ? <><Spinner size={18} color="#fff" /> Signing in...</> : 'Sign In'}
+              </button>
+            </form>
+
+            <div style={{ textAlign: 'center', marginTop: 24, color: '#444', fontSize: 12 }}>
+              © {new Date().getFullYear()} Titus CRM — Restricted Access
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── Stat Card ─────────────────────────────────────────────────────────────
+    function StatCard({ label, value, sub, color }) {
+      return (
+        <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 12, padding: '20px 24px', borderTop: `3px solid ${color || C.gold}` }}>
+          <div style={{ color: C.textLight, fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>{label}</div>
+          <div style={{ fontFamily: 'Space Grotesk', fontSize: 32, fontWeight: 700, color: C.text, lineHeight: 1 }}>{value}</div>
+          {sub && <div style={{ color: C.textLight, fontSize: 12, marginTop: 6 }}>{sub}</div>}
+        </div>
+      );
+    }
+
+    // ── Dashboard Tab ─────────────────────────────────────────────────────────
+    function DashboardTab({ leads, loading }) {
+      if (loading) return <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 80 }}><Spinner size={36} /></div>;
+
+      const total = leads.length;
+      const p1Count = leads.filter(l => getPipelineForStage(l.status || 'waitlist_joined') === 1).length;
+      const p2Count = leads.filter(l => getPipelineForStage(l.status || 'waitlist_joined') === 2).length;
+      const p3Count = leads.filter(l => getPipelineForStage(l.status || 'waitlist_joined') === 3).length;
+
+      const recentLeads = [...leads].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 8);
+
+      return (
+        <div className="fade-in">
+          <div style={{ marginBottom: 28 }}>
+            <h2 style={{ fontFamily: 'Space Grotesk', fontSize: 22, fontWeight: 600, color: C.text }}>Dashboard</h2>
+            <p style={{ color: C.textLight, fontSize: 14, marginTop: 4 }}>Overview of your 3-pipeline CRM</p>
+          </div>
+
+          {/* Stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 32 }}>
+            <StatCard label="Total Leads" value={total} sub="All pipelines" color={C.gold} />
+            <StatCard label="Pipeline 1: Waitlist" value={p1Count} sub="Waitlist & Launch" color={C.pipeGold} />
+            <StatCard label="Pipeline 2: Trial" value={p2Count} sub="Trial to Paid" color={C.pipeTeal} />
+            <StatCard label="Pipeline 3: Active" value={p3Count} sub="Active Clients" color={C.pipePurple} />
+          </div>
+
+          {/* Recent leads */}
+          <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 12, overflow: 'hidden' }}>
+            <div style={{ padding: '16px 20px', borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontFamily: 'Space Grotesk', fontWeight: 600, fontSize: 15 }}>Recent Activity</span>
+              <span style={{ fontSize: 12, color: C.textLight }}>Showing latest 8</span>
+            </div>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: C.bg2 }}>
+                    {['Name','Email','Pipeline','Stage','State','Date'].map(h => (
+                      <th key={h} style={{ padding: '10px 16px', textAlign: 'left', color: C.textLight, fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentLeads.map((l, i) => {
+                    const si = getStageInfo(l.status || 'waitlist_joined');
+                    return (
+                      <tr key={l.id} style={{ borderTop: i > 0 ? `1px solid ${C.border}` : 'none' }}>
+                        <td style={{ padding: '11px 16px', fontWeight: 500, whiteSpace: 'nowrap' }}>{l.first_name} {l.last_name}</td>
+                        <td style={{ padding: '11px 16px', color: C.textMid, fontSize: 12 }}>{l.email}</td>
+                        <td style={{ padding: '11px 16px' }}>
+                          <span style={{ background: `${si.pipelineColor}18`, color: si.pipelineColor, padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap' }}>
+                            P{si.pipeline}: {si.pipelineLabel}
+                          </span>
+                        </td>
+                        <td style={{ padding: '11px 16px' }}>
+                          <span style={{ background: `${si.color}18`, color: si.color, padding: '2px 8px', borderRadius: 20, fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                            {si.emoji} {si.label}
+                          </span>
+                        </td>
+                        <td style={{ padding: '11px 16px', color: C.textMid }}>{l.state || '—'}</td>
+                        <td style={{ padding: '11px 16px', color: C.textLight, fontSize: 12, whiteSpace: 'nowrap' }}>{fmtDate(l.created_at)}</td>
+                      </tr>
+                    );
+                  })}
+                  {recentLeads.length === 0 && (
+                    <tr><td colSpan="6" style={{ padding: '32px 16px', textAlign: 'center', color: C.textLight }}>No leads yet.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── Kanban Card ───────────────────────────────────────────────────────────
+    function KanbanCard({ lead, onClick, onDragStart }) {
+      const pts = joinArr(lead.provider_types);
+      const si = getStageInfo(lead.status || 'waitlist_joined');
+      const days = daysInStage(lead);
+      return (
+        <div
+          draggable
+          onDragStart={onDragStart}
+          onClick={() => onClick(lead)}
+          style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 8, padding: '12px 14px', cursor: 'pointer', marginBottom: 8, transition: 'box-shadow 0.15s', userSelect: 'none' }}
+          onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.10)'}
+          onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
+        >
+          {/* Pipeline badge + emoji + days */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: si.pipelineColor, flexShrink: 0 }} />
+            <span style={{ fontSize: 13 }}>{si.emoji}</span>
+            <span style={{ fontSize: 10, color: si.pipelineColor, fontWeight: 600 }}>P{si.pipeline}</span>
+            {days > 0 && (
+              <span style={{ marginLeft: 'auto', fontSize: 10, color: days > 7 ? '#EF4444' : C.textLight, fontWeight: 600 }}>{days}d</span>
+            )}
+          </div>
+          <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 3, color: C.text }}>{lead.first_name} {lead.last_name}</div>
+          <div style={{ fontSize: 11, color: C.textLight, marginBottom: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lead.email}</div>
+          {(lead.tags || []).length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
+              {(lead.tags || []).map(t => (
+                <span key={t} style={{ background: '#7C3AED18', color: '#7C3AED', fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 10, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{t}</span>
+              ))}
+            </div>
+          )}
+          {pts && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
+              {pts.split(', ').slice(0, 2).map(p => (
+                <span key={p} style={{ background: C.goldBg, color: C.gold, fontSize: 10, fontWeight: 600, padding: '1px 6px', borderRadius: 10 }}>{p}</span>
+              ))}
+            </div>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11, color: C.textLight }}>
+            <span>{lead.state || '—'}</span>
+            <span>{fmtDate(lead.created_at)}</span>
+          </div>
+        </div>
+      );
+    }
+
+    // ── Lead Detail Panel ─────────────────────────────────────────────────────
+    function LeadDetailPanel({ lead, onClose, onSave, saving }) {
+      const [notes, setNotes] = useState(lead.notes || '');
+      const [status, setStatus] = useState(lead.status || 'waitlist_joined');
+      const [tags, setTags] = useState(lead.tags || []);
+      const [newTag, setNewTag] = useState('');
+      const [skipAuto, setSkipAuto] = useState(false);
+      const [pipeline, setPipeline] = useState(() => lead.pipeline || getPipelineForStage(lead.status || 'waitlist_joined'));
+      const [onboardingTasks, setOnboardingTasks] = useState(() => {
+        if (lead.onboarding_tasks && Array.isArray(lead.onboarding_tasks)) return lead.onboarding_tasks;
+        return ONBOARDING_DEFAULTS.map(t => ({ ...t }));
+      });
+
+      const addTag = () => { const t = newTag.trim().toUpperCase(); if (t && !tags.includes(t)) setTags([...tags, t]); setNewTag(''); };
+      const removeTag = (t) => setTags(tags.filter(x => x !== t));
+
+      const currentPipeline = getPipelineObj(pipeline);
+      const stageOpts = currentPipeline.stages;
+
+      function handlePipelineChange(newPid) {
+        const pid = Number(newPid);
+        setPipeline(pid);
+        const p = getPipelineObj(pid);
+        setStatus(p.stages[0].key);
+      }
+
+      function toggleOnboardingTask(idx) {
+        setOnboardingTasks(prev => prev.map((t, i) => i === idx ? { ...t, done: !t.done } : t));
+      }
+
+      const showOnboarding = pipeline === 3 && status === 'onboarding';
+
+      return (
+        <div className="slide-in" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 400, background: C.bg, borderLeft: `1px solid ${C.border}`, zIndex: 1000, display: 'flex', flexDirection: 'column', boxShadow: '-4px 0 24px rgba(0,0,0,0.12)' }}>
+          {/* Header */}
+          <div style={{ padding: '20px 24px', borderBottom: `1px solid ${C.border}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <div>
+                <div style={{ fontFamily: 'Space Grotesk', fontWeight: 600, fontSize: 17 }}>{lead.first_name} {lead.last_name}</div>
+                <div style={{ fontSize: 12, color: C.textLight, marginTop: 2 }}>{lead.email}</div>
+              </div>
+              <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.textLight, padding: 4, borderRadius: 6, display: 'flex' }}>
+                <Icon.close />
+              </button>
+            </div>
+            {/* Pipeline badge */}
+            <span style={{ display: 'inline-block', background: `${currentPipeline.color}18`, color: currentPipeline.color, padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700 }}>
+              P{pipeline}: {currentPipeline.label}
+            </span>
+          </div>
+
+          {/* Scrollable body */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
+            {/* Pipeline selector */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: C.textLight, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Pipeline</label>
+              <select value={pipeline} onChange={e => handlePipelineChange(e.target.value)} style={{ width: '100%', background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 7, padding: '9px 12px', fontSize: 13, fontFamily: 'Plus Jakarta Sans', color: currentPipeline.color, fontWeight: 600 }}>
+                {PIPELINES.map(p => <option key={p.id} value={p.id}>P{p.id}: {p.label}</option>)}
+              </select>
+            </div>
+
+            {/* Status — filtered to current pipeline */}
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: C.textLight, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Stage</label>
+              <select value={status} onChange={e => setStatus(e.target.value)} style={{ width: '100%', background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 7, padding: '9px 12px', fontSize: 13, fontFamily: 'Plus Jakarta Sans', color: statusColors[status] || C.text, fontWeight: 600 }}>
+                {stageOpts.map(s => <option key={s.key} value={s.key}>{s.emoji} {s.label}</option>)}
+              </select>
+            </div>
+
+            {/* Onboarding checklist */}
+            {showOnboarding && (
+              <div style={{ marginBottom: 20, background: '#3B82F608', border: '1px solid #3B82F622', borderRadius: 10, padding: '14px 16px' }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>Onboarding Checklist</label>
+                {onboardingTasks.map((task, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, cursor: 'pointer' }} onClick={() => toggleOnboardingTask(idx)}>
+                    <div style={{ width: 18, height: 18, borderRadius: 4, border: `2px solid ${task.done ? '#22C55E' : C.border}`, background: task.done ? '#22C55E' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.15s' }}>
+                      {task.done && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                    </div>
+                    <span style={{ fontSize: 13, color: task.done ? C.textLight : C.text, textDecoration: task.done ? 'line-through' : 'none', transition: 'all 0.15s' }}>{task.label}</span>
+                  </div>
+                ))}
+                <div style={{ marginTop: 8, fontSize: 11, color: C.textLight }}>{onboardingTasks.filter(t => t.done).length}/{onboardingTasks.length} complete</div>
+              </div>
+            )}
+
+            {/* Tags */}
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: C.textLight, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Tags</label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                {tags.map(t => (
+                  <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#7C3AED18', color: '#7C3AED', fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 12, textTransform: 'uppercase' }}>
+                    {t}
+                    <button onClick={() => removeTag(t)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#7C3AED', fontSize: 14, lineHeight: 1, padding: 0, marginLeft: 2 }}>&times;</button>
+                  </span>
+                ))}
+                {tags.length === 0 && <span style={{ fontSize: 12, color: C.textLight }}>No tags</span>}
+              </div>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <input
+                  value={newTag}
+                  onChange={e => setNewTag(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
+                  placeholder="Add tag..."
+                  style={{ flex: 1, background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 7, padding: '7px 10px', fontSize: 12, fontFamily: 'Plus Jakarta Sans', color: C.text }}
+                  onFocus={e => e.target.style.borderColor = C.gold}
+                  onBlur={e => e.target.style.borderColor = C.border}
+                />
+                <button onClick={addTag} style={{ background: '#7C3AED', color: '#fff', border: 'none', borderRadius: 7, padding: '7px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Plus Jakarta Sans' }}>Add</button>
+              </div>
+            </div>
+
+            {/* Fields */}
+            {[
+              ['Phone', lead.phone],
+              ['State', lead.state],
+              ['Provider Types', joinArr(lead.provider_types)],
+              ['Business Structures', joinArr(lead.business_structures)],
+              ['Interested Features', joinArr(lead.interested_features)],
+              ['Joined', fmtDate(lead.created_at)],
+            ].map(([label, val]) => (
+              <div key={label} style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: C.textLight, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>{label}</div>
+                <div style={{ fontSize: 13, color: val ? C.text : C.textLight }}>{val || '—'}</div>
+              </div>
+            ))}
+
+            {/* Notes */}
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: C.textLight, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Notes</label>
+              <textarea
+                value={notes}
+                onChange={e => setNotes(e.target.value)}
+                rows={5}
+                placeholder="Add notes about this lead..."
+                style={{ width: '100%', background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 7, padding: '10px 12px', fontSize: 13, fontFamily: 'Plus Jakarta Sans', color: C.text, resize: 'vertical' }}
+                onFocus={e => e.target.style.borderColor = C.gold}
+                onBlur={e => e.target.style.borderColor = C.border}
+              />
+            </div>
+
+            {/* Skip auto-email */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <div
+                onClick={() => setSkipAuto(!skipAuto)}
+                style={{ width: 18, height: 18, borderRadius: 4, border: `2px solid ${skipAuto ? C.orange : C.border}`, background: skipAuto ? C.orange : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, transition: 'all 0.15s' }}
+              >
+                {skipAuto && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+              </div>
+              <span style={{ fontSize: 12, color: C.textMid, cursor: 'pointer' }} onClick={() => setSkipAuto(!skipAuto)}>Skip auto-email</span>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div style={{ padding: '16px 24px', borderTop: `1px solid ${C.border}` }}>
+            {/* Auto-email indicator */}
+            <div style={{ fontSize: 11, color: skipAuto ? C.orange : '#22C55E', marginBottom: 10, textAlign: 'center' }}>
+              {skipAuto ? 'No auto-email will be sent' : 'Auto-email will be sent for this stage'}
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={onClose} style={{ flex: 1, background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 7, padding: '10px', fontSize: 13, fontWeight: 500, fontFamily: 'Plus Jakarta Sans', cursor: 'pointer', color: C.textMid }}>
+                Cancel
+              </button>
+              <button
+                onClick={() => onSave(lead.id, { status, notes, tags, pipeline, onboarding_tasks: showOnboarding ? onboardingTasks : undefined, skip_automation: skipAuto })}
+                disabled={saving}
+                style={{ flex: 2, background: C.gold, color: '#fff', border: 'none', borderRadius: 7, padding: '10px', fontSize: 13, fontWeight: 600, fontFamily: 'Plus Jakarta Sans', cursor: saving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+              >
+                {saving ? <><Spinner size={14} color="#fff" /> Saving...</> : <><Icon.check /> Save Changes</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── Leads (Kanban) Tab ────────────────────────────────────────────────────
+    function LeadsTab({ leads, setLeads, token, addToast, loading }) {
+      const [selectedLead, setSelectedLead] = useState(null);
+      const [saving, setSaving] = useState(false);
+      const [dragging, setDragging] = useState(null);
+      const [dragOver, setDragOver] = useState(null);
+      const [activePipeline, setActivePipeline] = useState(1);
+
+      const currentPipeline = getPipelineObj(activePipeline);
+      const columns = currentPipeline.stages;
+
+      async function handleSave(id, updates) {
+        // Auto-calculate pipeline from status
+        const autoPipeline = updates.pipeline || getPipelineForStage(updates.status);
+        const payload = { ...updates, pipeline: autoPipeline };
+        setSaving(true);
+        try {
+          const res = await fetch(`${API}/admin/leads/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (data.success) {
+            setLeads(prev => prev.map(l => l.id === id ? { ...l, ...payload, updated_at: new Date().toISOString() } : l));
+            if (selectedLead && selectedLead.id === id) setSelectedLead(prev => ({ ...prev, ...payload, updated_at: new Date().toISOString() }));
+            addToast('Lead updated.', 'success');
+          } else {
+            addToast(data.error || 'Save failed.', 'error');
+          }
+        } catch {
+          addToast('Network error.', 'error');
+        } finally {
+          setSaving(false);
+        }
+      }
+
+      function handleDrop(colKey) {
+        if (!dragging || dragging.status === colKey) return;
+        const autoPipeline = getPipelineForStage(colKey);
+        handleSave(dragging.id, { status: colKey, notes: dragging.notes, pipeline: autoPipeline });
+        setDragging(null);
+        setDragOver(null);
+      }
+
+      if (loading) return <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 80 }}><Spinner size={36} /></div>;
+
+      const pipeTabStyle = (pid) => ({
+        padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', border: 'none',
+        background: activePipeline === pid ? getPipelineObj(pid).color : 'transparent',
+        color: activePipeline === pid ? '#fff' : C.textMid,
+        transition: 'all 0.15s', fontFamily: 'Plus Jakarta Sans',
+      });
+
+      return (
+        <div className="fade-in">
+          <div style={{ marginBottom: 24 }}>
+            <h2 style={{ fontFamily: 'Space Grotesk', fontSize: 22, fontWeight: 600 }}>Leads Pipeline</h2>
+            <p style={{ color: C.textLight, fontSize: 14, marginTop: 4 }}>Drag cards between columns to update stage</p>
+          </div>
+
+          {/* Pipeline selector tabs */}
+          <div style={{ display: 'flex', gap: 6, marginBottom: 20, background: C.bg, border: `1px solid ${C.border}`, borderRadius: 10, padding: 4, width: 'fit-content' }}>
+            {PIPELINES.map(p => (
+              <button key={p.id} style={pipeTabStyle(p.id)} onClick={() => setActivePipeline(p.id)}>
+                P{p.id}: {p.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="kanban-board" style={{ display: 'flex', gap: 12, alignItems: 'flex-start', overflowX: 'auto', paddingBottom: 16 }}>
+            {columns.map(col => {
+              const colLeads = leads.filter(l => (l.status || 'waitlist_joined') === col.key);
+              const isOver = dragOver === col.key;
+              return (
+                <div
+                  key={col.key}
+                  className="kanban-col"
+                  style={{ minWidth: 220, flex: '0 0 220px', background: isOver ? `${col.color}10` : C.bg2, borderRadius: 10, border: `1px solid ${isOver ? col.color : C.border}`, transition: 'all 0.15s' }}
+                  onDragOver={e => { e.preventDefault(); setDragOver(col.key); }}
+                  onDragLeave={() => setDragOver(null)}
+                  onDrop={() => handleDrop(col.key)}
+                >
+                  {/* Column header */}
+                  <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: `2px solid ${col.color}` }}>
+                    <span style={{ fontWeight: 700, fontSize: 11, color: col.color, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{col.emoji} {col.label}</span>
+                    <span style={{ background: col.color, color: '#fff', borderRadius: 20, fontSize: 11, fontWeight: 700, padding: '1px 7px' }}>{colLeads.length}</span>
+                  </div>
+                  {/* Cards */}
+                  <div style={{ padding: '10px 10px', minHeight: 80 }}>
+                    {colLeads.map(lead => (
+                      <KanbanCard
+                        key={lead.id}
+                        lead={lead}
+                        onClick={setSelectedLead}
+                        onDragStart={() => setDragging(lead)}
+                      />
+                    ))}
+                    {colLeads.length === 0 && (
+                      <div style={{ textAlign: 'center', padding: '20px 10px', color: C.textLight, fontSize: 12 }}>No leads</div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Detail panel */}
+          {selectedLead && (
+            <>
+              <div onClick={() => setSelectedLead(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 999 }} />
+              <LeadDetailPanel lead={selectedLead} onClose={() => setSelectedLead(null)} onSave={handleSave} saving={saving} />
+            </>
+          )}
+        </div>
+      );
+    }
+
+    // ── Emails Tab ────────────────────────────────────────────────────────────
+    function EmailsTab({ token, addToast }) {
+      const [emails, setEmails] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [selected, setSelected] = useState(null);
+      const [filter, setFilter] = useState('all');
+      const [composing, setComposing] = useState(false);
+      const [compose, setCompose] = useState({ to: '', subject: '', body: '' });
+      const [sending, setSending] = useState(false);
+
+      useEffect(() => {
+        (async () => {
+          try {
+            const res = await fetch(`${API}/admin/emails`, { headers: { Authorization: `Bearer ${token}` } });
+            const data = await res.json();
+            if (data.success) setEmails(data.emails || []);
+          } catch {}
+          setLoading(false);
+        })();
+      }, []);
+
+      async function handleSend(e) {
+        e.preventDefault();
+        setSending(true);
+        try {
+          const res = await fetch(`${API}/admin/email/send`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify(compose),
+          });
+          const data = await res.json();
+          if (data.success) {
+            addToast('Email sent.', 'success');
+            setComposing(false);
+            setCompose({ to: '', subject: '', body: '' });
+          } else {
+            addToast(data.error || 'Send failed.', 'error');
+          }
+        } catch {
+          addToast('Network error.', 'error');
+        } finally {
+          setSending(false);
+        }
+      }
+
+      function startReply(email) {
+        setCompose({ to: email.from_address, subject: `Re: ${email.subject}`, body: '' });
+        setComposing(true);
+      }
+
+      const filtered = emails.filter(e => {
+        if (filter === 'inbox') return e.direction === 'inbound';
+        if (filter === 'sent') return e.direction === 'outbound';
+        return true;
+      });
+
+      const subNavStyle = (f) => ({
+        padding: '6px 14px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none',
+        background: filter === f ? C.gold : 'transparent', color: filter === f ? '#fff' : C.textMid, transition: 'all 0.15s',
+      });
+
+      return (
+        <div className="fade-in" style={{ height: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column' }}>
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexShrink: 0 }}>
+            <div>
+              <h2 style={{ fontFamily: 'Space Grotesk', fontSize: 22, fontWeight: 600 }}>Emails</h2>
+            </div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div style={{ display: 'flex', background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8, padding: 3, gap: 2 }}>
+                {['all','inbox','sent'].map(f => (
+                  <button key={f} style={subNavStyle(f)} onClick={() => setFilter(f)}>
+                    {f.charAt(0).toUpperCase() + f.slice(1)}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => { setComposing(true); setCompose({ to: '', subject: '', body: '' }); }}
+                style={{ background: C.gold, color: '#fff', border: 'none', borderRadius: 7, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'Plus Jakarta Sans' }}
+              >
+                <Icon.compose /> Compose
+              </button>
+            </div>
+          </div>
+
+          {/* Split panel */}
+          <div className="email-split" style={{ flex: 1, display: 'flex', background: C.bg, border: `1px solid ${C.border}`, borderRadius: 12, overflow: 'hidden', minHeight: 0 }}>
+            {/* Email list */}
+            <div className="email-list-panel" style={{ width: 320, borderRight: `1px solid ${C.border}`, overflowY: 'auto', flexShrink: 0 }}>
+              {loading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 40 }}><Spinner /></div>
+              ) : filtered.length === 0 ? (
+                <div style={{ padding: 32, textAlign: 'center', color: C.textLight, fontSize: 13 }}>No emails found.</div>
+              ) : (
+                filtered.map((email, i) => (
+                  <div
+                    key={email.id}
+                    onClick={() => { setSelected(email); setComposing(false); }}
+                    style={{ padding: '14px 16px', borderBottom: `1px solid ${C.border}`, cursor: 'pointer', background: selected?.id === email.id ? C.goldBg : 'transparent', transition: 'background 0.1s' }}
+                    onMouseEnter={e => { if (selected?.id !== email.id) e.currentTarget.style.background = C.bg2; }}
+                    onMouseLeave={e => { if (selected?.id !== email.id) e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <span style={{ fontWeight: 600, fontSize: 13, color: C.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 160 }}>
+                        {email.direction === 'inbound' ? email.from_address : email.to_address}
+                      </span>
+                      <span style={{ fontSize: 10, color: C.textLight, flexShrink: 0 }}>{fmtDate(email.created_at)}</span>
+                    </div>
+                    <div style={{ fontSize: 12, fontWeight: 500, color: C.textMid, marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email.subject}</div>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 6px', borderRadius: 10, background: email.direction === 'inbound' ? '#2563EB18' : '#16A34A18', color: email.direction === 'inbound' ? C.blue : C.green }}>
+                        {email.direction === 'inbound' ? '↙ Inbox' : '↗ Sent'}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Email content / Compose */}
+            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+              {composing ? (
+                <form onSubmit={handleSend} style={{ padding: 28, maxWidth: 600 }}>
+                  <div style={{ fontFamily: 'Space Grotesk', fontSize: 16, fontWeight: 600, marginBottom: 20 }}>New Message</div>
+                  {[
+                    { label: 'To', key: 'to', type: 'email', placeholder: 'recipient@example.com' },
+                    { label: 'Subject', key: 'subject', type: 'text', placeholder: 'Email subject' },
+                  ].map(f => (
+                    <div key={f.key} style={{ marginBottom: 16 }}>
+                      <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: C.textLight, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 5 }}>{f.label}</label>
+                      <input
+                        type={f.type}
+                        value={compose[f.key]}
+                        onChange={e => setCompose(p => ({ ...p, [f.key]: e.target.value }))}
+                        placeholder={f.placeholder}
+                        required
+                        style={{ width: '100%', background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 7, padding: '9px 12px', fontSize: 13, fontFamily: 'Plus Jakarta Sans', color: C.text }}
+                        onFocus={e => e.target.style.borderColor = C.gold}
+                        onBlur={e => e.target.style.borderColor = C.border}
+                      />
+                    </div>
+                  ))}
+                  <div style={{ marginBottom: 20 }}>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: C.textLight, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 5 }}>Body</label>
+                    <textarea
+                      value={compose.body}
+                      onChange={e => setCompose(p => ({ ...p, body: e.target.value }))}
+                      rows={10}
+                      placeholder="Type your message..."
+                      required
+                      style={{ width: '100%', background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 7, padding: '10px 12px', fontSize: 13, fontFamily: 'Plus Jakarta Sans', color: C.text, resize: 'vertical' }}
+                      onFocus={e => e.target.style.borderColor = C.gold}
+                      onBlur={e => e.target.style.borderColor = C.border}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: 10 }}>
+                    <button type="button" onClick={() => setComposing(false)} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 7, padding: '9px 18px', fontSize: 13, fontWeight: 500, fontFamily: 'Plus Jakarta Sans', cursor: 'pointer', color: C.textMid }}>
+                      Cancel
+                    </button>
+                    <button type="submit" disabled={sending} style={{ background: C.gold, color: '#fff', border: 'none', borderRadius: 7, padding: '9px 20px', fontSize: 13, fontWeight: 600, fontFamily: 'Plus Jakarta Sans', cursor: sending ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {sending ? <><Spinner size={14} color="#fff" /> Sending...</> : <><Icon.send /> Send</>}
+                    </button>
+                  </div>
+                </form>
+              ) : selected ? (
+                <div style={{ padding: 28, maxWidth: 680 }}>
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ fontFamily: 'Space Grotesk', fontSize: 18, fontWeight: 600, marginBottom: 12 }}>{selected.subject}</div>
+                    <div style={{ display: 'flex', gap: 16, fontSize: 12, color: C.textLight, flexWrap: 'wrap' }}>
+                      <span><b>From:</b> {selected.from_address}</span>
+                      <span><b>To:</b> {selected.to_address}</span>
+                      <span>{fmtTime(selected.created_at)}</span>
+                    </div>
+                  </div>
+                  <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 20, marginBottom: 20 }}>
+                    {selected.body_html ? (
+                      <div style={{ fontSize: 14, lineHeight: 1.7 }} dangerouslySetInnerHTML={{ __html: selected.body_html }} />
+                    ) : (
+                      <div style={{ fontSize: 14, lineHeight: 1.7, color: C.textMid, whiteSpace: 'pre-wrap' }}>
+                        {selected.body || '(No content)'}
+                      </div>
+                    )}
+                  </div>
+                  {selected.direction === 'inbound' && (
+                    <button onClick={() => startReply(selected)} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 7, padding: '9px 16px', fontSize: 13, fontWeight: 500, fontFamily: 'Plus Jakarta Sans', cursor: 'pointer', color: C.textMid, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Icon.reply /> Reply
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.textLight, fontSize: 14 }}>
+                  Select an email to read it
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── Export Tab ────────────────────────────────────────────────────────────
+    function ExportTab({ leads, loading }) {
+      const [sortKey, setSortKey] = useState('created_at');
+      const [sortDir, setSortDir] = useState('desc');
+
+      function toggleSort(key) {
+        if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+        else { setSortKey(key); setSortDir('asc'); }
+      }
+
+      const sorted = [...leads].sort((a, b) => {
+        let av = a[sortKey] || '', bv = b[sortKey] || '';
+        if (sortKey === 'created_at') { av = new Date(av); bv = new Date(bv); }
+        if (av < bv) return sortDir === 'asc' ? -1 : 1;
+        if (av > bv) return sortDir === 'asc' ? 1 : -1;
+        return 0;
+      });
+
+      const cols = [
+        { key: 'first_name',   label: 'First Name' },
+        { key: 'last_name',    label: 'Last Name' },
+        { key: 'email',        label: 'Email' },
+        { key: 'phone',        label: 'Phone' },
+        { key: 'state',        label: 'State' },
+        { key: 'provider_types',     label: 'Provider Types' },
+        { key: 'business_structures',label: 'Business Structures' },
+        { key: 'interested_features',label: 'Interested Features' },
+        { key: 'tags',         label: 'Tags' },
+        { key: 'pipeline',     label: 'Pipeline' },
+        { key: 'status',       label: 'Stage' },
+        { key: 'notes',        label: 'Notes' },
+        { key: 'created_at',   label: 'Date Joined' },
+      ];
+
+      function toRows() {
+        return sorted.map(l => {
+          const si = getStageInfo(l.status || 'waitlist_joined');
+          return {
+            'First Name':           l.first_name || '',
+            'Last Name':            l.last_name || '',
+            'Email':                l.email || '',
+            'Phone':                l.phone || '',
+            'State':                l.state || '',
+            'Provider Types':       joinArr(l.provider_types),
+            'Business Structures':  joinArr(l.business_structures),
+            'Interested Features':  joinArr(l.interested_features),
+            'Tags':                 joinArr(l.tags),
+            'Pipeline':             `P${si.pipeline}: ${si.pipelineLabel}`,
+            'Stage':                si.label,
+            'Notes':                l.notes || '',
+            'Date Joined':          fmtDate(l.created_at),
+          };
+        });
+      }
+
+      function exportCSV() {
+        const rows = toRows();
+        if (!rows.length) return;
+        const headers = Object.keys(rows[0]);
+        const csv = [headers.join(','), ...rows.map(r => headers.map(h => `"${String(r[h]).replace(/"/g, '""')}"`).join(','))].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `titus-leads-${todayStr()}.csv`; a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportXLS() {
+        const rows = toRows();
+        if (!rows.length) return;
+        const ws = XLSX.utils.json_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Leads');
+        XLSX.writeFile(wb, `titus-leads-${todayStr()}.xlsx`);
+      }
+
+      const thStyle = (key) => ({
+        padding: '10px 14px', textAlign: 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em',
+        color: sortKey === key ? C.gold : C.textLight, cursor: 'pointer', whiteSpace: 'nowrap', userSelect: 'none',
+        background: C.bg2,
+      });
+
+      if (loading) return <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 80 }}><Spinner size={36} /></div>;
+
+      return (
+        <div className="fade-in">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+            <div>
+              <h2 style={{ fontFamily: 'Space Grotesk', fontSize: 22, fontWeight: 600 }}>Export</h2>
+              <p style={{ color: C.textLight, fontSize: 14, marginTop: 4 }}>{sorted.length} leads total — click column headers to sort</p>
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={exportCSV} style={{ background: C.bg, border: `1.5px solid ${C.border}`, borderRadius: 7, padding: '9px 18px', fontSize: 13, fontWeight: 600, fontFamily: 'Plus Jakarta Sans', cursor: 'pointer', color: C.textMid, display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.15s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.color = C.gold; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textMid; }}>
+                <Icon.export /> Export CSV
+              </button>
+              <button onClick={exportXLS} style={{ background: C.gold, border: 'none', borderRadius: 7, padding: '9px 18px', fontSize: 13, fontWeight: 600, fontFamily: 'Plus Jakarta Sans', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Icon.export /> Export XLS
+              </button>
+            </div>
+          </div>
+
+          <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 12, overflow: 'hidden' }}>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                <thead>
+                  <tr>
+                    {cols.map(c => (
+                      <th key={c.key} style={thStyle(c.key)} onClick={() => toggleSort(c.key)}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          {c.label}
+                          {sortKey === c.key && <span style={{ fontSize: 10 }}>{sortDir === 'asc' ? '▲' : '▼'}</span>}
+                        </span>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {sorted.map((l, i) => (
+                    <tr key={l.id} style={{ borderTop: `1px solid ${C.border}`, background: i % 2 === 0 ? C.bg : C.bg2 }}>
+                      <td style={{ padding: '10px 14px', whiteSpace: 'nowrap' }}>{l.first_name}</td>
+                      <td style={{ padding: '10px 14px', whiteSpace: 'nowrap' }}>{l.last_name}</td>
+                      <td style={{ padding: '10px 14px', color: C.textMid }}>{l.email}</td>
+                      <td style={{ padding: '10px 14px', color: C.textMid, whiteSpace: 'nowrap' }}>{l.phone || '—'}</td>
+                      <td style={{ padding: '10px 14px' }}>{l.state || '—'}</td>
+                      <td style={{ padding: '10px 14px', maxWidth: 160, color: C.textMid }}><span style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{joinArr(l.provider_types) || '—'}</span></td>
+                      <td style={{ padding: '10px 14px', maxWidth: 140, color: C.textMid }}><span style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{joinArr(l.business_structures) || '—'}</span></td>
+                      <td style={{ padding: '10px 14px', maxWidth: 180, color: C.textMid }}><span style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{joinArr(l.interested_features) || '—'}</span></td>
+                      <td style={{ padding: '10px 14px' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+                          {(l.tags || []).length > 0 ? (l.tags || []).map(t => (
+                            <span key={t} style={{ background: '#7C3AED18', color: '#7C3AED', fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 10, textTransform: 'uppercase' }}>{t}</span>
+                          )) : <span style={{ color: C.textLight }}>—</span>}
+                        </div>
+                      </td>
+                      <td style={{ padding: '10px 14px' }}>{(() => { const si = getStageInfo(l.status || 'waitlist_joined'); return (
+                        <span style={{ background: `${si.pipelineColor}15`, color: si.pipelineColor, fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10, whiteSpace: 'nowrap' }}>P{si.pipeline}</span>
+                      ); })()}</td>
+                      <td style={{ padding: '10px 14px' }}>{(() => { const si = getStageInfo(l.status || 'waitlist_joined'); return (
+                        <span style={{ background: `${si.color}15`, color: si.color, fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10, whiteSpace: 'nowrap' }}>{si.emoji} {si.label}</span>
+                      ); })()}</td>
+                      <td style={{ padding: '10px 14px', maxWidth: 200, color: C.textMid }}><span style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{l.notes || '—'}</span></td>
+                      <td style={{ padding: '10px 14px', color: C.textLight, whiteSpace: 'nowrap' }}>{fmtDate(l.created_at)}</td>
+                    </tr>
+                  ))}
+                  {sorted.length === 0 && (
+                    <tr><td colSpan={cols.length} style={{ padding: '40px 16px', textAlign: 'center', color: C.textLight }}>No leads to export.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── Sidebar ───────────────────────────────────────────────────────────────
+    function Sidebar({ tab, setTab, onLogout, mobile, onClose }) {
+      const navItems = [
+        { key: 'dashboard', label: 'Dashboard', Icon: Icon.dash },
+        { key: 'leads',     label: 'Leads',     Icon: Icon.leads },
+        { key: 'emails',    label: 'Emails',    Icon: Icon.email },
+        { key: 'export',    label: 'Export',    Icon: Icon.export },
+      ];
+
+      return (
+        <div style={{ width: 240, background: C.sidebar, display: 'flex', flexDirection: 'column', height: '100%', flexShrink: 0, position: mobile ? 'fixed' : 'relative', top: 0, left: 0, bottom: 0, zIndex: mobile ? 2000 : 'auto' }}>
+          {/* Logo */}
+          <div style={{ padding: '28px 24px 20px', borderBottom: `1px solid ${C.borderDark}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontFamily: 'Space Grotesk', fontSize: 20, fontWeight: 700, color: C.gold, letterSpacing: '-0.3px' }}>Titus CRM</div>
+              <div style={{ fontSize: 10, color: '#555', marginTop: 2, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Admin Portal</div>
+            </div>
+            {mobile && (
+              <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', padding: 4 }}>
+                <Icon.close />
+              </button>
+            )}
+          </div>
+
+          {/* Nav */}
+          <nav style={{ flex: 1, padding: '16px 12px' }}>
+            {navItems.map(({ key, label, Icon: I }) => {
+              const active = tab === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => { setTab(key); if (mobile) onClose(); }}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 11, padding: '10px 12px', borderRadius: 8, border: 'none', background: active ? C.goldBg : 'transparent', color: active ? C.gold : '#666', cursor: 'pointer', fontSize: 14, fontWeight: active ? 600 : 400, fontFamily: 'Plus Jakarta Sans', marginBottom: 2, transition: 'all 0.15s', textAlign: 'left' }}
+                  onMouseEnter={e => { if (!active) { e.currentTarget.style.background = '#1A1A1A'; e.currentTarget.style.color = '#999'; } }}
+                  onMouseLeave={e => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#666'; } }}
+                >
+                  <I />
+                  {label}
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Logout */}
+          <div style={{ padding: '16px 12px', borderTop: `1px solid ${C.borderDark}` }}>
+            <button
+              onClick={onLogout}
+              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 11, padding: '10px 12px', borderRadius: 8, border: 'none', background: 'transparent', color: '#666', cursor: 'pointer', fontSize: 14, fontWeight: 400, fontFamily: 'Plus Jakarta Sans', transition: 'all 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.color = C.red; e.currentTarget.style.background = '#DC262611'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = '#666'; e.currentTarget.style.background = 'transparent'; }}
+            >
+              <Icon.logout />
+              Sign Out
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // ── Main App ──────────────────────────────────────────────────────────────
+    function App() {
+      const [token, setToken] = useState(() => sessionStorage.getItem('titus_admin_token') || null);
+      const [tab, setTab] = useState('dashboard');
+      const [leads, setLeads] = useState([]);
+      const [leadsLoading, setLeadsLoading] = useState(true);
+      const [toast, setToast] = useState(null);
+      const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+      function addToast(msg, type = 'info') {
+        setToast({ msg, type, id: Date.now() });
+      }
+
+      async function loadLeads(tok) {
+        setLeadsLoading(true);
+        try {
+          const res = await fetch(`${API}/admin/leads`, { headers: { Authorization: `Bearer ${tok}` } });
+          const data = await res.json();
+          if (data.success) setLeads(data.leads || []);
+          else if (res.status === 401) { sessionStorage.removeItem('titus_admin_token'); setToken(null); }
+        } catch {}
+        setLeadsLoading(false);
+      }
+
+      useEffect(() => {
+        if (token) loadLeads(token);
+      }, [token]);
+
+      function handleLogin(tok) {
+        setToken(tok);
+      }
+
+      function handleLogout() {
+        sessionStorage.removeItem('titus_admin_token');
+        setToken(null);
+        setLeads([]);
+        setTab('dashboard');
+      }
+
+      if (!token) return <LoginScreen onLogin={handleLogin} />;
+
+      return (
+        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Plus Jakarta Sans' }}>
+          {/* Mobile header */}
+          <div className="mobile-header" style={{ display: 'none', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', background: C.sidebar, borderBottom: `1px solid ${C.borderDark}`, flexShrink: 0 }}>
+            <div style={{ fontFamily: 'Space Grotesk', fontSize: 18, fontWeight: 700, color: C.gold }}>Titus CRM</div>
+            <button onClick={() => setMobileNavOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#999', padding: 4 }}>
+              <Icon.menu />
+            </button>
+          </div>
+
+          <div className="main-layout" style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+            {/* Desktop sidebar */}
+            <div className="sidebar-desktop" style={{ display: 'flex' }}>
+              <Sidebar tab={tab} setTab={setTab} onLogout={handleLogout} mobile={false} />
+            </div>
+
+            {/* Mobile sidebar overlay */}
+            {mobileNavOpen && (
+              <>
+                <div onClick={() => setMobileNavOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1999 }} />
+                <Sidebar tab={tab} setTab={setTab} onLogout={handleLogout} mobile={true} onClose={() => setMobileNavOpen(false)} />
+              </>
+            )}
+
+            {/* Main content */}
+            <main style={{ flex: 1, overflowY: 'auto', padding: '28px 28px', background: C.bg2 }}>
+              {tab === 'dashboard' && <DashboardTab leads={leads} loading={leadsLoading} />}
+              {tab === 'leads'     && <LeadsTab leads={leads} setLeads={setLeads} token={token} addToast={addToast} loading={leadsLoading} />}
+              {tab === 'emails'    && <EmailsTab token={token} addToast={addToast} />}
+              {tab === 'export'    && <ExportTab leads={leads} loading={leadsLoading} />}
+            </main>
+          </div>
+
+          {/* Toast */}
+          {toast && <Toast key={toast.id} msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
