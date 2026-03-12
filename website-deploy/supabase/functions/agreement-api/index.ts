@@ -5,7 +5,7 @@ import autoTable from 'https://esm.sh/jspdf-autotable@3.8.4'
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
 }
 
 function jsonResponse(data: any, status = 200) {
@@ -210,6 +210,21 @@ async function handleCreateAgreement(req: Request) {
   const agreementId = inserted.agreement_id
   const recordId = inserted.id
 
+  // Capture provider as lead in waitlist (non-fatal)
+  try {
+    await captureLeadToWaitlist(supabase, {
+      firstName: (data.providerFirstName || '').trim(),
+      lastName: (data.providerLastName || '').trim(),
+      email: (data.providerEmail || '').trim(),
+      phone: '',
+      companyName: (data.organisationName || '').trim(),
+      state: (data.providerState || '').trim(),
+      source: 'AGREEMENT BUILDER',
+    })
+  } catch (capErr) {
+    console.error('Lead capture from agreement error:', capErr)
+  }
+
   // PDF generation + upload
   let pdfUrl: string | null = null
   let pdfBytes: Uint8Array | null = null
@@ -276,6 +291,74 @@ async function handleDownloadPdf(agreementId: string) {
   })
 }
 
+// ── Helper: Insert lead into waitlist (non-fatal) ─────────────
+async function captureLeadToWaitlist(supabase: any, opts: {
+  firstName: string, lastName: string, email: string, phone?: string,
+  companyName?: string, state?: string, source: string
+}) {
+  try {
+    // Check if lead already exists by email
+    const { data: existing } = await supabase
+      .from('waitlist')
+      .select('id, tags')
+      .eq('email', opts.email)
+      .maybeSingle()
+
+    if (existing) {
+      // Add source tag if not already present
+      const tags = existing.tags || []
+      if (!tags.includes(opts.source)) {
+        tags.push(opts.source)
+        await supabase.from('waitlist').update({ tags }).eq('id', existing.id)
+      }
+      return
+    }
+
+    const record: any = {
+      first_name: opts.firstName,
+      last_name: opts.lastName || '',
+      email: opts.email,
+      status: 'waitlist_joined',
+      pipeline: 1,
+      tags: [opts.source],
+    }
+    if (opts.phone) record.phone = opts.phone
+    if (opts.state) record.state = opts.state
+    if (opts.companyName) record.notes = `Company: ${opts.companyName}`
+
+    await supabase.from('waitlist').insert(record)
+  } catch (err) {
+    console.error('Lead capture error:', err)
+  }
+}
+
+// ── Route: POST /lead-capture (public, for external sources) ──
+async function handleLeadCapture(req: Request) {
+  const data = await req.json()
+  const supabase = getSupabaseClient()
+
+  const firstName = (data.firstName || '').trim()
+  const lastName = (data.lastName || '').trim()
+  const email = (data.email || '').trim()
+  const source = (data.source || 'UNKNOWN').trim().toUpperCase()
+
+  if (!firstName) return errorResponse('First name required.', 400)
+  if (!email) return errorResponse('Email required.', 400)
+  if (!source) return errorResponse('Source required.', 400)
+
+  await captureLeadToWaitlist(supabase, {
+    firstName,
+    lastName,
+    email,
+    phone: (data.phone || '').trim(),
+    companyName: (data.companyName || '').trim(),
+    state: (data.state || '').trim(),
+    source,
+  })
+
+  return jsonResponse({ ok: true, message: 'Lead captured' })
+}
+
 // ── Route: POST /waitlist ──────────────────────────────────────
 async function handleWaitlist(req: Request) {
   const data = await req.json()
@@ -306,6 +389,7 @@ async function handleWaitlist(req: Request) {
   if (phone) record.phone = phone
   if (businessStructures.length) record.business_structures = businessStructures
   if (interestedFeatures.length) record.interested_features = interestedFeatures
+  record.tags = [data.source || 'WAITLIST FORM']
 
   const { error } = await supabase.from('waitlist').insert(record)
 
@@ -890,6 +974,570 @@ async function sendAgreementEmail(
   }
 }
 
+// ── Pipeline & Stage Mapping ─────────────────────────────────
+function getPipelineForStage(stage: string): number {
+  const p1 = ['waitlist_joined','welcome_sent','hot_lead','personal_outreach','trial_activated','no_show']
+  const p2 = ['trial_day_1_7','trial_day_8_14','trial_day_15_21','demo_booked','proposal_sent','won_paid','lost_churned','nurture']
+  const p3 = ['onboarding','live_healthy','at_risk','upsell','advocate','churned']
+  if (p1.includes(stage)) return 1
+  if (p2.includes(stage)) return 2
+  if (p3.includes(stage)) return 3
+  return 1
+}
+
+// ── Stage Email Templates ────────────────────────────────────
+const STAGE_AUTOMATIONS: Record<string, { subject: string; body: string; internal?: boolean }> = {
+  // ─── Pipeline 1: Waitlist & Launch ───
+  waitlist_joined: {
+    internal: true,
+    subject: 'New Waitlist Lead — {{first_name}} {{last_name}} ({{state}})',
+    body: `<p>A new lead just joined the waitlist.</p>
+<p><strong>Name:</strong> {{first_name}} {{last_name}}<br/>
+<strong>Email:</strong> {{email}}<br/>
+<strong>State:</strong> {{state}}</p>
+<p>Log in to the admin panel to review and move them through the pipeline.</p>`,
+  },
+  welcome_sent: {
+    subject: "You're on the list, {{first_name}} \u{1F9ED}",
+    body: `<p>Hey {{first_name}},</p>
+<p>You're officially on the Titus CRM waitlist — and I'm genuinely glad you're here.</p>
+<p>Here's what that means:</p>
+<ul>
+<li>You'll be one of the first to access Titus when we launch on <strong>April 1st</strong></li>
+<li>You'll get <strong>21 days free</strong> — no card, no commitment</li>
+<li>You'll have direct access to me (A4, the founder) for onboarding support</li>
+</ul>
+<p>In the meantime, if you haven't already — you can build a free NDIS Service Agreement right now using our Agreement Builder:</p>
+<p><a href="https://www.titus-crm.com/agreement-builder" style="color:#9A7B2E;font-weight:bold;">Build a Free Agreement →</a></p>
+<p>I'll be in touch soon with your next steps.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  hot_lead: {
+    subject: '{{first_name}} — quick one',
+    body: `<p>Hey {{first_name}},</p>
+<p>I noticed you signed up for the waitlist — thanks for that.</p>
+<p>I'd love to jump on a quick 20-min call to understand what you're dealing with right now and see if Titus is the right fit.</p>
+<p>No pitch, no pressure — just a conversation.</p>
+<p>Would sometime this week work?</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  personal_outreach: {
+    subject: '{{first_name}} — following up',
+    body: `<p>Hey {{first_name}},</p>
+<p>Just following up on my last email — I know things get busy.</p>
+<p>I'm genuinely keen to hear what's going on in your business and whether Titus could help. Even if it's not the right time, happy to point you in the right direction.</p>
+<p>Let me know if you've got 15 minutes this week.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  trial_activated: {
+    subject: "{{first_name}} — your trial is ready to go \u{1F680}",
+    body: `<p>Hey {{first_name}},</p>
+<p>Great news — your Titus CRM trial is now active.</p>
+<p>You've got 21 days to explore everything. I'll send you a welcome email shortly with your login details and first steps.</p>
+<p>If you need anything at all, just reply to this email.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  no_show: {
+    subject: '{{first_name}} — still interested?',
+    body: `<p>Hey {{first_name}},</p>
+<p>I noticed you haven't jumped in yet — totally fine, no judgement.</p>
+<p>Just wanted to check: is there something holding you back? Sometimes it's a question I can answer in 2 minutes.</p>
+<p>If the timing isn't right, no stress at all. But if you're still keen, I'm here to help you get started.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+
+  // ─── Pipeline 2: Trial to Paid ───
+  trial_day_1_7: {
+    subject: "Your Titus CRM trial is live, {{first_name}} \u{1F9ED}",
+    body: `<p>Hey {{first_name}},</p>
+<p>Welcome to Titus CRM — your 21-day trial is officially live.</p>
+<p>Here are 4 things to do in your first 48 hours:</p>
+<ol>
+<li><strong>Add your first client</strong> — even a test one is fine</li>
+<li><strong>Build a roster</strong> — drag and drop, SCHADS-compliant</li>
+<li><strong>Create a service agreement</strong> — takes 5 minutes</li>
+<li><strong>Explore the QMS</strong> — incidents, complaints, progress notes</li>
+</ol>
+<p>I'll check in with you in a few days. If you get stuck on anything, just reply to this email — it comes straight to me.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  trial_day_8_14: {
+    subject: '{{first_name}} — how are you finding Titus so far?',
+    body: `<p>Hey {{first_name}},</p>
+<p>You're about a week into your trial now — how's it going?</p>
+<p>By now most providers have set up their clients and started rostering. If you haven't yet, no stress — here's a quick refresher on what to try next:</p>
+<ul>
+<li>Set up your staff profiles and availability</li>
+<li>Run a payroll report to see SCHADS compliance in action</li>
+<li>Try the AI progress note writer</li>
+</ul>
+<p>Any questions? Just hit reply.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  trial_day_15_21: {
+    subject: '{{first_name}} — your trial wraps up soon',
+    body: `<p>Hey {{first_name}},</p>
+<p>Your trial ends in about a week — I wanted to give you a heads up.</p>
+<p>If Titus is working for you, here's what the plans look like:</p>
+<ul>
+<li><strong>Foundation:</strong> $149/wk +GST — perfect for smaller providers</li>
+<li><strong>Growth:</strong> $349/wk +GST — most popular, includes all core + add-ons</li>
+<li><strong>Scale:</strong> $749/wk +GST — for larger orgs with 50+ staff</li>
+</ul>
+<p>Want me to put together a proposal based on your setup? Just reply and I'll have it to you same day.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  demo_booked: {
+    subject: "Your Titus demo is confirmed, {{first_name}} — a couple of things beforehand",
+    body: `<p>Hey {{first_name}},</p>
+<p>Looking forward to our demo — just wanted to send a couple of things to think about beforehand so we make the most of the time:</p>
+<ol>
+<li>What's your biggest operational headache right now?</li>
+<li>How many staff and clients are you managing?</li>
+<li>What software are you currently using (if any)?</li>
+</ol>
+<p>No need to reply — just have a think. I'll tailor the demo to what matters most to you.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  proposal_sent: {
+    subject: '{{first_name}} — your Titus CRM proposal',
+    body: `<p>Hey {{first_name}},</p>
+<p>As discussed, here's your tailored proposal for Titus CRM.</p>
+<p><strong>Recommended plan:</strong> {{tier_target}}<br/>
+<strong>Weekly fee:</strong> {{weekly_fee}} +GST<br/>
+<strong>Implementation:</strong> {{implementation_fee}} +GST</p>
+<p>This includes everything we talked about — QMS, rostering, client management, SCHADS compliance, and ongoing support.</p>
+<p>Let me know if you have any questions or want to jump on a quick call to go through it.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  won_paid: {
+    subject: "Welcome to Titus CRM, {{first_name}} — you're officially live \u{1F9ED}",
+    body: `<p>Hey {{first_name}},</p>
+<p>Welcome aboard — you're officially a Titus CRM client. I'm stoked to have you.</p>
+<p>Here's what happens next:</p>
+<ol>
+<li><strong>Onboarding kickoff</strong> — I'll send you a day-by-day plan within 24 hours</li>
+<li><strong>Data migration</strong> — we'll help you move your clients, staff, and rosters across</li>
+<li><strong>Training</strong> — a 1-on-1 session with me to get your team up to speed</li>
+</ol>
+<p>If you need anything in the meantime, reply here — I'm always around.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  lost_churned: {
+    subject: 'Thanks for trying Titus, {{first_name}} — one honest question',
+    body: `<p>Hey {{first_name}},</p>
+<p>I saw that Titus wasn't the right fit this time — and that's completely okay.</p>
+<p>I've got one honest question, and I'd really appreciate a candid answer:</p>
+<p><strong>What was the main reason it didn't work out?</strong></p>
+<ul>
+<li>Timing?</li>
+<li>Pricing?</li>
+<li>Missing a feature you needed?</li>
+<li>Something else?</li>
+</ul>
+<p>Your feedback genuinely helps me build a better product. No hard feelings either way.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  nurture: {
+    subject: '{{first_name}} — something I thought you should see',
+    body: `<p>Hey {{first_name}},</p>
+<p>I've been heads-down building new features and thought of you.</p>
+<p>Here's what's new in Titus CRM this month:</p>
+<ul>
+<li>AI-powered progress note writing</li>
+<li>Automated SCHADS compliance alerts</li>
+<li>One-click service agreement generation</li>
+</ul>
+<p>If you're ever keen to take another look, the door's always open. No pressure.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+
+  // ─── Pipeline 3: Active Clients ───
+  onboarding: {
+    subject: "Let's get you live, {{first_name}} — here's the plan",
+    body: `<p>Hey {{first_name}},</p>
+<p>Welcome to onboarding — here's your day-by-day plan to get fully live on Titus CRM:</p>
+<p><strong>Day 1-2:</strong> Account setup, branding, and user invites<br/>
+<strong>Day 3-4:</strong> Client and staff data migration<br/>
+<strong>Day 5:</strong> Roster setup and SCHADS configuration<br/>
+<strong>Day 6-7:</strong> QMS configuration (incidents, complaints, progress notes)<br/>
+<strong>Day 8-10:</strong> Team training and go-live</p>
+<p>I'll be with you every step of the way. If anything comes up, just reply here.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  live_healthy: {
+    subject: '{{first_name}} — your first month with Titus',
+    body: `<p>Hey {{first_name}},</p>
+<p>You've been live on Titus for about a month now — just wanted to check in and share a quick recap.</p>
+<p>Here's what you've achieved so far:</p>
+<ul>
+<li>Your team is rostered and SCHADS-compliant</li>
+<li>Service agreements are being generated digitally</li>
+<li>Your QMS is tracking incidents and progress notes</li>
+</ul>
+<p>Is there anything that could be working better? I'm always keen to hear feedback.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  at_risk: {
+    subject: '{{first_name}} — is everything okay?',
+    body: `<p>Hey {{first_name}},</p>
+<p>I noticed things have gone a bit quiet on your account — just wanted to check in.</p>
+<p>Is everything okay? Sometimes it's a small thing that's getting in the way, and I can usually fix it quickly.</p>
+<p>If something's not working the way you expected, I'd rather hear about it now so I can make it right.</p>
+<p>Just reply here — even a one-liner is fine.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  upsell: {
+    subject: '{{first_name}} — an upgrade opportunity for you',
+    body: `<p>Hey {{first_name}},</p>
+<p>I've been looking at your usage and I think you might benefit from upgrading your plan.</p>
+<p>You're currently on <strong>{{tier_target}}</strong>, and based on your team size and usage patterns, the next tier up would unlock:</p>
+<ul>
+<li>Additional add-on modules</li>
+<li>Priority support</li>
+<li>Advanced reporting and AI features</li>
+</ul>
+<p>Want me to put together a comparison? No pressure — just want to make sure you're getting the most out of Titus.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  advocate: {
+    subject: '{{first_name}} — would you share your experience?',
+    body: `<p>Hey {{first_name}},</p>
+<p>You've been using Titus for a while now and I'd love to ask a favour.</p>
+<p>Would you be open to sharing a short testimonial about your experience? It doesn't have to be long — even 2-3 sentences would mean the world.</p>
+<p>If you're happy to, just reply with a few words about:</p>
+<ul>
+<li>What Titus has helped you with</li>
+<li>What you like most about it</li>
+<li>Whether you'd recommend it to other providers</li>
+</ul>
+<p>Totally optional — but genuinely appreciated.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+  churned: {
+    subject: 'Understood, {{first_name}} — a quick farewell',
+    body: `<p>Hey {{first_name}},</p>
+<p>I'm sorry to see you go — but I understand, and I respect the decision.</p>
+<p>Your account will remain accessible for the next 30 days in case you need to export anything. After that, your data will be securely archived.</p>
+<p>If there's ever anything I can do in the future, don't hesitate to reach out. The door is always open.</p>
+<p>Wishing you and your team all the best.</p>
+<p>Cheers,<br/>A4, Founder — Titus CRM</p>`,
+  },
+}
+
+// ── Send Stage Automation Email ──────────────────────────────
+async function sendStageAutomationEmail(
+  stage: string,
+  lead: any,
+  supabase: any,
+): Promise<{ sent: boolean; error?: string }> {
+  const template = STAGE_AUTOMATIONS[stage]
+  if (!template) return { sent: false, error: 'No template for stage' }
+
+  const resendKey = Deno.env.get('RESEND_API_KEY')
+  if (!resendKey) return { sent: false, error: 'RESEND_API_KEY not set' }
+
+  // Build token replacements
+  const tokens: Record<string, string> = {
+    '{{first_name}}': lead.first_name || '',
+    '{{last_name}}': lead.last_name || '',
+    '{{email}}': lead.email || '',
+    '{{state}}': lead.state || '',
+    '{{tier_target}}': lead.tier_target || '',
+    '{{weekly_fee}}': lead.weekly_fee || '',
+    '{{annual_value}}': lead.annual_value || '',
+    '{{implementation_fee}}': lead.implementation_fee || '',
+  }
+
+  const replaceTokens = (text: string): string => {
+    let result = text
+    for (const [token, value] of Object.entries(tokens)) {
+      result = result.replaceAll(token, value)
+    }
+    return result
+  }
+
+  const subject = replaceTokens(template.subject)
+  const bodyContent = replaceTokens(template.body)
+
+  const to = template.internal ? 'info@titus-crm.com' : (lead.email || '')
+  if (!to) return { sent: false, error: 'No email address for lead' }
+
+  const fullHtml = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+    <div style="background:#9A7B2E;color:white;padding:16px 24px;border-radius:8px 8px 0 0;">
+      <h2 style="margin:0;font-size:18px;">Titus CRM</h2>
+    </div>
+    <div style="border:1px solid #ddd;border-top:none;padding:20px;line-height:1.6;">
+      ${bodyContent}
+    </div>
+    <div style="padding:12px 20px;font-size:12px;color:#999;">
+      Sent from Titus CRM — <a href="https://www.titus-crm.com" style="color:#9A7B2E;">www.titus-crm.com</a>
+    </div>
+  </div>`
+
+  try {
+    const emailRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${resendKey}`,
+      },
+      body: JSON.stringify({
+        from: 'Titus CRM <info@titus-crm.com>',
+        to: [to],
+        subject,
+        html: fullHtml,
+      }),
+    })
+
+    if (!emailRes.ok) {
+      const errText = await emailRes.text()
+      console.error(`Stage automation email failed: ${emailRes.status} ${errText}`)
+      return { sent: false, error: errText }
+    }
+
+    // Store in admin_emails
+    await supabase.from('admin_emails').insert({
+      direction: 'outbound',
+      from_address: 'info@titus-crm.com',
+      to_address: to,
+      subject,
+      body_html: fullHtml,
+      lead_id: lead.id || null,
+    })
+
+    return { sent: true }
+  } catch (err: any) {
+    console.error('Stage automation email error:', err)
+    return { sent: false, error: err.message }
+  }
+}
+
+// ── Admin: Constants ──────────────────────────────────────────
+const ADMIN_PASSWORD = 'Valencia@@'
+const ADMIN_TOKEN_SECRET = 'titus-admin-2026-secret-key'
+
+function generateAdminToken(): string {
+  const payload = { role: 'admin', exp: Date.now() + 24 * 60 * 60 * 1000 }
+  // Simple base64 token with expiry
+  return btoa(JSON.stringify(payload) + '|' + ADMIN_TOKEN_SECRET)
+}
+
+function verifyAdminToken(token: string): boolean {
+  try {
+    const decoded = atob(token)
+    if (!decoded.endsWith('|' + ADMIN_TOKEN_SECRET)) return false
+    const jsonStr = decoded.replace('|' + ADMIN_TOKEN_SECRET, '')
+    const payload = JSON.parse(jsonStr)
+    return payload.role === 'admin' && payload.exp > Date.now()
+  } catch {
+    return false
+  }
+}
+
+function getAdminToken(req: Request): string | null {
+  const auth = req.headers.get('Authorization') || ''
+  if (auth.startsWith('Bearer ')) return auth.slice(7)
+  return null
+}
+
+function requireAdmin(req: Request): Response | null {
+  const token = getAdminToken(req)
+  if (!token || !verifyAdminToken(token)) {
+    return jsonResponse({ error: 'Unauthorized' }, 401)
+  }
+  return null
+}
+
+// ── Admin: Login ──────────────────────────────────────────────
+async function handleAdminLogin(req: Request) {
+  const data = await req.json()
+  if (data.password !== ADMIN_PASSWORD) {
+    return jsonResponse({ error: 'Invalid password' }, 401)
+  }
+  return jsonResponse({ success: true, token: generateAdminToken() })
+}
+
+// ── Admin: List Leads ─────────────────────────────────────────
+async function handleAdminLeads(req: Request) {
+  const authErr = requireAdmin(req)
+  if (authErr) return authErr
+
+  const supabase = getSupabaseClient()
+  const { data, error } = await supabase
+    .from('waitlist')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) return errorResponse(error.message)
+  return jsonResponse({ success: true, leads: data || [] })
+}
+
+// ── Admin: Update Lead ────────────────────────────────────────
+async function handleAdminUpdateLead(req: Request, id: string) {
+  const authErr = requireAdmin(req)
+  if (authErr) return authErr
+
+  const data = await req.json()
+  const supabase = getSupabaseClient()
+  const updates: any = {}
+  if (data.status !== undefined) updates.status = data.status
+  if (data.notes !== undefined) updates.notes = data.notes
+  if (data.tags !== undefined) updates.tags = data.tags
+  if (data.onboarding_tasks !== undefined) updates.onboarding_tasks = data.onboarding_tasks
+
+  // Auto-set pipeline based on stage
+  if (data.status !== undefined) {
+    updates.pipeline = getPipelineForStage(data.status)
+  }
+  if (data.pipeline !== undefined) {
+    updates.pipeline = data.pipeline
+  }
+
+  const { error } = await supabase
+    .from('waitlist')
+    .update(updates)
+    .eq('id', id)
+
+  if (error) return errorResponse(error.message)
+
+  // Stage change automation — send email unless skip_automation is true
+  let automationResult: any = null
+  if (data.status !== undefined && !data.skip_automation) {
+    // Fetch the lead to get their details for email tokens
+    const { data: lead, error: leadErr } = await supabase
+      .from('waitlist')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (!leadErr && lead) {
+      automationResult = await sendStageAutomationEmail(data.status, lead, supabase)
+    } else {
+      automationResult = { sent: false, error: 'Could not fetch lead data' }
+    }
+  }
+
+  return jsonResponse({
+    success: true,
+    automation: automationResult,
+  })
+}
+
+// ── Admin: List Emails ────────────────────────────────────────
+async function handleAdminEmails(req: Request) {
+  const authErr = requireAdmin(req)
+  if (authErr) return authErr
+
+  const supabase = getSupabaseClient()
+  const { data, error } = await supabase
+    .from('admin_emails')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) return errorResponse(error.message)
+  return jsonResponse({ success: true, emails: data || [] })
+}
+
+// ── Admin: Send Email ─────────────────────────────────────────
+async function handleAdminSendEmail(req: Request) {
+  const authErr = requireAdmin(req)
+  if (authErr) return authErr
+
+  const data = await req.json()
+  const to = (data.to || '').trim()
+  const subject = (data.subject || '').trim()
+  const body = (data.body || '').trim()
+
+  if (!to || !subject || !body) {
+    return errorResponse('To, subject, and body are required.', 400)
+  }
+
+  const supabase = getSupabaseClient()
+  const resendKey = Deno.env.get('RESEND_API_KEY')
+
+  if (!resendKey) {
+    return errorResponse('Email service not configured (RESEND_API_KEY missing).', 500)
+  }
+
+  // Send via Resend
+  const bodyHtml = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+    <div style="background:#9A7B2E;color:white;padding:16px 24px;border-radius:8px 8px 0 0;">
+      <h2 style="margin:0;font-size:18px;">Titus CRM</h2>
+    </div>
+    <div style="border:1px solid #ddd;border-top:none;padding:20px;line-height:1.6;">
+      ${body.replace(/\n/g, '<br/>')}
+    </div>
+    <div style="padding:12px 20px;font-size:12px;color:#999;">
+      Sent from Titus CRM — <a href="https://www.titus-crm.com" style="color:#9A7B2E;">www.titus-crm.com</a>
+    </div>
+  </div>`
+
+  const emailRes = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${resendKey}`,
+    },
+    body: JSON.stringify({
+      from: 'Titus CRM <info@titus-crm.com>',
+      to: [to],
+      subject,
+      html: bodyHtml,
+    }),
+  })
+
+  if (!emailRes.ok) {
+    const errText = await emailRes.text()
+    console.error('Send email failed:', emailRes.status, errText)
+    return errorResponse(`Email send failed: ${errText}`, 500)
+  }
+
+  // Store in admin_emails table
+  const { error } = await supabase.from('admin_emails').insert({
+    direction: 'outbound',
+    from_address: 'info@titus-crm.com',
+    to_address: to,
+    subject,
+    body_html: bodyHtml,
+    lead_id: data.lead_id || null,
+  })
+
+  if (error) {
+    console.error('Failed to store sent email:', error.message)
+  }
+
+  return jsonResponse({ success: true })
+}
+
+// ── Admin: Inbound Email Webhook (from Cloudflare Email Worker) ──
+const EMAIL_WEBHOOK_SECRET = 'titus-email-inbound-2026'
+
+async function handleInboundEmail(req: Request) {
+  const secret = req.headers.get('X-Webhook-Secret')
+  if (secret !== EMAIL_WEBHOOK_SECRET) {
+    return jsonResponse({ error: 'Unauthorized' }, 401)
+  }
+
+  const data = await req.json()
+  const supabase = getSupabaseClient()
+
+  const { error } = await supabase.from('admin_emails').insert({
+    direction: 'inbound',
+    from_address: data.from_address || 'unknown',
+    to_address: data.to_address || 'info@titus-crm.com',
+    subject: data.subject || '(No subject)',
+    body_html: data.body_html || '',
+  })
+
+  if (error) {
+    console.error('Failed to store inbound email:', error.message)
+    return errorResponse(error.message)
+  }
+
+  return jsonResponse({ success: true })
+}
+
 // ── Main router ────────────────────────────────────────────────
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -900,6 +1548,7 @@ Deno.serve(async (req) => {
   const path = url.pathname.replace(/^\/agreement-api/, '') || '/'
 
   try {
+    // Public routes
     if (req.method === 'GET' && path.startsWith('/support-items')) {
       return await handleSupportItems(url)
     }
@@ -912,9 +1561,39 @@ Deno.serve(async (req) => {
       return await handleWaitlist(req)
     }
 
+    if (req.method === 'POST' && path === '/lead-capture') {
+      return await handleLeadCapture(req)
+    }
+
     const downloadMatch = path.match(/^\/agreements\/download\/(.+)$/)
     if (req.method === 'GET' && downloadMatch) {
       return await handleDownloadPdf(downloadMatch[1])
+    }
+
+    // Admin routes
+    if (req.method === 'POST' && path === '/admin/login') {
+      return await handleAdminLogin(req)
+    }
+
+    if (req.method === 'GET' && path === '/admin/leads') {
+      return await handleAdminLeads(req)
+    }
+
+    const leadMatch = path.match(/^\/admin\/leads\/([a-f0-9-]+)$/)
+    if (req.method === 'PATCH' && leadMatch) {
+      return await handleAdminUpdateLead(req, leadMatch[1])
+    }
+
+    if (req.method === 'GET' && path === '/admin/emails') {
+      return await handleAdminEmails(req)
+    }
+
+    if (req.method === 'POST' && path === '/admin/email/send') {
+      return await handleAdminSendEmail(req)
+    }
+
+    if (req.method === 'POST' && path === '/admin/email/inbound') {
+      return await handleInboundEmail(req)
     }
 
     return errorResponse('Not found', 404)
