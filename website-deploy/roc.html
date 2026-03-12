@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NDIS Roster of Care Calculator | Titus CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root {
+  --navy: #0B1D3A;
+  --surface: #0F2440;
+  --surface-light: #132D50;
+  --royal: #2454A0;
+  --teal: #00B4D8;
+  --aqua: #48CAE4;
+  --gold: #C8A951;
+  --gold-light: #E0CC82;
+  --gold-dark: #A08535;
+  --green: #10B981;
+  --green-light: #D1FAE5;
+  --warning: #F59E0B;
+  --warning-light: #FEF3C7;
+  --error: #EF4444;
+  --error-light: #FEE2E2;
+  --white: #FFFFFF;
+  --gray-50: #F8FAFC;
+  --gray-100: #F1F5F9;
+  --gray-200: #E2E8F0;
+  --gray-300: #CBD5E1;
+  --gray-400: #94A3B8;
+  --gray-500: #64748B;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1E293B;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.03);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
+  --shadow-lg: 0 4px 20px rgba(0,0,0,0.08), 0 12px 40px rgba(0,0,0,0.06);
+  --shadow-gold: 0 4px 20px rgba(200,169,81,0.18);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--gray-50);
+  color: var(--gray-800);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ══════ HERO ══════ */
+.hero {
+  background: linear-gradient(145deg, var(--navy) 0%, #081628 50%, #0A1E38 100%);
+  padding: 48px 24px 44px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 25% 20%, rgba(0,180,216,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 75% 75%, rgba(200,169,81,0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200,169,81,0.2), transparent);
+}
+.logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  position: relative;
+}
+.logo-icon {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(200,169,81,0.3);
+}
+.logo-icon svg { width: 18px; height: 18px; color: var(--white); }
+.logo-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px; font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.3px;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(200,169,81,0.1);
+  border: 1px solid rgba(200,169,81,0.2);
+  color: var(--gold-light);
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 100px;
+  margin-bottom: 16px;
+  position: relative;
+}
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(26px, 5vw, 40px);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.15;
+  margin-bottom: 12px;
+  position: relative;
+}
+.hero h1 span { color: var(--gold); }
+.hero p {
+  color: var(--gray-400);
+  font-size: clamp(14px, 2.5vw, 16px);
+  max-width: 540px;
+  margin: 0 auto;
+  position: relative;
+  line-height: 1.55;
+}
+
+/* ══════ PROGRESS BAR ══════ */
+.progress-bar-wrap {
+  padding: 24px 20px 0;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.progress-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+.progress-steps::before {
+  content: '';
+  position: absolute;
+  top: 14px; left: 28px; right: 28px;
+  height: 2px;
+  background: var(--gray-200);
+}
+.progress-track {
+  position: absolute;
+  top: 14px; left: 28px;
+  height: 2px;
+  background: var(--gold);
+  transition: width 0.4s ease;
+  width: 0%;
+}
+.p-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+.p-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 2px solid var(--gray-300);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  color: var(--gray-400);
+  transition: all 0.3s ease;
+}
+.p-step.active .p-dot {
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(200,169,81,0.12);
+}
+.p-step.done .p-dot {
+  border-color: var(--green);
+  background: var(--green);
+  color: var(--white);
+}
+.p-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color 0.3s;
+}
+.p-step.active .p-label { color: var(--gold); }
+.p-step.done .p-label { color: var(--green); }
+
+/* ══════ CONTAINER ══════ */
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+}
+
+/* ══════ SECTIONS ══════ */
+.section { display: none; animation: fadeUp 0.35s ease; }
+.section.active { display: block; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════ CARD ══════ */
+.card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 19px; font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+.card-sub {
+  font-size: 13px; color: var(--gray-500);
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+
+/* ══════ FORMS ══════ */
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block;
+  font-size: 13px; font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: 5px;
+}
+.form-group label .req { color: var(--error); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+select, textarea {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px; color: var(--gray-800);
+  background: var(--white);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(0,180,216,0.08);
+}
+input::placeholder, textarea::placeholder { color: var(--gray-400); }
+select {
+  cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M4.646 5.646a.5.5 0 0 1 .708 0L8 8.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+input.has-error, select.has-error {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.08);
+}
+.field-err {
+  font-size: 11px; color: var(--error);
+  margin-top: 3px; display: none;
+}
+.field-err.show { display: block; }
+
+/* ══════ MODE TOGGLE ══════ */
+.mode-toggle {
+  display: flex;
+  background: var(--gray-100);
+  border-radius: var(--radius);
+  padding: 4px;
+  margin-bottom: 24px;
+  position: relative;
+}
+.mode-btn {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px; font-weight: 600;
+  color: var(--gray-500);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.mode-btn.active {
+  background: var(--white);
+  color: var(--navy);
+  box-shadow: var(--shadow);
+}
+.mode-icon {
+  display: block;
+  margin: 0 auto 4px;
+}
+
+/* ══════ INFO BOX ══════ */
+.info-box {
+  background: rgba(0,180,216,0.05);
+  border: 1px solid rgba(0,180,216,0.15);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.info-box svg { flex-shrink: 0; color: var(--teal); margin-top: 1px; }
+.info-box p { font-size: 13px; color: var(--gray-600); line-height: 1.5; }
+
+/* ══════ PARTICIPANT BLOCKS ══════ */
+.participant-block {
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.participant-block:hover { border-color: var(--gray-300); }
+.pb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+  cursor: pointer;
+  user-select: none;
+}
+.pb-header-left {
+  display: flex; align-items: center; gap: 10px;
+}
+.pb-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  font-family: 'Syne', sans-serif;
+}
+.pb-name {
+  font-size: 14px; font-weight: 600; color: var(--navy);
+}
+.pb-cost {
+  font-size: 14px; font-weight: 600; color: var(--teal);
+  font-family: 'Syne', sans-serif;
+}
+.pb-header-right {
+  display: flex; align-items: center; gap: 8px;
+}
+.pb-remove {
+  background: none; border: none;
+  color: var(--gray-400);
+  cursor: pointer; padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex; align-items: center;
+}
+.pb-remove:hover { color: var(--error); background: rgba(239,68,68,0.06); }
+.pb-body { padding: 16px; }
+.pb-body .form-group { margin-bottom: 12px; }
+.pb-body .form-group:last-child { margin-bottom: 0; }
+
+/* Shift rows inside participant */
+.shift-rows { margin-top: 8px; }
+.shift-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 40px;
+  gap: 8px;
+  align-items: end;
+  margin-bottom: 8px;
+}
+.shift-row .form-group { margin-bottom: 0; }
+.shift-row .form-group label { font-size: 11px; color: var(--gray-500); }
+.shift-remove {
+  background: none; border: none;
+  color: var(--gray-300);
+  cursor: pointer;
+  padding: 8px 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.shift-remove:hover { color: var(--error); }
+.add-shift-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: none; border: none;
+  color: var(--teal);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  padding: 6px 0;
+  transition: opacity 0.2s;
+}
+.add-shift-btn:hover { opacity: 0.7; }
+
+/* ══════ ADD PARTICIPANT BUTTON ══════ */
+.add-participant-btn {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px;
+  border: 2px dashed var(--gray-300);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--gray-500);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.add-participant-btn:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: rgba(0,180,216,0.02);
+}
+
+/* ══════ LIVE TOTAL BAR ══════ */
+.live-total {
+  background: var(--navy);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  margin-bottom: 4px;
+}
+.live-total-label {
+  font-size: 13px; color: var(--gray-400); font-weight: 500;
+}
+.live-total-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px; font-weight: 700;
+  color: var(--gold);
+}
+
+/* ══════ BUTTONS ══════ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 7px;
+  padding: 13px 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+  color: var(--white);
+  box-shadow: var(--shadow-gold);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(200,169,81,0.25); }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-secondary { background: var(--gray-100); color: var(--gray-700); }
+.btn-secondary:hover { background: var(--gray-200); }
+.btn-teal {
+  background: linear-gradient(135deg, var(--teal) 0%, #0096B7 100%);
+  color: var(--white);
+}
+.btn-teal:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,180,216,0.2); }
+.btn-row {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  margin-top: 12px;
+}
+
+/* ══════ RESULTS ══════ */
+.result-hero {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.result-check {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--green-light);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+}
+.result-check svg { color: var(--green); }
+.result-hero h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px; font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+.result-hero p { font-size: 13px; color: var(--gray-500); }
+
+/* Summary cards */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--gray-50);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 16px 12px;
+  text-align: center;
+}
+.stat-card.primary {
+  grid-column: 1 / -1;
+  background: linear-gradient(145deg, var(--navy), var(--surface));
+  border-color: transparent;
+}
+.stat-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gray-500);
+  margin-bottom: 4px;
+}
+.stat-card.primary .stat-label { color: var(--gold-light); }
+.stat-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px; font-weight: 700;
+  color: var(--navy);
+}
+.stat-card.primary .stat-value { color: var(--white); font-size: 30px; }
+
+/* Burn rate bar */
+.burn-bar-wrap {
+  margin-bottom: 20px;
+}
+.burn-label-row {
+  display: flex; justify-content: space-between;
+  margin-bottom: 6px;
+}
+.burn-label-row span {
+  font-size: 12px; font-weight: 600; color: var(--gray-600);
+}
+.burn-track {
+  height: 10px;
+  background: var(--gray-200);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.burn-fill {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 0.6s ease;
+  background: var(--green);
+}
+.burn-fill.warn { background: var(--warning); }
+.burn-fill.over { background: var(--error); }
+.burn-status {
+  font-size: 12px;
+  margin-top: 6px;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 5px;
+}
+.burn-status.good { color: var(--green); }
+.burn-status.warn { color: var(--warning); }
+.burn-status.over { color: var(--error); }
+
+/* Breakdown table */
+.breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.breakdown-table th {
+  text-align: left;
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--gray-500);
+  padding: 8px 10px;
+  border-bottom: 2px solid var(--gray-200);
+}
+.breakdown-table th:nth-child(3),
+.breakdown-table th:nth-child(4) { text-align: right; }
+.breakdown-table td {
+  padding: 10px;
+  font-size: 13px;
+  color: var(--gray-700);
+  border-bottom: 1px solid var(--gray-100);
+}
+.breakdown-table td:nth-child(3),
+.breakdown-table td:nth-child(4) {
+  text-align: right; font-weight: 600;
+  font-family: 'Syne', sans-serif;
+  color: var(--navy);
+}
+.breakdown-table .participant-row td {
+  font-weight: 700;
+  background: var(--gray-50);
+  color: var(--navy);
+  font-size: 13px;
+}
+
+/* CTA */
+.cta-banner {
+  background: linear-gradient(145deg, var(--navy) 0%, #081628 50%, #0A1E38 100%);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
+  text-align: center;
+  margin-top: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.cta-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 50% at 60% 80%, rgba(200,169,81,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cta-banner h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px; font-weight: 700;
+  color: var(--white);
+  margin-bottom: 8px;
+  position: relative;
+}
+.cta-banner p {
+  color: var(--gray-400);
+  font-size: 13px;
+  margin-bottom: 18px;
+  position: relative;
+  max-width: 480px;
+  margin-left: auto; margin-right: auto;
+  line-height: 1.5;
+}
+.cta-banner .btn { position: relative; }
+
+/* Admin callout */
+.admin-callout {
+  background: rgba(245,158,11,0.05);
+  border: 1.5px solid rgba(245,158,11,0.18);
+  border-radius: var(--radius);
+  padding: 16px 14px;
+  margin-top: 16px;
+}
+.admin-callout-title {
+  font-weight: 700; font-size: 13px;
+  color: var(--warning);
+  margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.admin-callout p { font-size: 12px; color: var(--gray-600); line-height: 1.55; }
+.admin-callout strong { color: var(--gray-800); }
+
+/* Disclaimer */
+.disclaimer {
+  text-align: center;
+  font-size: 11px;
+  color: var(--gray-400);
+  padding: 24px 16px 12px;
+  line-height: 1.5;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* ══════ RESPONSIVE ══════ */
+@media (max-width: 640px) {
+  .form-row, .form-row-3 { grid-template-columns: 1fr; }
+  .shift-row { grid-template-columns: 1fr 80px 36px; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .card { padding: 22px 16px; }
+  .hero { padding: 36px 16px 32px; }
+  .btn-row { flex-direction: column; }
+  .btn-row .btn { width: 100%; }
+  .mode-btn { font-size: 12px; padding: 10px 8px; }
+  .live-total { flex-direction: column; gap: 4px; text-align: center; }
+}
+@media (max-width: 380px) {
+  .stat-grid { grid-template-columns: 1fr; }
+}
+
+/* Print */
+@media print {
+  .hero, .progress-bar-wrap, .btn-row, .cta-banner, .disclaimer, .add-participant-btn, .add-shift-btn, .pb-remove, .shift-remove { display: none !important; }
+  .section { display: block !important; }
+  .card { box-shadow: none; border: 1px solid #ddd; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════ HERO ══════ -->
+<div class="hero">
+  <div class="logo-row">
+    <a href="https://www.titus-crm.com" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="logo-text">Titus CRM</span>
+    </a>
+  </div>
+  <div class="hero-badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    Free NDIS Tool — 2025–26 Rates
+  </div>
+  <h1>Roster of Care <span>Calculator</span></h1>
+  <p>Calculate sustainable weekly support hours from an NDIS budget — or estimate total costs from a planned roster. Built for Australian providers.</p>
+</div>
+
+<!-- ══════ PROGRESS ══════ -->
+<div class="progress-bar-wrap">
+  <div class="progress-steps">
+    <div class="progress-track" id="progress-track"></div>
+    <div class="p-step active" id="ps-1">
+      <div class="p-dot">1</div>
+      <span class="p-label">Details</span>
+    </div>
+    <div class="p-step" id="ps-2">
+      <div class="p-dot">2</div>
+      <span class="p-label">Calculator</span>
+    </div>
+    <div class="p-step" id="ps-3">
+      <div class="p-dot">3</div>
+      <span class="p-label">Results</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ═══════════ STEP 1: LEAD CAPTURE ═══════════ -->
+  <div class="section active" id="sec-1">
+    <div class="card">
+      <div class="card-title">Your Details</div>
+      <div class="card-sub">Tell us about your organisation so we can personalise your estimate.</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name <span class="req">*</span></label>
+          <input type="text" id="f-first" placeholder="Sarah">
+          <div class="field-err" id="e-first">Required</div>
+        </div>
+        <div class="form-group">
+          <label>Last Name <span class="req">*</span></label>
+          <input type="text" id="f-last" placeholder="Thompson">
+          <div class="field-err" id="e-last">Required</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Organisation <span class="req">*</span></label>
+        <input type="text" id="f-org" placeholder="Sunrise Community Care">
+        <div class="field-err" id="e-org">Required</div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email <span class="req">*</span></label>
+          <input type="email" id="f-email" placeholder="you@provider.com.au">
+          <div class="field-err" id="e-email">Enter a valid email</div>
+        </div>
+        <div class="form-group">
+          <label>Mobile <span class="req">*</span></label>
+          <input type="tel" id="f-mobile" placeholder="04XX XXX XXX">
+          <div class="field-err" id="e-mobile">Required</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>State / Territory <span class="req">*</span></label>
+          <select id="f-state">
+            <option value="">Select…</option>
+            <option value="QLD">Queensland</option>
+            <option value="NSW">New South Wales</option>
+            <option value="VIC">Victoria</option>
+            <option value="SA">South Australia</option>
+            <option value="WA">Western Australia</option>
+            <option value="TAS">Tasmania</option>
+            <option value="NT">Northern Territory</option>
+            <option value="ACT">ACT</option>
+          </select>
+          <div class="field-err" id="e-state">Required</div>
+        </div>
+        <div class="form-group">
+          <label>Current Rostering Tool</label>
+          <select id="f-tool">
+            <option value="">Select…</option>
+            <option value="spreadsheet">Spreadsheets / Manual</option>
+            <option value="shiftcare">ShiftCare</option>
+            <option value="flowlogic">FlowLogic</option>
+            <option value="lumary">Lumary</option>
+            <option value="brevity">Brevity</option>
+            <option value="imploy">Imploy</option>
+            <option value="other">Other</option>
+            <option value="none">No System</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <span></span>
+        <button class="btn btn-primary" onclick="goStep(2)">
+          Continue
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ STEP 2: CALCULATOR ═══════════ -->
+  <div class="section" id="sec-2">
+    <div class="card">
+      <div class="card-title">Calculate Your Roster</div>
+      <div class="card-sub">Choose how you want to calculate, then add participants with their support needs.</div>
+
+      <!-- MODE TOGGLE -->
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="mode-b2h" onclick="setMode('b2h')">
+          <svg class="mode-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M12 4v16"/><path d="M2 12h10"/></svg>
+          Budget → Hours
+        </button>
+        <button class="mode-btn" id="mode-h2b" onclick="setMode('h2b')">
+          <svg class="mode-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Hours → Budget
+        </button>
+      </div>
+
+      <!-- INFO BOX -->
+      <div class="info-box" id="info-b2h">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <p>Enter each participant's NDIS budget and plan length. Select their typical support mix, and we'll calculate how many hours per week the budget can sustain.</p>
+      </div>
+      <div class="info-box" id="info-h2b" style="display:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <p>Enter each participant's weekly support hours by shift type. We'll calculate the total weekly and annual cost using 2025–26 NDIS price limits.</p>
+      </div>
+
+      <!-- PARTICIPANT LIST -->
+      <div id="participant-list"></div>
+
+      <button class="add-participant-btn" onclick="addParticipant()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+        Add Participant
+      </button>
+
+      <!-- LIVE TOTAL -->
+      <div class="live-total">
+        <span class="live-total-label">Estimated Weekly Total</span>
+        <span class="live-total-value" id="live-total">$0.00</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="goStep(1)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+          Back
+        </button>
+        <button class="btn btn-primary" onclick="goStep(3)">
+          View Full Results
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ STEP 3: RESULTS ═══════════ -->
+  <div class="section" id="sec-3">
+    <div class="result-hero">
+      <div class="result-check">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 id="r-greeting">Your Roster Estimate</h2>
+      <p>Based on NDIS Pricing Arrangements 2025–26 (PAPL v1.1, effective 24 Nov 2025)</p>
+    </div>
+
+    <div class="card">
+      <div class="stat-grid">
+        <div class="stat-card primary">
+          <div class="stat-label">Estimated Weekly Cost</div>
+          <div class="stat-value" id="r-weekly">$0.00</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Weekly Hours</div>
+          <div class="stat-value" id="r-hours">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Participants</div>
+          <div class="stat-value" id="r-participants">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Annual Estimate</div>
+          <div class="stat-value" id="r-annual">$0</div>
+        </div>
+      </div>
+
+      <!-- Budget mode: burn rate bars -->
+      <div id="r-burn-section" style="display:none;"></div>
+
+      <div class="card-title" style="font-size:15px; margin-bottom:10px;">Line-by-Line Breakdown</div>
+      <div style="overflow-x:auto;">
+        <table class="breakdown-table">
+          <thead>
+            <tr><th>Support</th><th>Hrs/Wk</th><th>Rate</th><th>Weekly</th></tr>
+          </thead>
+          <tbody id="r-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="admin-callout">
+        <div class="admin-callout-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Hidden admin cost
+        </div>
+        <p>Most providers spend <strong>6–10 hours per week</strong> on manual rostering, timesheet reconciliation, and NDIS billing prep. At ~$35/hr, that's <strong>$210–$350/week ($10,920–$18,200/year)</strong> in overhead. Titus automates roster management, shift tracking, and billing preparation in one platform.</p>
+      </div>
+    </div>
+
+    <div class="cta-banner">
+      <h3>Let Titus manage your roster</h3>
+      <p>Replace spreadsheets and manual admin with AI-powered rostering, NDIS billing prep, and compliance tracking — purpose-built for Australian care providers.</p>
+      <a href="https://www.titus-crm.com/#waitlist" target="_blank" class="btn btn-primary">
+        Book a Free 15-Minute Demo
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <div class="btn-row" style="margin-top:16px; flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="goStep(2)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        Edit Roster
+      </button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-teal" onclick="exportPDF()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Export PDF
+        </button>
+        <button class="btn btn-primary" onclick="exportExcel()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M14 13h2"/><path d="M8 17h2"/><path d="M14 17h2"/></svg>
+          Export Excel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    Estimates based on NDIS Pricing Arrangements and Price Limits 2025–26 v1.1 (effective 24 November 2025). Actual costs vary by provider agreements, location loadings (MMM), plan management type, and individual service agreements. This tool is for estimation purposes only and does not constitute financial advice.<br><br>
+    &copy; 2026 Titus CRM &mdash; Built for Australian Care Providers &mdash; <a href="https://www.titus-crm.com" target="_blank" style="color:var(--teal); text-decoration:none;">titus-crm.com</a>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// NDIS 2025–26 RATES (PAPL v1.1)
+// ═══════════════════════════════════════════════════════════════
+const R = {
+  // Assistance with Daily Life — 1:1
+  adl_wd:    { r: 70.23,  l: 'Daily Living — Weekday',           g: 'Core' },
+  adl_eve:   { r: 77.35,  l: 'Daily Living — Evening',           g: 'Core' },
+  adl_sat:   { r: 98.54,  l: 'Daily Living — Saturday',          g: 'Core' },
+  adl_sun:   { r: 126.85, l: 'Daily Living — Sunday',            g: 'Core' },
+  adl_ph:    { r: 155.16, l: 'Daily Living — Public Holiday',    g: 'Core' },
+  // High Intensity — 1:1
+  hi_wd:     { r: 73.55,  l: 'High Intensity — Weekday',         g: 'Core' },
+  hi_eve:    { r: 81.01,  l: 'High Intensity — Evening',         g: 'Core' },
+  hi_sat:    { r: 103.19, l: 'High Intensity — Saturday',        g: 'Core' },
+  hi_sun:    { r: 132.82, l: 'High Intensity — Sunday',          g: 'Core' },
+  // Community Access — 1:1
+  ca_wd:     { r: 70.23,  l: 'Community Access — Weekday',       g: 'Core' },
+  ca_eve:    { r: 77.35,  l: 'Community Access — Evening',       g: 'Core' },
+  ca_sat:    { r: 98.54,  l: 'Community Access — Saturday',      g: 'Core' },
+  ca_sun:    { r: 126.85, l: 'Community Access — Sunday',        g: 'Core' },
+  // SIL — Shared/Group (per participant per hour)
+  sil_wd_12: { r: 56.74,  l: 'SIL 1:2 — Weekday',               g: 'SIL' },
+  sil_wd_13: { r: 42.96,  l: 'SIL 1:3 — Weekday',               g: 'SIL' },
+  sil_ev_12: { r: 62.51,  l: 'SIL 1:2 — Evening',               g: 'SIL' },
+  sil_ev_13: { r: 47.32,  l: 'SIL 1:3 — Evening',               g: 'SIL' },
+  sil_sa_12: { r: 79.56,  l: 'SIL 1:2 — Saturday',              g: 'SIL' },
+  sil_sa_13: { r: 60.24,  l: 'SIL 1:3 — Saturday',              g: 'SIL' },
+  sil_su_12: { r: 102.39, l: 'SIL 1:2 — Sunday',                g: 'SIL' },
+  sil_su_13: { r: 77.53,  l: 'SIL 1:3 — Sunday',                g: 'SIL' },
+  sil_an_12: { r: 73.91,  l: 'SIL 1:2 — Active Night',          g: 'SIL' },
+  sil_an_13: { r: 55.97,  l: 'SIL 1:3 — Active Night',          g: 'SIL' },
+  sil_sleep: { r: 245.94, l: 'SIL — Sleepover (per night)',      g: 'SIL' },
+  // Support Coordination
+  sc_l1:     { r: 65.47,  l: 'Support Coordination L1',          g: 'CB' },
+  sc_l2:     { r: 100.14, l: 'Support Coordination L2',          g: 'CB' },
+  sc_l3:     { r: 190.54, l: 'Specialist Support Coord.',        g: 'CB' },
+  // Therapies
+  th_physio: { r: 183.99, l: 'Physiotherapy',                    g: 'CB' },
+  th_ot:     { r: 193.99, l: 'Occupational Therapy',             g: 'CB' },
+  th_psych:  { r: 232.99, l: 'Psychology',                       g: 'CB' },
+  th_speech: { r: 193.99, l: 'Speech Pathology',                 g: 'CB' },
+  th_behav:  { r: 232.99, l: 'Behaviour Support',                g: 'CB' },
+  // Transport
+  transport: { r: 0.85,   l: 'Transport (per km)',               g: 'Core' },
+};
+
+const SUPPORT_OPTIONS = `
+  <optgroup label="Daily Living (1:1)">
+    <option value="adl_wd">Weekday Daytime — $70.23</option>
+    <option value="adl_eve">Weekday Evening — $77.35</option>
+    <option value="adl_sat">Saturday — $98.54</option>
+    <option value="adl_sun">Sunday — $126.85</option>
+    <option value="adl_ph">Public Holiday — $155.16</option>
+  </optgroup>
+  <optgroup label="High Intensity (1:1)">
+    <option value="hi_wd">Weekday — $73.55</option>
+    <option value="hi_eve">Evening — $81.01</option>
+    <option value="hi_sat">Saturday — $103.19</option>
+    <option value="hi_sun">Sunday — $132.82</option>
+  </optgroup>
+  <optgroup label="Community Access (1:1)">
+    <option value="ca_wd">Weekday — $70.23</option>
+    <option value="ca_eve">Evening — $77.35</option>
+    <option value="ca_sat">Saturday — $98.54</option>
+    <option value="ca_sun">Sunday — $126.85</option>
+  </optgroup>
+  <optgroup label="SIL — Shared Living">
+    <option value="sil_wd_12">Weekday 1:2 — $56.74</option>
+    <option value="sil_wd_13">Weekday 1:3 — $42.96</option>
+    <option value="sil_ev_12">Evening 1:2 — $62.51</option>
+    <option value="sil_ev_13">Evening 1:3 — $47.32</option>
+    <option value="sil_sa_12">Saturday 1:2 — $79.56</option>
+    <option value="sil_sa_13">Saturday 1:3 — $60.24</option>
+    <option value="sil_su_12">Sunday 1:2 — $102.39</option>
+    <option value="sil_su_13">Sunday 1:3 — $77.53</option>
+    <option value="sil_an_12">Active Night 1:2 — $73.91</option>
+    <option value="sil_an_13">Active Night 1:3 — $55.97</option>
+    <option value="sil_sleep">Sleepover — $245.94/night</option>
+  </optgroup>
+  <optgroup label="Support Coordination">
+    <option value="sc_l1">Level 1 — $65.47</option>
+    <option value="sc_l2">Level 2 — $100.14</option>
+    <option value="sc_l3">Specialist — $190.54</option>
+  </optgroup>
+  <optgroup label="Therapies">
+    <option value="th_physio">Physiotherapy — $183.99</option>
+    <option value="th_ot">OT — $193.99</option>
+    <option value="th_psych">Psychology — $232.99</option>
+    <option value="th_speech">Speech Pathology — $193.99</option>
+    <option value="th_behav">Behaviour Support — $232.99</option>
+  </optgroup>
+  <optgroup label="Transport">
+    <option value="transport">KM Allowance — $0.85/km</option>
+  </optgroup>`;
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let mode = 'b2h'; // 'b2h' = budget-to-hours, 'h2b' = hours-to-budget
+let pCount = 0;
+
+// ═══════════════════════════════════════════
+// MODE TOGGLE
+// ═══════════════════════════════════════════
+function setMode(m) {
+  mode = m;
+  document.getElementById('mode-b2h').classList.toggle('active', m === 'b2h');
+  document.getElementById('mode-h2b').classList.toggle('active', m === 'h2b');
+  document.getElementById('info-b2h').style.display = m === 'b2h' ? 'flex' : 'none';
+  document.getElementById('info-h2b').style.display = m === 'h2b' ? 'flex' : 'none';
+  // Rebuild participants to show/hide budget fields
+  rebuildAllParticipants();
+}
+
+// ═══════════════════════════════════════════
+// PARTICIPANT MANAGEMENT
+// ═══════════════════════════════════════════
+let participants = []; // {id, name}
+
+function addParticipant() {
+  pCount++;
+  const p = { id: pCount, shifts: [1] };
+  participants.push(p);
+  renderParticipant(p);
+  recalcLive();
+}
+
+function removeParticipant(pid) {
+  participants = participants.filter(p => p.id !== pid);
+  const el = document.getElementById('pb-' + pid);
+  if (el) el.remove();
+  recalcLive();
+}
+
+function renderParticipant(p) {
+  const container = document.getElementById('participant-list');
+  const div = document.createElement('div');
+  div.className = 'participant-block';
+  div.id = 'pb-' + p.id;
+
+  const budgetFields = mode === 'b2h' ? `
+    <div class="form-row" style="margin-bottom:12px;">
+      <div class="form-group">
+        <label>NDIS Budget ($)</label>
+        <input type="number" id="budget-${p.id}" placeholder="e.g. 85000" min="0" step="100" oninput="recalcLive()">
+      </div>
+      <div class="form-group">
+        <label>Plan Length (weeks)</label>
+        <input type="number" id="weeks-${p.id}" value="52" min="1" max="104" oninput="recalcLive()">
+      </div>
+    </div>` : '';
+
+  div.innerHTML = `
+    <div class="pb-header" onclick="toggleParticipant(${p.id})">
+      <div class="pb-header-left">
+        <div class="pb-num">${p.id}</div>
+        <span class="pb-name" id="pname-${p.id}">Participant ${p.id}</span>
+      </div>
+      <div class="pb-header-right">
+        <span class="pb-cost" id="pcost-${p.id}">$0/wk</span>
+        <button class="pb-remove" onclick="event.stopPropagation(); removeParticipant(${p.id})" title="Remove">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="pb-body" id="pbody-${p.id}">
+      <div class="form-group">
+        <label>Participant Name (optional)</label>
+        <input type="text" id="name-${p.id}" placeholder="e.g. John D." oninput="updatePName(${p.id})">
+      </div>
+      ${budgetFields}
+      <label style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px;display:block;">Support Shifts</label>
+      <div class="shift-rows" id="shifts-${p.id}">
+        <div class="shift-row" id="sr-${p.id}-1">
+          <div class="form-group">
+            <label>Type</label>
+            <select id="stype-${p.id}-1" onchange="recalcLive()">${SUPPORT_OPTIONS}</select>
+          </div>
+          <div class="form-group">
+            <label>Hrs/Wk</label>
+            <input type="number" id="shrs-${p.id}-1" value="8" min="0" step="0.5" oninput="recalcLive()">
+          </div>
+          <button class="shift-remove" onclick="removeShift(${p.id},1)" title="Remove">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
+      </div>
+      <button class="add-shift-btn" onclick="addShift(${p.id})">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+        Add shift type
+      </button>
+    </div>`;
+
+  container.appendChild(div);
+}
+
+function rebuildAllParticipants() {
+  // Save current data
+  const savedData = [];
+  participants.forEach(p => {
+    const data = { id: p.id, name: gv('name-' + p.id), budget: gv('budget-' + p.id), weeks: gv('weeks-' + p.id), shifts: [] };
+    const rows = document.querySelectorAll(`#shifts-${p.id} .shift-row`);
+    rows.forEach(row => {
+      const sid = row.id.split('-').pop();
+      data.shifts.push({
+        type: gv(`stype-${p.id}-${sid}`),
+        hrs: gv(`shrs-${p.id}-${sid}`)
+      });
+    });
+    savedData.push(data);
+  });
+
+  // Clear and rebuild
+  document.getElementById('participant-list').innerHTML = '';
+  const old = [...participants];
+  participants = [];
+  pCount = 0;
+
+  savedData.forEach(d => {
+    pCount = d.id;
+    const p = { id: d.id, shifts: d.shifts.map((_, i) => i + 1) };
+    participants.push(p);
+    renderParticipant(p);
+
+    // Restore values
+    sv('name-' + d.id, d.name);
+    if (mode === 'b2h') {
+      sv('budget-' + d.id, d.budget);
+      sv('weeks-' + d.id, d.weeks || '52');
+    }
+    updatePName(d.id);
+
+    // Need to add extra shifts beyond the first
+    for (let i = 1; i < d.shifts.length; i++) {
+      addShift(d.id);
+    }
+
+    // Restore shift values
+    const rows = document.querySelectorAll(`#shifts-${d.id} .shift-row`);
+    rows.forEach((row, idx) => {
+      if (d.shifts[idx]) {
+        const sid = row.id.split('-').pop();
+        sv(`stype-${d.id}-${sid}`, d.shifts[idx].type);
+        sv(`shrs-${d.id}-${sid}`, d.shifts[idx].hrs);
+      }
+    });
+  });
+  recalcLive();
+}
+
+let shiftCounters = {};
+function addShift(pid) {
+  if (!shiftCounters[pid]) shiftCounters[pid] = 1;
+  shiftCounters[pid]++;
+  const sid = shiftCounters[pid];
+  const container = document.getElementById('shifts-' + pid);
+  const div = document.createElement('div');
+  div.className = 'shift-row';
+  div.id = `sr-${pid}-${sid}`;
+  div.innerHTML = `
+    <div class="form-group">
+      <label>Type</label>
+      <select id="stype-${pid}-${sid}" onchange="recalcLive()">${SUPPORT_OPTIONS}</select>
+    </div>
+    <div class="form-group">
+      <label>Hrs/Wk</label>
+      <input type="number" id="shrs-${pid}-${sid}" value="4" min="0" step="0.5" oninput="recalcLive()">
+    </div>
+    <button class="shift-remove" onclick="removeShift(${pid},${sid})" title="Remove">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>`;
+  container.appendChild(div);
+  recalcLive();
+}
+
+function removeShift(pid, sid) {
+  const el = document.getElementById(`sr-${pid}-${sid}`);
+  if (el) el.remove();
+  recalcLive();
+}
+
+function toggleParticipant(pid) {
+  const body = document.getElementById('pbody-' + pid);
+  body.style.display = body.style.display === 'none' ? 'block' : 'none';
+}
+
+function updatePName(pid) {
+  const name = gv('name-' + pid) || 'Participant ' + pid;
+  document.getElementById('pname-' + pid).textContent = name;
+}
+
+// ═══════════════════════════════════════════
+// LIVE CALCULATION
+// ═══════════════════════════════════════════
+function getParticipantData(pid) {
+  const name = gv('name-' + pid) || 'Participant ' + pid;
+  const budget = parseFloat(gv('budget-' + pid)) || 0;
+  const weeks = parseInt(gv('weeks-' + pid)) || 52;
+  const rows = document.querySelectorAll(`#shifts-${pid} .shift-row`);
+  let shifts = [];
+  rows.forEach(row => {
+    const sid = row.id.split('-').pop();
+    const type = gv(`stype-${pid}-${sid}`);
+    const hrs = parseFloat(gv(`shrs-${pid}-${sid}`)) || 0;
+    if (type && hrs > 0) {
+      shifts.push({ type, hrs, rate: R[type]?.r || 0, label: R[type]?.l || type });
+    }
+  });
+  const weeklyCost = shifts.reduce((s, sh) => s + sh.rate * sh.hrs, 0);
+  const weeklyHours = shifts.filter(s => s.type !== 'transport' && s.type !== 'sil_sleep').reduce((s, sh) => s + sh.hrs, 0);
+
+  // Budget-to-hours: calculate sustainable hours
+  let sustainableWeeks = 0;
+  let budgetUsedPercent = 0;
+  if (mode === 'b2h' && budget > 0 && weeklyCost > 0) {
+    sustainableWeeks = budget / weeklyCost;
+    budgetUsedPercent = (weeklyCost * weeks) / budget * 100;
+  }
+
+  return { pid, name, budget, weeks, shifts, weeklyCost, weeklyHours, sustainableWeeks, budgetUsedPercent };
+}
+
+function recalcLive() {
+  let total = 0;
+  participants.forEach(p => {
+    const d = getParticipantData(p.id);
+    total += d.weeklyCost;
+    const costEl = document.getElementById('pcost-' + p.id);
+    if (costEl) {
+      if (mode === 'b2h' && d.budget > 0) {
+        const weeksBudgeted = d.budget / d.weeklyCost;
+        const status = weeksBudgeted >= d.weeks ? '\u2713' : '\u26A0';
+        costEl.textContent = `$${d.weeklyCost.toFixed(0)}/wk ${status}`;
+        costEl.style.color = weeksBudgeted >= d.weeks ? 'var(--green)' : 'var(--warning)';
+      } else {
+        costEl.textContent = `$${d.weeklyCost.toFixed(0)}/wk`;
+        costEl.style.color = 'var(--teal)';
+      }
+    }
+  });
+  document.getElementById('live-total').textContent = '$' + total.toFixed(2);
+}
+
+// ═══════════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════════
+function buildResults() {
+  const firstName = gv('f-first') || 'Provider';
+  document.getElementById('r-greeting').textContent = firstName + "'s Roster Estimate";
+
+  let totalWeekly = 0, totalHours = 0;
+  let tbody = '';
+  let burnHTML = '';
+  let pCountResult = 0;
+
+  participants.forEach(p => {
+    const d = getParticipantData(p.id);
+    pCountResult++;
+    totalWeekly += d.weeklyCost;
+    totalHours += d.weeklyHours;
+
+    // Participant header row
+    tbody += `<tr class="participant-row"><td colspan="4">${d.name}</td></tr>`;
+
+    d.shifts.forEach(s => {
+      const unit = s.type === 'transport' ? 'km' : (s.type === 'sil_sleep' ? 'nights' : 'hrs');
+      tbody += `<tr>
+        <td style="padding-left:24px;">${s.label}</td>
+        <td>${s.hrs} ${unit}</td>
+        <td>$${s.rate.toFixed(2)}</td>
+        <td>$${(s.rate * s.hrs).toFixed(2)}</td>
+      </tr>`;
+    });
+
+    // Burn rate for b2h mode
+    if (mode === 'b2h' && d.budget > 0 && d.weeklyCost > 0) {
+      const pct = d.budgetUsedPercent;
+      const cls = pct <= 95 ? 'good' : (pct <= 105 ? 'warn' : 'over');
+      const fillCls = pct <= 95 ? '' : (pct <= 105 ? 'warn' : 'over');
+      const sustainWks = d.sustainableWeeks;
+      let statusText;
+      if (pct <= 95) {
+        statusText = `Budget sustains ${sustainWks.toFixed(1)} weeks \u2014 within plan period of ${d.weeks} weeks`;
+      } else if (pct <= 105) {
+        statusText = `Tight \u2014 budget covers ${sustainWks.toFixed(1)} of ${d.weeks} weeks. Consider adjusting weekend hours`;
+      } else {
+        statusText = `Over budget \u2014 only covers ${sustainWks.toFixed(1)} of ${d.weeks} weeks. Reduce hours or shift weekend to weekday`;
+      }
+
+      burnHTML += `
+        <div class="burn-bar-wrap">
+          <div class="burn-label-row">
+            <span>${d.name}</span>
+            <span>$${d.weeklyCost.toFixed(0)}/wk of $${(d.budget / d.weeks).toFixed(0)}/wk budget</span>
+          </div>
+          <div class="burn-track">
+            <div class="burn-fill ${fillCls}" style="width:${Math.min(pct, 100)}%"></div>
+          </div>
+          <div class="burn-status ${cls}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${
+              cls === 'good' ? '<polyline points="20 6 9 17 4 12"/>' :
+              '<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
+            }</svg>
+            ${statusText}
+          </div>
+        </div>`;
+    }
+  });
+
+  document.getElementById('r-weekly').textContent = '$' + totalWeekly.toFixed(2);
+  document.getElementById('r-hours').textContent = totalHours.toFixed(1);
+  document.getElementById('r-participants').textContent = pCountResult;
+  document.getElementById('r-annual').textContent = '$' + Math.round(totalWeekly * 52).toLocaleString();
+  document.getElementById('r-tbody').innerHTML = tbody;
+
+  const burnSection = document.getElementById('r-burn-section');
+  if (mode === 'b2h' && burnHTML) {
+    burnSection.innerHTML = `<div class="card-title" style="font-size:15px;margin-bottom:12px;">Budget Sustainability</div>` + burnHTML;
+    burnSection.style.display = 'block';
+  } else {
+    burnSection.style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function goStep(s) {
+  if (s === 2 && !validateStep1()) return;
+  if (s === 2 && participants.length === 0) addParticipant();
+  if (s === 3) buildResults();
+
+  document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+  document.getElementById('sec-' + s).classList.add('active');
+
+  // Progress
+  for (let i = 1; i <= 3; i++) {
+    const ps = document.getElementById('ps-' + i);
+    ps.classList.remove('active', 'done');
+    if (i < s) ps.classList.add('done');
+    if (i === s) ps.classList.add('active');
+  }
+  const track = document.getElementById('progress-track');
+  track.style.width = s === 1 ? '0%' : (s === 2 ? '50%' : '100%');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateStep1() {
+  let ok = true;
+  [
+    { id: 'f-first', eid: 'e-first' },
+    { id: 'f-last', eid: 'e-last' },
+    { id: 'f-org', eid: 'e-org' },
+    { id: 'f-email', eid: 'e-email', email: true },
+    { id: 'f-mobile', eid: 'e-mobile' },
+    { id: 'f-state', eid: 'e-state' },
+  ].forEach(f => {
+    const el = document.getElementById(f.id);
+    const err = document.getElementById(f.eid);
+    el.classList.remove('has-error');
+    err.classList.remove('show');
+    const v = el.value.trim();
+    if (!v || (f.email && !v.includes('@'))) {
+      el.classList.add('has-error');
+      err.classList.add('show');
+      ok = false;
+    }
+  });
+  return ok;
+}
+
+// ═══════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════
+function gv(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+function sv(id, v) { const el = document.getElementById(id); if (el && v) el.value = v; }
+
+// ═══════════════════════════════════════════
+// EXPORT DATA BUILDER
+// ═══════════════════════════════════════════
+function getExportData() {
+  const firstName = gv('f-first') || 'Provider';
+  const lastName = gv('f-last') || '';
+  const org = gv('f-org') || '';
+  const email = gv('f-email') || '';
+  const mobile = gv('f-mobile') || '';
+  const state = gv('f-state') || '';
+
+  let totalWeekly = 0, totalHours = 0;
+  const rows = [];
+
+  participants.forEach(p => {
+    const d = getParticipantData(p.id);
+    totalWeekly += d.weeklyCost;
+    totalHours += d.weeklyHours;
+
+    d.shifts.forEach(s => {
+      const unit = s.type === 'transport' ? 'km' : (s.type === 'sil_sleep' ? 'nights' : 'hrs');
+      rows.push({
+        participant: d.name,
+        support: s.label,
+        hours: s.hrs,
+        unit: unit,
+        rate: s.rate,
+        weekly: s.rate * s.hrs,
+        budget: d.budget || null,
+        planWeeks: d.weeks || null,
+      });
+    });
+  });
+
+  return { firstName, lastName, org, email, mobile, state, totalWeekly, totalHours, rows, participantCount: participants.length };
+}
+
+// ═══════════════════════════════════════════
+// EXCEL EXPORT
+// ═══════════════════════════════════════════
+function exportExcel() {
+  const d = getExportData();
+  const wb = XLSX.utils.book_new();
+
+  // Summary sheet
+  const summaryData = [
+    ['NDIS Roster of Care Estimate'],
+    ['Generated', new Date().toLocaleDateString('en-AU')],
+    [''],
+    ['Provider Details'],
+    ['Name', d.firstName + ' ' + d.lastName],
+    ['Organisation', d.org],
+    ['Email', d.email],
+    ['Mobile', d.mobile],
+    ['State', d.state],
+    [''],
+    ['Summary'],
+    ['Total Participants', d.participantCount],
+    ['Total Weekly Hours', d.totalHours],
+    ['Estimated Weekly Cost', d.totalWeekly],
+    ['Estimated Annual Cost', d.totalWeekly * 52],
+    ['Calculation Mode', mode === 'b2h' ? 'Budget to Hours' : 'Hours to Budget'],
+  ];
+  const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+  wsSummary['!cols'] = [{ wch: 22 }, { wch: 30 }];
+  XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+
+  // Breakdown sheet
+  const breakdownHeader = ['Participant', 'Support Type', 'Hours/Wk', 'Unit', 'Rate ($)', 'Weekly Cost ($)'];
+  if (mode === 'b2h') {
+    breakdownHeader.push('NDIS Budget ($)', 'Plan Weeks');
+  }
+  const breakdownRows = d.rows.map(r => {
+    const row = [r.participant, r.support, r.hours, r.unit, r.rate, r.weekly];
+    if (mode === 'b2h') {
+      row.push(r.budget || '', r.planWeeks || '');
+    }
+    return row;
+  });
+
+  // Add totals row
+  breakdownRows.push([]);
+  breakdownRows.push(['TOTAL', '', d.totalHours, '', '', d.totalWeekly]);
+
+  const wsBreakdown = XLSX.utils.aoa_to_sheet([breakdownHeader, ...breakdownRows]);
+  wsBreakdown['!cols'] = [
+    { wch: 20 }, { wch: 30 }, { wch: 10 }, { wch: 8 }, { wch: 12 }, { wch: 14 },
+    ...(mode === 'b2h' ? [{ wch: 16 }, { wch: 12 }] : []),
+  ];
+  XLSX.utils.book_append_sheet(wb, wsBreakdown, 'Breakdown');
+
+  // Budget sustainability sheet (b2h mode only)
+  if (mode === 'b2h') {
+    const burnData = [['Participant', 'Weekly Cost ($)', 'Weekly Budget ($)', 'Budget Sustains (weeks)', 'Plan Length (weeks)', 'Status']];
+    participants.forEach(p => {
+      const pd = getParticipantData(p.id);
+      if (pd.budget > 0 && pd.weeklyCost > 0) {
+        const weeklyBudget = pd.budget / pd.weeks;
+        const status = pd.budgetUsedPercent <= 95 ? 'On Track' : (pd.budgetUsedPercent <= 105 ? 'Tight' : 'Over Budget');
+        burnData.push([pd.name, pd.weeklyCost, weeklyBudget, pd.sustainableWeeks, pd.weeks, status]);
+      }
+    });
+    if (burnData.length > 1) {
+      const wsBurn = XLSX.utils.aoa_to_sheet(burnData);
+      wsBurn['!cols'] = [{ wch: 20 }, { wch: 16 }, { wch: 16 }, { wch: 22 }, { wch: 18 }, { wch: 14 }];
+      XLSX.utils.book_append_sheet(wb, wsBurn, 'Budget Sustainability');
+    }
+  }
+
+  const filename = `ROC-Estimate-${d.org.replace(/[^a-zA-Z0-9]/g, '-') || 'Provider'}-${new Date().toISOString().slice(0,10)}.xlsx`;
+  XLSX.writeFile(wb, filename);
+}
+
+// ═══════════════════════════════════════════
+// PDF EXPORT
+// ═══════════════════════════════════════════
+function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const d = getExportData();
+  const pageW = doc.internal.pageSize.getWidth();
+  const margin = 16;
+  let y = 16;
+
+  // Header bar
+  doc.setFillColor(11, 29, 58); // navy
+  doc.rect(0, 0, pageW, 36, 'F');
+  doc.setFillColor(200, 169, 81); // gold accent line
+  doc.rect(0, 36, pageW, 1.5, 'F');
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Titus CRM', margin, 15);
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  doc.text('NDIS Roster of Care Estimate', margin, 24);
+  doc.setFontSize(9);
+  doc.setTextColor(200, 169, 81);
+  doc.text(new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' }), margin, 32);
+  doc.setFontSize(9);
+  doc.text('NDIS Pricing 2025\u201326 (PAPL v1.1)', pageW - margin, 32, { align: 'right' });
+
+  y = 46;
+
+  // Provider details box
+  doc.setFillColor(248, 250, 252);
+  doc.roundedRect(margin, y, pageW - margin * 2, 32, 3, 3, 'F');
+  doc.setTextColor(100, 116, 139);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  doc.text('PROVIDER DETAILS', margin + 6, y + 7);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(30, 41, 59);
+  doc.text(`${d.firstName} ${d.lastName}  \u2022  ${d.org}`, margin + 6, y + 15);
+  doc.text(`${d.email}  \u2022  ${d.mobile}  \u2022  ${d.state}`, margin + 6, y + 22);
+  doc.text(`Mode: ${mode === 'b2h' ? 'Budget \u2192 Hours' : 'Hours \u2192 Budget'}`, margin + 6, y + 29);
+  y += 40;
+
+  // Summary stats
+  const statsW = (pageW - margin * 2 - 8) / 3;
+  const stats = [
+    { label: 'Weekly Cost', value: '$' + d.totalWeekly.toFixed(2) },
+    { label: 'Weekly Hours', value: d.totalHours.toFixed(1) },
+    { label: 'Annual Estimate', value: '$' + Math.round(d.totalWeekly * 52).toLocaleString() },
+  ];
+  stats.forEach((s, i) => {
+    const x = margin + i * (statsW + 4);
+    doc.setFillColor(11, 29, 58);
+    doc.roundedRect(x, y, statsW, 22, 2, 2, 'F');
+    doc.setTextColor(200, 169, 81);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'bold');
+    doc.text(s.label.toUpperCase(), x + statsW / 2, y + 8, { align: 'center' });
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(14);
+    doc.text(s.value, x + statsW / 2, y + 18, { align: 'center' });
+  });
+  y += 30;
+
+  // Breakdown table
+  const tableHead = [['Participant', 'Support Type', 'Hrs/Wk', 'Rate ($)', 'Weekly ($)']];
+  const tableBody = [];
+  let currentParticipant = '';
+
+  d.rows.forEach(r => {
+    if (r.participant !== currentParticipant) {
+      currentParticipant = r.participant;
+    }
+    tableBody.push([r.participant, r.support, r.hours.toString(), r.rate.toFixed(2), r.weekly.toFixed(2)]);
+  });
+  tableBody.push([{ content: 'TOTAL', colSpan: 2, styles: { fontStyle: 'bold', fillColor: [248, 250, 252] } }, { content: d.totalHours.toFixed(1), styles: { fontStyle: 'bold', fillColor: [248, 250, 252] } }, { content: '', styles: { fillColor: [248, 250, 252] } }, { content: '$' + d.totalWeekly.toFixed(2), styles: { fontStyle: 'bold', fillColor: [248, 250, 252] } }]);
+
+  doc.autoTable({
+    startY: y,
+    head: tableHead,
+    body: tableBody,
+    margin: { left: margin, right: margin },
+    theme: 'grid',
+    headStyles: { fillColor: [11, 29, 58], textColor: [255, 255, 255], fontSize: 8, fontStyle: 'bold', halign: 'left' },
+    bodyStyles: { fontSize: 8, textColor: [51, 65, 85], lineColor: [226, 232, 240], lineWidth: 0.3 },
+    columnStyles: {
+      0: { cellWidth: 36 },
+      2: { halign: 'right', cellWidth: 20 },
+      3: { halign: 'right', cellWidth: 22 },
+      4: { halign: 'right', cellWidth: 24 },
+    },
+    alternateRowStyles: { fillColor: [248, 250, 252] },
+    didParseCell: function(data) {
+      // Bold participant name on first occurrence
+      if (data.column.index === 0 && data.section === 'body' && data.cell.raw && typeof data.cell.raw === 'string') {
+        const rowIdx = data.row.index;
+        if (rowIdx === 0 || (tableBody[rowIdx - 1] && tableBody[rowIdx - 1][0] !== data.cell.raw)) {
+          data.cell.styles.fontStyle = 'bold';
+        }
+      }
+    }
+  });
+
+  y = doc.lastAutoTable.finalY + 8;
+
+  // Budget sustainability section (b2h mode)
+  if (mode === 'b2h') {
+    const burnRows = [];
+    participants.forEach(p => {
+      const pd = getParticipantData(p.id);
+      if (pd.budget > 0 && pd.weeklyCost > 0) {
+        const status = pd.budgetUsedPercent <= 95 ? 'On Track' : (pd.budgetUsedPercent <= 105 ? 'Tight' : 'Over Budget');
+        burnRows.push([pd.name, '$' + pd.weeklyCost.toFixed(0) + '/wk', '$' + (pd.budget / pd.weeks).toFixed(0) + '/wk', pd.sustainableWeeks.toFixed(1) + ' wks', pd.weeks + ' wks', status]);
+      }
+    });
+    if (burnRows.length > 0) {
+      if (y + 30 > doc.internal.pageSize.getHeight() - 30) {
+        doc.addPage();
+        y = 16;
+      }
+      doc.setTextColor(11, 29, 58);
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Budget Sustainability', margin, y);
+      y += 4;
+
+      doc.autoTable({
+        startY: y,
+        head: [['Participant', 'Weekly Cost', 'Weekly Budget', 'Sustains', 'Plan', 'Status']],
+        body: burnRows,
+        margin: { left: margin, right: margin },
+        theme: 'grid',
+        headStyles: { fillColor: [11, 29, 58], textColor: [255, 255, 255], fontSize: 8, fontStyle: 'bold' },
+        bodyStyles: { fontSize: 8, textColor: [51, 65, 85], lineColor: [226, 232, 240], lineWidth: 0.3 },
+        didParseCell: function(data) {
+          if (data.column.index === 5 && data.section === 'body') {
+            const v = data.cell.raw;
+            if (v === 'On Track') { data.cell.styles.textColor = [16, 185, 129]; data.cell.styles.fontStyle = 'bold'; }
+            else if (v === 'Tight') { data.cell.styles.textColor = [245, 158, 11]; data.cell.styles.fontStyle = 'bold'; }
+            else { data.cell.styles.textColor = [239, 68, 68]; data.cell.styles.fontStyle = 'bold'; }
+          }
+        }
+      });
+      y = doc.lastAutoTable.finalY + 8;
+    }
+  }
+
+  // Footer disclaimer
+  const footerY = doc.internal.pageSize.getHeight() - 14;
+  doc.setDrawColor(226, 232, 240);
+  doc.line(margin, footerY - 4, pageW - margin, footerY - 4);
+  doc.setTextColor(148, 163, 184);
+  doc.setFontSize(6.5);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Estimates based on NDIS Pricing Arrangements 2025\u201326 v1.1. Actual costs vary by provider agreements, location loadings, and plan management type.', margin, footerY);
+  doc.text('This tool is for estimation purposes only. \u00A9 2026 Titus CRM \u2014 www.titus-crm.com', margin, footerY + 4);
+
+  const filename = `ROC-Estimate-${d.org.replace(/[^a-zA-Z0-9]/g, '-') || 'Provider'}-${new Date().toISOString().slice(0,10)}.pdf`;
+  doc.save(filename);
+}
+</script>
+
+</body>
+</html>

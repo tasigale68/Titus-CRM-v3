@@ -1,12 +1,14 @@
 // Titus CRM — Cloudflare Worker with hostname-based routing
 // www.titus-crm.com  → serve marketing site (imported HTML)
 // www.titus-crm.com/agreement-builder → NDIS Agreement Builder
+// www.titus-crm.com/roc → NDIS Roster of Care Calculator
 // demo.titus-crm.com → reverse proxy to Railway backend
 // info@titus-crm.com → inbound email stored in Supabase
 
 import SITE_HTML from './index.html';
 import AGREEMENT_HTML from './agreement-builder.html';
 import ADMIN_HTML from './administrator.html';
+import ROC_HTML from './roc.html';
 import OG_IMAGE_DATA from './og-image.png';
 import LOGO_DELTA from './partners/delta-community.png';
 import LOGO_MEADOW from './partners/meadow-street.png';
@@ -70,6 +72,12 @@ const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
     <lastmod>2026-03-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/roc</loc>
+    <lastmod>2026-03-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>`;
 
@@ -197,6 +205,11 @@ export default {
     // /administrator → serve Admin Portal (noindex, password-protected)
     if (url.pathname === '/administrator' || url.pathname === '/administrator/') {
       return htmlResponse(ADMIN_HTML);
+    }
+
+    // /roc → Roster of Care Calculator
+    if (url.pathname === '/roc' || url.pathname === '/roc/') {
+      return htmlResponse(ROC_HTML);
     }
 
     // www.titus-crm.com (and any other hostname) → serve marketing site
