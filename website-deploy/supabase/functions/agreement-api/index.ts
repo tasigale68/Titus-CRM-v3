@@ -2,8 +2,26 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { jsPDF } from 'https://esm.sh/jspdf@2.5.2'
 import autoTable from 'https://esm.sh/jspdf-autotable@3.8.4'
 
+const ALLOWED_ORIGINS = [
+  'https://www.titus-crm.com',
+  'https://demo.titus-crm.com',
+  'https://poto-ai.com',
+  'https://www.poto-ai.com',
+]
+
+function getCorsHeaders(req?: Request) {
+  const origin = req?.headers?.get('origin') || ''
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]
+  return {
+    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
+  }
+}
+
+// Legacy alias for existing code
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://www.titus-crm.com',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
 }
@@ -24,6 +42,45 @@ function getSupabaseClient() {
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   )
+}
+
+// ── Structured Error Logging ──────────────────────────────────
+function logError(endpoint: string, error: unknown, metadata: Record<string, unknown> = {}) {
+  console.error(JSON.stringify({
+    timestamp: new Date().toISOString(),
+    endpoint,
+    error: error instanceof Error ? { message: error.message, stack: error.stack } : String(error),
+    ...metadata,
+  }));
+}
+
+// ── Sentry Error Reporting ────────────────────────────────────
+async function reportToSentry(error: unknown, endpoint: string, metadata: Record<string, unknown> = {}) {
+  try {
+    const dsn = 'https://9bee37d9abf0a8e3162bf0cf6412635a@o4511016077164544.ingest.us.sentry.io/4511036917219328';
+    const match = dsn.match(/https:\/\/(.+)@(.+)\/(\d+)/);
+    if (!match) return;
+    const [, publicKey, host, projectId] = match;
+    const err = error instanceof Error ? error : new Error(String(error));
+    const envelope = JSON.stringify({
+      event_id: crypto.randomUUID().replace(/-/g, ''),
+      sent_at: new Date().toISOString(),
+      dsn: { host, publicKey, projectId },
+    }) + '\n' +
+    JSON.stringify({ type: 'event' }) + '\n' +
+    JSON.stringify({
+      exception: { values: [{ type: err.name, value: err.message, stacktrace: { frames: [] } }] },
+      tags: { endpoint, ...metadata },
+      environment: 'production',
+      platform: 'node',
+      timestamp: Date.now() / 1000,
+    });
+    await fetch(`https://${host}/api/${projectId}/envelope/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-sentry-envelope', 'X-Sentry-Auth': `Sentry sentry_key=${publicKey}, sentry_version=7` },
+      body: envelope,
+    });
+  } catch (_) { /* silent */ }
 }
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -241,14 +298,16 @@ async function handleCreateAgreement(req: Request) {
       await supabase.from('agreements').update({ pdf_url: filename }).eq('id', recordId)
     }
   } catch (pdfErr) {
-    console.error('PDF generation error:', pdfErr)
+    logError('POST /agreements/public', pdfErr, { step: 'pdf_generation', agreementId })
+    reportToSentry(pdfErr, 'POST /agreements/public', { step: 'pdf_generation', agreementId }).catch(() => {})
   }
 
   // Send email (non-fatal)
   try {
     await sendAgreementEmail(data, supportItems, agreementId, weekly, total, duration, pdfBytes)
   } catch (emailErr) {
-    console.error('Email error:', emailErr)
+    logError('POST /agreements/public', emailErr, { step: 'email_send', agreementId })
+    reportToSentry(emailErr, 'POST /agreements/public', { step: 'email_send', agreementId }).catch(() => {})
   }
 
   return jsonResponse({
@@ -328,7 +387,7 @@ async function captureLeadToWaitlist(supabase: any, opts: {
 
     await supabase.from('waitlist').insert(record)
   } catch (err) {
-    console.error('Lead capture error:', err)
+    logError('captureLeadToWaitlist', err, { email: opts.email })
   }
 }
 
@@ -357,6 +416,74 @@ async function handleLeadCapture(req: Request) {
   })
 
   return jsonResponse({ ok: true, message: 'Lead captured' })
+}
+
+// ── Route: POST /demo-lead (captures lead + sends email notification) ──
+async function handleDemoLead(req: Request) {
+  const headers = getCorsHeaders(req)
+  const data = await req.json()
+  const supabase = getSupabaseClient()
+
+  const firstName = (data.firstName || '').trim()
+  const lastName = (data.lastName || '').trim()
+  const email = (data.email || '').trim()
+  const product = (data.product || 'UNKNOWN').trim()
+
+  if (!firstName) return new Response(JSON.stringify({ error: 'First name required.' }), { status: 400, headers: { ...headers, 'Content-Type': 'application/json' } })
+  if (!lastName) return new Response(JSON.stringify({ error: 'Last name required.' }), { status: 400, headers: { ...headers, 'Content-Type': 'application/json' } })
+  if (!email) return new Response(JSON.stringify({ error: 'Email required.' }), { status: 400, headers: { ...headers, 'Content-Type': 'application/json' } })
+
+  // Capture lead to waitlist
+  await captureLeadToWaitlist(supabase, {
+    firstName,
+    lastName,
+    email,
+    source: `DEMO ACCESS - ${product.toUpperCase()}`,
+  })
+
+  // Send email notification
+  const resendKey = Deno.env.get('RESEND_API_KEY')
+  if (resendKey) {
+    const now = new Date().toLocaleString('en-AU', { timeZone: 'Australia/Brisbane' })
+    const emailHtml = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+      <div style="background:#9A7B2E;color:white;padding:16px 24px;border-radius:8px 8px 0 0;">
+        <h2 style="margin:0;font-size:18px;">New Demo Access — ${product}</h2>
+      </div>
+      <div style="border:1px solid #ddd;border-top:none;padding:24px;line-height:1.8;">
+        <p style="margin:0 0 8px;"><strong>First Name:</strong> ${firstName}</p>
+        <p style="margin:0 0 8px;"><strong>Last Name:</strong> ${lastName}</p>
+        <p style="margin:0 0 8px;"><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+        <p style="margin:0 0 8px;"><strong>Product:</strong> ${product}</p>
+        <p style="margin:0;"><strong>Time:</strong> ${now} (AEST)</p>
+      </div>
+      <div style="padding:12px 20px;font-size:12px;color:#999;">
+        Demo lead captured automatically
+      </div>
+    </div>`
+
+    try {
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${resendKey}`,
+        },
+        body: JSON.stringify({
+          from: 'Titus CRM <info@titus-crm.com>',
+          to: ['a4@askyrgrandpa.com'],
+          subject: `Demo Access: ${firstName} ${lastName} — ${product}`,
+          html: emailHtml,
+        }),
+      })
+    } catch (err) {
+      logError('POST /demo-lead', err, { step: 'send_notification', email })
+    }
+  }
+
+  return new Response(JSON.stringify({ ok: true }), {
+    status: 200,
+    headers: { ...headers, 'Content-Type': 'application/json' },
+  })
 }
 
 // ── Route: POST /waitlist ──────────────────────────────────────
@@ -1314,8 +1441,8 @@ async function sendStageAutomationEmail(
 }
 
 // ── Admin: Constants ──────────────────────────────────────────
-const ADMIN_PASSWORD = 'Valencia@@'
-const ADMIN_TOKEN_SECRET = 'titus-admin-2026-secret-key'
+const ADMIN_PASSWORD = Deno.env.get('ADMIN_PASSWORD')!
+const ADMIN_TOKEN_SECRET = Deno.env.get('ADMIN_TOKEN_SECRET')!
 
 function generateAdminToken(): string {
   const payload = { role: 'admin', exp: Date.now() + 24 * 60 * 60 * 1000 }
@@ -1489,7 +1616,7 @@ async function handleAdminSendEmail(req: Request) {
 
   if (!emailRes.ok) {
     const errText = await emailRes.text()
-    console.error('Send email failed:', emailRes.status, errText)
+    logError('POST /admin/email/send', errText, { step: 'resend_api', status: emailRes.status, to })
     return errorResponse(`Email send failed: ${errText}`, 500)
   }
 
@@ -1511,7 +1638,7 @@ async function handleAdminSendEmail(req: Request) {
 }
 
 // ── Admin: Inbound Email Webhook (from Cloudflare Email Worker) ──
-const EMAIL_WEBHOOK_SECRET = 'titus-email-inbound-2026'
+const EMAIL_WEBHOOK_SECRET = Deno.env.get('EMAIL_WEBHOOK_SECRET')!
 
 async function handleInboundEmail(req: Request) {
   const secret = req.headers.get('X-Webhook-Secret')
@@ -1541,7 +1668,7 @@ async function handleInboundEmail(req: Request) {
 // ── Main router ────────────────────────────────────────────────
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response('ok', { headers: getCorsHeaders(req) })
   }
 
   const url = new URL(req.url)
@@ -1563,6 +1690,10 @@ Deno.serve(async (req) => {
 
     if (req.method === 'POST' && path === '/lead-capture') {
       return await handleLeadCapture(req)
+    }
+
+    if (req.method === 'POST' && path === '/demo-lead') {
+      return await handleDemoLead(req)
     }
 
     const downloadMatch = path.match(/^\/agreements\/download\/(.+)$/)
@@ -1598,7 +1729,8 @@ Deno.serve(async (req) => {
 
     return errorResponse('Not found', 404)
   } catch (err) {
-    console.error('Unhandled error:', err)
+    logError(path, err, { method: req.method })
+    reportToSentry(err, path, { method: req.method }).catch(() => {})
     return errorResponse(err.message || 'Internal server error')
   }
 })
