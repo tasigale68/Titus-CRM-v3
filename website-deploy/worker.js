@@ -3,7 +3,7 @@
 // www.titus-crm.com/agreement-builder → NDIS Agreement Builder
 // www.titus-crm.com/roc → NDIS Roster of Care Calculator
 // demo.titus-crm.com → reverse proxy to Railway backend
-// info@titus-crm.com → inbound email stored in Supabase
+// titus@askyrgrandpa.com → inbound email stored in Supabase
 
 import SITE_HTML from './index.html';
 import AGREEMENT_HTML from './agreement-builder.html';
@@ -142,7 +142,7 @@ Titus CRM replaces 5 separate tools (CRM, rostering, HR, recruitment, compliance
 - All plans: 14-day free trial, no per-user fees, cancel anytime
 
 ## Contact
-- Email: info@titus-crm.com
+- Email: titus@askyrgrandpa.com
 - Phone: 0488 810 958
 - Website: https://www.titus-crm.com
 - ABN: 28 616 760 206
@@ -170,7 +170,7 @@ export default {
       const parsed = await parser.parse(arrayBuffer);
 
       const fromAddress = message.from || parsed.from?.address || 'unknown';
-      const toAddress = message.to || 'info@titus-crm.com';
+      const toAddress = message.to || 'titus@askyrgrandpa.com';
       const subject = parsed.subject || '(No subject)';
       const bodyHtml = parsed.html || (parsed.text ? `<pre style="font-family:sans-serif;white-space:pre-wrap;">${parsed.text}</pre>` : '');
 

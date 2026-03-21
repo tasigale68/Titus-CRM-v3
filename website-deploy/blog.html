@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — Titus CRM | NDIS Provider Resources &amp; Guides</title>
+  <meta name="description" content="Practical guides, compliance updates, and insights for Australian NDIS providers. Learn about SCHADS compliance, audit preparation, AI automation, and more.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://www.titus-crm.com/blog">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Blog — Titus CRM | NDIS Provider Resources &amp; Guides">
+  <meta property="og:description" content="Practical guides, compliance updates, and insights for Australian NDIS providers. Learn about SCHADS compliance, audit preparation, AI automation, and more.">
+  <meta property="og:url" content="https://www.titus-crm.com/blog">
+  <meta property="og:site_name" content="Titus CRM">
+  <meta property="og:locale" content="en_AU">
+  <meta property="og:image" content="https://www.titus-crm.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Titus CRM Blog — Resources for NDIS Providers">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Blog — Titus CRM | NDIS Provider Resources &amp; Guides">
+  <meta name="twitter:description" content="Practical guides, compliance updates, and insights for Australian NDIS providers.">
+  <meta name="twitter:image" content="https://www.titus-crm.com/og-image.png">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 15C50 15 35 30 25 40C15 50 20 65 30 65C40 65 45 55 50 45C55 55 60 65 70 65C80 65 85 50 75 40C65 30 50 15 50 15Z' fill='%239A7B2E'/%3E%3Cellipse cx='35' cy='52' rx='18' ry='18' fill='none' stroke='%239A7B2E' stroke-width='4'/%3E%3Cellipse cx='65' cy='52' rx='18' ry='18' fill='none' stroke='%239A7B2E' stroke-width='4'/%3E%3Cellipse cx='50' cy='32' rx='16' ry='16' fill='none' stroke='%239A7B2E' stroke-width='4'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: #FAF7EE;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      color: #1a1a1a;
+      line-height: 1.6;
+    }
+    ::selection { background: #9A7B2E22; color: #1a1a1a; }
+
+    /* Header */
+    .site-header {
+      background: #1a1a1a;
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+    }
+    .back-link {
+      color: #C8A951;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .back-link:hover {
+      color: #fff;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 4rem 0 3rem;
+      text-align: center;
+    }
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.75rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+    .hero h1 span {
+      color: #9A7B2E;
+    }
+    .hero p {
+      font-size: 1.15rem;
+      color: #555;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* Featured Article */
+    .featured {
+      padding: 0 0 3rem;
+    }
+    .featured-card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      transition: box-shadow 0.3s;
+    }
+    .featured-card:hover {
+      box-shadow: 0 8px 40px rgba(154,123,46,0.12);
+    }
+    .featured-visual {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      min-height: 320px;
+    }
+    .featured-visual-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #9A7B2E, #C8A951);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .featured-visual-icon svg {
+      width: 40px;
+      height: 40px;
+      fill: #fff;
+    }
+    .featured-visual-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #C8A951;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .featured-content {
+      padding: 2.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .category-badge {
+      display: inline-block;
+      background: #9A7B2E;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 1rem;
+      width: fit-content;
+    }
+    .featured-content h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      line-height: 1.3;
+      margin-bottom: 1rem;
+    }
+    .featured-content .excerpt {
+      color: #555;
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+    .article-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 1.25rem;
+    }
+    .article-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .read-link {
+      color: #9A7B2E;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    .read-link:hover {
+      color: #C8A951;
+    }
+
+    /* Article Grid */
+    .articles-section {
+      padding: 0 0 4rem;
+    }
+    .articles-section h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      color: #1a1a1a;
+    }
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.75rem;
+    }
+    .article-card {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+      transition: transform 0.2s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+    .article-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(154,123,46,0.1);
+    }
+    .card-accent {
+      height: 4px;
+      background: linear-gradient(90deg, #9A7B2E, #C8A951);
+    }
+    .card-body {
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .card-body .category-badge {
+      font-size: 0.7rem;
+      padding: 0.25rem 0.6rem;
+      margin-bottom: 0.75rem;
+    }
+    .card-body h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+    }
+    .card-body .excerpt {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+      flex: 1;
+    }
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1rem;
+      border-top: 1px solid #f0ede4;
+    }
+    .card-footer .article-meta {
+      margin-bottom: 0;
+      font-size: 0.8rem;
+    }
+    .card-footer .read-link {
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    /* Subscribe Section */
+    .subscribe-section {
+      background: #1a1a1a;
+      padding: 4rem 0;
+      text-align: center;
+    }
+    .subscribe-section h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.75rem;
+    }
+    .subscribe-section p {
+      color: #aaa;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .subscribe-form {
+      display: flex;
+      gap: 0.75rem;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .subscribe-form input[type="email"] {
+      flex: 1;
+      padding: 0.9rem 1.25rem;
+      border: 2px solid #333;
+      border-radius: 10px;
+      background: #222;
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .subscribe-form input[type="email"]::placeholder {
+      color: #666;
+    }
+    .subscribe-form input[type="email"]:focus {
+      border-color: #9A7B2E;
+    }
+    .subscribe-form button {
+      padding: 0.9rem 1.75rem;
+      background: linear-gradient(135deg, #9A7B2E, #C8A951);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+    .subscribe-form button:hover {
+      opacity: 0.9;
+    }
+
+    /* Footer */
+    .site-footer {
+      background: #111;
+      padding: 2.5rem 0;
+      text-align: center;
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: #888;
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover {
+      color: #C8A951;
+    }
+    .footer-copy {
+      color: #555;
+      font-size: 0.8rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .articles-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+      .hero p {
+        font-size: 1rem;
+      }
+      .featured-card {
+        grid-template-columns: 1fr;
+      }
+      .featured-visual {
+        min-height: 200px;
+        padding: 2rem;
+      }
+      .featured-content {
+        padding: 2rem;
+      }
+      .featured-content h2 {
+        font-size: 1.35rem;
+      }
+      .articles-grid {
+        grid-template-columns: 1fr;
+      }
+      .subscribe-form {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <path d="M50 15C50 15 35 30 25 40C15 50 20 65 30 65C40 65 45 55 50 45C55 55 60 65 70 65C80 65 85 50 75 40C65 30 50 15 50 15Z" fill="#C8A951"/>
+          <ellipse cx="35" cy="52" rx="18" ry="18" fill="none" stroke="#C8A951" stroke-width="4"/>
+          <ellipse cx="65" cy="52" rx="18" ry="18" fill="none" stroke="#C8A951" stroke-width="4"/>
+          <ellipse cx="50" cy="32" rx="16" ry="16" fill="none" stroke="#C8A951" stroke-width="4"/>
+        </svg>
+        Titus CRM
+      </a>
+      <a href="/" class="back-link">&larr; Back to Home</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <h1>Titus CRM <span>Blog</span> — Resources for NDIS Providers</h1>
+        <p>Practical guides, compliance updates, and insights for Australian NDIS, Aged Care, and Community Service providers.</p>
+      </div>
+    </section>
+
+    <!-- Featured Article -->
+    <section class="featured">
+      <div class="container">
+        <article class="featured-card">
+          <div class="featured-visual">
+            <div class="featured-visual-icon">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            </div>
+            <span class="featured-visual-label">Featured Article</span>
+          </div>
+          <div class="featured-content">
+            <span class="category-badge">Industry Insights</span>
+            <h2>The True Cost of NDIS Administration: Why Providers Are Losing $64,000+ Per Year</h2>
+            <p class="excerpt">Most NDIS providers don't realise how much admin is really costing them. We break down the numbers — from roster management to compliance tracking — and show where AI automation can reclaim 80% of that time.</p>
+            <div class="article-meta">
+              <span>March 2026</span>
+              <span>&middot;</span>
+              <span>8 min read</span>
+            </div>
+            <a href="#" class="read-link">Read Article &rarr;</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Article Grid -->
+    <section class="articles-section">
+      <div class="container">
+        <h2>Latest Articles</h2>
+        <div class="articles-grid">
+
+          <!-- Article 1 -->
+          <article class="article-card">
+            <div class="card-accent"></div>
+            <div class="card-body">
+              <span class="category-badge">Compliance</span>
+              <h3>NDIS Audit Preparation: A Complete Checklist for 2026</h3>
+              <p class="excerpt">Everything you need to know to prepare for your NDIS audit. From QMS registers to incident reporting — a step-by-step guide.</p>
+              <div class="card-footer">
+                <div class="article-meta">
+                  <span>March 2026</span>
+                  <span>&middot;</span>
+                  <span>6 min read</span>
+                </div>
+                <a href="#" class="read-link">Read Article &rarr;</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Article 2 -->
+          <article class="article-card">
+            <div class="card-accent"></div>
+            <div class="card-body">
+              <span class="category-badge">Compliance</span>
+              <h3>SCHADS Award 2025-26: What NDIS Providers Need to Know</h3>
+              <p class="excerpt">Key changes to the SCHADS Award rates, penalty calculations, and what it means for your rostering and payroll.</p>
+              <div class="card-footer">
+                <div class="article-meta">
+                  <span>March 2026</span>
+                  <span>&middot;</span>
+                  <span>5 min read</span>
+                </div>
+                <a href="#" class="read-link">Read Article &rarr;</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Article 3 -->
+          <article class="article-card">
+            <div class="card-accent"></div>
+            <div class="card-body">
+              <span class="category-badge">Growth</span>
+              <h3>5 Signs Your NDIS Business Has Outgrown Spreadsheets</h3>
+              <p class="excerpt">Still running your provider business on Excel? Here are the warning signs that it's time to move to a purpose-built platform.</p>
+              <div class="card-footer">
+                <div class="article-meta">
+                  <span>March 2026</span>
+                  <span>&middot;</span>
+                  <span>4 min read</span>
+                </div>
+                <a href="#" class="read-link">Read Article &rarr;</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Article 4 -->
+          <article class="article-card">
+            <div class="card-accent"></div>
+            <div class="card-body">
+              <span class="category-badge">Technology</span>
+              <h3>How AI Is Changing NDIS Progress Note Writing</h3>
+              <p class="excerpt">Voice-to-text, AI-assisted report writing, and automated compliance checks — how modern tools are saving support workers hours every week.</p>
+              <div class="card-footer">
+                <div class="article-meta">
+                  <span>March 2026</span>
+                  <span>&middot;</span>
+                  <span>5 min read</span>
+                </div>
+                <a href="#" class="read-link">Read Article &rarr;</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Article 5 -->
+          <article class="article-card">
+            <div class="card-accent"></div>
+            <div class="card-body">
+              <span class="category-badge">Operations</span>
+              <h3>Digital Service Agreements: Why Paper Is Holding Your NDIS Business Back</h3>
+              <p class="excerpt">Digital signatures, automated reminders, and instant PDF generation — the case for moving your NDIS service agreements online.</p>
+              <div class="card-footer">
+                <div class="article-meta">
+                  <span>March 2026</span>
+                  <span>&middot;</span>
+                  <span>4 min read</span>
+                </div>
+                <a href="#" class="read-link">Read Article &rarr;</a>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Subscribe -->
+    <section class="subscribe-section">
+      <div class="container">
+        <h2>Subscribe for Updates</h2>
+        <p>Get the latest NDIS industry insights, compliance guides, and product updates delivered to your inbox.</p>
+        <form class="subscribe-form" onsubmit="return false;">
+          <input type="email" placeholder="Enter your email address" aria-label="Email address">
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <nav class="footer-links">
+        <a href="/">Home</a>
+        <a href="/agreement-builder">Agreement Builder</a>
+        <a href="/roc">Roster of Care</a>
+        <a href="/blog">Blog</a>
+        <a href="/privacy-policy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+      </nav>
+      <p class="footer-copy">&copy; 2026 Titus CRM. All rights reserved. &nbsp;|&nbsp; ABN pending &nbsp;|&nbsp; Melbourne, Australia</p>
+      <p class="footer-copy" style="margin-top:8px">Created by <a href="https://www.askyrgrandpa.com" style="color:#9A7B2E;text-decoration:none">askyrgrandpa.com</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -540,7 +540,7 @@ async function handleWaitlist(req: Request) {
         },
         body: JSON.stringify({
           from: 'Titus CRM <titus@askyrgrandpa.com>',
-          to: ['info@titus-crm.com'],
+          to: ['titus@askyrgrandpa.com'],
           subject: `New Waitlist Signup - ${firstName} ${lastName} (${state})`,
           html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
             <div style="background:#9A7B2E;color:white;padding:20px 24px;border-radius:8px 8px 0 0;">
@@ -1065,7 +1065,7 @@ async function sendAgreementEmail(
 
   const emailPayload: any = {
     from: 'Titus CRM <titus@askyrgrandpa.com>',
-    to: ['info@titus-crm.com'],
+    to: ['titus@askyrgrandpa.com'],
     subject,
     html,
   }
@@ -1387,7 +1387,7 @@ async function sendStageAutomationEmail(
   const subject = replaceTokens(template.subject)
   const bodyContent = replaceTokens(template.body)
 
-  const to = template.internal ? 'info@titus-crm.com' : (lead.email || '')
+  const to = template.internal ? 'titus@askyrgrandpa.com' : (lead.email || '')
   if (!to) return { sent: false, error: 'No email address for lead' }
 
   const fullHtml = `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
@@ -1652,7 +1652,7 @@ async function handleInboundEmail(req: Request) {
   const { error } = await supabase.from('admin_emails').insert({
     direction: 'inbound',
     from_address: data.from_address || 'unknown',
-    to_address: data.to_address || 'info@titus-crm.com',
+    to_address: data.to_address || 'titus@askyrgrandpa.com',
     subject: data.subject || '(No subject)',
     body_html: data.body_html || '',
   })
