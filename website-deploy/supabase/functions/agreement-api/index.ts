@@ -469,7 +469,7 @@ async function handleDemoLead(req: Request) {
           'Authorization': `Bearer ${resendKey}`,
         },
         body: JSON.stringify({
-          from: 'Titus CRM <info@titus-crm.com>',
+          from: 'Titus CRM <titus@askyrgrandpa.com>',
           to: ['a4@askyrgrandpa.com'],
           subject: `Demo Access: ${firstName} ${lastName} — ${product}`,
           html: emailHtml,
@@ -539,7 +539,7 @@ async function handleWaitlist(req: Request) {
           'Authorization': `Bearer ${resendKey}`,
         },
         body: JSON.stringify({
-          from: 'Titus CRM <info@titus-crm.com>',
+          from: 'Titus CRM <titus@askyrgrandpa.com>',
           to: ['info@titus-crm.com'],
           subject: `New Waitlist Signup - ${firstName} ${lastName} (${state})`,
           html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
@@ -1064,7 +1064,7 @@ async function sendAgreementEmail(
     </div>`
 
   const emailPayload: any = {
-    from: 'info@titus-crm.com',
+    from: 'Titus CRM <titus@askyrgrandpa.com>',
     to: ['info@titus-crm.com'],
     subject,
     html,
@@ -1410,7 +1410,7 @@ async function sendStageAutomationEmail(
         'Authorization': `Bearer ${resendKey}`,
       },
       body: JSON.stringify({
-        from: 'Titus CRM <info@titus-crm.com>',
+        from: 'Titus CRM <titus@askyrgrandpa.com>',
         to: [to],
         subject,
         html: fullHtml,
@@ -1426,7 +1426,7 @@ async function sendStageAutomationEmail(
     // Store in admin_emails
     await supabase.from('admin_emails').insert({
       direction: 'outbound',
-      from_address: 'info@titus-crm.com',
+      from_address: 'titus@askyrgrandpa.com',
       to_address: to,
       subject,
       body_html: fullHtml,
@@ -1607,7 +1607,7 @@ async function handleAdminSendEmail(req: Request) {
       'Authorization': `Bearer ${resendKey}`,
     },
     body: JSON.stringify({
-      from: 'Titus CRM <info@titus-crm.com>',
+      from: 'Titus CRM <titus@askyrgrandpa.com>',
       to: [to],
       subject,
       html: bodyHtml,
@@ -1623,7 +1623,7 @@ async function handleAdminSendEmail(req: Request) {
   // Store in admin_emails table
   const { error } = await supabase.from('admin_emails').insert({
     direction: 'outbound',
-    from_address: 'info@titus-crm.com',
+    from_address: 'titus@askyrgrandpa.com',
     to_address: to,
     subject,
     body_html: bodyHtml,
