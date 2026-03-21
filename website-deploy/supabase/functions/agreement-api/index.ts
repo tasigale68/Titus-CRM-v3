@@ -5,8 +5,6 @@ import autoTable from 'https://esm.sh/jspdf-autotable@3.8.4'
 const ALLOWED_ORIGINS = [
   'https://www.titus-crm.com',
   'https://demo.titus-crm.com',
-  'https://poto-ai.com',
-  'https://www.poto-ai.com',
 ]
 
 function getCorsHeaders(req?: Request) {
@@ -19,11 +17,24 @@ function getCorsHeaders(req?: Request) {
   }
 }
 
-// Legacy alias for existing code
-const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://www.titus-crm.com',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
+// Legacy alias — kept for backward compat, prefer getCorsHeaders(req)
+const corsHeaders = getCorsHeaders()
+
+function escapeHtml(str: string): string {
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+}
+
+function isValidEmail(email: string): boolean {
+  return /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/.test(email)
+}
+
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let mismatch = 0
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return mismatch === 0
 }
 
 function jsonResponse(data: any, status = 200) {
@@ -113,11 +124,9 @@ function formatDateDisplay(dateStr: string): string {
 
 function generateAgreementId(): string {
   const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  let id = ''
-  for (let i = 0; i < 8; i++) {
-    id += chars[Math.floor(Math.random() * chars.length)]
-  }
-  return id
+  const bytes = new Uint8Array(8)
+  crypto.getRandomValues(bytes)
+  return Array.from(bytes).map(b => chars[b % chars.length]).join('')
 }
 
 function buildDbRecord(data: any, weekly: number, duration: number, total: number) {
@@ -262,7 +271,7 @@ async function handleCreateAgreement(req: Request) {
     .select()
     .single()
 
-  if (error) return errorResponse(`DB error: ${error.message}`)
+  if (error) return errorResponse('A database error occurred. Please try again.')
 
   const agreementId = inserted.agreement_id
   const recordId = inserted.id
@@ -520,7 +529,7 @@ async function handleWaitlist(req: Request) {
 
   const { error } = await supabase.from('waitlist').insert(record)
 
-  if (error) return errorResponse(`DB error: ${error.message}`)
+  if (error) return errorResponse('A database error occurred. Please try again.')
 
   // Send notification email (non-fatal)
   try {
@@ -1444,19 +1453,30 @@ async function sendStageAutomationEmail(
 const ADMIN_PASSWORD = Deno.env.get('ADMIN_PASSWORD')!
 const ADMIN_TOKEN_SECRET = Deno.env.get('ADMIN_TOKEN_SECRET')!
 
-function generateAdminToken(): string {
-  const payload = { role: 'admin', exp: Date.now() + 24 * 60 * 60 * 1000 }
-  // Simple base64 token with expiry
-  return btoa(JSON.stringify(payload) + '|' + ADMIN_TOKEN_SECRET)
+async function generateAdminToken(): Promise<string> {
+  const payload = JSON.stringify({ role: 'admin', exp: Date.now() + 8 * 60 * 60 * 1000 })
+  const encoder = new TextEncoder()
+  const key = await crypto.subtle.importKey(
+    'raw', encoder.encode(ADMIN_TOKEN_SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  )
+  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(payload))
+  const sigHex = Array.from(new Uint8Array(signature)).map(b => b.toString(16).padStart(2, '0')).join('')
+  return btoa(payload) + '.' + sigHex
 }
 
-function verifyAdminToken(token: string): boolean {
+async function verifyAdminToken(token: string): Promise<boolean> {
   try {
-    const decoded = atob(token)
-    if (!decoded.endsWith('|' + ADMIN_TOKEN_SECRET)) return false
-    const jsonStr = decoded.replace('|' + ADMIN_TOKEN_SECRET, '')
-    const payload = JSON.parse(jsonStr)
-    return payload.role === 'admin' && payload.exp > Date.now()
+    const [payloadB64, sigHex] = token.split('.')
+    if (!payloadB64 || !sigHex) return false
+    const payload = atob(payloadB64)
+    const parsed = JSON.parse(payload)
+    if (parsed.role !== 'admin' || parsed.exp <= Date.now()) return false
+    const encoder = new TextEncoder()
+    const key = await crypto.subtle.importKey(
+      'raw', encoder.encode(ADMIN_TOKEN_SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']
+    )
+    const sigBytes = new Uint8Array(sigHex.match(/.{2}/g)!.map(b => parseInt(b, 16)))
+    return await crypto.subtle.verify('HMAC', key, sigBytes, encoder.encode(payload))
   } catch {
     return false
   }
@@ -1468,9 +1488,9 @@ function getAdminToken(req: Request): string | null {
   return null
 }
 
-function requireAdmin(req: Request): Response | null {
+async function requireAdmin(req: Request): Promise<Response | null> {
   const token = getAdminToken(req)
-  if (!token || !verifyAdminToken(token)) {
+  if (!token || !(await verifyAdminToken(token))) {
     return jsonResponse({ error: 'Unauthorized' }, 401)
   }
   return null
@@ -1482,12 +1502,12 @@ async function handleAdminLogin(req: Request) {
   if (data.password !== ADMIN_PASSWORD) {
     return jsonResponse({ error: 'Invalid password' }, 401)
   }
-  return jsonResponse({ success: true, token: generateAdminToken() })
+  return jsonResponse({ success: true, token: await generateAdminToken() })
 }
 
 // ── Admin: List Leads ─────────────────────────────────────────
 async function handleAdminLeads(req: Request) {
-  const authErr = requireAdmin(req)
+  const authErr = await requireAdmin(req)
   if (authErr) return authErr
 
   const supabase = getSupabaseClient()
@@ -1502,7 +1522,7 @@ async function handleAdminLeads(req: Request) {
 
 // ── Admin: Update Lead ────────────────────────────────────────
 async function handleAdminUpdateLead(req: Request, id: string) {
-  const authErr = requireAdmin(req)
+  const authErr = await requireAdmin(req)
   if (authErr) return authErr
 
   const data = await req.json()
@@ -1553,7 +1573,7 @@ async function handleAdminUpdateLead(req: Request, id: string) {
 
 // ── Admin: List Emails ────────────────────────────────────────
 async function handleAdminEmails(req: Request) {
-  const authErr = requireAdmin(req)
+  const authErr = await requireAdmin(req)
   if (authErr) return authErr
 
   const supabase = getSupabaseClient()
@@ -1568,7 +1588,7 @@ async function handleAdminEmails(req: Request) {
 
 // ── Admin: Send Email ─────────────────────────────────────────
 async function handleAdminSendEmail(req: Request) {
-  const authErr = requireAdmin(req)
+  const authErr = await requireAdmin(req)
   if (authErr) return authErr
 
   const data = await req.json()
@@ -1593,7 +1613,7 @@ async function handleAdminSendEmail(req: Request) {
       <h2 style="margin:0;font-size:18px;">Titus CRM</h2>
     </div>
     <div style="border:1px solid #ddd;border-top:none;padding:20px;line-height:1.6;">
-      ${body.replace(/\n/g, '<br/>')}
+      ${escapeHtml(body).replace(/\n/g, '<br/>')}
     </div>
     <div style="padding:12px 20px;font-size:12px;color:#999;">
       Sent from Titus CRM — <a href="https://www.titus-crm.com" style="color:#9A7B2E;">www.titus-crm.com</a>
@@ -1617,7 +1637,7 @@ async function handleAdminSendEmail(req: Request) {
   if (!emailRes.ok) {
     const errText = await emailRes.text()
     logError('POST /admin/email/send', errText, { step: 'resend_api', status: emailRes.status, to })
-    return errorResponse(`Email send failed: ${errText}`, 500)
+    return errorResponse('Email delivery failed. Please try again.', 500)
   }
 
   // Store in admin_emails table
@@ -1642,7 +1662,7 @@ const EMAIL_WEBHOOK_SECRET = Deno.env.get('EMAIL_WEBHOOK_SECRET')!
 
 async function handleInboundEmail(req: Request) {
   const secret = req.headers.get('X-Webhook-Secret')
-  if (secret !== EMAIL_WEBHOOK_SECRET) {
+  if (!secret || !timingSafeEqual(secret, EMAIL_WEBHOOK_SECRET)) {
     return jsonResponse({ error: 'Unauthorized' }, 401)
   }
 
@@ -1659,7 +1679,7 @@ async function handleInboundEmail(req: Request) {
 
   if (error) {
     console.error('Failed to store inbound email:', error.message)
-    return errorResponse(error.message)
+    return errorResponse('Failed to process inbound email.')
   }
 
   return jsonResponse({ success: true })

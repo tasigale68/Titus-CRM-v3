@@ -2,6 +2,14 @@
 <html lang="en-AU">
 <head>
   <meta charset="UTF-8">
+  <script src="https://browser.sentry-cdn.com/8.0.0/bundle.min.js" crossorigin="anonymous"></script>
+  <script>
+    Sentry.init({
+      dsn: 'https://9bee37d9abf0a8e3162bf0cf6412635a@o4511016077164544.ingest.us.sentry.io/4511036917219328',
+      tracesSampleRate: 0.1,
+      environment: 'production',
+    });
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Titus CRM — Administrator Portal</title>
   <meta name="robots" content="noindex, nofollow">
@@ -897,7 +905,7 @@
                   </div>
                   <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 20, marginBottom: 20 }}>
                     {selected.body_html ? (
-                      <div style={{ fontSize: 14, lineHeight: 1.7 }} dangerouslySetInnerHTML={{ __html: selected.body_html }} />
+                      <div style={{ fontSize: 14, lineHeight: 1.7 }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(selected.body_html) }} />
                     ) : (
                       <div style={{ fontSize: 14, lineHeight: 1.7, color: C.textMid, whiteSpace: 'pre-wrap' }}>
                         {selected.body || '(No content)'}
@@ -1135,6 +1143,22 @@
           </div>
         </div>
       );
+    }
+
+    // ── HTML Sanitizer (prevents stored XSS in email display) ──────────────
+    function sanitizeHtml(html) {
+      if (!html) return '';
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      doc.querySelectorAll('script').forEach(el => el.remove());
+      doc.querySelectorAll('*').forEach(el => {
+        [...el.attributes].forEach(attr => {
+          if (attr.name.startsWith('on') || (attr.value && attr.value.startsWith('javascript:'))) {
+            el.removeAttribute(attr.name);
+          }
+        });
+      });
+      doc.querySelectorAll('iframe,object,embed,form,input,textarea,button').forEach(el => el.remove());
+      return doc.body.innerHTML;
     }
 
     // ── Main App ──────────────────────────────────────────────────────────────

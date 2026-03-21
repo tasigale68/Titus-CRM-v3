@@ -43,7 +43,7 @@ const securityHeaders = {
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(self), geolocation=()',
   'X-XSS-Protection': '1; mode=block',
-  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://esm.sh https://browser.sentry-cdn.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' https://pub-e10851134f4946a5a12af091dd5ba51e.r2.dev; connect-src 'self' https://*.supabase.co https://octdvaicofjmaetgfect.supabase.co https://*.sentry.io https://browser.sentry-cdn.com https://cdnjs.cloudflare.com; frame-src 'none';",
+  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://esm.sh https://browser.sentry-cdn.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' https://pub-e10851134f4946a5a12af091dd5ba51e.r2.dev; connect-src 'self' https://*.supabase.co https://octdvaicofjmaetgfect.supabase.co https://*.sentry.io https://browser.sentry-cdn.com https://cdnjs.cloudflare.com; frame-src 'none';",
 };
 
 const OG_IMAGE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
@@ -160,7 +160,11 @@ function htmlResponse(html) {
 export default {
   async email(message, env, ctx) {
     const EDGE_FN = 'https://octdvaicofjmaetgfect.supabase.co/functions/v1/agreement-api';
-    const WEBHOOK_SECRET = env.EMAIL_WEBHOOK_SECRET || 'titus-email-inbound-2026';
+    const WEBHOOK_SECRET = env.EMAIL_WEBHOOK_SECRET;
+    if (!WEBHOOK_SECRET) {
+      console.error('EMAIL_WEBHOOK_SECRET not configured');
+      return;
+    }
 
     try {
       // Parse the raw email
@@ -456,7 +460,7 @@ async function handleDemoRegister(request) {
     status: 302,
     headers: {
       'Location': 'https://demo.titus-crm.com/',
-      'Set-Cookie': 'titus_demo_access=1; Path=/; Max-Age=604800; Secure; SameSite=Lax',
+      'Set-Cookie': 'titus_demo_access=1; Path=/; Max-Age=604800; Secure; SameSite=Lax; HttpOnly',
       ...securityHeaders,
     }
   });
