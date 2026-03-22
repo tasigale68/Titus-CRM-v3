@@ -590,6 +590,7 @@ async function handleWaitlist(req: Request) {
         platform: 'titus',
         stage: 'waitlist',
         source: 'webhook_titus',
+        country: 'AU',
       }),
     })
   } catch (e) { console.error('AYG webhook error:', e) }
