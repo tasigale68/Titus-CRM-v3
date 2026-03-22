@@ -576,6 +576,24 @@ async function handleWaitlist(req: Request) {
     console.error('Waitlist email error:', emailErr)
   }
 
+  // Push contact to AYG Command Centre (non-fatal)
+  try {
+    await fetch('https://askyrgrandpa.com/api/contacts/webhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer A4Command2026!' },
+      body: JSON.stringify({
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        org: (data.providerTypes || []).join(', '),
+        phone: phone || '',
+        platform: 'titus',
+        stage: 'waitlist',
+        source: 'webhook_titus',
+      }),
+    })
+  } catch (e) { console.error('AYG webhook error:', e) }
+
   return jsonResponse({ success: true })
 }
 
