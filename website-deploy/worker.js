@@ -16,6 +16,7 @@ import ABOUT_HTML from './about.html';
 import BLOG_HTML from './blog.html';
 import FEATURES_HTML from './features.html';
 import OG_IMAGE_DATA from './og-image.png';
+import TITUS_LOGO from './titus-logo.png';
 import LOGO_DELTA from './partners/delta-community.png';
 import LOGO_MEADOW from './partners/meadow-street.png';
 import LOGO_AMAIYA from './partners/amaiya-support.png';
@@ -264,6 +265,17 @@ export default {
       return new Response(OG_IMAGE_SVG, {
         headers: {
           'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=604800',
+          ...securityHeaders,
+        }
+      });
+    }
+
+    // Titus logo
+    if (url.pathname === '/titus-logo.png') {
+      return new Response(TITUS_LOGO, {
+        headers: {
+          'Content-Type': 'image/png',
           'Cache-Control': 'public, max-age=604800',
           ...securityHeaders,
         }
