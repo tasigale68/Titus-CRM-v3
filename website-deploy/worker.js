@@ -60,7 +60,7 @@ const OG_IMAGE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" heigh
   <text x="80" y="268" font-family="Arial,Helvetica,sans-serif" font-size="56" font-weight="800" fill="#9A7B2E">Australian NDIS Providers</text>
   <text x="80" y="340" font-family="Arial,Helvetica,sans-serif" font-size="26" fill="#666">Replace 5 tools with one platform. CRM · Rostering · HR · Compliance · AI</text>
   <rect x="80" y="390" width="280" height="56" rx="12" fill="url(#gold)"/>
-  <text x="140" y="426" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#fff">From $149/wk +GST</text>
+  <text x="140" y="426" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#fff">From $249/wk +GST</text>
   <rect x="380" y="390" width="310" height="56" rx="12" fill="none" stroke="#9A7B2E" stroke-width="2"/>
   <text x="410" y="426" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="600" fill="#9A7B2E">24/7 AI Agent Included</text>
   <line x1="80" y1="490" x2="1120" y2="490" stroke="#E8E6DF" stroke-width="1"/>
@@ -156,7 +156,7 @@ const LLMS_TXT = `# Titus CRM
 ## Key Pages
 - [Home](https://www.titus-crm.com/): Platform overview, pricing, admin savings calculator, feature showcase
 - [Features](https://www.titus-crm.com/features): 100+ features across 9 modules with live/coming-soon status
-- [Pricing](https://www.titus-crm.com/pricing): From $149/week +GST, flat fee, no per-user charges, 14-day free trial
+- [Pricing](https://www.titus-crm.com/pricing): From $249/week +GST, flat fee, no per-user charges, 14-day free trial
 - [Agreement Builder](https://www.titus-crm.com/agreement-builder): Free NDIS Service Agreement and Schedule of Support builder
 - [Roster of Care Calculator](https://www.titus-crm.com/roc): Free NDIS Roster of Care calculator tool
 - [About](https://www.titus-crm.com/about): Company story, team, mission
@@ -182,7 +182,7 @@ Titus CRM is an AI-powered provider management platform built for Australian NDI
 - Worker Mobile Portal (roster, timesheets, availability, document uploads)
 
 ## Pricing (AUD, paid weekly +GST)
-- Foundation: $149/week (1-15 staff)
+- Foundation: $249/week (1-15 staff)
 - Growth: $349/week (10-40 staff)
 - Scale: $749/week (30+ staff)
 - An implementation fee applies to all plans based on the size of your business and data migration
