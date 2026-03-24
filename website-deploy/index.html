@@ -402,6 +402,13 @@ const WaitlistForm=()=>{
       const selectedFeatures=INTEREST_FEATURES.filter(f=>form.features[f.k]).map(f=>f.l);
       const body={firstName:form.firstName.trim(),lastName:form.lastName.trim(),email:form.email.trim(),phone:form.phone.trim(),state:form.state,providerTypes:selected,businessStructures:selectedStructures,interestedFeatures:selectedFeatures};
       await fetch('https://octdvaicofjmaetgfect.supabase.co/functions/v1/agreement-api/waitlist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      // Push to AYG admin as Titus CRM contact at Waitlist stage
+      try{
+        const noteLines=['Titus CRM waitlist signup at '+new Date().toISOString(),'Name: '+form.firstName.trim()+' '+form.lastName.trim(),'Email: '+form.email.trim(),form.phone.trim()?'Phone: '+form.phone.trim():'','State: '+form.state,'Provider types: '+selected.join(', ')];
+        if(selectedStructures.length)noteLines.push('Business structures: '+selectedStructures.join(', '));
+        if(selectedFeatures.length)noteLines.push('Interested features: '+selectedFeatures.join(', '));
+        fetch('https://askyrgrandpa.com/api/contacts/webhook',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer A4Command2026!'},body:JSON.stringify({email:form.email.trim(),first_name:form.firstName.trim(),last_name:form.lastName.trim(),phone:form.phone.trim()||null,platform:'titus',stage:'waitlist',source:'webhook_titus_waitlist',country:'AU',industry:selected.includes('NDIS Provider (Registered)')||selected.includes('NDIS Provider (Unregistered)')?'ndis':selected.includes('Aged Care Provider')?'aged_care':'community_services',action_note:noteLines.filter(Boolean).join('\n')})}).catch(function(){});
+      }catch(e){}
       setDone(true);
     }catch(err){setDone(true);}
     setSubmitting(false);
