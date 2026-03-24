@@ -396,21 +396,20 @@ const WaitlistForm=()=>{
     if(!form.state){setError('Please select your state.');return;}
     if(!Object.values(form.providers).some(Boolean)){setError('Please select at least one provider type.');return;}
     setSubmitting(true);
+    const selected=PROVIDER_TYPES.filter(p=>form.providers[p.k]).map(p=>p.l);
+    const selectedStructures=BUSINESS_STRUCTURES.filter(s=>form.structures[s.k]).map(s=>s.l);
+    const selectedFeatures=INTEREST_FEATURES.filter(f=>form.features[f.k]).map(f=>f.l);
+    const body={firstName:form.firstName.trim(),lastName:form.lastName.trim(),email:form.email.trim(),phone:form.phone.trim(),state:form.state,providerTypes:selected,businessStructures:selectedStructures,interestedFeatures:selectedFeatures};
+    // Save to Supabase waitlist
+    try{await fetch('https://octdvaicofjmaetgfect.supabase.co/functions/v1/agreement-api/waitlist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){}
+    // Push to AYG admin as Titus CRM contact at Waitlist stage
     try{
-      const selected=PROVIDER_TYPES.filter(p=>form.providers[p.k]).map(p=>p.l);
-      const selectedStructures=BUSINESS_STRUCTURES.filter(s=>form.structures[s.k]).map(s=>s.l);
-      const selectedFeatures=INTEREST_FEATURES.filter(f=>form.features[f.k]).map(f=>f.l);
-      const body={firstName:form.firstName.trim(),lastName:form.lastName.trim(),email:form.email.trim(),phone:form.phone.trim(),state:form.state,providerTypes:selected,businessStructures:selectedStructures,interestedFeatures:selectedFeatures};
-      await fetch('https://octdvaicofjmaetgfect.supabase.co/functions/v1/agreement-api/waitlist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-      // Push to AYG admin as Titus CRM contact at Waitlist stage
-      try{
-        const noteLines=['Titus CRM waitlist signup at '+new Date().toISOString(),'Name: '+form.firstName.trim()+' '+form.lastName.trim(),'Email: '+form.email.trim(),form.phone.trim()?'Phone: '+form.phone.trim():'','State: '+form.state,'Provider types: '+selected.join(', ')];
-        if(selectedStructures.length)noteLines.push('Business structures: '+selectedStructures.join(', '));
-        if(selectedFeatures.length)noteLines.push('Interested features: '+selectedFeatures.join(', '));
-        fetch('https://askyrgrandpa.com/api/contacts/webhook',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer A4Command2026!'},body:JSON.stringify({email:form.email.trim(),first_name:form.firstName.trim(),last_name:form.lastName.trim(),phone:form.phone.trim()||null,platform:'titus',stage:'waitlist',source:'webhook_titus_waitlist',country:'AU',industry:selected.includes('NDIS Provider (Registered)')||selected.includes('NDIS Provider (Unregistered)')?'ndis':selected.includes('Aged Care Provider')?'aged_care':'community_services',action_note:noteLines.filter(Boolean).join('\n')})}).catch(function(){});
-      }catch(e){}
-      setDone(true);
-    }catch(err){setDone(true);}
+      const noteLines=['Titus CRM waitlist signup at '+new Date().toISOString(),'Name: '+form.firstName.trim()+' '+form.lastName.trim(),'Email: '+form.email.trim(),form.phone.trim()?'Phone: '+form.phone.trim():'','State: '+form.state,'Provider types: '+selected.join(', ')];
+      if(selectedStructures.length)noteLines.push('Business structures: '+selectedStructures.join(', '));
+      if(selectedFeatures.length)noteLines.push('Interested features: '+selectedFeatures.join(', '));
+      fetch('https://askyrgrandpa.com/api/contacts/webhook',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer A4Command2026!'},body:JSON.stringify({email:form.email.trim(),first_name:form.firstName.trim(),last_name:form.lastName.trim(),phone:form.phone.trim()||null,platform:'titus',stage:'waitlist',source:'webhook_titus_waitlist',country:'AU',industry:selected.includes('NDIS Provider (Registered)')||selected.includes('NDIS Provider (Unregistered)')?'ndis':selected.includes('Aged Care Provider')?'aged_care':'community_services',action_note:noteLines.filter(Boolean).join('\n')})}).catch(function(){});
+    }catch(e){}
+    setDone(true);
     setSubmitting(false);
   };
   if(done)return(<div style={{textAlign:'center',padding:'60px 20px'}}><div style={{width:80,height:80,borderRadius:'50%',background:C.greenLight,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 24px',border:'2px solid '+C.greenPale}}><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={C.green} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><h3 style={{fontFamily:"'Space Grotesk',sans-serif",color:C.text,fontSize:28,marginBottom:12}}>You're on the list!</h3><p style={{fontFamily:"'Plus Jakarta Sans',sans-serif",color:C.textSoft,fontSize:15}}>Thanks <strong style={{color:C.gold}}>{form.firstName}</strong>! We'll be in touch at <strong style={{color:C.gold}}>{form.email}</strong> when Titus is ready for you.</p></div>);
