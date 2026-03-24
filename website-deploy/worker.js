@@ -64,7 +64,7 @@ const OG_IMAGE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" heigh
   <rect x="380" y="390" width="310" height="56" rx="12" fill="none" stroke="#9A7B2E" stroke-width="2"/>
   <text x="410" y="426" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="600" fill="#9A7B2E">24/7 AI Agent Included</text>
   <line x1="80" y1="490" x2="1120" y2="490" stroke="#E8E6DF" stroke-width="1"/>
-  <text x="80" y="530" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#999">18 QMS Registers · SCHADS Compliance · Browser Softphone · AI Reports</text>
+  <text x="80" y="530" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#999">18 Customisable QMS Registers · SCHADS Compliance · Browser Softphone · AI Reports</text>
   <text x="80" y="565" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#999">Voice-to-Text · Digital Agreements · Recruitment ATS · Budget Tracking</text>
   <text x="1120" y="600" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#9A7B2E" text-anchor="end">www.titus-crm.com</text>
 </svg>`;
@@ -165,10 +165,10 @@ const LLMS_TXT = `# Titus CRM
 - [Terms](https://www.titus-crm.com/terms): Terms of service
 
 ## What is Titus CRM?
-Titus CRM is an AI-powered provider management platform built for Australian NDIS, aged care, and community service providers. It consolidates five separate business tools into one system: CRM, staff rostering with SCHADS Award compliance, HR management, recruitment ATS, and a quality management system with 18 built-in compliance registers. The platform includes a 24/7 AI agent named Denise that handles after-hours calls, and generates AI-powered NDIS progress reports using voice-to-text input. Providers report saving $64,000+ per year in admin costs and reclaiming 10+ hours per week. All data is hosted in Australia.
+Titus CRM is an AI-powered provider management platform built for Australian NDIS, aged care, and community service providers. It consolidates five separate business tools into one system: CRM, staff rostering with SCHADS Award compliance, HR management, recruitment ATS, and a quality management system with 18 built-in customisable compliance registers. The platform includes a 24/7 AI agent named Denise that handles after-hours calls, and generates AI-powered NDIS progress reports using voice-to-text input. Providers report saving $64,000+ per year in admin costs and reclaiming 10+ hours per week. All data is hosted in Australia.
 
 ## Features
-- 18 QMS Compliance Registers across 5 categories: Governance & Risk (risk register, legislative compliance, quality improvement, internal audit), Incidents & Safety (incident register, reportable incidents, CAPA, restrictive practices), Complaints & Feedback (complaints, compliments), Workforce & Screening (worker screening, staff training, staff qualifications, key personnel), Participant Records (participant files, service agreements, consent, medication administration). 6 registers auto-populated from operational data.
+- 18 Customisable QMS Compliance Registers across 5 categories: Governance & Risk (risk register, legislative compliance, quality improvement, internal audit), Incidents & Safety (incident register, reportable incidents, CAPA, restrictive practices), Complaints & Feedback (complaints, compliments), Workforce & Screening (worker screening, staff training, staff qualifications, key personnel), Participant Records (participant files, service agreements, consent, medication administration). 6 registers auto-populated from operational data. All registers are fully customisable to suit the needs of your organisation.
 - NDIS Auditor AI (continuous compliance scanning, audit-readiness scores)
 - SCHADS-Compliant Rostering (drag-and-drop, real-time budget tracking, penalty rate calculations)
 - Full HR and Recruitment ATS (Kanban pipeline, AI CV extraction, ABN validation)
@@ -191,7 +191,7 @@ Titus CRM is an AI-powered provider management platform built for Australian NDI
 ## Key Statistics
 - $64,000+ annual savings per provider
 - 80% admin time reduction
-- 18 QMS compliance registers
+- 18 customisable QMS compliance registers, tailored to suit the needs of your organisation
 - 5 tools replaced with one platform
 - 10+ hours reclaimed every week
 
