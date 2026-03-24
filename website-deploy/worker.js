@@ -182,9 +182,10 @@ Titus CRM is an AI-powered provider management platform built for Australian NDI
 - Worker Mobile Portal (roster, timesheets, availability, document uploads)
 
 ## Pricing (AUD, paid weekly +GST)
-- Foundation: $149/week (1-15 staff), Implementation: $1,999
-- Growth: $349/week (10-40 staff), Implementation: $4,999
-- Scale: $749/week (30+ staff), Implementation: $9,999
+- Foundation: $149/week (1-15 staff)
+- Growth: $349/week (10-40 staff)
+- Scale: $749/week (30+ staff)
+- An implementation fee applies to all plans based on the size of your business and data migration
 - All plans: 14-day free trial, no per-user fees, cancel anytime, flat weekly fee
 
 ## Key Statistics
