@@ -172,7 +172,7 @@ Titus CRM is an AI-powered provider management platform built for Australian NDI
 - NDIS Auditor AI (continuous compliance scanning, audit-readiness scores)
 - SCHADS-Compliant Rostering (drag-and-drop, real-time budget tracking, penalty rate calculations)
 - Full HR and Recruitment ATS (Kanban pipeline, AI CV extraction, ABN validation)
-- 24/7 AI Voice Agent "Denise" (add-on $69.95/wk +GST, handles calls, shift enquiries, message taking)
+- 24/7 AI Voice Agent "Denise" (add-on $129/wk +GST, handles calls, shift enquiries, message taking; call and SMS charges not included)
 - AI Report Writing (progress notes, incident reports, stakeholder summaries)
 - Voice-to-Text Notes (dictate progress notes on mobile, auto-saved to participant records)
 - Digital Service Agreements (create, send, track NDIS agreements with automated expiry reminders)
