@@ -114,103 +114,79 @@ const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.titus-crm.com/</loc>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://www.titus-crm.com/agreement-builder</loc>
-    <lastmod>2026-03-08</lastmod>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://www.titus-crm.com/roc</loc>
-    <lastmod>2026-03-12</lastmod>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://www.titus-crm.com/features</loc>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://www.titus-crm.com/pricing</loc>
-    <lastmod>2026-03-13</lastmod>
-  </url>
-  <url>
-    <loc>https://www.titus-crm.com/privacy-policy</loc>
-    <lastmod>2026-03-13</lastmod>
-  </url>
-  <url>
-    <loc>https://www.titus-crm.com/terms</loc>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://www.titus-crm.com/about</loc>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://www.titus-crm.com/blog</loc>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/privacy-policy</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/terms</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
   </url>
 </urlset>`;
 
 const LLMS_TXT = `# Titus CRM
-> AI-powered all-in-one CRM for Australian NDIS, Aged Care, and Community Service providers. Replaces 5 separate tools (CRM, rostering, HR, recruitment, compliance) with one platform. Built in Brisbane, Australia.
+> AI-Powered CRM, HR & Operations Platform for NDIS, Aged Care & Community Services
 
-## Key Pages
-- [Home](https://www.titus-crm.com/): Platform overview, pricing, admin savings calculator, feature showcase
-- [Features](https://www.titus-crm.com/features): 100+ features across 9 modules with live/coming-soon status
-- [Pricing](https://www.titus-crm.com/pricing): From $249/week +GST, flat fee, no per-user charges, 14-day free trial
-- [Agreement Builder](https://www.titus-crm.com/agreement-builder): Free NDIS Service Agreement and Schedule of Support builder
-- [Roster of Care Calculator](https://www.titus-crm.com/roc): Free NDIS Roster of Care calculator tool
-- [About](https://www.titus-crm.com/about): Company story, team, mission
-- [Blog](https://www.titus-crm.com/blog): NDIS industry insights, compliance guides, provider tips
-- [Privacy Policy](https://www.titus-crm.com/privacy-policy): Data handling and privacy
-- [Terms](https://www.titus-crm.com/terms): Terms of service
+Titus CRM is an Australian-built SaaS platform that replaces 5 separate tools with one. It combines CRM, rostering, HR, recruitment, compliance (18 QMS registers), AI reports, voice-to-text, NDIS budget tracking, and a 24/7 AI phone agent into a single platform designed for NDIS, Aged Care, Youth, Recruitment, Labour Hire, and any admin-heavy industry.
 
-## What is Titus CRM?
-Titus CRM is an AI-powered provider management platform built for Australian NDIS, aged care, and community service providers. It consolidates five separate business tools into one system: CRM, staff rostering with SCHADS Award compliance, HR management, recruitment ATS, and a quality management system with 18 built-in customisable compliance registers. The platform includes a 24/7 AI agent named Denise that handles after-hours calls, and generates AI-powered NDIS progress reports using voice-to-text input. Providers report saving $64,000+ per year in admin costs and reclaiming 10+ hours per week. All data is hosted in Australia.
+## Pricing
+- Contractor: $79/week +GST (independent contractors, ABN holders)
+- Foundation: $249/week +GST (1-15 staff)
+- Growth: $499/week +GST (10-40 staff)
+- Scale: Custom pricing (30+ staff)
+- AI Agent (Denise): $129/week +GST add-on
 
-## Features
-- 18 Customisable QMS Compliance Registers across 5 categories: Governance & Risk (risk register, legislative compliance, quality improvement, internal audit), Incidents & Safety (incident register, reportable incidents, CAPA, restrictive practices), Complaints & Feedback (complaints, compliments), Workforce & Screening (worker screening, staff training, staff qualifications, key personnel), Participant Records (participant files, service agreements, consent, medication administration). 6 registers auto-populated from operational data. All registers are fully customisable to suit the needs of your organisation.
-- NDIS Auditor AI (continuous compliance scanning, audit-readiness scores)
-- SCHADS-Compliant Rostering (drag-and-drop, real-time budget tracking, penalty rate calculations)
-- Full HR and Recruitment ATS (Kanban pipeline, AI CV extraction, ABN validation)
-- 24/7 AI Voice Agent "Denise" (add-on $129/wk +GST, handles calls, shift enquiries, message taking; call and SMS charges not included)
-- AI Report Writing (progress notes, incident reports, stakeholder summaries)
-- Voice-to-Text Notes (dictate progress notes on mobile, auto-saved to participant records)
-- Digital Service Agreements (create, send, track NDIS agreements with automated expiry reminders)
-- Client Budget Tracking (SIL, Community Access, Transport with live utilisation)
-- Browser Softphone (calls, SMS, recording, transcripts)
-- Learning Management System (21 NDIS-compliant courses, AI course builder)
-- Worker Mobile Portal (roster, timesheets, availability, document uploads)
-
-## Pricing (AUD, paid weekly +GST)
-- Foundation: $249/week (1-15 staff)
-- Growth: $499/week (10-40 staff)
-- Scale: $749/week (30+ staff)
-- An implementation fee applies to all plans based on the size of your business and data migration
-- All plans: 14-day free trial, no per-user fees, cancel anytime, flat weekly fee
-
-## Key Statistics
-- $64,000+ annual savings per provider
-- 80% admin time reduction
-- 18 customisable QMS compliance registers, tailored to suit the needs of your organisation
-- 5 tools replaced with one platform
-- 10+ hours reclaimed every week
-
-## Industries Served
-NDIS (registered and unregistered providers), Aged Care, Youth Services, Community Services, Recruitment Agencies, Labour Hire companies
-
-## Current Partners
-- Delta Community Support (Brisbane, QLD)
-- Amaiya Support (Melbourne, VIC)
-- Meadow Street (Melbourne, VIC)
-- Pineula Care Services (Brisbane, QLD)
+## Pages
+- Homepage: https://www.titus-crm.com
+- Features: https://www.titus-crm.com/features
+- Pricing: https://www.titus-crm.com/pricing
+- About: https://www.titus-crm.com/about
+- Blog: https://www.titus-crm.com/blog
+- Agreement Builder: https://www.titus-crm.com/agreement-builder
+- Roster of Care: https://www.titus-crm.com/roc
+- Privacy Policy: https://www.titus-crm.com/privacy-policy
+- Terms: https://www.titus-crm.com/terms
 
 ## Contact
 - Email: titus@askyrgrandpa.com
 - Phone: 0488 810 958
-- Website: https://www.titus-crm.com
-- ABN: 28 616 760 206
 - Location: Brisbane, QLD, Australia
-- Data Hosting: Australia-based servers
+- ABN: 28 616 760 206
 `;
 
 function htmlResponse(html) {
