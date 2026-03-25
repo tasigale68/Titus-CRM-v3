@@ -916,13 +916,25 @@
     card.style.cssText='background:#FFFFFF;border-radius:16px;overflow:hidden;border:1px solid #E8E6DF;transition:transform 0.2s,box-shadow 0.2s;cursor:pointer';
     card.onmouseenter=function(){card.style.transform='translateY(-4px)';card.style.boxShadow='0 12px 40px rgba(154,123,46,0.12)'};
     card.onmouseleave=function(){card.style.transform='';card.style.boxShadow=''};
-    card.innerHTML='<div style="position:relative;padding-top:56.25%;background:#1A1A1A">'
-      +'<iframe src="https://www.loom.com/embed/'+v.id+'?hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true" frameborder="0" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe>'
-      +'</div>'
-      +'<div style="padding:14px 16px;display:flex;align-items:center;gap:10px">'
-      +'<div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#9A7B2E22,#C8A95122);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="#9A7B2E"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>'
-      +'<span style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px;font-weight:600;color:#1a1a1a">'+v.title+'</span>'
+    var thumbUrl='https://cdn.loom.com/sessions/thumbnails/'+v.id+'-with-play.gif';
+    var wrapper=document.createElement('div');
+    wrapper.style.cssText='position:relative;padding-top:56.25%;background:#F7F6F2';
+    // Thumbnail with play button overlay
+    wrapper.innerHTML='<img src="'+thumbUrl+'" alt="'+v.title+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover" loading="lazy">'
+      +'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.15);transition:background 0.2s" onmouseenter="this.style.background=\'rgba(0,0,0,0.25)\'" onmouseleave="this.style.background=\'rgba(0,0,0,0.15)\'">'
+      +'<div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.95);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,0.15)"><svg width="22" height="22" viewBox="0 0 24 24" fill="#C6941E"><polygon points="6 3 20 12 6 21 6 3"/></svg></div>'
       +'</div>';
+    // Click to replace with iframe
+    wrapper.onclick=function(){
+      wrapper.innerHTML='<iframe src="https://www.loom.com/embed/'+v.id+'?hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true&autoplay=1" frameborder="0" allowfullscreen allow="autoplay" style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe>';
+      wrapper.onclick=null;
+    };
+    card.appendChild(wrapper);
+    var info=document.createElement('div');
+    info.style.cssText='padding:14px 16px;display:flex;align-items:center;gap:10px';
+    info.innerHTML='<div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#9A7B2E22,#C8A95122);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="#9A7B2E"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>'
+      +'<span style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px;font-weight:600;color:#1a1a1a">'+v.title+'</span>';
+    card.appendChild(info);
     vg.appendChild(card);
   });}
 
