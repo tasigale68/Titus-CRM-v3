@@ -216,6 +216,7 @@
       </div>
       <a href="#calculator" style="color:#555;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;text-decoration:none;font-weight:500">Calculator</a>
       <a href="#pricing" style="color:#555;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;text-decoration:none;font-weight:500">Pricing</a>
+      <a href="#videos" style="color:#555;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;text-decoration:none;font-weight:500">Videos</a>
       <a href="#waitlist" style="color:#555;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;text-decoration:none;font-weight:500">Waitlist</a>
       <a href="#waitlist" style="background:linear-gradient(135deg,#9A7B2E,#C8A951);color:#fff;padding:10px 22px;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;text-decoration:none">Join the Waitlist</a>
     </div>
@@ -229,6 +230,7 @@
     <a href="/roc" class="mobile-nav-link" style="display:block;padding:10px 16px 10px 32px;color:#555;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;text-decoration:none">Roster of Care</a>
     <a href="#calculator" class="mobile-nav-link" style="display:block;padding:12px 16px;color:#1a1a1a;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;text-decoration:none">Calculator</a>
     <a href="#pricing" class="mobile-nav-link" style="display:block;padding:12px 16px;color:#1a1a1a;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;text-decoration:none">Pricing</a>
+    <a href="#videos" class="mobile-nav-link" style="display:block;padding:12px 16px;color:#1a1a1a;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;text-decoration:none">Videos</a>
     <a href="#waitlist" class="mobile-nav-link" style="display:block;padding:12px 16px;color:#9A7B2E;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;text-decoration:none;font-weight:700">Join the Waitlist →</a>
   </div>
 </nav>
@@ -528,6 +530,19 @@
   </div>
 </section>
 
+<!-- ═══ VIDEOS ═══ -->
+<section id="videos" style="background:#F7F6F2">
+  <div class="section-pad" style="max-width:1200px;margin:0 auto;padding:100px 24px">
+    <div style="text-align:center;margin-bottom:48px">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:#9A7B2E;letter-spacing:3px;font-weight:600;margin-bottom:12px">SEE IT IN ACTION</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(28px, 4vw, 44px);font-weight:800;color:#1a1a1a">Watch Titus CRM <span style="color:#9A7B2E">Live</span></h2>
+      <p style="font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;color:#555;margin-top:12px;max-width:600px;margin-left:auto;margin-right:auto;line-height:1.7">See how Titus CRM works in real walkthroughs. Click any video to watch.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px" id="video-grid">
+    </div>
+  </div>
+</section>
+
 <!-- ═══ WAITLIST FORM ═══ -->
 <section id="waitlist" style="background:#FFFFFF">
   <div class="section-pad" style="max-width:800px;margin:0 auto;padding:100px 24px">
@@ -615,6 +630,7 @@
         <h4 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:#C8A951;letter-spacing:2px;font-weight:600;margin-bottom:20px">PLATFORM</h4>
         <a href="#features" style="display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;color:#999;text-decoration:none;margin-bottom:12px">Features</a>
         <a href="#pricing" style="display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;color:#999;text-decoration:none;margin-bottom:12px">Pricing</a>
+        <a href="#videos" style="display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;color:#999;text-decoration:none;margin-bottom:12px">Videos</a>
         <a href="#calculator" style="display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;color:#999;text-decoration:none;margin-bottom:12px">Calculator</a>
         <a href="#features" style="display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;color:#999;text-decoration:none;margin-bottom:12px">QMS</a>
       </div>
@@ -882,6 +898,32 @@
     var dash='<span style="color:#ccc">—</span>';
     tr.innerHTML='<td style="padding:10px 16px;color:#1a1a1a">'+ft.n+'</td><td style="padding:10px 16px;text-align:center">'+(ft.c?tick:dash)+'</td><td style="padding:10px 16px;text-align:center">'+(ft.f?tick:dash)+'</td><td style="padding:10px 16px;text-align:center">'+(ft.g?tick:dash)+'</td><td style="padding:10px 16px;text-align:center">'+(ft.s?tick:dash)+'</td>';
     cb.appendChild(tr);
+  });}
+
+  // ── VIDEOS ──
+  var videos=[
+    {id:'c9441d0020a246aba9542cfca9eda481',title:'Full Platform Walkthrough'},
+    {id:'de78900a954e488ca674943ba5c9ab78',title:'Rostering & Scheduling'},
+    {id:'939fe13567b24472b9030b6cf8401d63',title:'Client Management'},
+    {id:'193f95f931b24f608be266c300879fe9',title:'AI Progress Notes'},
+    {id:'1c7f7dbe6a3d4afe9c674abc93c496ba',title:'Staff & HR Management'},
+    {id:'bdcf53dad0e44f04b9ee653fbd04a36b',title:'Compliance & QMS'},
+    {id:'4ad58f6844e547009e27d2bde7d9343c',title:'Invoicing & Billing'}
+  ];
+  var vg=document.getElementById('video-grid');
+  if(vg){videos.forEach(function(v){
+    var card=document.createElement('div');
+    card.style.cssText='background:#FFFFFF;border-radius:16px;overflow:hidden;border:1px solid #E8E6DF;transition:transform 0.2s,box-shadow 0.2s;cursor:pointer';
+    card.onmouseenter=function(){card.style.transform='translateY(-4px)';card.style.boxShadow='0 12px 40px rgba(154,123,46,0.12)'};
+    card.onmouseleave=function(){card.style.transform='';card.style.boxShadow=''};
+    card.innerHTML='<div style="position:relative;padding-top:56.25%;background:#1A1A1A">'
+      +'<iframe src="https://www.loom.com/embed/'+v.id+'?hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true" frameborder="0" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe>'
+      +'</div>'
+      +'<div style="padding:14px 16px;display:flex;align-items:center;gap:10px">'
+      +'<div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#9A7B2E22,#C8A95122);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="#9A7B2E"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>'
+      +'<span style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px;font-weight:600;color:#1a1a1a">'+v.title+'</span>'
+      +'</div>';
+    vg.appendChild(card);
   });}
 
   // ── CHATBOT ──
