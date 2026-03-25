@@ -474,7 +474,7 @@
       <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:#9A7B2E;letter-spacing:3px;font-weight:600;margin-bottom:12px">SIMPLE PRICING</div>
       <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(28px, 4vw, 44px);font-weight:800;color:#1a1a1a">Flat Weekly Fee. <span style="color:#9A7B2E">No Per-User Traps.</span></h2>
     </div>
-    <div class="pricing-grid" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:20px" id="pricing-cards">
+    <div class="pricing-grid" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:24px" id="pricing-cards">
       <!-- Pricing cards rendered by JS -->
     </div>
     <div style="text-align:center;margin-top:32px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:#888">All plans: 14-day free trial · No per-user fees · Cancel anytime · Paid weekly in advance · All prices +GST</div>
@@ -826,10 +826,10 @@
   // ── PRICING CARDS ──
   var pricingData=[
     {tier:"CONTRACTOR",price:"79",target:"Independent contractors · ABN holders",popular:false,tagline:"Your own portal to manage clients, invoicing, and expenses.",implFee:"No setup fee. Start immediately.",cta:"Get Started",features:["Create and send professional tax invoices","Link to companies using Titus CRM","AI integrated receipt scanning for expenses","Track invoicing, GST, and tax liabilities","Auto-create invoices from rostered shifts","Voice-to-text for progress notes and incident reports","Income dashboard with BAS quarter tracking","ABN verification via Australian Business Register","Bank details management for payments","Expense tracking with 16 categories","KM travel claims on invoices","Mobile app (PWA) with full offline access"]},
-    {tier:"FOUNDATION",price:"249",target:"Small-medium providers · 1–15 staff",popular:false,tagline:"Everything you need to run your NDIS business.",implFee:"An implementation fee applies based on the size of your business and data migration",cta:"Get Started",features:["Drag-and-drop rostering with SCHADS compliance","Full contact management (staff, clients, jobseekers)","Client profiles with NDIS goals & budget tracking","Progress notes with voice-to-text","Incident reporting with NDIS reportable flag","NDIS Auditor AI — continuous compliance scanning","Agreement Builder — service agreements + staff contracts","AI chatbot (NDIS policy assistant)","AI support plan rewriter","18 customisable QMS compliance registers (audit-ready)","Task management (Kanban board)","Referral pipeline (5-stage)","Reports dashboard with CSV/Excel export","Worker portal (mobile-first PWA with offline sync)","6-role access control with audit trail","Company document library"]},
-    {tier:"GROWTH",price:"499",target:"Growing providers · 10–40 staff",popular:true,tagline:"AI-powered operations with 24/7 coverage. Replaces 4–5 tools.",implFee:"An implementation fee applies based on the size of your business and data migration",cta:"Coming Soon — Join Waitlist",features:["Everything in Foundation, plus:","Browser softphone (Twilio — calls from your browser)","Call recording, transcripts & AI summaries","Hunt group routing with skip-if-busy","SMS notifications (bulk, templates, MMS)","Unified inbox (calls + SMS per contact)","SCHADS payroll engine (full rate calculations)","Xero journal export","HR/Recruitment ATS (Kanban pipeline)","AI CV extraction & summarisation","Agreement Builder with custom templates + in-app signing","ABN validation (ABR API)","AI report writing"]},
-    {tier:"SCALE",price:"Custom",target:"Registered providers · 30+ staff",popular:false,tagline:"Total operational automation. Customised to your organisation.",implFee:"Pricing quoted based on your requirements",cta:"Request a Quote",features:["Everything in Growth, plus:","Geo-fenced time & attendance (GPS verified clock in/out)","External stakeholder portal (scoped read-only access)","Contractor invoice auto-generation from shifts","Live budget / roster integration (real-time deductions)","Automated stakeholder reminders (60/30/21/14/7 day escalation)","Schedule of Supports — digital delivery","NDIS Stakeholder Report PDF (3-page, auto-generated)","Dedicated account manager","Priority support (4hr response)","Custom integrations and workflows"]}
+    {tier:"FOUNDATION",price:"249",target:"Small-medium providers · 1–15 staff",popular:true,tagline:"Everything you need to run your NDIS business.",implFee:"An implementation fee applies based on the size of your business and data migration",cta:"Get Started",features:["Drag-and-drop rostering with SCHADS compliance","Full contact management (staff, clients, jobseekers)","Client profiles with NDIS goals & budget tracking","Progress notes with voice-to-text","Incident reporting with NDIS reportable flag","NDIS Auditor AI — continuous compliance scanning","Agreement Builder — service agreements + staff contracts","AI chatbot (NDIS policy assistant)","AI support plan rewriter","18 customisable QMS compliance registers (audit-ready)","Task management (Kanban board)","Referral pipeline (5-stage)","Reports dashboard with CSV/Excel export","Worker portal (mobile-first PWA with offline sync)","6-role access control with audit trail","Company document library"]},
+    {tier:"GROWTH",price:"499",target:"Growing providers · 10–40 staff",popular:false,tagline:"AI-powered operations with 24/7 coverage. Replaces 4–5 tools.",implFee:"An implementation fee applies based on the size of your business and data migration",cta:"Coming Soon — Join Waitlist",features:["Everything in Foundation, plus:","Browser softphone (Twilio — calls from your browser)","Call recording, transcripts & AI summaries","Hunt group routing with skip-if-busy","SMS notifications (bulk, templates, MMS)","Unified inbox (calls + SMS per contact)","SCHADS payroll engine (full rate calculations)","Xero journal export","HR/Recruitment ATS (Kanban pipeline)","AI CV extraction & summarisation","Agreement Builder with custom templates + in-app signing","ABN validation (ABR API)","AI report writing"]}
   ];
+  var scaleData={tier:"SCALE",price:"Custom",target:"Registered providers · 30+ staff",tagline:"Total operational automation. Customised to your organisation.",implFee:"Pricing quoted based on your requirements",cta:"Request a Quote",features:["Everything in Growth, plus:","Geo-fenced time & attendance (GPS verified clock in/out)","External stakeholder portal (scoped read-only access)","Contractor invoice auto-generation from shifts","Live budget / roster integration (real-time deductions)","Automated stakeholder reminders (60/30/21/14/7 day escalation)","Schedule of Supports — digital delivery","NDIS Stakeholder Report PDF (3-page, auto-generated)","Dedicated account manager","Priority support (4hr response)","Custom integrations and workflows"]};
   var pc=document.getElementById('pricing-cards');
   if(pc){pricingData.forEach(function(p){
     var card=document.createElement('div');
@@ -848,6 +848,24 @@
     card.innerHTML=html;
     pc.appendChild(card);
   });}
+
+  // ── SCALE (Custom) card below the 3 pricing cards ──
+  if(pc){
+    var scaleCard=document.createElement('div');
+    scaleCard.style.cssText='margin-top:32px;background:linear-gradient(135deg,#F7F6F2,#FFFFFF);border-radius:20px;padding:32px;border:1px solid #E8E6DF;display:flex;flex-direction:column;gap:20px';
+    scaleCard.setAttribute('id','scale-card');
+    var sh='<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px">';
+    sh+='<div><div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;color:#9A7B2E;letter-spacing:2px;font-weight:600;margin-bottom:4px">SCALE</div>';
+    sh+='<div style="font-family:\'Space Grotesk\',sans-serif;font-size:32px;color:#1a1a1a;font-weight:700">Custom Pricing</div>';
+    sh+='<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;color:#888;margin-top:2px">'+scaleData.target+'</div>';
+    sh+='<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;color:#555;font-style:italic;margin-top:4px;line-height:1.5">'+scaleData.tagline+'</div></div>';
+    sh+='<a href="#waitlist" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#9A7B2E,#C8A951);color:#fff;padding:14px 32px;border-radius:12px;font-family:\'Plus Jakarta Sans\',sans-serif;font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap">'+scaleData.cta+'</a></div>';
+    sh+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px">';
+    scaleData.features.forEach(function(f){sh+='<div style="display:flex;align-items:flex-start;gap:8px;color:#1a1a1a;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px"><span style="color:#059A69;flex-shrink:0;margin-top:2px">'+checkSvg+'</span><span>'+f+'</span></div>';});
+    sh+='</div>';
+    scaleCard.innerHTML=sh;
+    pc.parentNode.insertBefore(scaleCard,pc.nextSibling);
+  }
 
   // ── COMPARISON TABLE ──
   var features=[
