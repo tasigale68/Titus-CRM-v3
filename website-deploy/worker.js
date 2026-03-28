@@ -211,32 +211,81 @@ const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
 </urlset>`;
 
 const LLMS_TXT = `# Titus CRM
-> AI-Powered CRM, HR & Operations Platform for NDIS, Aged Care & Community Services
+> The customisable management platform for NDIS, Aged Care, Youth Residential, and Community services.
 
-Titus CRM is an Australian-built SaaS platform that replaces 5 separate tools with one. It combines CRM, rostering, HR, recruitment, compliance (18 QMS registers), AI reports, voice-to-text, NDIS budget tracking, and a 24/7 AI phone agent into a single platform designed for NDIS, Aged Care, Youth, Recruitment, Labour Hire, and any admin-heavy industry.
+## What is Titus CRM?
+Titus CRM is an Australian SaaS platform that consolidates CRM, rostering, HR, compliance, payroll, training, and AI automation into one system. Built specifically for NDIS providers, aged care organisations, youth residential services, and community service providers. All data hosted in Australia. ABN 28 616 760 206.
 
 ## Pricing
-- Foundation: $249/week +GST (small providers, 1-15 staff)
-- Growth: $499/week +GST (mid-size providers, 10-40 staff)
-- Scale: $749/week +GST (large providers, 30+ staff)
-- AI Agent (Andy): $129/week +GST add-on
+- Foundation: $249/week +GST (1-15 staff)
+- Growth: $499/week +GST (10-40 staff)
+- Scale: $749/week +GST (30+ staff)
+- Andy AI (add-on): $129/week +GST — 24/7 AI receptionist
+- No per-user fees. 14-day free trial. Cancel anytime.
+
+## 23 Live Features
+
+### Core Operations
+- Smart Rostering & AI Suggestions
+- Task Manager
+- Sites & Locations
+- Timesheets & Staff Hours
+- SCHADS Payroll Engine
+
+### AI Powered
+- Andy AI Chatbot
+- AI Receptionist (Calls & SMS)
+- Freestyle Voice Progress Notes
+- AI Receipt Parsing
+- Bulk CV Upload & AI Assessment
+
+### Contacts & Pipeline
+- Contacts: Clients, Staff & Jobseekers
+- Referral Pipeline
+- Unified Inbox (Email, SMS, Calls)
+
+### NDIS Compliance & Audit
+- NDIS Auditor (9 evidence tabs, PDF audit pack)
+- 18 NDIS Compliance Registers
+- Policy Register
+- SCHADS Compliance Reports
+- NDIS Plan & Budget Tracking
+
+### Training & Client Care
+- LMS with AI Course Builder
+- Medication Administration
+- Care Passport ID
+
+### Automation & Files
+- Workflow Automations
+- Company Files
+
+## Coming Soon
+- Support Worker Profile Creator
+- Service Agreement & SOS Creator
+- Roster of Care Calculator
+- Shift GPS Tracker & Auto KM Recording
+- AI Daily Shift Summary Email
+- NDIS Bulk Claim File Generator
+- Client Risk & Wellbeing Scoring
+- Automated Reference Checks
 
 ## Pages
-- Homepage: https://www.titus-crm.com — main landing page with features overview, pricing, videos, and waitlist
-- Features: https://www.titus-crm.com/features — 100+ features across 9 modules (CRM, rostering, HR, compliance, AI)
-- Pricing: https://www.titus-crm.com/pricing — from $249/wk +GST, no per-user fees, 14-day free trial
-- About: https://www.titus-crm.com/about — company story, founder background, partners, technology stack
-- Blog: https://www.titus-crm.com/blog — NDIS compliance guides, SCHADS updates, AI automation insights
-- Blog: The True Cost of NDIS Administration: https://www.titus-crm.com/blog/ndis-admin-cost — why providers lose $64,000+ per year on admin
-- Blog: NDIS Audit Checklist 2026: https://www.titus-crm.com/blog/ndis-audit-checklist — 18 QMS registers, incident reports, worker screening
-- Blog: SCHADS Award 2025-26: https://www.titus-crm.com/blog/schads-award — pay rates, penalty calculations, four award streams
-- Blog: Outgrown Spreadsheets: https://www.titus-crm.com/blog/outgrown-spreadsheets — five signs your NDIS business needs a purpose-built platform
-- Blog: AI Progress Notes: https://www.titus-crm.com/blog/ai-progress-notes — voice-to-text saves 30 minutes per shift
-- Blog: Digital Agreements: https://www.titus-crm.com/blog/digital-agreements — eliminate paper with automated reminders and digital signing
-- Agreement Builder: https://www.titus-crm.com/agreement-builder — free NDIS Service Agreement and Schedule of Supports generator
-- Roster of Care: https://www.titus-crm.com/roc — free weekly roster builder with 2025-26 NDIS pricing and Excel export
-- Privacy Policy: https://www.titus-crm.com/privacy-policy — Australian Privacy Act compliance, data handling practices
-- Terms: https://www.titus-crm.com/terms — subscription terms, billing, data rights, liability
+- [Homepage](https://www.titus-crm.com/): Platform overview, from $249/wk
+- [Features](https://www.titus-crm.com/features): 31 features across 6 modules
+- [Pricing](https://www.titus-crm.com/pricing): Foundation, Growth, Scale tiers
+- [About](https://www.titus-crm.com/about): Company story, founder, mission
+- [Blog](https://www.titus-crm.com/blog): NDIS compliance, SCHADS, AI automation articles
+- [Agreement Builder](https://www.titus-crm.com/agreement-builder): Free NDIS service agreement generator
+- [Roster of Care](https://www.titus-crm.com/roc): Free weekly planner and SCHADS calculator
+
+## Blog Articles
+- [The True Cost of NDIS Administration](https://www.titus-crm.com/blog/ndis-admin-cost)
+- [NDIS Audit Checklist 2026](https://www.titus-crm.com/blog/ndis-audit-checklist)
+- [SCHADS Award 2025-26](https://www.titus-crm.com/blog/schads-award)
+- [Outgrown Spreadsheets](https://www.titus-crm.com/blog/outgrown-spreadsheets)
+- [AI Progress Notes](https://www.titus-crm.com/blog/ai-progress-notes)
+- [Digital Agreements](https://www.titus-crm.com/blog/digital-agreements)
 
 ## Contact
 - Email: titus@askyrgrandpa.com
