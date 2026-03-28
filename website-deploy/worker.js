@@ -15,6 +15,12 @@ import TERMS_HTML from './terms.html';
 import ABOUT_HTML from './about.html';
 import BLOG_HTML from './blog.html';
 import FEATURES_HTML from './features.html';
+import BLOG_NDIS_ADMIN from './blog/ndis-admin-cost.html';
+import BLOG_AUDIT from './blog/ndis-audit-checklist.html';
+import BLOG_SCHADS from './blog/schads-award.html';
+import BLOG_SPREADSHEETS from './blog/outgrown-spreadsheets.html';
+import BLOG_AI_NOTES from './blog/ai-progress-notes.html';
+import BLOG_AGREEMENTS from './blog/digital-agreements.html';
 import OG_IMAGE_DATA from './og-image.png';
 import TITUS_LOGO from './titus-logo.png';
 import LOGO_DELTA from './partners/delta-community.png';
@@ -116,46 +122,91 @@ const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
     <loc>https://www.titus-crm.com/</loc>
     <lastmod>2026-03-25</lastmod>
     <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://www.titus-crm.com/agreement-builder</loc>
-    <lastmod>2026-03-25</lastmod>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://www.titus-crm.com/roc</loc>
-    <lastmod>2026-03-25</lastmod>
-    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.titus-crm.com/features</loc>
     <lastmod>2026-03-25</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.titus-crm.com/pricing</loc>
     <lastmod>2026-03-25</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/agreement-builder</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/roc</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.titus-crm.com/about</loc>
     <lastmod>2026-03-25</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.titus-crm.com/blog</loc>
     <lastmod>2026-03-25</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/blog/ndis-admin-cost</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/blog/ndis-audit-checklist</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/blog/schads-award</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/blog/outgrown-spreadsheets</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/blog/ai-progress-notes</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/blog/digital-agreements</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.titus-crm.com/privacy-policy</loc>
     <lastmod>2026-03-25</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
   </url>
   <url>
     <loc>https://www.titus-crm.com/terms</loc>
     <lastmod>2026-03-25</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
   </url>
 </urlset>`;
 
@@ -169,18 +220,24 @@ Titus CRM is an Australian-built SaaS platform that replaces 5 separate tools wi
 - Foundation: $249/week +GST (1-15 staff)
 - Growth: $499/week +GST (10-40 staff)
 - Scale: Custom pricing (30+ staff)
-- AI Agent (Denise): $129/week +GST add-on
+- AI Agent (Andy): $129/week +GST add-on
 
 ## Pages
-- Homepage: https://www.titus-crm.com
-- Features: https://www.titus-crm.com/features
-- Pricing: https://www.titus-crm.com/pricing
-- About: https://www.titus-crm.com/about
-- Blog: https://www.titus-crm.com/blog
-- Agreement Builder: https://www.titus-crm.com/agreement-builder
-- Roster of Care: https://www.titus-crm.com/roc
-- Privacy Policy: https://www.titus-crm.com/privacy-policy
-- Terms: https://www.titus-crm.com/terms
+- Homepage: https://www.titus-crm.com — main landing page with features overview, pricing, videos, and waitlist
+- Features: https://www.titus-crm.com/features — 100+ features across 9 modules (CRM, rostering, HR, compliance, AI)
+- Pricing: https://www.titus-crm.com/pricing — from $79/wk +GST, no per-user fees, 14-day free trial
+- About: https://www.titus-crm.com/about — company story, founder background, partners, technology stack
+- Blog: https://www.titus-crm.com/blog — NDIS compliance guides, SCHADS updates, AI automation insights
+- Blog: The True Cost of NDIS Administration: https://www.titus-crm.com/blog/ndis-admin-cost — why providers lose $64,000+ per year on admin
+- Blog: NDIS Audit Checklist 2026: https://www.titus-crm.com/blog/ndis-audit-checklist — 18 QMS registers, incident reports, worker screening
+- Blog: SCHADS Award 2025-26: https://www.titus-crm.com/blog/schads-award — pay rates, penalty calculations, four award streams
+- Blog: Outgrown Spreadsheets: https://www.titus-crm.com/blog/outgrown-spreadsheets — five signs your NDIS business needs a purpose-built platform
+- Blog: AI Progress Notes: https://www.titus-crm.com/blog/ai-progress-notes — voice-to-text saves 30 minutes per shift
+- Blog: Digital Agreements: https://www.titus-crm.com/blog/digital-agreements — eliminate paper with automated reminders and digital signing
+- Agreement Builder: https://www.titus-crm.com/agreement-builder — free NDIS Service Agreement and Schedule of Supports generator
+- Roster of Care: https://www.titus-crm.com/roc — free weekly roster builder with 2025-26 NDIS pricing and Excel export
+- Privacy Policy: https://www.titus-crm.com/privacy-policy — Australian Privacy Act compliance, data handling practices
+- Terms: https://www.titus-crm.com/terms — subscription terms, billing, data rights, liability
 
 ## Contact
 - Email: titus@askyrgrandpa.com
@@ -403,6 +460,14 @@ export default {
     if (url.pathname === '/about' || url.pathname === '/about/') {
       return htmlResponse(ABOUT_HTML);
     }
+
+    // Blog articles
+    if (url.pathname === '/blog/ndis-admin-cost') return htmlResponse(BLOG_NDIS_ADMIN);
+    if (url.pathname === '/blog/ndis-audit-checklist') return htmlResponse(BLOG_AUDIT);
+    if (url.pathname === '/blog/schads-award') return htmlResponse(BLOG_SCHADS);
+    if (url.pathname === '/blog/outgrown-spreadsheets') return htmlResponse(BLOG_SPREADSHEETS);
+    if (url.pathname === '/blog/ai-progress-notes') return htmlResponse(BLOG_AI_NOTES);
+    if (url.pathname === '/blog/digital-agreements') return htmlResponse(BLOG_AGREEMENTS);
 
     // /blog → Blog landing page
     if (url.pathname === '/blog' || url.pathname === '/blog/') {
