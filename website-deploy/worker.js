@@ -66,7 +66,7 @@ const OG_IMAGE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" heigh
   <text x="80" y="268" font-family="Arial,Helvetica,sans-serif" font-size="56" font-weight="800" fill="#9A7B2E">Australian NDIS Providers</text>
   <text x="80" y="340" font-family="Arial,Helvetica,sans-serif" font-size="26" fill="#666">Replace 5 tools with one platform. CRM · Rostering · HR · Compliance · AI</text>
   <rect x="80" y="390" width="280" height="56" rx="12" fill="url(#gold)"/>
-  <text x="140" y="426" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#fff">From $249/wk +GST</text>
+  <text x="140" y="426" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" fill="#fff">From $79/wk +GST</text>
   <rect x="380" y="390" width="310" height="56" rx="12" fill="none" stroke="#9A7B2E" stroke-width="2"/>
   <text x="410" y="426" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="600" fill="#9A7B2E">24/7 AI Agent Included</text>
   <line x1="80" y1="490" x2="1120" y2="490" stroke="#E8E6DF" stroke-width="1"/>
@@ -217,9 +217,10 @@ const LLMS_TXT = `# Titus CRM
 Titus CRM is an Australian SaaS platform that consolidates CRM, rostering, HR, compliance, payroll, training, and AI automation into one system. Built specifically for NDIS providers, aged care organisations, youth residential services, and community service providers. All data hosted in Australia. ABN 28 616 760 206.
 
 ## Pricing
+- Independent Contractor: $79/week +GST (sole traders)
 - Foundation: $249/week +GST (1-15 staff)
 - Growth: $499/week +GST (10-40 staff)
-- Scale: $749/week +GST (30+ staff)
+- Custom Build: $749/week +GST (30+ staff)
 - Andy AI (add-on): $129/week +GST — 24/7 AI receptionist
 - No per-user fees. 14-day free trial. Cancel anytime.
 
@@ -271,9 +272,9 @@ Titus CRM is an Australian SaaS platform that consolidates CRM, rostering, HR, c
 - Automated Reference Checks
 
 ## Pages
-- [Homepage](https://www.titus-crm.com/): Platform overview, from $249/wk
+- [Homepage](https://www.titus-crm.com/): Platform overview, from $79/wk
 - [Features](https://www.titus-crm.com/features): 31 features across 6 modules
-- [Pricing](https://www.titus-crm.com/pricing): Foundation, Growth, Scale tiers
+- [Pricing](https://www.titus-crm.com/pricing): Independent Contractor, Foundation, Growth, Custom Build tiers
 - [About](https://www.titus-crm.com/about): Company story, founder, mission
 - [Blog](https://www.titus-crm.com/blog): NDIS compliance, SCHADS, AI automation articles
 - [Agreement Builder](https://www.titus-crm.com/agreement-builder): Free NDIS service agreement generator
