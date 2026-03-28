@@ -216,16 +216,15 @@ const LLMS_TXT = `# Titus CRM
 Titus CRM is an Australian-built SaaS platform that replaces 5 separate tools with one. It combines CRM, rostering, HR, recruitment, compliance (18 QMS registers), AI reports, voice-to-text, NDIS budget tracking, and a 24/7 AI phone agent into a single platform designed for NDIS, Aged Care, Youth, Recruitment, Labour Hire, and any admin-heavy industry.
 
 ## Pricing
-- Contractor: $79/week +GST (independent contractors, ABN holders)
-- Foundation: $249/week +GST (1-15 staff)
-- Growth: $499/week +GST (10-40 staff)
-- Scale: Custom pricing (30+ staff)
+- Foundation: $249/week +GST (small providers, 1-15 staff)
+- Growth: $499/week +GST (mid-size providers, 10-40 staff)
+- Scale: $749/week +GST (large providers, 30+ staff)
 - AI Agent (Andy): $129/week +GST add-on
 
 ## Pages
 - Homepage: https://www.titus-crm.com — main landing page with features overview, pricing, videos, and waitlist
 - Features: https://www.titus-crm.com/features — 100+ features across 9 modules (CRM, rostering, HR, compliance, AI)
-- Pricing: https://www.titus-crm.com/pricing — from $79/wk +GST, no per-user fees, 14-day free trial
+- Pricing: https://www.titus-crm.com/pricing — from $249/wk +GST, no per-user fees, 14-day free trial
 - About: https://www.titus-crm.com/about — company story, founder background, partners, technology stack
 - Blog: https://www.titus-crm.com/blog — NDIS compliance guides, SCHADS updates, AI automation insights
 - Blog: The True Cost of NDIS Administration: https://www.titus-crm.com/blog/ndis-admin-cost — why providers lose $64,000+ per year on admin
