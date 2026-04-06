@@ -21,6 +21,7 @@ import BLOG_SCHADS from './blog/schads-award.html';
 import BLOG_SPREADSHEETS from './blog/outgrown-spreadsheets.html';
 import BLOG_AI_NOTES from './blog/ai-progress-notes.html';
 import BLOG_AGREEMENTS from './blog/digital-agreements.html';
+import SALES_INDUCTION from './sales-induction.html';
 import OG_IMAGE_DATA from './og-image.png';
 import TITUS_LOGO from './titus-logo.png';
 import LOGO_DELTA from './partners/delta-community.png';
@@ -508,6 +509,10 @@ export default {
     // /about → About page
     if (url.pathname === '/about' || url.pathname === '/about/') {
       return htmlResponse(ABOUT_HTML);
+    }
+
+    if (url.pathname === '/sales-induction' || url.pathname === '/sales-induction/') {
+      return htmlResponse(SALES_INDUCTION);
     }
 
     // Blog articles
