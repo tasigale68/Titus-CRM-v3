@@ -480,7 +480,7 @@ async function handleDemoLead(req: Request) {
         body: JSON.stringify({
           from: 'Titus CRM <titus@askyrgrandpa.com>',
           to: ['a4@askyrgrandpa.com'],
-          bcc: ['tasigale68@gmail.com'],
+          bcc: ['a4@askyrgrandpa.com'],
           subject: `Demo Access: ${firstName} ${lastName} — ${product}`,
           html: emailHtml,
         }),
@@ -551,7 +551,7 @@ async function handleWaitlist(req: Request) {
         body: JSON.stringify({
           from: 'Titus CRM <titus@askyrgrandpa.com>',
           to: ['titus@askyrgrandpa.com'],
-          bcc: ['tasigale68@gmail.com'],
+          bcc: ['a4@askyrgrandpa.com'],
           subject: `New Waitlist Signup - ${firstName} ${lastName} (${state})`,
           html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
             <div style="background:#9A7B2E;color:white;padding:20px 24px;border-radius:8px 8px 0 0;">
@@ -582,7 +582,7 @@ async function handleWaitlist(req: Request) {
   try {
     await fetch('https://askyrgrandpa.com/api/contacts/webhook', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer A4Command2026!' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Deno.env.get('AYG_WEBHOOK_TOKEN')}` },
       body: JSON.stringify({
         email,
         first_name: firstName,
@@ -1096,7 +1096,7 @@ async function sendAgreementEmail(
   const emailPayload: any = {
     from: 'Titus CRM <titus@askyrgrandpa.com>',
     to: ['titus@askyrgrandpa.com'],
-    bcc: ['tasigale68@gmail.com'],
+    bcc: ['a4@askyrgrandpa.com'],
     subject,
     html,
   }
@@ -1443,7 +1443,7 @@ async function sendStageAutomationEmail(
       body: JSON.stringify({
         from: 'Titus CRM <titus@askyrgrandpa.com>',
         to: [to],
-        bcc: ['tasigale68@gmail.com'],
+        bcc: ['a4@askyrgrandpa.com'],
         subject,
         html: fullHtml,
       }),
@@ -1652,7 +1652,7 @@ async function handleAdminSendEmail(req: Request) {
     body: JSON.stringify({
       from: 'Titus CRM <titus@askyrgrandpa.com>',
       to: [to],
-      bcc: ['tasigale68@gmail.com'],
+      bcc: ['a4@askyrgrandpa.com'],
       subject,
       html: bodyHtml,
     }),
