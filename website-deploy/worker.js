@@ -22,7 +22,9 @@ import BLOG_SPREADSHEETS from './blog/outgrown-spreadsheets.html';
 import BLOG_AI_NOTES from './blog/ai-progress-notes.html';
 import BLOG_AGREEMENTS from './blog/digital-agreements.html';
 import BLOG_COMPARISON from './blog/titus-vs-shiftcare.html';
+import BLOG_BEST_NDIS from './blog/best-ndis-software.html';
 import SALES_INDUCTION from './sales-induction.html';
+import CHECKLIST_HTML from './checklist.html';
 import OG_IMAGE_DATA from './og-image.png';
 import TITUS_LOGO from './titus-logo.png';
 import LOGO_DELTA from './partners/delta-community.png';
@@ -205,6 +207,18 @@ const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.titus-crm.com/checklist</loc>
+    <lastmod>2026-04-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/blog/best-ndis-software</loc>
+    <lastmod>2026-04-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.titus-crm.com/privacy-policy</loc>
     <lastmod>2026-03-25</lastmod>
     <changefreq>monthly</changefreq>
@@ -296,6 +310,7 @@ Titus CRM is an Australian SaaS platform that consolidates CRM, rostering, HR, c
 - [AI Progress Notes](https://www.titus-crm.com/blog/ai-progress-notes)
 - [Digital Agreements](https://www.titus-crm.com/blog/digital-agreements)
 - [Titus CRM vs ShiftCare](https://www.titus-crm.com/blog/titus-vs-shiftcare)
+- [Best NDIS Software Australia 2026](https://www.titus-crm.com/blog/best-ndis-software)
 
 ## Contact
 - Email: titus@askyrgrandpa.com
@@ -523,6 +538,11 @@ export default {
       return htmlResponse(SALES_INDUCTION);
     }
 
+    // /checklist → Compliance Checklist email capture page
+    if (url.pathname === '/checklist' || url.pathname === '/checklist/') {
+      return htmlResponse(CHECKLIST_HTML);
+    }
+
     // Blog articles
     if (url.pathname === '/blog/ndis-admin-cost') return htmlResponse(BLOG_NDIS_ADMIN);
     if (url.pathname === '/blog/ndis-audit-checklist') return htmlResponse(BLOG_AUDIT);
@@ -531,6 +551,7 @@ export default {
     if (url.pathname === '/blog/ai-progress-notes') return htmlResponse(BLOG_AI_NOTES);
     if (url.pathname === '/blog/digital-agreements') return htmlResponse(BLOG_AGREEMENTS);
     if (url.pathname === '/blog/titus-vs-shiftcare') return htmlResponse(BLOG_COMPARISON);
+    if (url.pathname === '/blog/best-ndis-software') return htmlResponse(BLOG_BEST_NDIS);
 
     // /blog → Blog landing page
     if (url.pathname === '/blog' || url.pathname === '/blog/') {
