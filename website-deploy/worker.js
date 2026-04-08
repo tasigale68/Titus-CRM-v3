@@ -21,6 +21,7 @@ import BLOG_SCHADS from './blog/schads-award.html';
 import BLOG_SPREADSHEETS from './blog/outgrown-spreadsheets.html';
 import BLOG_AI_NOTES from './blog/ai-progress-notes.html';
 import BLOG_AGREEMENTS from './blog/digital-agreements.html';
+import BLOG_COMPARISON from './blog/titus-vs-shiftcare.html';
 import SALES_INDUCTION from './sales-induction.html';
 import OG_IMAGE_DATA from './og-image.png';
 import TITUS_LOGO from './titus-logo.png';
@@ -198,6 +199,12 @@ const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://www.titus-crm.com/blog/titus-vs-shiftcare</loc>
+    <lastmod>2026-04-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.titus-crm.com/privacy-policy</loc>
     <lastmod>2026-03-25</lastmod>
     <changefreq>monthly</changefreq>
@@ -288,6 +295,7 @@ Titus CRM is an Australian SaaS platform that consolidates CRM, rostering, HR, c
 - [Outgrown Spreadsheets](https://www.titus-crm.com/blog/outgrown-spreadsheets)
 - [AI Progress Notes](https://www.titus-crm.com/blog/ai-progress-notes)
 - [Digital Agreements](https://www.titus-crm.com/blog/digital-agreements)
+- [Titus CRM vs ShiftCare](https://www.titus-crm.com/blog/titus-vs-shiftcare)
 
 ## Contact
 - Email: titus@askyrgrandpa.com
@@ -522,6 +530,7 @@ export default {
     if (url.pathname === '/blog/outgrown-spreadsheets') return htmlResponse(BLOG_SPREADSHEETS);
     if (url.pathname === '/blog/ai-progress-notes') return htmlResponse(BLOG_AI_NOTES);
     if (url.pathname === '/blog/digital-agreements') return htmlResponse(BLOG_AGREEMENTS);
+    if (url.pathname === '/blog/titus-vs-shiftcare') return htmlResponse(BLOG_COMPARISON);
 
     // /blog → Blog landing page
     if (url.pathname === '/blog' || url.pathname === '/blog/') {
