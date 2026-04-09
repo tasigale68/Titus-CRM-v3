@@ -26,6 +26,7 @@ import BLOG_BEST_NDIS from './blog/best-ndis-software.html';
 import SALES_INDUCTION from './sales-induction.html';
 import CHECKLIST_HTML from './checklist.html';
 import PROCEDURE_SHIFT_CANCEL from './procedures/ai-shift-cancellation.html';
+import PROCEDURE_CLIENT_CANCEL from './procedures/ai-client-cancellation.html';
 import OG_IMAGE_DATA from './og-image.png';
 import TITUS_LOGO from './titus-logo.png';
 import LOGO_DELTA from './partners/delta-community.png';
@@ -556,6 +557,7 @@ export default {
 
     // Procedures
     if (url.pathname === '/procedures/ai-shift-cancellation') return htmlResponse(PROCEDURE_SHIFT_CANCEL);
+    if (url.pathname === '/procedures/ai-client-cancellation') return htmlResponse(PROCEDURE_CLIENT_CANCEL);
 
     // /blog → Blog landing page
     if (url.pathname === '/blog' || url.pathname === '/blog/') {
