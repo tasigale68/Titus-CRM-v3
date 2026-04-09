@@ -242,11 +242,10 @@ Titus CRM is an Australian SaaS platform that consolidates CRM, rostering, HR, c
 
 ## Pricing
 - Independent Contractor: $79/week +GST (sole traders)
-- Foundation: $249/week +GST (1-15 staff)
-- Growth: $499/week +GST (10-40 staff)
-- Custom Build: $749/week +GST (30+ staff)
+- Foundation: $249/week +GST (startup or growing providers)
 - Andy AI (add-on): $129/week +GST — 24/7 AI receptionist
 - No per-user fees. 14-day free trial. Cancel anytime.
+- Customisation available at additional cost — contact us for a quote.
 
 ## 23 Live Features
 
@@ -298,7 +297,7 @@ Titus CRM is an Australian SaaS platform that consolidates CRM, rostering, HR, c
 ## Pages
 - [Homepage](https://www.titus-crm.com/): Platform overview, from $79/wk
 - [Features](https://www.titus-crm.com/features): 31 features across 6 modules
-- [Pricing](https://www.titus-crm.com/pricing): Independent Contractor, Foundation, Growth, Custom Build tiers
+- [Pricing](https://www.titus-crm.com/pricing): Independent Contractor and Foundation plans, customisation available
 - [About](https://www.titus-crm.com/about): Company story, founder, mission
 - [Blog](https://www.titus-crm.com/blog): NDIS compliance, SCHADS, AI automation articles
 - [Agreement Builder](https://www.titus-crm.com/agreement-builder): Free NDIS service agreement generator
