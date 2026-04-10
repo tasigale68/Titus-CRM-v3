@@ -243,7 +243,7 @@ Titus CRM is an Australian SaaS platform that consolidates CRM, rostering, HR, c
 
 ## Pricing
 - Independent Contractor: $79/week +GST (sole traders)
-- Company Growth: $249/week +GST (up to 100 user licenses)
+- Company Growth: $349/week +GST (up to 100 user licenses)
 - Andy AI (add-on): $129/week +GST — 24/7 AI receptionist
 - No per-user fees. 14-day free trial. Cancel anytime.
 - Customisation available at additional cost — contact us for a quote.
