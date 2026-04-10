@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stakeholder Portal Guide | Titus CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C6941E; --gold-light: #F5E6C0; --gold-dark: #8B6914;
+    --teal: #0D9488; --teal-light: #CCFBF1; --teal-dark: #065F5D;
+    --blue: #2563EB; --blue-light: #DBEAFE;
+    --purple: #7C3AED; --purple-light: #EDE9FE;
+    --green: #16A34A; --green-light: #DCFCE7;
+    --slate-900: #0F172A; --slate-700: #334155; --slate-500: #64748B;
+    --slate-300: #CBD5E1; --slate-100: #F1F5F9; --white: #FFFFFF; --bg: #FAFAF8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--slate-700); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  .page { max-width: 960px; margin: 0 auto; padding: 40px 32px 80px; }
+
+  .header { text-align: center; margin-bottom: 48px; padding-bottom: 40px; border-bottom: 1px solid var(--slate-300); }
+  .header-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--teal-light); color: var(--teal-dark); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; margin-bottom: 20px; }
+  .header h1 { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700; color: var(--slate-900); margin-bottom: 8px; }
+  .header p { font-size: 15px; color: var(--slate-500); max-width: 600px; margin: 0 auto; }
+  .header .version { font-size: 12px; color: var(--slate-500); margin-top: 12px; }
+
+  .section { margin-bottom: 48px; }
+  .section-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; color: var(--slate-900); margin-bottom: 16px; }
+  .section-subtitle { font-size: 14px; color: var(--slate-500); margin-bottom: 24px; }
+
+  /* Flow diagram */
+  .flow { display: flex; flex-direction: column; gap: 0; align-items: center; margin: 24px 0 32px; }
+  .flow-step { display: flex; align-items: center; gap: 16px; width: 100%; max-width: 700px; }
+  .flow-number { width: 44px; height: 44px; min-width: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: white; }
+  .flow-number.office { background: var(--blue); }
+  .flow-number.system { background: var(--teal); }
+  .flow-number.user { background: var(--purple); }
+  .flow-card { flex: 1; background: white; border: 1px solid var(--slate-300); border-radius: 12px; padding: 16px 20px; }
+  .flow-card h4 { font-size: 14px; font-weight: 700; color: var(--slate-900); margin-bottom: 4px; }
+  .flow-card p { font-size: 13px; color: var(--slate-700); }
+  .flow-card .badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; margin-left: 8px; }
+  .flow-card .badge-office { background: var(--blue-light); color: var(--blue); }
+  .flow-card .badge-system { background: var(--teal-light); color: var(--teal); }
+  .flow-card .badge-user { background: var(--purple-light); color: var(--purple); }
+  .flow-arrow { width: 2px; height: 20px; background: var(--slate-300); margin-left: 21px; }
+
+  /* Role access table */
+  .access-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+  @media (max-width: 640px) { .access-grid { grid-template-columns: 1fr; } }
+  .access-card { background: white; border: 1px solid var(--slate-300); border-radius: 12px; padding: 20px; }
+  .access-card h4 { font-size: 15px; font-weight: 700; color: var(--slate-900); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .access-card .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .access-card ul { list-style: none; padding: 0; }
+  .access-card li { font-size: 13px; padding: 5px 0 5px 20px; position: relative; color: var(--slate-700); }
+  .access-card li::before { content: ''; position: absolute; left: 0; top: 12px; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+
+  /* Feature cards */
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+  @media (max-width: 768px) { .features { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .features { grid-template-columns: 1fr; } }
+  .feature { background: white; border: 1px solid var(--slate-300); border-radius: 12px; padding: 20px; text-align: center; }
+  .feature .icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 20px; }
+  .feature h4 { font-size: 14px; font-weight: 700; color: var(--slate-900); margin-bottom: 6px; }
+  .feature p { font-size: 12px; color: var(--slate-500); }
+
+  .care-passport { background: linear-gradient(135deg, var(--gold-light) 0%, white 100%); border: 2px solid var(--gold); border-radius: 16px; padding: 28px; margin: 24px 0; }
+  .care-passport h3 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; color: var(--gold-dark); margin-bottom: 8px; }
+  .care-passport p { font-size: 14px; color: var(--slate-700); margin-bottom: 12px; }
+  .care-passport ul { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .care-passport li { font-size: 13px; padding-left: 20px; position: relative; }
+  .care-passport li::before { content: ''; position: absolute; left: 0; top: 7px; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
+
+  .info-box { background: var(--blue-light); border: 1px solid #93C5FD; border-radius: 12px; padding: 20px 24px; margin: 20px 0; }
+  .info-box h4 { font-size: 14px; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
+  .info-box p { font-size: 14px; color: var(--slate-700); }
+
+  .footer { text-align: center; padding-top: 32px; border-top: 1px solid var(--slate-300); font-size: 12px; color: var(--slate-500); }
+  .footer a { color: var(--gold); text-decoration: none; }
+
+  @media print {
+    body { background: white; }
+    .page { padding: 20px; }
+    .flow-card, .access-card, .feature { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-badge">Office Procedure</div>
+    <h1>Stakeholder Portal Guide</h1>
+    <p>How to set up, manage, and support external portal access for support coordinators, guardians, nominees, and clients.</p>
+    <div class="version">Effective 10 April 2026 | Version 1.0</div>
+  </div>
+
+  <!-- Who gets access -->
+  <div class="section">
+    <div class="section-title">Who Gets Portal Access</div>
+    <div class="access-grid">
+      <div class="access-card">
+        <h4><div class="dot" style="background:var(--blue)"></div> Support Coordinators</h4>
+        <ul>
+          <li>See all clients they are linked to as a Stakeholder</li>
+          <li>View client details, NDIS plans, rosters, service records</li>
+          <li>Access signed-off progress notes, incidents, behaviour records</li>
+          <li>View documents: NDIS plans, service agreements, reports</li>
+          <li>Read-only access (cannot edit any records)</li>
+        </ul>
+      </div>
+      <div class="access-card">
+        <h4><div class="dot" style="background:var(--purple)"></div> Guardians, Nominees, Family</h4>
+        <ul>
+          <li>Same access as Support Coordinators</li>
+          <li>See only the clients they are linked to</li>
+          <li>View upcoming roster and shift details</li>
+          <li>Access relevant documents shared by the provider</li>
+          <li>Read-only access (cannot edit any records)</li>
+        </ul>
+      </div>
+      <div class="access-card">
+        <h4><div class="dot" style="background:var(--teal)"></div> Clients / Participants</h4>
+        <ul>
+          <li>See their own information only</li>
+          <li>View their own roster, shifts, and worker details</li>
+          <li>Access their NDIS plan and budget summary</li>
+          <li>Read signed-off progress notes about their care</li>
+          <li>Read-only access (cannot edit any records)</li>
+        </ul>
+      </div>
+      <div class="access-card" style="border-color:var(--gold)">
+        <h4><div class="dot" style="background:var(--gold)"></div> What They Cannot See</h4>
+        <ul>
+          <li>Other clients not linked to them</li>
+          <li>Staff profiles, internal contacts, or HR records</li>
+          <li>Draft progress notes (only signed-off)</li>
+          <li>Internal documents, incidents not linked to their client</li>
+          <li>Company settings, audit logs, financial data</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Onboarding Flow -->
+  <div class="section">
+    <div class="section-title">Setting Up a New Portal User</div>
+    <div class="section-subtitle">Follow these steps to create access for a new external user.</div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-number office">1</div>
+        <div class="flow-card">
+          <h4>Verify Stakeholder Record <span class="badge badge-office">Office Staff</span></h4>
+          <p>Go to Contacts > Stakeholders. Ensure the person has a record with a valid email address and is linked to the correct client(s).</p>
+        </div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step">
+        <div class="flow-number office">2</div>
+        <div class="flow-card">
+          <h4>Create Portal Account <span class="badge badge-office">Office Staff</span></h4>
+          <p>Ask admin to create the account (via Settings or script). A unique password is generated. The account is set to the correct role (Support Coordinator or Nominee/Guardian).</p>
+        </div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step">
+        <div class="flow-number office">3</div>
+        <div class="flow-card">
+          <h4>Send Invitation Email <span class="badge badge-office">Office Staff</span></h4>
+          <p>Click "Send Portal Invitation" on the stakeholder's contact record. This sends a branded email with login URL, temporary password, and feature overview.</p>
+        </div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step">
+        <div class="flow-number user">4</div>
+        <div class="flow-card">
+          <h4>User Signs NDA <span class="badge badge-user">External User</span></h4>
+          <p>On first login, the user is shown the Platform Agreement (NDA). They must accept before accessing any data. The acceptance is timestamped and recorded.</p>
+        </div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step">
+        <div class="flow-number system">5</div>
+        <div class="flow-card">
+          <h4>Access Granted <span class="badge badge-system">Automatic</span></h4>
+          <p>User sees their Clients list and Roster. All data is automatically filtered to only the clients they are linked to. NDA status is visible in their contact record.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features Available -->
+  <div class="section">
+    <div class="section-title">Portal Features</div>
+    <div class="features">
+      <div class="feature">
+        <div class="icon" style="background:var(--teal-light)">&#128101;</div>
+        <h4>Client Overview</h4>
+        <p>View all linked clients with contact details, NDIS numbers, and status at a glance.</p>
+      </div>
+      <div class="feature">
+        <div class="icon" style="background:var(--blue-light)">&#128197;</div>
+        <h4>Roster View</h4>
+        <p>See upcoming shifts, worker names, times, service types, and shift status in a weekly calendar.</p>
+      </div>
+      <div class="feature">
+        <div class="icon" style="background:var(--purple-light)">&#128203;</div>
+        <h4>NDIS Plan & Budget</h4>
+        <p>View plan dates, budget totals, and NDIS goals with category breakdowns.</p>
+      </div>
+      <div class="feature">
+        <div class="icon" style="background:var(--green-light)">&#128221;</div>
+        <h4>Service Records</h4>
+        <p>Access signed-off progress notes, incident reports, and behaviour records.</p>
+      </div>
+      <div class="feature">
+        <div class="icon" style="background:var(--gold-light)">&#128194;</div>
+        <h4>Documents</h4>
+        <p>Download NDIS plans, service agreements, progress reports, and stakeholder reports.</p>
+      </div>
+      <div class="feature">
+        <div class="icon" style="background:#FEE2E2">&#128274;</div>
+        <h4>Secure & Read-Only</h4>
+        <p>NDA-protected access. Users can view but never edit, delete, or export data.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Care Passport -->
+  <div class="section">
+    <div class="section-title">Care Passport</div>
+    <div class="care-passport">
+      <h3>What is the Care Passport?</h3>
+      <p>Every support worker in Titus CRM has a globally unique Care Passport ID. This portable identifier travels with the worker across different provider organisations, carrying their verified credentials, training history, and compliance certifications.</p>
+      <ul>
+        <li>Verified qualifications and certifications</li>
+        <li>Training completion records</li>
+        <li>Working with Children checks</li>
+        <li>NDIS Worker Screening clearances</li>
+        <li>First Aid and CPR currency</li>
+        <li>Employment history across providers</li>
+        <li>COVID-19 vaccination status</li>
+        <li>Professional development records</li>
+      </ul>
+      <p style="margin-top:16px"><strong>For stakeholders:</strong> When you view a client's roster, the workers assigned to their shifts carry verified Care Passport credentials. This gives you confidence that every worker supporting your client meets compliance requirements.</p>
+    </div>
+  </div>
+
+  <!-- Password Management -->
+  <div class="section">
+    <div class="section-title">Managing Portal Users</div>
+    <div class="info-box">
+      <h4>Resetting Passwords</h4>
+      <p>Directors, Team Leaders, and Roster Officers can reset any stakeholder's password from their contact record. Go to Contacts > Stakeholders > select the person > Portal Access section > "Reset Password". The new password is shown on screen for you to share securely.</p>
+    </div>
+    <div class="info-box">
+      <h4>NDA Tracking</h4>
+      <p>Each stakeholder's NDA acceptance status is shown in their contact record under Portal Access. If the NDA version is updated, users will be prompted to re-accept on their next login.</p>
+    </div>
+    <div class="info-box">
+      <h4>Removing Access</h4>
+      <p>To revoke access, change the user's status to Inactive in the users table or contact admin. The user will be unable to log in but their records and NDA acceptance remain for audit purposes.</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Titus CRM | <a href="https://www.titus-crm.com">www.titus-crm.com</a> | Stakeholder Portal Guide v1.0</p>
+  </div>
+</div>
+</body>
+</html>
