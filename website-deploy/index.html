@@ -6,8 +6,8 @@
 <meta name="google-site-verification" content="5iGXy_LR0T2xboyocbB6wSOlddlTK4FQ1m7N2_jR-pY">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-J81FRHT53C"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-J81FRHT53C');</script>
-<title>Titus CRM — AI-Powered Operations Platform for Compliance-Heavy Businesses</title>
-<meta name="description" content="Titus is the AI-powered operations platform for compliance-heavy businesses. Rostering, staff management, document control, 24/7 AI receptionist. One login. No per-user fees. Built in Brisbane, Australia.">
+<title>Titus CRM — AI Operations for Compliance Businesses</title>
+<meta name="description" content="Titus CRM is the AI-powered operations platform for compliance-heavy businesses. Rostering, compliance, AI receptionist. No per-user fees.">
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://www.titus-crm.com/">
 <meta property="og:title" content="Titus CRM — AI-Powered Operations Platform">
@@ -203,6 +203,18 @@ section{padding:var(--section-pad) 0}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
 .hero .reveal{transition-delay:var(--delay,0ms)}
+.faq-item{border:1px solid #E8E6E1;border-radius:10px;margin-bottom:12px;overflow:hidden;transition:border-color 0.3s}
+.faq-item.open{border-left:4px solid var(--ember)}
+.faq-q{width:100%;background:none;border:none;padding:20px 24px;font-family:var(--font-head);font-size:17px;font-weight:700;color:var(--black);text-align:left;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;line-height:1.4}
+.faq-q:hover{color:var(--ember)}
+.faq-chev{flex-shrink:0;width:20px;height:20px;position:relative;transition:transform 0.3s}
+.faq-chev::before,.faq-chev::after{content:'';position:absolute;background:var(--steel);border-radius:2px}
+.faq-chev::before{width:14px;height:2px;top:9px;left:3px}
+.faq-chev::after{width:2px;height:14px;top:3px;left:9px;transition:transform 0.3s}
+.faq-item.open .faq-chev::after{transform:scaleY(0)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.3s ease}
+.faq-item.open .faq-a{max-height:500px}
+.faq-a p{padding:0 24px 20px;font-size:15px;color:var(--steel);line-height:1.8}
 </style>
 </head>
 <body>
@@ -305,6 +317,13 @@ section{padding:var(--section-pad) 0}
   </div>
 </section>
 
+<section style="background:var(--white);padding:48px 0 0">
+  <div class="container" style="max-width:800px;text-align:center">
+    <h2 class="reveal" style="font-size:clamp(22px,3vw,32px);letter-spacing:-0.5px;margin-bottom:16px;color:var(--black)">What is Titus CRM?</h2>
+    <p class="reveal" style="font-size:clamp(15px,1.5vw,18px);color:var(--steel);line-height:1.8">Titus CRM is an AI-powered operations platform built for compliance-heavy businesses in Australia and New Zealand. It replaces spreadsheets, disconnected tools, and manual processes with one system that handles rostering, staff management, compliance registers, document control, and a 24/7 AI receptionist. Built by A4 inside a real NDIS business (Delta Community Support), it reduced admin staff from 14 to 1 and saved over $900,000 per year in wages. Now available to every compliance-heavy business across human services, aged care, real estate, accounting, recruitment, and more.</p>
+  </div>
+</section>
+
 <section class="bg-bone" id="problem">
   <div class="container">
     <div class="text-center">
@@ -340,6 +359,12 @@ section{padding:var(--section-pad) 0}
         <span class="ic-icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--ember)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 012-2h10a2 2 0 012 2v16"/></svg></span>
         <h3>Human Services</h3>
         <ul class="ic-list"><li>NDIS Providers</li><li>Aged Care</li><li>Youth Residential</li><li>Youth Justice</li><li>DV Providers</li><li>Child Care / OSHC</li><li>Community Services</li></ul>
+        <span class="ic-link">Explore <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+      </a>
+      <a href="/domestic-violence" class="industry-card reveal">
+        <span class="ic-icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--ember)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+        <h3>Domestic &amp; Family Violence</h3>
+        <ul class="ic-list"><li>Safety plans &amp; perpetrator exclusions</li><li>Coercive control registers</li><li>Anonymised client records</li><li>GPS disabled by default</li><li>Mandatory reporting prompts</li><li>DFV Sector Standards mapping</li></ul>
         <span class="ic-link">Explore <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
       </a>
       <a href="/real-estate" class="industry-card reveal">
@@ -441,6 +466,14 @@ section{padding:var(--section-pad) 0}
   </div>
 </section>
 
+<section style="background:var(--bone);padding:var(--section-pad) 0">
+  <div class="container" style="max-width:800px;text-align:center">
+    <p class="section-eyebrow reveal">Built by an operator, not a startup</p>
+    <h2 class="section-head reveal" style="margin-bottom:20px">A4 built Titus inside his own NDIS business.</h2>
+    <p class="reveal" style="font-size:clamp(15px,1.5vw,18px);color:var(--steel);line-height:1.8">30+ years in community services. Built Titus inside Delta Community Support, a registered NDIS provider in Queensland. Reduced admin staff from 14 to 1. Saved over $900,000 per year. Now available to every compliance-heavy business in Australia and New Zealand.</p>
+  </div>
+</section>
+
 <section id="pricing-preview">
   <div class="container">
     <div class="text-center">
@@ -464,6 +497,55 @@ section{padding:var(--section-pad) 0}
       </div>
     </div>
     <p class="pricing-note reveal">14-day free trial. Cancel anytime. All prices +GST. <a href="/pricing" style="color:var(--ember);font-weight:600">See full pricing &rarr;</a></p>
+  </div>
+</section>
+
+<section id="faq" class="section" style="background:var(--white);padding:var(--section-pad) 0">
+  <div class="container">
+    <p class="section-eyebrow reveal">Frequently Asked Questions</p>
+    <h2 class="section-head reveal" style="margin-bottom:48px;text-align:center">Common questions about Titus CRM</h2>
+    <div style="max-width:800px;margin:0 auto">
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false">What is Titus CRM?<span class="faq-chev"></span></button>
+        <div class="faq-a"><p>Titus CRM is an AI-powered operations platform built for compliance-heavy businesses in Australia and New Zealand. It replaces spreadsheets, disconnected tools, and manual processes with one system that handles rostering, staff management, compliance registers, document control, and a 24/7 AI receptionist. Built by A4 inside a real NDIS business (Delta Community Support), it reduced admin staff from 14 to 1 and saved over $900,000 per year in wages.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false">What industries does Titus support?<span class="faq-chev"></span></button>
+        <div class="faq-a"><p>Titus currently supports Human Services (NDIS providers, aged care, youth residential, domestic violence services, childcare), Property Services (real estate agencies), Professional Services (bookkeeping and accounting firms), and Workforce Services (recruitment agencies and labour hire). Each industry gets a configured version of the platform with sector-specific terminology, compliance registers, and workflows.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false">How much does Titus cost?<span class="faq-chev"></span></button>
+        <div class="faq-a"><p>Titus uses a flat weekly fee with no per-user pricing. The Independent Contractor plan starts at $79 per week. The Company Growth plan is $349 per week and includes all core features. The AI add-on (Andy AI receptionist) is $129 per week. There are no setup fees, no lock-in contracts, and no hidden charges.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false">Is Titus NDIS compliant?<span class="faq-chev"></span></button>
+        <div class="faq-a"><p>Yes. Titus includes 18 configurable NDIS compliance registers, maps to all NDIS Practice Standards, includes AI incident classification, automated CAPA generation, and a full audit evidence pack export. It was built inside an active NDIS provider and is used by registered providers across QLD, VIC, and NSW.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false">Does Titus work for real estate agencies?<span class="faq-chev"></span></button>
+        <div class="faq-a"><p>Yes. Titus CRM Real Estate is a purpose-built version for NZ and Australian agencies. It includes lead pipeline management, listings with photo galleries, open home QR registration, buyer matching, transaction tracking, digital agreements with e-signature, commission tracking with GST, CPD compliance monitoring, and agent onboarding. Available at realestate.titus-crm.com.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false">Does Titus support domestic violence services?<span class="faq-chev"></span></button>
+        <div class="faq-a"><p>Yes. Titus includes DV-specific features: safety plans, perpetrator exclusions, coercive control registers, protection order tracking, safety action meetings, technology safety assessments, anonymised client records, and mandatory reporting prompts. GPS tracking is disabled by default for DV services to protect client safety. The platform maps to DFV Sector Standards.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false">What is the AI receptionist?<span class="faq-chev"></span></button>
+        <div class="faq-a"><p>Andy is a 24/7 AI voice agent that answers every inbound call, triages enquiries, takes messages, and routes to the right person. It works at 3am, on weekends, and on public holidays. Andy also handles shift cancellations, roster changes, and client communications. It replaces the need for a full-time receptionist.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false">Can I import my existing data?<span class="faq-chev"></span></button>
+        <div class="faq-a"><p>Yes. Titus supports CSV and Excel file uploads with AI-powered field mapping. Upload your staff, client, or lead spreadsheets and the system automatically matches your columns to the correct fields. You can also bulk import through the admin portal.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false">Does Titus work on mobile?<span class="faq-chev"></span></button>
+        <div class="faq-a"><p>Yes. Titus is a Progressive Web App (PWA) that installs on any phone or tablet like a native app. No app store download needed. Workers can view rosters, submit progress notes via voice, log incidents, and manage availability from their phone. It works offline for critical functions.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-q" aria-expanded="false">Is there a free trial?<span class="faq-chev"></span></button>
+        <div class="faq-a"><p>Yes. You can start a free trial at app.titus-crm.com with no credit card required. For real estate agencies, visit realestate.titus-crm.com. Both include demo data so you can explore the full platform immediately.</p></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -528,6 +610,26 @@ window.addEventListener('scroll',()=>{document.querySelector('.nav').style.backg
 // Industries dropdown - click/tap toggle (fixes touch devices and click users)
 document.querySelectorAll('.has-dropdown > a').forEach(a=>{a.addEventListener('click',function(e){e.preventDefault();const p=this.parentElement;const wasOpen=p.classList.contains('dropdown-open');document.querySelectorAll('.has-dropdown').forEach(d=>d.classList.remove('dropdown-open'));if(!wasOpen)p.classList.add('dropdown-open')});});
 document.addEventListener('click',function(e){if(!e.target.closest('.has-dropdown'))document.querySelectorAll('.has-dropdown').forEach(d=>d.classList.remove('dropdown-open'))});
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(btn=>{btn.addEventListener('click',function(){const item=this.parentElement;const wasOpen=item.classList.contains('open');document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));if(!wasOpen)item.classList.add('open');this.setAttribute('aria-expanded',!wasOpen)})});
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"What is Titus CRM?","acceptedAnswer":{"@type":"Answer","text":"Titus CRM is an AI-powered operations platform built for compliance-heavy businesses in Australia and New Zealand. It replaces spreadsheets, disconnected tools, and manual processes with one system that handles rostering, staff management, compliance registers, document control, and a 24/7 AI receptionist. Built by A4 inside a real NDIS business (Delta Community Support), it reduced admin staff from 14 to 1 and saved over $900,000 per year in wages."}},
+    {"@type":"Question","name":"What industries does Titus support?","acceptedAnswer":{"@type":"Answer","text":"Titus currently supports Human Services (NDIS providers, aged care, youth residential, domestic violence services, childcare), Property Services (real estate agencies), Professional Services (bookkeeping and accounting firms), and Workforce Services (recruitment agencies and labour hire). Each industry gets a configured version of the platform with sector-specific terminology, compliance registers, and workflows."}},
+    {"@type":"Question","name":"How much does Titus cost?","acceptedAnswer":{"@type":"Answer","text":"Titus uses a flat weekly fee with no per-user pricing. The Independent Contractor plan starts at $79 per week. The Company Growth plan is $349 per week and includes all core features. The AI add-on (Andy AI receptionist) is $129 per week. There are no setup fees, no lock-in contracts, and no hidden charges."}},
+    {"@type":"Question","name":"Is Titus NDIS compliant?","acceptedAnswer":{"@type":"Answer","text":"Yes. Titus includes 18 configurable NDIS compliance registers, maps to all NDIS Practice Standards, includes AI incident classification, automated CAPA generation, and a full audit evidence pack export. It was built inside an active NDIS provider and is used by registered providers across QLD, VIC, and NSW."}},
+    {"@type":"Question","name":"Does Titus work for real estate agencies?","acceptedAnswer":{"@type":"Answer","text":"Yes. Titus CRM Real Estate is a purpose-built version for NZ and Australian agencies. It includes lead pipeline management, listings with photo galleries, open home QR registration, buyer matching, transaction tracking, digital agreements with e-signature, commission tracking with GST, CPD compliance monitoring, and agent onboarding. Available at realestate.titus-crm.com."}},
+    {"@type":"Question","name":"Does Titus support domestic violence services?","acceptedAnswer":{"@type":"Answer","text":"Yes. Titus includes DV-specific features: safety plans, perpetrator exclusions, coercive control registers, protection order tracking, safety action meetings, technology safety assessments, anonymised client records, and mandatory reporting prompts. GPS tracking is disabled by default for DV services to protect client safety. The platform maps to DFV Sector Standards."}},
+    {"@type":"Question","name":"What is the AI receptionist?","acceptedAnswer":{"@type":"Answer","text":"Andy is a 24/7 AI voice agent that answers every inbound call, triages enquiries, takes messages, and routes to the right person. It works at 3am, on weekends, and on public holidays. Andy also handles shift cancellations, roster changes, and client communications. It replaces the need for a full-time receptionist."}},
+    {"@type":"Question","name":"Can I import my existing data?","acceptedAnswer":{"@type":"Answer","text":"Yes. Titus supports CSV and Excel file uploads with AI-powered field mapping. Upload your staff, client, or lead spreadsheets and the system automatically matches your columns to the correct fields. You can also bulk import through the admin portal."}},
+    {"@type":"Question","name":"Does Titus work on mobile?","acceptedAnswer":{"@type":"Answer","text":"Yes. Titus is a Progressive Web App (PWA) that installs on any phone or tablet like a native app. No app store download needed. Workers can view rosters, submit progress notes via voice, log incidents, and manage availability from their phone. It works offline for critical functions."}},
+    {"@type":"Question","name":"Is there a free trial?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can start a free trial at app.titus-crm.com with no credit card required. For real estate agencies, visit realestate.titus-crm.com. Both include demo data so you can explore the full platform immediately."}}
+  ]
+}
 </script>
 </body>
 </html>

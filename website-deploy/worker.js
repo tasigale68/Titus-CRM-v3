@@ -95,6 +95,10 @@ const OG_IMAGE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" heigh
 const ROBOTS_TXT = `User-agent: *
 Allow: /
 Disallow: /administrator
+Disallow: /sales-induction
+Disallow: /procedures/
+Disallow: /sales-induction
+Disallow: /procedures/
 
 # Block AI training crawlers (not search crawlers)
 User-agent: CCBot
@@ -113,22 +117,32 @@ Disallow: /
 User-agent: GPTBot
 Allow: /
 Disallow: /administrator
+Disallow: /sales-induction
+Disallow: /procedures/
 
 User-agent: OAI-SearchBot
 Allow: /
 Disallow: /administrator
+Disallow: /sales-induction
+Disallow: /procedures/
 
 User-agent: ChatGPT-User
 Allow: /
 Disallow: /administrator
+Disallow: /sales-induction
+Disallow: /procedures/
 
 User-agent: ClaudeBot
 Allow: /
 Disallow: /administrator
+Disallow: /sales-induction
+Disallow: /procedures/
 
 User-agent: PerplexityBot
 Allow: /
 Disallow: /administrator
+Disallow: /sales-induction
+Disallow: /procedures/
 
 Sitemap: https://www.titus-crm.com/sitemap.xml
 `;
@@ -567,6 +581,11 @@ export default {
           ...securityHeaders,
         }
       });
+    }
+
+    // /videos → redirect to features page
+    if (url.pathname === '/videos' || url.pathname === '/videos/') {
+      return Response.redirect('https://www.titus-crm.com/features', 301);
     }
 
     // /agreement-builder → serve Agreement Builder page
