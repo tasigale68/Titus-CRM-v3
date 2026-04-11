@@ -28,6 +28,7 @@ import NDIS_HTML from './ndis.html';
 import ACCOUNTING_HTML from './accounting.html';
 import DV_HTML from './domestic-violence.html';
 import YOUTH_RESI_HTML from './youth-residential-care.html';
+import YOUTH_JUSTICE_HTML from './youth-justice.html';
 import CHILDCARE_HTML from './childcare.html';
 import REAL_ESTATE_HTML from './real-estate.html';
 import RECRUITMENT_HTML from './recruitment.html';
@@ -277,6 +278,12 @@ const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://www.titus-crm.com/youth-justice</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://www.titus-crm.com/childcare</loc>
     <lastmod>2026-04-11</lastmod>
     <changefreq>monthly</changefreq>
@@ -394,6 +401,7 @@ Titus CRM is an Australian SaaS platform that consolidates rostering, compliance
 - [Property Services](https://www.titus-crm.com/real-estate): Industry landing page for real estate, property management, and strata management
 - [Domestic & Family Violence](https://www.titus-crm.com/domestic-violence): Industry landing page for DFV crisis services, refuge providers, and specialist DFV services
 - [Youth Residential Care](https://www.titus-crm.com/youth-residential-care): Industry landing page for youth resi care providers covering shift handovers, incident documentation, behaviour support plans, mandatory reporting, and staff compliance
+- [Youth Justice](https://www.titus-crm.com/youth-justice): Industry landing page for youth justice services covering court order tracking, community service hours, bail compliance, case planning, mandatory reporting, and Care Passport continuity
 - [Recruitment & Labour Hire](https://www.titus-crm.com/recruitment): Industry landing page for recruitment agencies, labour hire, staffing firms, and care sector recruitment
 - [Service Operations](https://www.titus-crm.com/service-ops): Industry landing page for plan management, intake and triage, coordination hubs, and inbound service centres
 - [Agreement Builder](https://www.titus-crm.com/agreement-builder): Free NDIS service agreement generator
@@ -678,6 +686,11 @@ export default {
     // /youth-residential-care → Youth Residential Care vertical landing page
     if (url.pathname === '/youth-residential-care' || url.pathname === '/youth-residential-care/') {
       return htmlResponse(YOUTH_RESI_HTML);
+    }
+
+    // /youth-justice → Youth Justice vertical landing page
+    if (url.pathname === '/youth-justice' || url.pathname === '/youth-justice/') {
+      return htmlResponse(YOUTH_JUSTICE_HTML);
     }
 
     // /childcare → Child Care & OSHC vertical landing page
