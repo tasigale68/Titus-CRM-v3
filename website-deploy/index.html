@@ -110,11 +110,21 @@ img{max-width:100%;display:block}
 .hero-proof{font-family:var(--font-mono);font-size:12px;color:var(--slate);line-height:1.8}
 .hero-proof strong{color:var(--black)}
 .hero-visual{position:relative;display:none}
-.hero-video{border-radius:12px;border:2px solid #E8E6E1;overflow:hidden;box-shadow:0 20px 60px rgba(30,41,59,0.12),0 4px 16px rgba(30,41,59,0.06);background:#fff}
+.hero-video{border-radius:16px;overflow:hidden;box-shadow:0 25px 80px rgba(30,41,59,0.18),0 8px 24px rgba(30,41,59,0.08);background:var(--black);position:relative}
+.hero-video-thumb{position:relative;width:100%;aspect-ratio:16/9;cursor:pointer;overflow:hidden;display:block}
+.hero-video-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s ease,filter 0.4s ease}
+.hero-video-thumb:hover img{transform:scale(1.02);filter:brightness(0.85)}
+.hero-video-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;background:var(--ember);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(232,87,14,0.4);transition:transform 0.25s ease,box-shadow 0.25s ease}
+.hero-video-thumb:hover .hero-video-play{transform:translate(-50%,-50%) scale(1.1);box-shadow:0 8px 32px rgba(232,87,14,0.5)}
+.hero-video-play svg{margin-left:3px}
+.hero-video-badge{position:absolute;bottom:16px;left:16px;display:flex;align-items:center;gap:8px;background:rgba(30,41,59,0.85);backdrop-filter:blur(8px);border-radius:8px;padding:8px 14px;font-size:12px;color:rgba(255,255,255,0.9);font-weight:500;letter-spacing:0.3px}
+.hero-video-badge .vb-dot{width:8px;height:8px;border-radius:50%;background:var(--ember);animation:pulse-dot 2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.4}}
 .hero-video iframe{display:block;width:100%;aspect-ratio:16/9;border:none}
-.hero-video-label{display:flex;align-items:center;gap:8px;padding:12px 16px;background:#fff;border-top:1px solid #E8E6E1;font-size:13px;color:var(--slate);font-weight:500}
-.hero-video-label svg{color:var(--ember);flex-shrink:0}
-.hero-video-label span{color:var(--black);font-weight:600}
+.hero-video-bar{display:flex;align-items:center;gap:10px;padding:14px 18px;background:linear-gradient(to right,var(--black),#263248);border-top:1px solid rgba(255,255,255,0.06)}
+.hero-video-bar-dot{width:6px;height:6px;border-radius:50%;background:var(--ember);flex-shrink:0}
+.hero-video-bar span{font-size:13px;color:rgba(255,255,255,0.6);font-weight:500}
+.hero-video-bar strong{color:#fff;font-weight:600}
 @media(min-width:1024px){.hero-inner{grid-template-columns:1fr 1fr;align-items:center}.hero-visual{display:block}}
 section{padding:var(--section-pad) 0}
 .section-eyebrow{font-family:var(--font-mono);font-size:12px;color:var(--ember);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
@@ -274,11 +284,20 @@ section{padding:var(--section-pad) 0}
       </div>
     </div>
     <div class="hero-visual reveal" style="--delay:200ms">
-      <div class="hero-video">
-        <iframe src="https://www.loom.com/embed/c9441d0020a246aba9542cfca9eda481?hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true" allowfullscreen></iframe>
-        <div class="hero-video-label">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          <span>Watch:</span> Full Platform Walkthrough (4 min)
+      <div class="hero-video" id="heroVideo">
+        <div class="hero-video-thumb" onclick="playHeroVideo()">
+          <img src="https://cdn.loom.com/sessions/thumbnails/c9441d0020a246aba9542cfca9eda481-0699acbbb617e2bb.jpg" alt="Titus CRM Platform Walkthrough">
+          <div class="hero-video-play">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" stroke="none"><polygon points="6 3 20 12 6 21"/></svg>
+          </div>
+          <div class="hero-video-badge">
+            <span class="vb-dot"></span>
+            4 min walkthrough
+          </div>
+        </div>
+        <div class="hero-video-bar">
+          <span class="hero-video-bar-dot"></span>
+          <span><strong>Titus CRM</strong> &nbsp;Full Platform Walkthrough</span>
         </div>
       </div>
     </div>
@@ -497,6 +516,7 @@ section{padding:var(--section-pad) 0}
 </footer>
 
 <script>
+function playHeroVideo(){const v=document.getElementById('heroVideo');const thumb=v.querySelector('.hero-video-thumb');const iframe=document.createElement('iframe');iframe.src='https://www.loom.com/embed/c9441d0020a246aba9542cfca9eda481?hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true&autoplay=1';iframe.allowFullscreen=true;iframe.allow='autoplay';thumb.replaceWith(iframe)}
 const hamburger=document.querySelector('.hamburger'),mobileMenu=document.getElementById('mobileMenu');
 hamburger.addEventListener('click',()=>{const o=mobileMenu.classList.toggle('open');hamburger.classList.toggle('open');hamburger.setAttribute('aria-expanded',o);mobileMenu.setAttribute('aria-hidden',!o);document.body.style.overflow=o?'hidden':''});
 const io=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting){el.target.classList.add('visible');io.unobserve(el.target)}})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
