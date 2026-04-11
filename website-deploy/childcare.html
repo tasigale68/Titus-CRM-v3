@@ -19,7 +19,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="geo.region" content="AU-QLD">
 <meta name="geo.placename" content="Brisbane">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230D0D0D'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='800' font-size='18' fill='%23E8570E'>T</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231E293B'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='800' font-size='18' fill='%23E8570E'>T</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
@@ -44,8 +44,8 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --black:#0D0D0D;--white:#F5F4F0;--ember:#E8570E;--ember-glow:rgba(232,87,14,0.35);
-  --steel:#2C3E50;--slate:#8A9BAE;--bone:#F0EDE6;--success:#2ECC71;
+  --black:#1E293B;--white:#FAFAF8;--ember:#E8570E;--ember-glow:rgba(232,87,14,0.35);
+  --steel:#334155;--slate:#64748B;--bone:#F0EDE6;--success:#2ECC71;
   --font-head:'Outfit',sans-serif;--font-body:'Source Sans 3',sans-serif;--font-mono:'IBM Plex Mono',monospace;
   --max-w:1280px;--gutter:24px;--section-pad:72px;
 }
@@ -56,7 +56,7 @@ h1,h2,h3,h4{font-family:var(--font-head);color:var(--black);line-height:1.15;fon
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 .container{max-width:var(--max-w);margin:0 auto;padding:0 var(--gutter)}
-.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(13,13,13,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06)}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(30,41,59,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06)}
 .nav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--gutter);display:flex;align-items:center;justify-content:space-between;height:72px}
 .nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--font-head);font-weight:800;font-size:20px;color:#fff;letter-spacing:-0.5px}
 .nav-logo img{width:36px;height:36px;border-radius:8px}
@@ -79,7 +79,7 @@ img{max-width:100%;display:block}
 .btn-ember:hover{box-shadow:0 0 24px var(--ember-glow);transform:translateY(-1px)}
 .btn-outline{display:inline-flex;align-items:center;gap:8px;background:transparent;color:#fff;font-family:var(--font-body);font-weight:600;font-size:14px;padding:12px 24px;border-radius:8px;border:2px solid rgba(255,255,255,0.2);cursor:pointer;transition:border-color 0.2s,background 0.2s}
 .btn-outline:hover{border-color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.05)}
-.btn-outline-dark{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--black);font-family:var(--font-body);font-weight:600;font-size:14px;padding:12px 24px;border-radius:8px;border:2px solid rgba(13,13,13,0.2);cursor:pointer;transition:border-color 0.2s,background 0.2s}
+.btn-outline-dark{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--black);font-family:var(--font-body);font-weight:600;font-size:14px;padding:12px 24px;border-radius:8px;border:2px solid rgba(30,41,59,0.2);cursor:pointer;transition:border-color 0.2s,background 0.2s}
 .btn-outline-dark:hover{border-color:var(--ember);background:rgba(232,87,14,0.04)}
 .hamburger{display:flex;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px}
 .hamburger span{display:block;width:24px;height:2px;background:#fff;border-radius:2px;transition:transform 0.3s,opacity 0.3s}
@@ -542,7 +542,7 @@ const hamburger=document.querySelector('.hamburger'),mobileMenu=document.getElem
 hamburger.addEventListener('click',()=>{const o=mobileMenu.classList.toggle('open');hamburger.classList.toggle('open');hamburger.setAttribute('aria-expanded',o);mobileMenu.setAttribute('aria-hidden',!o);document.body.style.overflow=o?'hidden':''});
 const io=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting){el.target.classList.add('visible');io.unobserve(el.target)}})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-window.addEventListener('scroll',()=>{document.querySelector('.nav').style.background=scrollY>50?'rgba(13,13,13,0.98)':'rgba(13,13,13,0.95)'},{passive:true});
+window.addEventListener('scroll',()=>{document.querySelector('.nav').style.background=scrollY>50?'rgba(30,41,59,0.98)':'rgba(30,41,59,0.95)'},{passive:true});
 </script>
 </body>
 </html>
