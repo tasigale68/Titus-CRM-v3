@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="google-site-verification" content="5iGXy_LR0T2xboyocbB6wSOlddlTK4FQ1m7N2_jR-pY">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-J81FRHT53C"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-J81FRHT53C');</script>
+<title>Login | Titus CRM — Choose Your Platform</title>
+<meta name="description" content="Login to your Titus CRM platform. Choose from Human Services, Real Estate, Professional Services, or Workforce Services.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://www.titus-crm.com/login">
+<meta property="og:title" content="Login | Titus CRM — Choose Your Platform">
+<meta property="og:description" content="Login to your Titus CRM platform. Human Services, Real Estate, Professional Services, or Workforce Services.">
+<meta property="og:url" content="https://www.titus-crm.com/login">
+<meta property="og:image" content="https://www.titus-crm.com/og-image.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_AU">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231E293B'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='800' font-size='18' fill='%23E8570E'>T</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --black:#1E293B;--white:#FAFAF8;--ember:#E8570E;--ember-glow:rgba(232,87,14,0.35);
+  --steel:#334155;--slate:#64748B;--bone:#F0EDE6;
+  --font-head:'Outfit',sans-serif;--font-body:'Source Sans 3',sans-serif;--font-mono:'IBM Plex Mono',monospace;
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--font-body);color:var(--steel);background:linear-gradient(135deg,#FAFAF8 0%,#F0EDE6 50%,#E8E2D8 100%);min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+
+/* Nav */
+.login-nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;max-width:1280px;margin:0 auto;width:100%}
+.login-nav a{text-decoration:none}
+.logo-link{display:flex;align-items:center;gap:10px}
+.logo-mark{width:36px;height:36px;background:var(--black);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:18px;height:18px}
+.logo-text{font-family:var(--font-head);font-size:18px;font-weight:800;color:var(--black);letter-spacing:-0.5px}
+.back-link{font-size:14px;color:var(--slate);font-weight:500;display:flex;align-items:center;gap:6px;transition:color 0.2s}
+.back-link:hover{color:var(--ember)}
+
+/* Main content */
+.login-page{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px 80px}
+.login-header{text-align:center;margin-bottom:48px}
+.login-header h1{font-family:var(--font-head);font-size:clamp(28px,4vw,42px);color:var(--black);letter-spacing:-1px;margin-bottom:12px;font-weight:800}
+.login-header p{font-size:18px;color:var(--slate);max-width:480px;margin:0 auto;line-height:1.6}
+
+/* Grid */
+.platforms-grid{display:grid;grid-template-columns:1fr;gap:20px;max-width:960px;width:100%}
+@media(min-width:640px){.platforms-grid{grid-template-columns:1fr 1fr}}
+
+/* Cards */
+.platform-card{position:relative;background:#fff;border:2px solid #E8E6E1;border-radius:16px;padding:32px 28px;cursor:pointer;transition:all 0.3s ease;text-decoration:none;display:flex;flex-direction:column;overflow:hidden}
+.platform-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;transition:width 0.3s ease;border-radius:16px 0 0 16px}
+.platform-card:hover{border-color:transparent;transform:translateY(-4px);box-shadow:0 16px 48px rgba(30,41,59,0.1),0 4px 12px rgba(30,41,59,0.06)}
+.platform-card:hover::before{width:5px}
+.platform-card:active{transform:translateY(-2px)}
+
+/* Card colours */
+.platform-card.human-services::before{background:#2563EB}
+.platform-card.human-services:hover{border-color:#2563EB}
+.platform-card.real-estate::before{background:#C6941E}
+.platform-card.real-estate:hover{border-color:#C6941E}
+.platform-card.professional::before{background:#059669}
+.platform-card.professional:hover{border-color:#059669}
+.platform-card.workforce::before{background:#7C3AED}
+.platform-card.workforce:hover{border-color:#7C3AED}
+
+/* Card icon */
+.pc-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;transition:transform 0.3s ease}
+.platform-card:hover .pc-icon{transform:scale(1.08)}
+.human-services .pc-icon{background:rgba(37,99,235,0.1)}
+.real-estate .pc-icon{background:rgba(198,148,30,0.1)}
+.professional .pc-icon{background:rgba(5,150,105,0.1)}
+.workforce .pc-icon{background:rgba(124,58,237,0.1)}
+
+/* Card content */
+.pc-title{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--black);letter-spacing:-0.5px;margin-bottom:6px}
+.pc-desc{font-size:15px;color:var(--slate);line-height:1.6;margin-bottom:16px}
+
+/* Tags */
+.pc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.pc-tag{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;letter-spacing:0.3px;text-transform:uppercase}
+.human-services .pc-tag{background:rgba(37,99,235,0.08);color:#2563EB}
+.real-estate .pc-tag{background:rgba(198,148,30,0.08);color:#9A7416}
+.professional .pc-tag{background:rgba(5,150,105,0.08);color:#059669}
+.workforce .pc-tag{background:rgba(124,58,237,0.08);color:#7C3AED}
+
+/* Card footer */
+.pc-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:16px;border-top:1px solid #F0EDE6}
+.pc-status{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:0.3px}
+.pc-status .dot{width:7px;height:7px;border-radius:50%}
+.pc-status.live .dot{background:#10B981}
+.pc-status.live{color:#059669}
+.pc-status.soon .dot{background:var(--ember);animation:pulse-dot 2s ease-in-out infinite}
+.pc-status.soon{color:var(--ember)}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.4}}
+.pc-arrow{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:all 0.25s ease}
+.human-services .pc-arrow{background:rgba(37,99,235,0.08);color:#2563EB}
+.real-estate .pc-arrow{background:rgba(198,148,30,0.08);color:#9A7416}
+.professional .pc-arrow{background:rgba(5,150,105,0.08);color:#059669}
+.workforce .pc-arrow{background:rgba(124,58,237,0.08);color:#7C3AED}
+.platform-card:hover .pc-arrow{transform:translateX(3px)}
+
+/* Coming soon overlay */
+.platform-card.coming-soon{cursor:default}
+.platform-card.coming-soon:hover{transform:none;box-shadow:0 4px 16px rgba(30,41,59,0.04)}
+.platform-card.coming-soon .pc-icon,.platform-card.coming-soon .pc-title,.platform-card.coming-soon .pc-desc,.platform-card.coming-soon .pc-tags{opacity:0.7}
+
+/* Waitlist form */
+.waitlist-row{display:flex;gap:8px;align-items:center}
+.waitlist-row input{flex:1;padding:8px 12px;border:1.5px solid #E8E6E1;border-radius:8px;font-family:var(--font-body);font-size:13px;outline:none;transition:border-color 0.2s}
+.waitlist-row input:focus{border-color:var(--ember)}
+.waitlist-row button{padding:8px 14px;border:none;border-radius:8px;font-family:var(--font-body);font-size:12px;font-weight:600;color:#fff;cursor:pointer;white-space:nowrap;transition:opacity 0.2s}
+.waitlist-row button:hover{opacity:0.9}
+.professional .waitlist-row button{background:#059669}
+.workforce .waitlist-row button{background:#7C3AED}
+.waitlist-msg{font-size:12px;margin-top:6px;font-weight:500;display:none}
+
+/* Footer */
+.login-footer{text-align:center;padding:24px;font-size:13px;color:var(--slate)}
+.login-footer a{color:var(--ember);font-weight:600;text-decoration:none}
+.login-footer a:hover{text-decoration:underline}
+
+/* Animations */
+.fade-up{opacity:0;transform:translateY(20px);animation:fadeUp 0.5s ease forwards}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.delay-1{animation-delay:0.1s}
+.delay-2{animation-delay:0.2s}
+.delay-3{animation-delay:0.3s}
+.delay-4{animation-delay:0.4s}
+</style>
+</head>
+<body>
+
+<nav class="login-nav">
+  <a href="/" class="logo-link">
+    <div class="logo-mark"><svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#1E293B"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="18" fill="#E8570E">T</text></svg></div>
+    <span class="logo-text">Titus CRM</span>
+  </a>
+  <a href="/" class="back-link">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Back to website
+  </a>
+</nav>
+
+<main class="login-page">
+  <div class="login-header fade-up">
+    <h1>Choose Your Platform</h1>
+    <p>Select the Titus platform that matches your industry to sign in.</p>
+  </div>
+
+  <div class="platforms-grid">
+
+    <!-- Human Services -->
+    <a href="https://app.titus-crm.com/login" class="platform-card human-services fade-up delay-1">
+      <div class="pc-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="pc-title">Human Services</div>
+      <div class="pc-desc">For disability, aged care, youth and community service providers across Australia.</div>
+      <div class="pc-tags">
+        <span class="pc-tag">NDIS</span>
+        <span class="pc-tag">Aged Care</span>
+        <span class="pc-tag">Youth Residential</span>
+        <span class="pc-tag">Community Services</span>
+        <span class="pc-tag">Domestic Violence</span>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-status live"><span class="dot"></span>Live</div>
+        <div class="pc-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+    </a>
+
+    <!-- Real Estate -->
+    <a href="https://realestate.titus-crm.com/login" class="platform-card real-estate fade-up delay-2">
+      <div class="pc-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C6941E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div class="pc-title">Real Estate</div>
+      <div class="pc-desc">For agencies managing listings, leads, transactions, open homes and agent compliance.</div>
+      <div class="pc-tags">
+        <span class="pc-tag">Listings</span>
+        <span class="pc-tag">Leads</span>
+        <span class="pc-tag">Transactions</span>
+        <span class="pc-tag">Open Homes</span>
+        <span class="pc-tag">Commission</span>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-status live"><span class="dot"></span>Live</div>
+        <div class="pc-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+    </a>
+
+    <!-- Professional Services -->
+    <div class="platform-card professional coming-soon fade-up delay-3" id="profCard">
+      <div class="pc-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      </div>
+      <div class="pc-title">Professional Services</div>
+      <div class="pc-desc">For accounting firms, bookkeepers, consultancies and professional service providers.</div>
+      <div class="pc-tags">
+        <span class="pc-tag">Accounting</span>
+        <span class="pc-tag">Bookkeeping</span>
+        <span class="pc-tag">Consultancy</span>
+        <span class="pc-tag">Legal</span>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-status soon"><span class="dot"></span>Coming Soon</div>
+        <div class="pc-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+      <div style="margin-top:12px">
+        <div class="waitlist-row">
+          <input type="email" id="profEmail" placeholder="Enter your email for early access">
+          <button onclick="joinWaitlist('profEmail','profMsg','Professional Services')">Notify Me</button>
+        </div>
+        <div class="waitlist-msg" id="profMsg"></div>
+      </div>
+    </div>
+
+    <!-- Workforce Services -->
+    <div class="platform-card workforce coming-soon fade-up delay-4" id="workCard">
+      <div class="pc-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+      <div class="pc-title">Workforce Services</div>
+      <div class="pc-desc">For labour hire companies, recruitment agencies and workforce management operations.</div>
+      <div class="pc-tags">
+        <span class="pc-tag">Labour Hire</span>
+        <span class="pc-tag">Recruitment</span>
+        <span class="pc-tag">Staffing</span>
+        <span class="pc-tag">Contractor Mgmt</span>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-status soon"><span class="dot"></span>Coming Soon</div>
+        <div class="pc-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+      <div style="margin-top:12px">
+        <div class="waitlist-row">
+          <input type="email" id="workEmail" placeholder="Enter your email for early access">
+          <button onclick="joinWaitlist('workEmail','workMsg','Workforce Services')">Notify Me</button>
+        </div>
+        <div class="waitlist-msg" id="workMsg"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="login-footer">
+  Need help? <a href="/contact">Contact our team</a> &nbsp;&middot;&nbsp; <a href="/">Back to titus-crm.com</a>
+</footer>
+
+<script>
+async function joinWaitlist(inputId,msgId,platform){
+  const input=document.getElementById(inputId);
+  const msg=document.getElementById(msgId);
+  const email=input.value.trim();
+  if(!email||!email.includes('@')){msg.textContent='Please enter a valid email.';msg.style.display='block';msg.style.color='#EF4444';return}
+  try{
+    const r=await fetch('https://octdvaicofjmaetgfect.supabase.co/functions/v1/agreement-api/waitlist',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,company:platform+' (Login Page)',name:'',phone:''})
+    });
+    if(r.ok){msg.textContent='You are on the list. We will be in touch.';msg.style.color='#059669'}
+    else{msg.textContent='Something went wrong. Try again.';msg.style.color='#EF4444'}
+  }catch(e){msg.textContent='Network error. Please try again.';msg.style.color='#EF4444'}
+  msg.style.display='block';input.value=''
+}
+</script>
+</body>
+</html>

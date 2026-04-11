@@ -34,6 +34,7 @@ import AGED_CARE_HTML from './aged-care.html';
 import SERVICE_OPS_HTML from './service-ops.html';
 import CHECKLIST_HTML from './checklist.html';
 import CONTACT_HTML from './contact.html';
+import LOGIN_HTML from './login.html';
 import PROCEDURE_SHIFT_CANCEL from './procedures/ai-shift-cancellation.html';
 import PROCEDURE_CLIENT_CANCEL from './procedures/ai-client-cancellation.html';
 import PROCEDURE_STAKEHOLDER_GUIDE from './procedures/stakeholder-portal-guide.html';
@@ -611,6 +612,11 @@ export default {
     // /contact → Contact / Book a Demo page
     if (url.pathname === '/contact' || url.pathname === '/contact/') {
       return htmlResponse(CONTACT_HTML);
+    }
+
+    // /login → Platform chooser page
+    if (url.pathname === '/login' || url.pathname === '/login/') {
+      return htmlResponse(LOGIN_HTML);
     }
 
     if (url.pathname === '/sales-induction' || url.pathname === '/sales-induction/') {
