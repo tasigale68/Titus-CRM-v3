@@ -74,8 +74,9 @@ img{max-width:100%;display:block}
 .dropdown a{display:block;padding:10px 14px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.7);transition:background 0.15s,color 0.15s}
 .dropdown a:hover{background:rgba(255,255,255,0.06);color:#fff}
 .dropdown .dd-head{font-family:var(--font-head);font-size:11px;font-weight:700;color:var(--ember);text-transform:uppercase;letter-spacing:1.5px;padding:10px 14px 4px;pointer-events:none}
-.has-dropdown:hover .dropdown{display:block}
-.has-dropdown:hover>a::after{transform:rotate(180deg)}
+.has-dropdown:hover .dropdown,.has-dropdown.dropdown-open .dropdown{display:block}
+.has-dropdown:hover>a::after,.has-dropdown.dropdown-open>a::after{transform:rotate(180deg)}
+.dropdown::before{content:'';position:absolute;top:-16px;left:0;right:0;height:16px}
 .nav-cta{display:none;align-items:center;gap:16px}
 .nav-cta .login{color:rgba(255,255,255,0.7);font-size:14px;font-weight:500;transition:color 0.2s}
 .nav-cta .login:hover{color:#fff}
@@ -524,6 +525,9 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 const counterObs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting){const t=el.target,n=parseInt(t.dataset.count),p=t.dataset.prefix||'',s=t.dataset.suffix||'';t.textContent=p+'0'+s;let c=0;const st=Math.max(1,Math.floor(n/40)),ti=setInterval(()=>{c+=st;if(c>=n){c=n;clearInterval(ti)}t.textContent=p+c+s},30);counterObs.unobserve(t)}})},{threshold:0.5});
 document.querySelectorAll('[data-count]').forEach(el=>counterObs.observe(el));
 window.addEventListener('scroll',()=>{document.querySelector('.nav').style.background=scrollY>50?'rgba(30,41,59,0.98)':'rgba(30,41,59,0.95)'},{passive:true});
+// Industries dropdown - click/tap toggle (fixes touch devices and click users)
+document.querySelectorAll('.has-dropdown > a').forEach(a=>{a.addEventListener('click',function(e){e.preventDefault();const p=this.parentElement;const wasOpen=p.classList.contains('dropdown-open');document.querySelectorAll('.has-dropdown').forEach(d=>d.classList.remove('dropdown-open'));if(!wasOpen)p.classList.add('dropdown-open')});});
+document.addEventListener('click',function(e){if(!e.target.closest('.has-dropdown'))document.querySelectorAll('.has-dropdown').forEach(d=>d.classList.remove('dropdown-open'))});
 </script>
 </body>
 </html>
