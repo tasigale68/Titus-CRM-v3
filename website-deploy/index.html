@@ -11,7 +11,7 @@
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://www.titus-crm.com/">
 <meta property="og:title" content="Titus CRM — AI-Powered Operations Platform">
-<meta property="og:description" content="Stop running your business on spreadsheets and panic. Rostering, compliance, AI receptionist. One platform. No per-user fees.">
+<meta property="og:description" content="One platform to run your entire business. Rostering, compliance, AI receptionist. No per-user fees. Built in Australia.">
 <meta property="og:url" content="https://www.titus-crm.com/">
 <meta property="og:image" content="https://www.titus-crm.com/og-image.png">
 <meta property="og:type" content="website">
@@ -96,32 +96,25 @@ img{max-width:100%;display:block}
 .mobile-menu .mm-sub{padding-left:16px;font-size:14px}
 .mobile-menu .mm-cta{margin-top:24px;display:flex;flex-direction:column;gap:12px}
 @media(min-width:1024px){.hamburger{display:none}.nav-links,.nav-cta{display:flex}}
-.hero{min-height:100vh;background:var(--black);display:flex;align-items:center;padding-top:72px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-50%;right:-30%;width:80%;height:200%;background:radial-gradient(ellipse,rgba(232,87,14,0.06) 0%,transparent 60%);pointer-events:none}
+.hero{min-height:100vh;background:linear-gradient(135deg,#FAFAF8 0%,#F0EDE6 50%,#E8E2D8 100%);display:flex;align-items:center;padding-top:72px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-30%;right:-20%;width:60%;height:160%;background:radial-gradient(ellipse,rgba(232,87,14,0.08) 0%,transparent 60%);pointer-events:none}
+.hero::after{content:'';position:absolute;bottom:-20%;left:-10%;width:40%;height:100%;background:radial-gradient(ellipse,rgba(30,41,59,0.04) 0%,transparent 60%);pointer-events:none}
 .hero-inner{display:grid;grid-template-columns:1fr;gap:48px;padding:var(--section-pad) 0}
 .hero-eyebrow{font-family:var(--font-mono);font-size:12px;color:var(--ember);letter-spacing:2px;text-transform:uppercase}
-.hero h1{font-size:clamp(36px,6vw,72px);color:#fff;letter-spacing:-2px}
+.hero h1{font-size:clamp(36px,6vw,72px);color:var(--black);letter-spacing:-2px}
 .hero h1 em{font-style:normal;color:var(--ember)}
-.hero-sub{font-size:clamp(16px,2vw,20px);color:var(--slate);max-width:600px;line-height:1.7}
+.hero-sub{font-size:clamp(16px,2vw,20px);color:var(--steel);max-width:600px;line-height:1.7}
 .hero-ctas{display:flex;flex-wrap:wrap;gap:16px;margin-top:8px}
-.hero-proof{font-family:var(--font-mono);font-size:12px;color:rgba(255,255,255,0.35);line-height:1.8}
-.hero-proof strong{color:rgba(255,255,255,0.6)}
+.hero .btn-outline{color:var(--black);border-color:var(--steel);background:transparent}
+.hero .btn-outline:hover{border-color:var(--ember);background:rgba(232,87,14,0.06);color:var(--ember)}
+.hero-proof{font-family:var(--font-mono);font-size:12px;color:var(--slate);line-height:1.8}
+.hero-proof strong{color:var(--black)}
 .hero-visual{position:relative;display:none}
-.hero-dash{background:var(--steel);border-radius:12px;border:1px solid rgba(255,255,255,0.08);padding:24px;min-height:320px;position:relative;overflow:hidden}
-.hero-dash::before{content:'';position:absolute;top:0;left:0;right:0;height:40px;background:rgba(0,0,0,0.3);border-bottom:1px solid rgba(255,255,255,0.06)}
-.hero-dash .dot{position:absolute;top:14px;width:10px;height:10px;border-radius:50%}
-.hero-dash .dot:nth-child(1){left:16px;background:#ff5f57}
-.hero-dash .dot:nth-child(2){left:32px;background:#ffbd2e}
-.hero-dash .dot:nth-child(3){left:48px;background:#28ca42}
-.dash-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:48px}
-.dash-bar{height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden}
-.dash-bar .fill{height:100%;border-radius:4px;background:var(--ember);width:0;transition:width 1.5s ease}
-.stat-float{position:absolute;background:rgba(30,41,59,0.9);border:1px solid rgba(232,87,14,0.3);border-radius:10px;padding:14px 18px;backdrop-filter:blur(8px)}
-.stat-float .stat-val{font-family:var(--font-mono);font-size:22px;font-weight:700;color:var(--ember)}
-.stat-float .stat-label{font-size:12px;color:var(--slate);margin-top:2px}
-.sf1{top:60px;right:-20px;animation:float1 6s ease-in-out infinite}
-.sf2{bottom:80px;left:-20px;animation:float2 8s ease-in-out infinite}
-.sf3{bottom:20px;right:40px;animation:float1 7s ease-in-out infinite 1s}
+.hero-video{border-radius:12px;border:2px solid #E8E6E1;overflow:hidden;box-shadow:0 20px 60px rgba(30,41,59,0.12),0 4px 16px rgba(30,41,59,0.06);background:#fff}
+.hero-video iframe{display:block;width:100%;aspect-ratio:16/9;border:none}
+.hero-video-label{display:flex;align-items:center;gap:8px;padding:12px 16px;background:#fff;border-top:1px solid #E8E6E1;font-size:13px;color:var(--slate);font-weight:500}
+.hero-video-label svg{color:var(--ember);flex-shrink:0}
+.hero-video-label span{color:var(--black);font-weight:600}
 @media(min-width:1024px){.hero-inner{grid-template-columns:1fr 1fr;align-items:center}.hero-visual{display:block}}
 section{padding:var(--section-pad) 0}
 .section-eyebrow{font-family:var(--font-mono);font-size:12px;color:var(--ember);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
@@ -199,8 +192,6 @@ section{padding:var(--section-pad) 0}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
 .hero .reveal{transition-delay:var(--delay,0ms)}
-@keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(-4px,8px)}}
-@keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(6px,-6px)}}
 </style>
 </head>
 <body>
@@ -271,11 +262,11 @@ section{padding:var(--section-pad) 0}
   <div class="container hero-inner">
     <div>
       <p class="hero-eyebrow reveal" style="--delay:0ms">Compliance-Heavy Industries &middot; AI-Powered Operations &middot; Built in Australia</p>
-      <h1 class="reveal" style="--delay:120ms">Stop Running Your Business<br>on Spreadsheets and <em>Panic.</em></h1>
+      <h1 class="reveal" style="--delay:120ms">One Platform to Run<br>Your <em>Entire Business.</em></h1>
       <p class="hero-sub reveal" style="--delay:240ms">Titus is the AI-powered operations platform for compliance-heavy businesses. Rostering. Staff management. Document control. 24/7 AI receptionist. One login. No per-user fees. Built by operators, for operators.</p>
       <div class="hero-ctas reveal" style="--delay:360ms">
         <a href="https://app.titus-crm.com/login" class="btn-ember">Start Free Trial <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-        <a href="#proof" class="btn-outline">See It In Action <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
+        <a href="/videos" class="btn-outline">Watch All Videos <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></a>
       </div>
       <div class="hero-proof reveal" style="--delay:480ms">
         <strong>Live in:</strong> NDIS Providers &middot; Aged Care &middot; Youth Residential &middot; Community Services<br>
@@ -283,30 +274,11 @@ section{padding:var(--section-pad) 0}
       </div>
     </div>
     <div class="hero-visual reveal" style="--delay:200ms">
-      <div class="hero-dash">
-        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        <div class="dash-grid">
-          <div><div class="dash-bar"><div class="fill" style="--bar-w:85%"></div></div></div>
-          <div><div class="dash-bar"><div class="fill" style="--bar-w:62%"></div></div></div>
-          <div><div class="dash-bar"><div class="fill" style="--bar-w:94%"></div></div></div>
-          <div><div class="dash-bar"><div class="fill" style="--bar-w:73%"></div></div></div>
-          <div><div class="dash-bar"><div class="fill" style="--bar-w:88%"></div></div></div>
-          <div><div class="dash-bar"><div class="fill" style="--bar-w:45%"></div></div></div>
-          <div><div class="dash-bar"><div class="fill" style="--bar-w:91%"></div></div></div>
-          <div><div class="dash-bar"><div class="fill" style="--bar-w:56%"></div></div></div>
-          <div><div class="dash-bar"><div class="fill" style="--bar-w:78%"></div></div></div>
-        </div>
-        <div class="stat-float sf1">
-          <div class="stat-val">$900K</div>
-          <div class="stat-label">admin wages recovered</div>
-        </div>
-        <div class="stat-float sf2">
-          <div class="stat-val">14 &rarr; 1</div>
-          <div class="stat-label">office staff in 12 months</div>
-        </div>
-        <div class="stat-float sf3">
-          <div class="stat-val">23</div>
-          <div class="stat-label">live features</div>
+      <div class="hero-video">
+        <iframe src="https://www.loom.com/embed/c9441d0020a246aba9542cfca9eda481?hide_owner=true&hide_share=true&hide_title=true&hideEmbedTopBar=true" allowfullscreen></iframe>
+        <div class="hero-video-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Watch:</span> Full Platform Walkthrough (4 min)
         </div>
       </div>
     </div>
@@ -529,8 +501,6 @@ const hamburger=document.querySelector('.hamburger'),mobileMenu=document.getElem
 hamburger.addEventListener('click',()=>{const o=mobileMenu.classList.toggle('open');hamburger.classList.toggle('open');hamburger.setAttribute('aria-expanded',o);mobileMenu.setAttribute('aria-hidden',!o);document.body.style.overflow=o?'hidden':''});
 const io=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting){el.target.classList.add('visible');io.unobserve(el.target)}})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-const heroObs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting){document.querySelectorAll('.dash-bar .fill').forEach(b=>{b.style.width=getComputedStyle(b).getPropertyValue('--bar-w')});heroObs.unobserve(el.target)}})},{threshold:0.3});
-const dashEl=document.querySelector('.hero-dash');if(dashEl)heroObs.observe(dashEl);
 const counterObs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting){const t=el.target,n=parseInt(t.dataset.count),p=t.dataset.prefix||'',s=t.dataset.suffix||'';t.textContent=p+'0'+s;let c=0;const st=Math.max(1,Math.floor(n/40)),ti=setInterval(()=>{c+=st;if(c>=n){c=n;clearInterval(ti)}t.textContent=p+c+s},30);counterObs.unobserve(t)}})},{threshold:0.5});
 document.querySelectorAll('[data-count]').forEach(el=>counterObs.observe(el));
 window.addEventListener('scroll',()=>{document.querySelector('.nav').style.background=scrollY>50?'rgba(30,41,59,0.98)':'rgba(30,41,59,0.95)'},{passive:true});
