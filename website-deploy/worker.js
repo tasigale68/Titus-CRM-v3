@@ -318,12 +318,12 @@ Titus CRM is an Australian SaaS platform that consolidates rostering, compliance
 - Task Manager
 - Sites & Locations
 - Timesheets & Staff Hours
-- SCHADS Payroll Engine
+- Award Payroll Engine (supports SCHADS for human services, Fair Work Act, configurable modern award rates)
 
 ### AI Powered
 - Andy AI Chatbot
 - AI Receptionist (Calls & SMS)
-- Freestyle Voice Progress Notes
+- AI Voice Field Notes
 - AI Receipt Parsing
 - Bulk CV Upload & AI Assessment
 
@@ -332,17 +332,17 @@ Titus CRM is an Australian SaaS platform that consolidates rostering, compliance
 - Referral Pipeline
 - Unified Inbox (Email, SMS, Calls)
 
-### NDIS Compliance & Audit
-- NDIS Auditor (9 evidence tabs, PDF audit pack)
-- 18 NDIS Compliance Registers
+### Compliance & Audit
+- Compliance Auditor (9 evidence tabs, PDF audit pack)
+- 18 Configurable Compliance Registers
 - Policy Register
-- SCHADS Compliance Reports
-- NDIS Plan & Budget Tracking
+- Award Compliance Reports
+- Plan & Budget Tracking
 
-### Training & Client Care
+### Training & Records
 - LMS with AI Course Builder
-- Medication Administration
-- Care Passport ID
+- Medication Administration (human services)
+- Care Passport ID (human services)
 
 ### Automation & Files
 - Workflow Automations
@@ -354,7 +354,7 @@ Titus CRM is an Australian SaaS platform that consolidates rostering, compliance
 - Roster of Care Calculator
 - Shift GPS Tracker & Auto KM Recording
 - AI Daily Shift Summary Email
-- NDIS Bulk Claim File Generator
+- Bulk Claim File Generator
 - Client Risk & Wellbeing Scoring
 - Automated Reference Checks
 
