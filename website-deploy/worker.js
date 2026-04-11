@@ -24,7 +24,16 @@ import BLOG_AGREEMENTS from './blog/digital-agreements.html';
 import BLOG_COMPARISON from './blog/titus-vs-shiftcare.html';
 import BLOG_BEST_NDIS from './blog/best-ndis-software.html';
 import SALES_INDUCTION from './sales-induction.html';
+import NDIS_HTML from './ndis.html';
+import ACCOUNTING_HTML from './accounting.html';
+import DV_HTML from './domestic-violence.html';
+import CHILDCARE_HTML from './childcare.html';
+import REAL_ESTATE_HTML from './real-estate.html';
+import RECRUITMENT_HTML from './recruitment.html';
+import AGED_CARE_HTML from './aged-care.html';
+import SERVICE_OPS_HTML from './service-ops.html';
 import CHECKLIST_HTML from './checklist.html';
+import CONTACT_HTML from './contact.html';
 import PROCEDURE_SHIFT_CANCEL from './procedures/ai-shift-cancellation.html';
 import PROCEDURE_CLIENT_CANCEL from './procedures/ai-client-cancellation.html';
 import PROCEDURE_STAKEHOLDER_GUIDE from './procedures/stakeholder-portal-guide.html';
@@ -127,19 +136,19 @@ const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.titus-crm.com/</loc>
-    <lastmod>2026-03-25</lastmod>
+    <lastmod>2026-04-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.titus-crm.com/features</loc>
-    <lastmod>2026-03-25</lastmod>
+    <lastmod>2026-04-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.titus-crm.com/pricing</loc>
-    <lastmod>2026-03-25</lastmod>
+    <lastmod>2026-04-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -160,6 +169,12 @@ const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
     <lastmod>2026-03-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/contact</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.titus-crm.com/blog</loc>
@@ -216,6 +231,54 @@ const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.titus-crm.com/aged-care</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/ndis</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/accounting</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/domestic-violence</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/childcare</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/real-estate</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/recruitment</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.titus-crm.com/service-ops</loc>
+    <lastmod>2026-04-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://www.titus-crm.com/blog/best-ndis-software</loc>
     <lastmod>2026-04-08</lastmod>
     <changefreq>monthly</changefreq>
@@ -236,10 +299,10 @@ const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
 </urlset>`;
 
 const LLMS_TXT = `# Titus CRM
-> The customisable management platform for NDIS, Aged Care, Youth Residential, and Community services.
+> The AI-powered operations platform for compliance-heavy businesses. Built in Brisbane, Australia.
 
 ## What is Titus CRM?
-Titus CRM is an Australian SaaS platform that consolidates CRM, rostering, HR, compliance, payroll, training, and AI automation into one system. Built specifically for NDIS providers, aged care organisations, youth residential services, and community service providers. All data hosted in Australia. ABN 28 616 760 206.
+Titus CRM is an Australian SaaS platform that consolidates rostering, compliance, HR, payroll, training, and AI automation into one system. Purpose-built for compliance-heavy, people-heavy industries: NDIS providers, aged care, child care, real estate, accounting, recruitment, and inbound service operations. All data hosted in Australia. ABN 28 616 760 206.
 
 ## Pricing
 - Independent Contractor: $79/week +GST (sole traders)
@@ -297,10 +360,19 @@ Titus CRM is an Australian SaaS platform that consolidates CRM, rostering, HR, c
 
 ## Pages
 - [Homepage](https://www.titus-crm.com/): Platform overview, from $79/wk
-- [Features](https://www.titus-crm.com/features): 31 features across 6 modules
+- [Features](https://www.titus-crm.com/features): 23 live features across 6 modules, 8 coming soon
 - [Pricing](https://www.titus-crm.com/pricing): Independent Contractor and Company Growth plans, customisation available
 - [About](https://www.titus-crm.com/about): Company story, founder, mission
+- [Contact](https://www.titus-crm.com/contact): Book a demo, get in touch, phone 0488 810 958
 - [Blog](https://www.titus-crm.com/blog): NDIS compliance, SCHADS, AI automation articles
+- [Human Services (NDIS)](https://www.titus-crm.com/ndis): Industry landing page for NDIS, aged care, youth residential, DV, child care providers
+- [Aged Care](https://www.titus-crm.com/aged-care): Industry landing page for aged care providers covering Quality Standards compliance, SIRS, rostering, and workforce management
+- [Professional Services](https://www.titus-crm.com/accounting): Industry landing page for accounting, bookkeeping, and financial planning firms
+- [Child Care & OSHC](https://www.titus-crm.com/childcare): Industry landing page for long day care, family day care, OSHC, and vacation care services
+- [Property Services](https://www.titus-crm.com/real-estate): Industry landing page for real estate, property management, and strata management
+- [Domestic & Family Violence](https://www.titus-crm.com/domestic-violence): Industry landing page for DFV crisis services, refuge providers, and specialist DFV services
+- [Recruitment & Labour Hire](https://www.titus-crm.com/recruitment): Industry landing page for recruitment agencies, labour hire, staffing firms, and care sector recruitment
+- [Service Operations](https://www.titus-crm.com/service-ops): Industry landing page for plan management, intake and triage, coordination hubs, and inbound service centres
 - [Agreement Builder](https://www.titus-crm.com/agreement-builder): Free NDIS service agreement generator
 - [Roster of Care](https://www.titus-crm.com/roc): Free weekly planner and SCHADS calculator
 
@@ -536,6 +608,11 @@ export default {
       return htmlResponse(ABOUT_HTML);
     }
 
+    // /contact → Contact / Book a Demo page
+    if (url.pathname === '/contact' || url.pathname === '/contact/') {
+      return htmlResponse(CONTACT_HTML);
+    }
+
     if (url.pathname === '/sales-induction' || url.pathname === '/sales-induction/') {
       return htmlResponse(SALES_INDUCTION);
     }
@@ -543,6 +620,46 @@ export default {
     // /checklist → Compliance Checklist email capture page
     if (url.pathname === '/checklist' || url.pathname === '/checklist/') {
       return htmlResponse(CHECKLIST_HTML);
+    }
+
+    // /ndis → Human Services vertical landing page
+    if (url.pathname === '/ndis' || url.pathname === '/ndis/') {
+      return htmlResponse(NDIS_HTML);
+    }
+
+    // /aged-care → Aged Care vertical landing page
+    if (url.pathname === '/aged-care' || url.pathname === '/aged-care/') {
+      return htmlResponse(AGED_CARE_HTML);
+    }
+
+    // /accounting → Professional Services vertical landing page
+    if (url.pathname === '/accounting' || url.pathname === '/accounting/') {
+      return htmlResponse(ACCOUNTING_HTML);
+    }
+
+    // /domestic-violence → DFV Services vertical landing page
+    if (url.pathname === '/domestic-violence' || url.pathname === '/domestic-violence/') {
+      return htmlResponse(DV_HTML);
+    }
+
+    // /childcare → Child Care & OSHC vertical landing page
+    if (url.pathname === '/childcare' || url.pathname === '/childcare/') {
+      return htmlResponse(CHILDCARE_HTML);
+    }
+
+    // /real-estate → Property Services vertical landing page
+    if (url.pathname === '/real-estate' || url.pathname === '/real-estate/') {
+      return htmlResponse(REAL_ESTATE_HTML);
+    }
+
+    // /recruitment → Workforce Services vertical landing page
+    if (url.pathname === '/recruitment' || url.pathname === '/recruitment/') {
+      return htmlResponse(RECRUITMENT_HTML);
+    }
+
+    // /service-ops → Service Operations vertical landing page
+    if (url.pathname === '/service-ops' || url.pathname === '/service-ops/') {
+      return htmlResponse(SERVICE_OPS_HTML);
     }
 
     // Blog articles
@@ -578,7 +695,7 @@ export default {
     }
 
     // 404 for all unknown paths (prevents soft-404 duplicate content)
-    return new Response('<!DOCTYPE html><html lang="en-AU"><head><meta charset="UTF-8"><title>Page Not Found — Titus CRM</title><meta name="robots" content="noindex"><style>body{font-family:"Plus Jakarta Sans",sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#FAF7EE;color:#1a1a1a;margin:0}div{text-align:center}h1{font-size:72px;color:#9A7B2E;margin:0}p{font-size:18px;color:#555;margin:16px 0}a{color:#9A7B2E;text-decoration:none;font-weight:600}</style></head><body><div><h1>404</h1><p>This page doesn\'t exist.</p><a href="https://www.titus-crm.com">← Back to Titus CRM</a></div></body></html>', {
+    return new Response('<!DOCTYPE html><html lang="en-AU"><head><meta charset="UTF-8"><title>Page Not Found — Titus CRM</title><meta name="robots" content="noindex"><link href="https://fonts.googleapis.com/css2?family=Syne:wght@800&family=DM+Sans:wght@500&display=swap" rel="stylesheet"><style>body{font-family:"DM Sans",sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#F5F4F0;color:#2C3E50;margin:0}div{text-align:center}h1{font-family:"Syne",sans-serif;font-size:72px;color:#E8570E;margin:0;font-weight:800}p{font-size:18px;color:#8A9BAE;margin:16px 0}a{color:#E8570E;text-decoration:none;font-weight:600}</style></head><body><div><h1>404</h1><p>This page doesn\'t exist.</p><a href="https://www.titus-crm.com">&larr; Back to Titus CRM</a></div></body></html>', {
       status: 404,
       headers: { 'Content-Type': 'text/html; charset=utf-8', ...securityHeaders }
     });
