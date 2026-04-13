@@ -60,7 +60,7 @@ import SS_AI_INCIDENTS from './screenshots/ai-incident-reports.png';
 import SS_LMS from './screenshots/lms-course-builder.png';
 import PostalMime from 'postal-mime';
 
-const RAILWAY_ORIGIN = 'https://titus-voice-version-2-production.up.railway.app';
+const RAILWAY_ORIGIN = 'https://titus-v3-production.up.railway.app';
 
 const securityHeaders = {
   'X-Content-Type-Options': 'nosniff',
@@ -738,6 +738,11 @@ export default {
       return new Response(LLMS_TXT, {
         headers: { 'Content-Type': 'text/plain', ...securityHeaders }
       });
+    }
+
+    // /signup → Self-service signup wizard (from Railway backend)
+    if (url.pathname === '/signup' || url.pathname === '/signup/') {
+      return proxyToRailway(request, url);
     }
 
     // Homepage — only serve for / and /index.html
