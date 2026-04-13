@@ -8,3 +8,4 @@ uploads/doc-scan/*
 !uploads/cv-temp/.gitkeep
 !uploads/doc-scan/.gitkeep
 .DS_Store
+.worktrees/
