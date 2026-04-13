@@ -162,6 +162,13 @@ a:hover { color:var(--gold-hover); }
   transition:all var(--transition) !important;
 }
 .nav-cta:hover { background:var(--gold-hover) !important; transform:translateY(-1px); box-shadow:var(--shadow-gold) !important; }
+.nav-cta--outline {
+  background:transparent !important; color:var(--gold) !important; font-weight:600 !important;
+  border:1.5px solid var(--gold) !important; padding:8px 18px !important; border-radius:9px !important;
+  transition:all var(--transition) !important;
+}
+.nav-cta--outline:hover { background:var(--gold-light) !important; color:var(--gold) !important; }
+.nav-login { color:var(--text-md) !important; padding:8px 14px !important; font-weight:500 !important; }
 .nav-toggle { display:none; background:none; border:none; font-size:24px; cursor:pointer; padding:4px; line-height:1; }
 .nav--transparent .nav-toggle { color:#fff; }
 .nav--solid .nav-toggle { color:var(--dark); }
@@ -509,6 +516,8 @@ a:hover { color:var(--gold-hover); }
       <a href="#pricing">Pricing</a>
       <a href="#roi">ROI Calculator</a>
       <a href="#faq">FAQ</a>
+      <a href="https://tituscrm.com.au/login" class="nav-login">Login</a>
+      <a href="/signup" class="nav-cta nav-cta--outline">Sign Up</a>
       <a href="#contact" class="nav-cta">Book a Demo</a>
     </div>
   </div>
