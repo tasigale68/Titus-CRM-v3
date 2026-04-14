@@ -763,6 +763,11 @@ export default {
       return proxyToRailway(request, url);
     }
 
+    // /api/* → All API endpoints (proxy to Railway backend)
+    if (url.pathname.startsWith('/api/')) {
+      return proxyToRailway(request, url);
+    }
+
     // Homepage — only serve for / and /index.html
     if (url.pathname === '/' || url.pathname === '/index.html') {
       return htmlResponse(SITE_HTML);
