@@ -61,7 +61,6 @@ import SS_SCHADS from './screenshots/schads-compliance.png';
 import SS_AI_PROGRESS from './screenshots/ai-progress-notes.png';
 import SS_AI_INCIDENTS from './screenshots/ai-incident-reports.png';
 import SS_LMS from './screenshots/lms-course-builder.png';
-import INTRO_VIDEO from './intro-video.mp4';
 import PostalMime from 'postal-mime';
 
 const RAILWAY_ORIGIN = 'https://titus-v3-production.up.railway.app';
@@ -555,17 +554,6 @@ export default {
       return new Response(TITUS_LOGO, {
         headers: {
           'Content-Type': 'image/png',
-          'Cache-Control': 'public, max-age=604800',
-          ...securityHeaders,
-        }
-      });
-    }
-
-    // Introduction video
-    if (url.pathname === '/intro-video.mp4') {
-      return new Response(INTRO_VIDEO, {
-        headers: {
-          'Content-Type': 'video/mp4',
           'Cache-Control': 'public, max-age=604800',
           ...securityHeaders,
         }
