@@ -32,6 +32,9 @@ import YOUTH_JUSTICE_HTML from './youth-justice.html';
 import CHILDCARE_HTML from './childcare.html';
 import REAL_ESTATE_HTML from './real-estate.html';
 import RECRUITMENT_HTML from './recruitment.html';
+import HUMAN_SERVICES_HTML from './human-services.html';
+import WORKFORCE_HTML from './workforce.html';
+import PROFESSIONAL_SERVICES_HTML from './professional-services.html';
 import AGED_CARE_HTML from './aged-care.html';
 import SERVICE_OPS_HTML from './service-ops.html';
 import CHECKLIST_HTML from './checklist.html';
@@ -711,6 +714,21 @@ export default {
     // /service-ops → Service Operations vertical landing page
     if (url.pathname === '/service-ops' || url.pathname === '/service-ops/') {
       return htmlResponse(SERVICE_OPS_HTML);
+    }
+
+    // /human-services → Human Services industry landing page
+    if (url.pathname === '/human-services' || url.pathname === '/human-services/') {
+      return htmlResponse(HUMAN_SERVICES_HTML);
+    }
+
+    // /workforce → Workforce industry landing page
+    if (url.pathname === '/workforce' || url.pathname === '/workforce/') {
+      return htmlResponse(WORKFORCE_HTML);
+    }
+
+    // /professional-services → Professional Services industry landing page
+    if (url.pathname === '/professional-services' || url.pathname === '/professional-services/') {
+      return htmlResponse(PROFESSIONAL_SERVICES_HTML);
     }
 
     // Blog articles

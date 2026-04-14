@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professional Services CRM & Operations Platform | Titus CRM</title>
+  <meta name="description" content="All-in-one platform for accounting, legal, and consulting firms. Manage clients, staff, billing, and compliance in one AI-powered system.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --gold: #C9A96E;
+      --gold-hover: #D4B87A;
+      --gold-light: rgba(201,169,110,0.1);
+      --gold-border: rgba(201,169,110,0.25);
+      --dark: #1A1A2E;
+      --dark-navy: #0A0A0A;
+      --surface: #F8F7F4;
+      --border: #E8E2D6;
+      --text-dark: #2A2A2A;
+      --text-light: #666;
+      --green: #10B981;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--sans);
+      color: var(--text-dark);
+      line-height: 1.6;
+      background: white;
+    }
+
+    a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: var(--gold-hover);
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 1.5rem 2rem;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+
+    nav.scrolled {
+      background: rgba(248, 247, 244, 0.95);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 1rem 2rem;
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: white;
+      font-size: 0.95rem;
+      transition: color 0.3s;
+      position: relative;
+    }
+
+    nav.scrolled .nav-link {
+      color: var(--text-dark);
+    }
+
+    .nav-dropdown-wrap {
+      position: relative;
+    }
+
+    .nav-dropdown {
+      position: absolute;
+      top: 100%;
+      left: -1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      min-width: 200px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-0.5rem);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .nav-dropdown-wrap:hover .nav-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .nav-dropdown a {
+      display: block;
+      padding: 0.75rem 1rem;
+      color: var(--text-dark);
+      border-radius: 0.4rem;
+      transition: background 0.2s;
+    }
+
+    .nav-dropdown a:hover {
+      background: var(--gold-light);
+    }
+
+    .nav-dropdown a.active {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background: var(--gold);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary:hover {
+      background: var(--gold-hover);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: 1px solid white;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.95rem;
+    }
+
+    nav.scrolled .btn-outline {
+      color: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .btn-outline:hover {
+      background: var(--gold-light);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 0.4rem;
+      cursor: pointer;
+    }
+
+    .hamburger span {
+      width: 1.5rem;
+      height: 2px;
+      background: white;
+      transition: all 0.3s;
+    }
+
+    nav.scrolled .hamburger span {
+      background: var(--text-dark);
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 100%);
+      position: relative;
+      overflow: hidden;
+      padding: 8rem 2rem 6rem;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(201, 169, 110, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      top: -200px;
+      right: -200px;
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(201, 169, 110, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      bottom: -100px;
+      left: 10%;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      text-align: center;
+      color: white;
+      position: relative;
+      z-index: 10;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-label {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 .gold {
+      color: var(--gold);
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .trust-badges {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.8);
+      flex-wrap: wrap;
+    }
+
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Section */
+    .section {
+      padding: 6rem 2rem;
+    }
+
+    .section--cream {
+      background: var(--surface);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+
+    .section h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.3;
+    }
+
+    .gold-underline {
+      color: var(--gold);
+    }
+
+    .section-header p {
+      font-size: 1.1rem;
+      color: var(--text-light);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 2rem;
+      transition: all 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--gold);
+      box-shadow: 0 8px 24px rgba(201, 169, 110, 0.12);
+      transform: translateY(-4px);
+    }
+
+    .card-number {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      margin-bottom: 0.5rem;
+    }
+
+    .card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text-dark);
+    }
+
+    .card p {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .feature-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--gold);
+      box-shadow: 0 8px 24px rgba(201, 169, 110, 0.12);
+      transform: translateY(-4px);
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--text-dark);
+    }
+
+    .feature-card p {
+      font-size: 0.95rem;
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    /* Stats Callout */
+    .stats-callout {
+      background: linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 100%);
+      color: white;
+      padding: 4rem 2rem;
+      border-radius: 1rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      margin: 4rem auto;
+      max-width: 900px;
+    }
+
+    .stats-callout::before {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(201, 169, 110, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      top: -200px;
+      right: -200px;
+      pointer-events: none;
+    }
+
+    .stats-callout h3 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .trial-note {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.9);
+      position: relative;
+      z-index: 10;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      padding: 4rem 2rem;
+      text-align: center;
+      background: white;
+    }
+
+    .cta-section h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      color: var(--text-dark);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--dark);
+      color: rgba(255,255,255,0.8);
+      padding: 4rem 2rem 2rem;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-col h4 {
+      color: white;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col li {
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-col a {
+      color: rgba(255,255,255,0.7);
+      transition: color 0.3s;
+    }
+
+    .footer-col a:hover {
+      color: var(--gold);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(201, 169, 110, 0.25);
+      padding-top: 2rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero {
+        padding: 6rem 1.5rem 4rem;
+        min-height: auto;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .nav-links {
+        gap: 1rem;
+      }
+
+      .nav-link {
+        font-size: 0.85rem;
+      }
+
+      .section-h2 {
+        font-size: 1.8rem;
+      }
+
+      .trust-badges {
+        gap: 1rem;
+        font-size: 0.8rem;
+      }
+
+      .cards-grid,
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-ctas {
+        flex-direction: column;
+      }
+
+      .hero-ctas .btn-primary,
+      .hero-ctas .btn-outline {
+        width: 100%;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav id="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">Titus CRM</div>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/#features" class="nav-link">Features</a>
+        <div class="nav-dropdown-wrap">
+          <a href="#" class="nav-link">Industries</a>
+          <div class="nav-dropdown">
+            <a href="/human-services">Human Services</a>
+            <a href="/workforce">Workforce</a>
+            <a href="/professional-services" class="active">Professional Services</a>
+          </div>
+        </div>
+        <a href="/#pricing" class="nav-link">Pricing</a>
+        <a href="/#faq" class="nav-link">FAQ</a>
+        <a href="#" class="nav-link">Login</a>
+        <a href="/signup" class="btn-outline">Sign Up</a>
+        <button onclick="window.location.href='#contact'" class="btn-primary">Book a Demo</button>
+      </div>
+      <div class="hamburger" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="breadcrumb">Home > Industries > Professional Services</div>
+      <div class="hero-label">Professional Services · Accounting · Legal · Consulting</div>
+      <h1>One Platform for Professional <span class="gold">Services Firms.</span></h1>
+      <p>Manage client relationships, staff scheduling, compliance documentation and billing in one AI-powered platform — so you can focus on client work, not admin.</p>
+      <div class="hero-ctas">
+        <button class="btn-primary" onclick="window.location.href='#contact'">Book a Free Demo</button>
+        <button class="btn-outline" onclick="window.location.href='/signup'">Start 14-Day Free Trial</button>
+      </div>
+      <div class="trust-badges">
+        <div class="trust-badge">🔒 Australian Hosted</div>
+        <div class="trust-badge">✅ GDPR Ready</div>
+        <div class="trust-badge">⚡ AI-Powered</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pain Points -->
+  <section class="section section--cream">
+    <div class="container fade-in">
+      <div class="section-header">
+        <span class="section-label">Why Professional Firms Switch</span>
+        <h2>Eight challenges every professional <span class="gold-underline">services firm faces</span></h2>
+      </div>
+      <div class="cards-grid">
+        <div class="card fade-in">
+          <div class="card-number">1</div>
+          <h3>Client files scattered across multiple tools</h3>
+          <p>Email, Drive, CRM, billing all separate. No single source of truth for client information, contracts, and communications.</p>
+        </div>
+        <div class="card fade-in">
+          <div class="card-number">2</div>
+          <h3>Staff utilisation tracked in spreadsheets</h3>
+          <p>No real-time view of who's busy, who's available, or billable hours. Capacity planning is a guessing game.</p>
+        </div>
+        <div class="card fade-in">
+          <div class="card-number">3</div>
+          <h3>Billing hours logged inconsistently</h3>
+          <p>Revenue leakage from untracked time, forgotten entries, and manual reconciliation. No audit trail.</p>
+        </div>
+        <div class="card fade-in">
+          <div class="card-number">4</div>
+          <h3>Compliance documentation is laborious</h3>
+          <p>Manual registers, version control issues, and no audit logs. One missed entry = regulatory risk.</p>
+        </div>
+        <div class="card fade-in">
+          <div class="card-number">5</div>
+          <h3>New client onboarding takes weeks</h3>
+          <p>Contracts, KYC checks, system access all manual. Missing docs discovered after engagement starts.</p>
+        </div>
+        <div class="card fade-in">
+          <div class="card-number">6</div>
+          <h3>Partner reporting takes days to prepare</h3>
+          <p>No live dashboards. Manual data pulls, spreadsheet consolidation, and late-night email updates.</p>
+        </div>
+        <div class="card fade-in">
+          <div class="card-number">7</div>
+          <h3>No AI to draft client communications</h3>
+          <p>Reports, proposals and memos written from scratch. Hours per week in repetitive writing.</p>
+        </div>
+        <div class="card fade-in">
+          <div class="card-number">8</div>
+          <h3>Multiple subscriptions draining margin</h3>
+          <p>Six to eight tools, none fully integrated. $500-$2,000/month on scattered platforms eating into profit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-label">Built for Professional Services</span>
+        <h2>Every module you need, <span class="gold-underline">in one platform</span></h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card fade-in">
+          <div class="feature-icon">📇</div>
+          <h3>CRM Contacts</h3>
+          <p>Client profiles, relationship history, document vault, timeline of all interactions in one secure space.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">📝</div>
+          <h3>AI Document Drafting</h3>
+          <p>Generate reports, proposals, compliance docs in seconds. AI learns your firm's style and templates.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">📅</div>
+          <h3>Staff Scheduling</h3>
+          <p>Assign work by skill, capacity and client priority. Real-time utilisation dashboards and capacity planning.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">💳</div>
+          <h3>Billing + Invoicing</h3>
+          <p>Time-based billing, retainer management, automated invoices. Zero revenue leakage, full audit trail.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">✅</div>
+          <h3>Compliance Register</h3>
+          <p>Policy documents, audit logs, certification tracking. Regulatory audit ready with full version control.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">🔗</div>
+          <h3>Client Portal</h3>
+          <p>Secure document sharing, e-signatures, client self-service. Reduce back-and-forth emails by 80%.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Callout -->
+  <section class="stats-callout fade-in">
+    <h3>Built to unify professional services</h3>
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-value">8</div>
+        <div class="stat-label">Tools replaced by 1</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">12+</div>
+        <div class="stat-label">Hours saved weekly</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">$0</div>
+        <div class="stat-label">Revenue leakage</div>
+      </div>
+    </div>
+    <div class="trial-note">14-day free trial, no credit card needed</div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section fade-in" id="contact">
+    <div class="container">
+      <h2>Ready to simplify your operations?</h2>
+      <button class="btn-primary" onclick="window.location.href='/signup'" style="padding: 1rem 3rem; font-size: 1.1rem;">Book a Free Demo</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>Titus CRM</h4>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Industries</h4>
+          <ul>
+            <li><a href="/human-services">Human Services</a></li>
+            <li><a href="/workforce">Workforce</a></li>
+            <li><a href="/professional-services">Professional Services</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="#">Support</a></li>
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">API</a></li>
+            <li><a href="#">Security</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Titus CRM. Brisbane, Australia. <a href="#">Privacy Policy</a> · <a href="#">Terms of Service</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Sticky nav on scroll
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('navbar');
+      if (window.scrollY > 100) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+
+    // Fade-in animation
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in').forEach(el => {
+      observer.observe(el);
+    });
+
+    function toggleMenu() {
+      const navLinks = document.querySelector('.nav-links');
+      navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+    }
+  </script>
+</body>
+</html>

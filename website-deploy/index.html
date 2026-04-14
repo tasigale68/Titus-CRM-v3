@@ -169,6 +169,20 @@ a:hover { color:var(--gold-hover); }
 }
 .nav-cta--outline:hover { background:var(--gold-light) !important; color:var(--gold) !important; }
 .nav-login { color:var(--text-md) !important; padding:8px 14px !important; font-weight:500 !important; }
+.nav-dropdown-wrap { position:relative; display:flex; align-items:center; }
+.nav-dropdown {
+  position:absolute; top:100%; left:0; background:#fff; border:1px solid var(--border);
+  border-radius:8px; padding:8px 4px; min-width:180px; opacity:0; visibility:hidden;
+  transform:translateY(-8px); transition:all var(--transition);
+  box-shadow:0 4px 16px rgba(0,0,0,.08);
+}
+.nav-dropdown-wrap:hover .nav-dropdown { opacity:1; visibility:visible; transform:translateY(0); }
+.nav-dropdown a {
+  display:block; padding:10px 14px; border-radius:6px; font-size:13px;
+  font-weight:500; color:var(--text-md); transition:all var(--transition);
+}
+.nav-dropdown a:hover { background:var(--gold-light); color:var(--gold); }
+.nav-dropdown a.active { color:var(--gold); font-weight:600; }
 .nav-toggle { display:none; background:none; border:none; font-size:24px; cursor:pointer; padding:4px; line-height:1; }
 .nav--transparent .nav-toggle { color:#fff; }
 .nav--solid .nav-toggle { color:var(--dark); }
@@ -265,6 +279,23 @@ a:hover { color:var(--gold-hover); }
   font-size:13.5px; color:var(--text-md); line-height:1.5;
 }
 .pain-point .x { color:var(--red); font-size:16px; font-weight:700; flex-shrink:0; margin-top:1px; }
+
+/* ═══ INDUSTRIES GRID ═══ */
+.industries-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px; margin-top:32px; }
+.industry-card {
+  background:var(--white); border:2px solid var(--border); border-radius:var(--r-lg);
+  padding:32px; text-align:center; transition:all var(--transition); text-decoration:none;
+  display:flex; flex-direction:column; align-items:center; min-height:280px; justify-content:center;
+}
+.industry-card:hover { border-color:var(--gold); box-shadow:var(--shadow-gold); transform:translateY(-4px); }
+.industry-icon {
+  font-size:48px; margin-bottom:20px; display:flex; align-items:center; justify-content:center;
+  width:80px; height:80px; background:var(--gold-light); border-radius:16px;
+}
+.industry-card h3 { font-size:18px; font-weight:700; color:var(--text); margin-bottom:8px; }
+.industry-card p { font-size:13.5px; color:var(--text-md); line-height:1.6; margin-bottom:16px; }
+.learn-more { font-size:13px; font-weight:600; color:var(--gold); transition:all var(--transition); }
+.industry-card:hover .learn-more { transform:translateX(4px); }
 
 /* ═══ FEATURE GRID ═══ */
 .feature-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
@@ -512,6 +543,14 @@ a:hover { color:var(--gold-hover); }
     <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Toggle menu">&#9776;</button>
     <div class="nav-links">
       <a href="#features">Features</a>
+      <div class="nav-dropdown-wrap">
+        <a href="#industries" class="nav-link">Industries</a>
+        <div class="nav-dropdown">
+          <a href="/human-services">Human Services</a>
+          <a href="/workforce">Workforce</a>
+          <a href="/professional-services">Professional Services</a>
+        </div>
+      </div>
       <a href="#ai">AI</a>
       <a href="#pricing">Pricing</a>
       <a href="#roi">ROI Calculator</a>
@@ -539,6 +578,37 @@ a:hover { color:var(--gold-hover); }
       <div class="hero-trust-item"><span>&#127462;&#127482;</span> Australian Hosted</div>
       <div class="hero-trust-item"><span>&#128274;</span> NDIS Compliant</div>
       <div class="hero-trust-item"><span>&#9889;</span> AI-Powered</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 1b. INDUSTRIES SELECTOR ═══ -->
+<section class="section section--white" id="industries" aria-label="Industries">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">Who We Serve</span>
+      <h2>Built for <span class="gold-underline">Three Markets</span></h2>
+      <p>Titus CRM is a single platform that adapts to your industry. Choose your sector to see how.</p>
+    </div>
+    <div class="industries-grid fade-in">
+      <a href="/human-services" class="industry-card">
+        <div class="industry-icon">🧑‍🦽</div>
+        <h3>Human Services</h3>
+        <p>NDIS, disability, DFV, aged care</p>
+        <span class="learn-more">Learn more →</span>
+      </a>
+      <a href="/workforce" class="industry-card">
+        <div class="industry-icon">👥</div>
+        <h3>Workforce</h3>
+        <p>Recruitment, labour hire, shift management</p>
+        <span class="learn-more">Learn more →</span>
+      </a>
+      <a href="/professional-services" class="industry-card">
+        <div class="industry-icon">📊</div>
+        <h3>Professional Services</h3>
+        <p>Accounting, legal, consulting</p>
+        <span class="learn-more">Learn more →</span>
+      </a>
     </div>
   </div>
 </section>
