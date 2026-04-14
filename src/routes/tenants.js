@@ -14,6 +14,9 @@ var router = express.Router();
 // ─── V5 Supabase Client Configuration ─────────────────────
 var V5_SUPABASE_URL = (process.env.V5_SUPABASE_URL || 'https://mptaztzpzvpaebdaqodt.supabase.co').trim().replace(/\/+$/, '');
 var V5_SUPABASE_SERVICE_KEY = (process.env.V5_SUPABASE_SERVICE_KEY || '').trim();
+console.log('[DEBUG] V5_SUPABASE_SERVICE_KEY env var:', process.env.V5_SUPABASE_SERVICE_KEY);
+console.log('[DEBUG] V5_SUPABASE_SERVICE_KEY trimmed value:', V5_SUPABASE_SERVICE_KEY);
+console.log('[DEBUG] All V5 env vars:', { V5_URL: process.env.V5_SUPABASE_URL, V5_KEY: process.env.V5_SUPABASE_SERVICE_KEY });
 
 // Resend & Twilio Configuration
 var RESEND_API_KEY = (process.env.RESEND_API_KEY || '').trim();
