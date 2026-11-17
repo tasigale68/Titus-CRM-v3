@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { jsPDF } from 'https://esm.sh/jspdf@2.5.2'
 import autoTable from 'https://esm.sh/jspdf-autotable@3.8.4'
+import { computeAgreementTotals, isOnceOffItem } from './onceOff.ts'
 
 const ALLOWED_ORIGINS = [
   'https://www.titus-crm.com',
@@ -247,13 +248,8 @@ async function handleCreateAgreement(req: Request) {
     return errorResponse('Terms & Conditions must be accepted.', 400)
   }
 
-  // Financial calculations
-  const weekly = Math.round(
-    supportItems.reduce(
-      (sum: number, item: any) => sum + (parseFloat(item.rate) || 0) * (parseFloat(item.quantity) || 1), 0
-    ) * 100
-  ) / 100
-
+  // Financial calculations. Public holiday and establishment fee lines are
+  // once-off: counted once, never multiplied by weeks (see onceOff.ts).
   const startDate = convertDateFormat(data.agreementStartDate)
   const endDate = convertDateFormat(data.ndisPlanEnd)
   let duration = 0
@@ -261,7 +257,9 @@ async function handleCreateAgreement(req: Request) {
     const diffDays = (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)
     duration = diffDays > 0 ? Math.ceil(diffDays / 7) : 0
   }
-  const total = Math.round(weekly * duration * 100) / 100
+  const totals = computeAgreementTotals(supportItems, duration)
+  const weekly = totals.weekly
+  const total = totals.total
 
   // Insert
   const record = buildDbRecord(data, weekly, duration, total)
@@ -295,7 +293,7 @@ async function handleCreateAgreement(req: Request) {
   let pdfUrl: string | null = null
   let pdfBytes: Uint8Array | null = null
   try {
-    pdfBytes = generatePdf(data, supportItems, agreementId, inserted.created_at, weekly, duration, total)
+    pdfBytes = generatePdf(data, supportItems, agreementId, inserted.created_at, weekly, duration, total, totals.onceOffTotal)
     const filename = `pdfs/agreement_${agreementId}.pdf`
     const { error: uploadErr } = await supabase.storage
       .from('agreement-pdfs')
@@ -313,7 +311,7 @@ async function handleCreateAgreement(req: Request) {
 
   // Send email (non-fatal)
   try {
-    await sendAgreementEmail(data, supportItems, agreementId, weekly, total, duration, pdfBytes)
+    await sendAgreementEmail(data, supportItems, agreementId, weekly, total, duration, pdfBytes, totals.onceOffTotal)
   } catch (emailErr) {
     logError('POST /agreements/public', emailErr, { step: 'email_send', agreementId })
     reportToSentry(emailErr, 'POST /agreements/public', { step: 'email_send', agreementId }).catch(() => {})
@@ -608,7 +606,8 @@ function generatePdf(
   createdAt: string,
   weekly: number,
   duration: number,
-  total: number
+  total: number,
+  onceOffTotal = 0,
 ): Uint8Array {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const pageWidth = doc.internal.pageSize.getWidth()
@@ -723,14 +722,8 @@ function generatePdf(
   infoRow('Duration', `${duration} weeks`)
   y += 3
 
-  // Separate weekly from once-off
-  const onceOffCodes = ['04_049_0104_1_1', '04_050_0104_1_1', '04_051_0104_1_1']
-  const weeklyItems = supportItems.filter((i: any) =>
-    !onceOffCodes.includes(i.code || '') && !(i.name || '').toLowerCase().includes('public holiday')
-  )
-  const onceOffItems = supportItems.filter((i: any) =>
-    onceOffCodes.includes(i.code || '') || (i.name || '').toLowerCase().includes('public holiday')
-  )
+  // Separate weekly from once-off (public holiday + establishment fee lines; see onceOff.ts)
+  const { weeklyItems, onceOffItems, weeklyRaw: totalWeekly } = computeAgreementTotals(supportItems, duration)
 
   // Weekly Support Items Table
   sectionHeading('Weekly Support Items')
@@ -742,9 +735,6 @@ function generatePdf(
     item.ratio || '1:1',
     `$${((parseFloat(item.rate) || 0) * (parseFloat(item.quantity) || 1)).toFixed(2)}`,
   ])
-  const totalWeekly = weeklyItems.reduce(
-    (s: number, i: any) => s + (parseFloat(i.rate) || 0) * (parseFloat(i.quantity) || 1), 0
-  )
   weeklyTableBody.push(['', '', '', '', 'Total Weekly:', `$${totalWeekly.toFixed(2)}`])
   weeklyTableBody.push(['', '', '', '', `Total (${duration} wks):`, `$${(totalWeekly * duration).toFixed(2)}`])
 
@@ -785,18 +775,22 @@ function generatePdf(
     y = (doc as any).lastAutoTable.finalY + 8
   }
 
-  // Total Agreement Value
-  checkPage(30)
+  // Total Agreement Value (an extra once-off line only when there are once-off fees)
+  const onceOffRow = onceOffItems.length > 0 ? 6 : 0
+  checkPage(30 + onceOffRow)
   doc.setFillColor(223, 245, 227)
-  doc.rect(margin, y - 3, contentWidth, 22, 'F')
+  doc.rect(margin, y - 3, contentWidth, 22 + onceOffRow, 'F')
   doc.setFontSize(9)
   doc.setFont('helvetica', 'bold')
   doc.setTextColor(0)
   doc.text(`Weekly Recurring: $${weekly.toFixed(2)}`, margin + 5, y + 3)
   doc.text(`Duration: ${duration} weeks`, margin + 5, y + 9)
+  if (onceOffRow) {
+    doc.text(`Once-off Fees (counted once): $${onceOffTotal.toFixed(2)}`, margin + 5, y + 15)
+  }
   doc.setFontSize(11)
-  doc.text(`TOTAL AGREEMENT VALUE: $${total.toFixed(2)}`, margin + 5, y + 16)
-  y += 28
+  doc.text(`TOTAL AGREEMENT VALUE: $${total.toFixed(2)}`, margin + 5, y + 16 + onceOffRow)
+  y += 28 + onceOffRow
 
   drawSignatureBox('Participant / Representative - Schedule of Support')
   drawSignatureBox('Provider Representative - Schedule of Support')
@@ -1045,6 +1039,7 @@ async function sendAgreementEmail(
   total: number,
   duration: number,
   pdfBytes: Uint8Array | null,
+  onceOffTotal = 0,
 ) {
   const resendKey = Deno.env.get('RESEND_API_KEY')
   if (!resendKey) {
@@ -1059,9 +1054,10 @@ async function sendAgreementEmail(
   const itemRows = (supportItems || []).map((item: any) => {
     const rate = parseFloat(item.rate) || 0
     const qty = parseFloat(item.quantity) || 1
+    const onceOffTag = isOnceOffItem(item) ? ' (once-off)' : ''
     return `<tr>
       <td style="padding:6px 10px;border:1px solid #ddd;">${item.code || ''}</td>
-      <td style="padding:6px 10px;border:1px solid #ddd;">${item.name || ''}</td>
+      <td style="padding:6px 10px;border:1px solid #ddd;">${item.name || ''}${onceOffTag}</td>
       <td style="padding:6px 10px;border:1px solid #ddd;text-align:right;">$${rate.toFixed(2)}</td>
       <td style="padding:6px 10px;border:1px solid #ddd;text-align:center;">${qty}</td>
       <td style="padding:6px 10px;border:1px solid #ddd;text-align:right;">$${(rate * qty).toFixed(2)}</td>
@@ -1089,7 +1085,7 @@ async function sendAgreementEmail(
           </tr>
           ${itemRows}
         </table>
-        <p style="font-size:16px;color:#28a745;"><strong>Weekly: $${weekly.toFixed(2)}</strong> | Duration: ${duration} weeks | <strong style="color:#2454A0;">Total: $${total.toFixed(2)}</strong></p>
+        <p style="font-size:16px;color:#28a745;"><strong>Weekly: $${weekly.toFixed(2)}</strong> | Duration: ${duration} weeks${(supportItems || []).some(isOnceOffItem) ? ` | Once-off: $${onceOffTotal.toFixed(2)}` : ''} | <strong style="color:#2454A0;">Total: $${total.toFixed(2)}</strong></p>
       </div>
     </div>`
 
